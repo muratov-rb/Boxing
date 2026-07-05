@@ -1,0 +1,358 @@
+@import "tailwindcss";
+
+/* class-based dark mode: `dark:` variants apply under a .dark ancestor */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===========================================================================
+   PRESSURE — design tokens (v3: minimalist glass, light-first + dark)
+   Token names are kept stable so every component adapts by theme; the values
+   flip between light (:root default) and dark (.dark).
+   =========================================================================== */
+@theme {
+  /* surfaces — light theme defaults (page → panels) */
+  --color-void: #eef1f6;
+  --color-charcoal: #e9edf3;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f7fa;
+  --color-line: #d9dee7;
+
+  /* text */
+  --color-bone: #14161b;
+  --color-ash: #565d69;
+  --color-ash-dim: #99a0ac;
+
+  /* blood red — primary accent (the red corner) */
+  --color-blood: #e30f2a;
+  --color-blood-bright: #ff2740;
+  --color-blood-deep: #a80d1f;
+
+  /* ember orange — warm accent */
+  --color-ember: #ff6a1a;
+
+  /* azure — secondary accent (the blue corner) */
+  --color-azure: #2f6bff;
+  --color-azure-deep: #1e40af;
+
+  /* Anton has no Cyrillic — chain Oswald so RU headings fall through cleanly */
+  --font-display: var(--font-anton), var(--font-oswald);
+  --font-condensed: var(--font-oswald);
+  --font-body: var(--font-inter);
+}
+
+/* corner-glow strength + glass tuning, per theme */
+:root {
+  --glow-red: rgba(227, 15, 42, 0.13);
+  --glow-blue: rgba(47, 107, 255, 0.13);
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 10px 34px -14px rgba(18, 22, 30, 0.28);
+  --grain-opacity: 0;
+}
+
+.dark {
+  /* surfaces — dark theme */
+  --color-void: #0a0b0f;
+  --color-charcoal: #0f1116;
+  --color-surface: #16181f;
+  --color-surface-2: #1e2129;
+  --color-line: #2a2e39;
+
+  /* text */
+  --color-bone: #f3f4f7;
+  --color-ash: #a3a8b4;
+  --color-ash-dim: #6b7280;
+
+  --glow-red: rgba(227, 15, 42, 0.16);
+  --glow-blue: rgba(47, 107, 255, 0.16);
+  --glass-bg: rgba(255, 255, 255, 0.045);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.55);
+  --grain-opacity: 0.04;
+}
+
+/* ===========================================================================
+   base
+   =========================================================================== */
+*,
+*::before,
+*::after {
+  border-color: var(--color-line);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* the two corners — soft red on the left, soft blue on the right.
+   A fixed layer behind content (cheaper to composite than a fixed
+   background-image behind every blurred panel). */
+.aura {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(46% 52% at 0% 42%, var(--glow-red), transparent 62%),
+    radial-gradient(46% 52% at 100% 58%, var(--glow-blue), transparent 62%);
+}
+
+::selection {
+  background: var(--color-blood);
+  color: #fff;
+}
+
+/* ===========================================================================
+   film grain — barely-there in dark, off in light (keeps it clean)
+   =========================================================================== */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: overlay;
+  background-size: 220px 220px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ===========================================================================
+   typographic helpers
+   =========================================================================== */
+.font-display {
+  letter-spacing: 0.004em;
+  line-height: 0.92;
+}
+
+.stroke {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-bone);
+  paint-order: stroke fill;
+}
+.stroke-blood {
+  -webkit-text-stroke-color: var(--color-blood);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--color-blood);
+}
+.kicker::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--color-blood);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  font-size: 0.66rem;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid var(--color-line);
+  color: var(--color-ash);
+  background: var(--glass-bg);
+  backdrop-filter: blur(6px);
+  border-radius: 4px;
+}
+
+/* ===========================================================================
+   buttons
+   =========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  padding: 0.95rem 1.7rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.25s ease;
+  user-select: none;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-blood);
+  color: #fff;
+  box-shadow: 0 10px 30px -12px rgba(227, 15, 42, 0.7);
+}
+.btn-primary:not(:disabled):hover {
+  background: var(--color-blood-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 0 42px -6px rgba(255, 39, 64, 0.5);
+}
+
+.btn-ghost {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  color: var(--color-bone);
+  border: 1px solid var(--glass-border);
+}
+.btn-ghost:not(:disabled):hover {
+  border-color: var(--color-blood);
+  color: var(--color-blood);
+}
+
+/* ===========================================================================
+   glass panels
+   =========================================================================== */
+.panel,
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+}
+
+/* ===========================================================================
+   animation
+   =========================================================================== */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes shine {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(227, 15, 42, 0);
+  }
+  50% {
+    box-shadow: 0 0 46px -6px rgba(227, 15, 42, 0.4);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.65s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+.animate-pop {
+  animation: pop 0.55s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+.animate-glow {
+  animation: pulseGlow 2.6s ease-in-out infinite;
+}
+
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+.shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: translateX(-130%) skewX(-18deg);
+  animation: shine 3.4s ease-in-out 0.6s infinite;
+}
+
+/* ===========================================================================
+   scrollbar
+   =========================================================================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-blood);
+}
+
+/* ===========================================================================
+   reduced motion
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

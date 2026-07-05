@@ -1,0 +1,64 @@
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { Anton, Oswald, Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
+import "./globals.css";
+
+/* Heavy condensed display — fight-poster headlines */
+const anton = Anton({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-anton",
+  display: "swap",
+  // drop the auto system fallback so Cyrillic (RU) falls through to Oswald,
+  // set in the --font-display stack, instead of a plain system sans
+  adjustFontFallback: false,
+});
+
+/* Condensed UI type — labels, buttons, subheads (latin + cyrillic for RU) */
+const oswald = Oswald({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-oswald",
+  display: "swap",
+});
+
+/* Clean body copy */
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Pressure — Train Like a Fighter. Look Like an Athlete.",
+  description:
+    "Free, web-first boxing training for everyone — from total beginners to seasoned pros. AI-built plans, progress ranks, nutrition and technique, no app and no gear required.",
+};
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const store = await cookies();
+  const isDark = store.get("theme")?.value === "dark";
+
+  return (
+    <html
+      lang={locale}
+      className={`${anton.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
+    >
+      <body className="min-h-full">
+        <div className="aura" aria-hidden="true" />
+        <div className="grain" aria-hidden="true" />
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
