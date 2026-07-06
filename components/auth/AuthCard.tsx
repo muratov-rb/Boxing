@@ -45,6 +45,8 @@ export function AuthCard({
 }) {
   const t = useTranslations("auth");
   const configured = isSupabaseConfigured();
+  // only show the Google button once the provider is actually set up in Supabase
+  const googleOn = process.env.NEXT_PUBLIC_GOOGLE_ENABLED === "true";
   const router = useRouter();
   const isLogin = mode === "login";
 
@@ -135,23 +137,27 @@ export function AuthCard({
           </p>
         )}
 
-        <button
-          type="button"
-          onClick={handleGoogle}
-          disabled={loading !== null}
-          className="btn btn-ghost w-full disabled:opacity-50"
-        >
-          <GoogleG />
-          {loading === "google" ? t("redirecting") : t("google")}
-        </button>
+        {googleOn && (
+          <>
+            <button
+              type="button"
+              onClick={handleGoogle}
+              disabled={loading !== null}
+              className="btn btn-ghost w-full disabled:opacity-50"
+            >
+              <GoogleG />
+              {loading === "google" ? t("redirecting") : t("google")}
+            </button>
 
-        <div className="my-5 flex items-center gap-4">
-          <span className="h-px flex-1 bg-line" />
-          <span className="font-condensed text-xs uppercase tracking-widest text-ash-dim">
-            {t("or")}
-          </span>
-          <span className="h-px flex-1 bg-line" />
-        </div>
+            <div className="my-5 flex items-center gap-4">
+              <span className="h-px flex-1 bg-line" />
+              <span className="font-condensed text-xs uppercase tracking-widest text-ash-dim">
+                {t("or")}
+              </span>
+              <span className="h-px flex-1 bg-line" />
+            </div>
+          </>
+        )}
 
         <form onSubmit={handleEmail} className="space-y-4">
           <div>
