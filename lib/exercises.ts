@@ -55,7 +55,21 @@ export type DemoPreset =
   | "swing"
   | "pullup"
   | "curl"
-  | "benchpress";
+  | "benchpress"
+  | "uppercut"
+  | "footwork"
+  | "speedbag"
+  | "jack"
+  | "highknees"
+  | "squatjump"
+  | "dip"
+  | "superman"
+  | "twist"
+  | "sidelunge"
+  | "calfraise"
+  | "wallsit"
+  | "deadlift"
+  | "latraise";
 
 export interface I18nText {
   en: string;
@@ -74,6 +88,7 @@ export interface Exercise {
   dose: I18nText; // reps / time prescription
   demo: DemoPreset;
   kcal10min: number; // rough burn per 10 min, for the calorie counter
+  workSec: number; // seconds of work per set in a guided session
 }
 
 export const EXERCISES: Exercise[] = [
@@ -106,6 +121,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 rounds × 3 min", ru: "3 раунда × 3 мин" },
     demo: "jab",
     kcal10min: 90,
+    workSec: 180,
   },
   {
     id: "hooks",
@@ -135,6 +151,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 rounds × 2 min", ru: "3 раунда × 2 мин" },
     demo: "hook",
     kcal10min: 95,
+    workSec: 120,
   },
   {
     id: "slips",
@@ -164,6 +181,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 rounds × 2 min", ru: "4 раунда × 2 мин" },
     demo: "slip",
     kcal10min: 80,
+    workSec: 120,
   },
   {
     id: "bag-combos",
@@ -193,6 +211,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 rounds × 3 min", ru: "4 раунда × 3 мин" },
     demo: "jab",
     kcal10min: 130,
+    workSec: 180,
   },
   {
     id: "jump-rope",
@@ -222,6 +241,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 rounds × 3 min", ru: "3 раунда × 3 мин" },
     demo: "jumprope",
     kcal10min: 120,
+    workSec: 180,
   },
 
   /* ------------------------------ bodyweight ----------------------------- */
@@ -253,6 +273,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 10–20 reps", ru: "4 × 10–20 повторений" },
     demo: "pushup",
     kcal10min: 70,
+    workSec: 45,
   },
   {
     id: "diamond-pushup",
@@ -280,6 +301,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 8–15 reps", ru: "3 × 8–15 повторений" },
     demo: "pushup",
     kcal10min: 70,
+    workSec: 40,
   },
   {
     id: "squat",
@@ -309,6 +331,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 15–25 reps", ru: "4 × 15–25 повторений" },
     demo: "squat",
     kcal10min: 75,
+    workSec: 60,
   },
   {
     id: "lunge",
@@ -338,6 +361,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 10 / leg", ru: "3 × 10 на ногу" },
     demo: "lunge",
     kcal10min: 80,
+    workSec: 60,
   },
   {
     id: "plank",
@@ -365,6 +389,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 30–60 sec", ru: "3 × 30–60 сек" },
     demo: "plank",
     kcal10min: 40,
+    workSec: 45,
   },
   {
     id: "situp",
@@ -392,6 +417,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 15–25 reps", ru: "4 × 15–25 повторений" },
     demo: "situp",
     kcal10min: 60,
+    workSec: 45,
   },
   {
     id: "burpee",
@@ -419,6 +445,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "5 × 10 reps", ru: "5 × 10 повторений" },
     demo: "burpee",
     kcal10min: 140,
+    workSec: 45,
   },
   {
     id: "mountain-climber",
@@ -446,6 +473,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 30 sec", ru: "4 × 30 сек" },
     demo: "climber",
     kcal10min: 110,
+    workSec: 30,
   },
   {
     id: "glute-bridge",
@@ -473,6 +501,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 15–20 reps", ru: "3 × 15–20 повторений" },
     demo: "bridge",
     kcal10min: 50,
+    workSec: 45,
   },
   {
     id: "pike-pushup",
@@ -500,6 +529,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 8–12 reps", ru: "3 × 8–12 повторений" },
     demo: "pushup",
     kcal10min: 65,
+    workSec: 40,
   },
 
   /* ------------------------------ equipment ------------------------------ */
@@ -529,6 +559,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 5–12 reps", ru: "4 × 5–12 повторений" },
     demo: "pullup",
     kcal10min: 85,
+    workSec: 40,
   },
   {
     id: "hanging-knee-raise",
@@ -556,6 +587,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 10–15 reps", ru: "3 × 10–15 повторений" },
     demo: "pullup",
     kcal10min: 60,
+    workSec: 40,
   },
   {
     id: "goblet-squat",
@@ -583,6 +615,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 10–12 reps", ru: "4 × 10–12 повторений" },
     demo: "squat",
     kcal10min: 85,
+    workSec: 50,
   },
   {
     id: "db-press",
@@ -610,6 +643,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 8–12 reps", ru: "4 × 8–12 повторений" },
     demo: "press",
     kcal10min: 65,
+    workSec: 45,
   },
   {
     id: "db-row",
@@ -637,6 +671,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 10 / arm", ru: "4 × 10 на руку" },
     demo: "row",
     kcal10min: 70,
+    workSec: 50,
   },
   {
     id: "kb-swing",
@@ -664,6 +699,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "5 × 15 reps", ru: "5 × 15 повторений" },
     demo: "swing",
     kcal10min: 120,
+    workSec: 40,
   },
   {
     id: "bench-press",
@@ -691,6 +727,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "4 × 6–10 reps", ru: "4 × 6–10 повторений" },
     demo: "benchpress",
     kcal10min: 70,
+    workSec: 50,
   },
   {
     id: "db-curl",
@@ -718,6 +755,7 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "3 × 10–15 reps", ru: "3 × 10–15 повторений" },
     demo: "curl",
     kcal10min: 50,
+    workSec: 45,
   },
   {
     id: "sandbag-carry",
@@ -745,6 +783,489 @@ export const EXERCISES: Exercise[] = [
     dose: { en: "5 × 20–40 m", ru: "5 × 20–40 м" },
     demo: "swing",
     kcal10min: 100,
+    workSec: 60,
+  },
+
+  /* --------------------------- more technique ---------------------------- */
+  {
+    id: "uppercuts",
+    name: { en: "Uppercuts", ru: "Апперкоты" },
+    desc: {
+      en: "The punch that comes from the legs — dig up through the target.",
+      ru: "Удар, который рождается в ногах — выстрели снизу вверх сквозь цель.",
+    },
+    steps: {
+      en: [
+        "Dip the knees slightly, keep the guard up",
+        "Drive up with the legs, palm turning toward you",
+        "Strike up through the chin height, elbow stays bent",
+      ],
+      ru: [
+        "Слегка подсядь, защита у подбородка",
+        "Выпрямись ногами, ладонь разворачивается к себе",
+        "Бей снизу вверх на высоту подбородка, локоть согнут",
+      ],
+    },
+    bodyPart: "technique",
+    muscles: ["biceps", "shoulders", "abs", "quads"],
+    requires: [],
+    level: 2,
+    dose: { en: "3 rounds × 2 min", ru: "3 раунда × 2 мин" },
+    demo: "uppercut",
+    kcal10min: 95,
+    workSec: 120,
+  },
+  {
+    id: "shadow-footwork",
+    name: { en: "Footwork Drill", ru: "Работа ног" },
+    desc: {
+      en: "In-out and lateral steps — boxing is played with the feet first.",
+      ru: "Вперёд-назад и в стороны — в бокс сначала играют ногами.",
+    },
+    steps: {
+      en: [
+        "Stay on the balls of your feet, knees soft",
+        "Step-drag forward, back, then side to side",
+        "Never cross the feet, keep the stance width",
+      ],
+      ru: [
+        "Стой на носках, колени мягкие",
+        "Шаг-подтяжка вперёд, назад, затем в стороны",
+        "Не скрещивай ноги, держи ширину стойки",
+      ],
+    },
+    bodyPart: "technique",
+    muscles: ["calves", "quads", "abs"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 rounds × 3 min", ru: "3 раунда × 3 мин" },
+    demo: "footwork",
+    kcal10min: 85,
+    workSec: 180,
+  },
+  {
+    id: "speed-bag",
+    name: { en: "Speed Bag", ru: "Пневмогруша" },
+    desc: {
+      en: "Rhythm, hand speed and shoulder endurance — the classic gym soundtrack.",
+      ru: "Ритм, скорость рук и выносливость плеч — классический саундтрек зала.",
+    },
+    steps: {
+      en: [
+        "Bag at eye level, elbows high",
+        "Small circular strikes with the side of the fist",
+        "Find the 1-2-3 rebound rhythm before speeding up",
+      ],
+      ru: [
+        "Груша на уровне глаз, локти высоко",
+        "Маленькие круговые удары ребром кулака",
+        "Поймай ритм отскока на 1-2-3, потом ускоряйся",
+      ],
+    },
+    bodyPart: "technique",
+    muscles: ["shoulders", "forearms", "triceps"],
+    requires: ["speedbag"],
+    level: 2,
+    dose: { en: "3 rounds × 2 min", ru: "3 раунда × 2 мин" },
+    demo: "speedbag",
+    kcal10min: 80,
+    workSec: 120,
+  },
+
+  /* --------------------------- more bodyweight --------------------------- */
+  {
+    id: "jumping-jacks",
+    name: { en: "Jumping Jacks", ru: "Джампинг-джек" },
+    desc: {
+      en: "The classic warm-up — wake up the whole body in a minute.",
+      ru: "Классическая разминка — разбуди всё тело за минуту.",
+    },
+    steps: {
+      en: [
+        "Jump feet wide while arms swing overhead",
+        "Jump back to feet together, arms down",
+        "Land soft, keep a steady rhythm",
+      ],
+      ru: [
+        "Прыжком ноги в стороны, руки через стороны вверх",
+        "Прыжком обратно, руки вниз",
+        "Приземляйся мягко, держи ровный ритм",
+      ],
+    },
+    bodyPart: "fullbody",
+    muscles: ["shoulders", "calves", "quads"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 × 45 sec", ru: "3 × 45 сек" },
+    demo: "jack",
+    kcal10min: 100,
+    workSec: 45,
+  },
+  {
+    id: "high-knees",
+    name: { en: "High Knees", ru: "Высокое колено" },
+    desc: {
+      en: "Sprint on the spot — engine, hip flexors and fast feet.",
+      ru: "Спринт на месте — дыхалка, сгибатели бедра и быстрые ноги.",
+    },
+    steps: {
+      en: [
+        "Run in place driving knees to hip height",
+        "Stay tall — don't lean back",
+        "Pump the arms like a sprinter",
+      ],
+      ru: [
+        "Беги на месте, поднимая колени до уровня таза",
+        "Держи корпус ровно — не отклоняйся назад",
+        "Работай руками как спринтер",
+      ],
+    },
+    bodyPart: "fullbody",
+    muscles: ["quads", "calves", "abs"],
+    requires: [],
+    level: 1,
+    dose: { en: "4 × 30 sec", ru: "4 × 30 сек" },
+    demo: "highknees",
+    kcal10min: 130,
+    workSec: 30,
+  },
+  {
+    id: "squat-jumps",
+    name: { en: "Squat Jumps", ru: "Выпрыгивания" },
+    desc: {
+      en: "Explosive legs — the spring behind every knockout punch.",
+      ru: "Взрывные ноги — пружина каждого нокаутирующего удара.",
+    },
+    steps: {
+      en: [
+        "Squat to parallel, chest up",
+        "Explode straight up as high as you can",
+        "Land soft into the next rep",
+      ],
+      ru: [
+        "Присядь до параллели, грудь вверх",
+        "Выпрыгни вертикально со всей силы",
+        "Мягко приземлись сразу в следующее повторение",
+      ],
+    },
+    bodyPart: "legs",
+    muscles: ["quads", "glutes", "calves"],
+    requires: [],
+    level: 2,
+    dose: { en: "4 × 8–12 reps", ru: "4 × 8–12 повторений" },
+    demo: "squatjump",
+    kcal10min: 120,
+    workSec: 40,
+  },
+  {
+    id: "chair-dips",
+    name: { en: "Chair Dips", ru: "Обратные отжимания" },
+    desc: {
+      en: "Triceps on any chair or bench — straight-punch snap at home.",
+      ru: "Трицепс на любом стуле или скамье — хлёсткость прямых ударов дома.",
+    },
+    steps: {
+      en: [
+        "Hands on the edge behind you, legs forward",
+        "Lower until elbows hit ~90°",
+        "Press back up without shrugging",
+      ],
+      ru: [
+        "Руки на краю опоры за спиной, ноги вперёд",
+        "Опустись до ~90° в локтях",
+        "Выжмись вверх, не поднимая плечи",
+      ],
+    },
+    bodyPart: "arms",
+    muscles: ["triceps", "shoulders", "chest"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 × 10–15 reps", ru: "3 × 10–15 повторений" },
+    demo: "dip",
+    kcal10min: 55,
+    workSec: 45,
+  },
+  {
+    id: "superman",
+    name: { en: "Superman Hold", ru: "Супермен" },
+    desc: {
+      en: "Lower back and glutes — the armor behind your posture.",
+      ru: "Поясница и ягодицы — броня твоей осанки.",
+    },
+    steps: {
+      en: [
+        "Face down, arms extended forward",
+        "Lift arms, chest and legs off the floor together",
+        "Hold, squeeze the glutes, breathe",
+      ],
+      ru: [
+        "Лёжа на животе, руки вытянуты вперёд",
+        "Одновременно оторви руки, грудь и ноги от пола",
+        "Держи, сжимай ягодицы, дыши",
+      ],
+    },
+    bodyPart: "back",
+    muscles: ["lowerback", "glutes", "traps"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 × 20–30 sec", ru: "3 × 20–30 сек" },
+    demo: "superman",
+    kcal10min: 40,
+    workSec: 30,
+  },
+  {
+    id: "russian-twists",
+    name: { en: "Russian Twists", ru: "Русские скручивания" },
+    desc: {
+      en: "Rotational core — the exact muscles that turn a punch over.",
+      ru: "Ротационный кор — именно эти мышцы проворачивают удар.",
+    },
+    steps: {
+      en: [
+        "Sit back to 45°, feet up or lightly grounded",
+        "Rotate the torso side to side",
+        "Turn the shoulders, not just the arms",
+      ],
+      ru: [
+        "Откинься на 45°, ноги подняты или слегка касаются пола",
+        "Вращай корпус из стороны в сторону",
+        "Поворачивай плечи, а не только руки",
+      ],
+    },
+    bodyPart: "core",
+    muscles: ["obliques", "abs"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 × 20 turns", ru: "3 × 20 поворотов" },
+    demo: "twist",
+    kcal10min: 65,
+    workSec: 45,
+  },
+  {
+    id: "side-lunges",
+    name: { en: "Side Lunges", ru: "Боковые выпады" },
+    desc: {
+      en: "Lateral strength for slips, pivots and ring movement.",
+      ru: "Боковая сила для уклонов, разворотов и движения по рингу.",
+    },
+    steps: {
+      en: [
+        "Big step to the side, hips back",
+        "Bend one knee, other leg stays straight",
+        "Push off and switch sides",
+      ],
+      ru: [
+        "Широкий шаг в сторону, таз назад",
+        "Сгибай одно колено, вторая нога прямая",
+        "Оттолкнись и смени сторону",
+      ],
+    },
+    bodyPart: "legs",
+    muscles: ["quads", "glutes", "hamstrings"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 × 8 / side", ru: "3 × 8 на сторону" },
+    demo: "sidelunge",
+    kcal10min: 75,
+    workSec: 60,
+  },
+  {
+    id: "calf-raises",
+    name: { en: "Calf Raises", ru: "Подъёмы на носки" },
+    desc: {
+      en: "Boxers live on their toes — build the springs that keep you there.",
+      ru: "Боксёр живёт на носках — накачай пружины, которые тебя там держат.",
+    },
+    steps: {
+      en: [
+        "Feet hip-width, rise to the balls of the feet",
+        "Pause at the top, squeeze the calves",
+        "Lower slow, heels kiss the floor",
+      ],
+      ru: [
+        "Стопы на ширине таза, поднимись на носки",
+        "Задержись наверху, сожми икры",
+        "Опускайся медленно, пятки едва касаются пола",
+      ],
+    },
+    bodyPart: "legs",
+    muscles: ["calves"],
+    requires: [],
+    level: 1,
+    dose: { en: "4 × 15–25 reps", ru: "4 × 15–25 повторений" },
+    demo: "calfraise",
+    kcal10min: 45,
+    workSec: 45,
+  },
+  {
+    id: "wall-sit",
+    name: { en: "Wall Sit", ru: "Стульчик у стены" },
+    desc: {
+      en: "Isometric leg endurance — for legs that don't fade in round three.",
+      ru: "Изометрическая выносливость ног — чтобы они не сели в третьем раунде.",
+    },
+    steps: {
+      en: [
+        "Back flat on the wall, thighs parallel to the floor",
+        "Knees at 90°, weight through the heels",
+        "Hold and breathe — no hands on the legs",
+      ],
+      ru: [
+        "Спина прижата к стене, бёдра параллельны полу",
+        "Колени под 90°, вес в пятках",
+        "Держи и дыши — руки не на ногах",
+      ],
+    },
+    bodyPart: "legs",
+    muscles: ["quads", "glutes"],
+    requires: [],
+    level: 1,
+    dose: { en: "3 × 30–60 sec", ru: "3 × 30–60 сек" },
+    demo: "wallsit",
+    kcal10min: 50,
+    workSec: 45,
+  },
+  {
+    id: "wide-pushup",
+    name: { en: "Wide Push-Up", ru: "Широкие отжимания" },
+    desc: {
+      en: "Hands wide — more chest, the base of a crushing clinch.",
+      ru: "Ладони шире — больше груди, база жёсткого клинча.",
+    },
+    steps: {
+      en: [
+        "Hands 1.5× shoulder width",
+        "Lower with control, chest leads",
+        "Press up, squeeze the chest at the top",
+      ],
+      ru: [
+        "Ладони в 1,5 раза шире плеч",
+        "Опускайся подконтрольно, грудью вперёд",
+        "Выжмись вверх, сожми грудь в верхней точке",
+      ],
+    },
+    bodyPart: "chest",
+    muscles: ["chest", "shoulders", "triceps"],
+    requires: [],
+    level: 1,
+    dose: { en: "4 × 8–15 reps", ru: "4 × 8–15 повторений" },
+    demo: "pushup",
+    kcal10min: 70,
+    workSec: 45,
+  },
+
+  /* --------------------------- more equipment ---------------------------- */
+  {
+    id: "deadlift",
+    name: { en: "Deadlift", ru: "Становая тяга" },
+    desc: {
+      en: "The whole posterior chain in one lift — raw fight-ending strength.",
+      ru: "Вся задняя цепь в одном движении — грубая, завершающая бой сила.",
+    },
+    steps: {
+      en: [
+        "Bar over mid-foot, flat back, chest up",
+        "Push the floor away, bar close to the legs",
+        "Lock out tall — don't lean back",
+      ],
+      ru: [
+        "Гриф над серединой стопы, спина ровная, грудь вверх",
+        "Отталкивай пол, гриф идёт вдоль ног",
+        "Выпрямись полностью — не отклоняйся назад",
+      ],
+    },
+    bodyPart: "back",
+    muscles: ["hamstrings", "glutes", "lowerback", "traps", "forearms"],
+    requires: ["barbell"],
+    level: 3,
+    dose: { en: "5 × 5 reps", ru: "5 × 5 повторений" },
+    demo: "deadlift",
+    kcal10min: 90,
+    workSec: 50,
+  },
+  {
+    id: "lateral-raise",
+    name: { en: "Lateral Raise", ru: "Махи в стороны" },
+    desc: {
+      en: "Wide shoulders that carry a long guard deep into the fight.",
+      ru: "Широкие плечи, которые держат защиту до конца боя.",
+    },
+    steps: {
+      en: [
+        "Dumbbells at your sides, slight elbow bend",
+        "Raise to shoulder height, lead with the elbows",
+        "Lower slower than you lifted",
+      ],
+      ru: [
+        "Гантели по бокам, локти слегка согнуты",
+        "Подними до уровня плеч, веди локтями",
+        "Опускай медленнее, чем поднимал",
+      ],
+    },
+    bodyPart: "shoulders",
+    muscles: ["shoulders", "traps"],
+    requires: ["dumbbells"],
+    level: 1,
+    dose: { en: "3 × 12–15 reps", ru: "3 × 12–15 повторений" },
+    demo: "latraise",
+    kcal10min: 50,
+    workSec: 45,
+  },
+  {
+    id: "barbell-squat",
+    name: { en: "Barbell Squat", ru: "Присед со штангой" },
+    desc: {
+      en: "The king of leg strength — loaded power from the ground up.",
+      ru: "Король силы ног — нагруженная мощь от самого пола.",
+    },
+    steps: {
+      en: [
+        "Bar on the upper back, core braced",
+        "Sit down between the knees to parallel",
+        "Drive up through the whole foot",
+      ],
+      ru: [
+        "Гриф на верхе спины, кор напряжён",
+        "Садись между коленей до параллели",
+        "Вставай, давя всей стопой",
+      ],
+    },
+    bodyPart: "legs",
+    muscles: ["quads", "glutes", "hamstrings", "lowerback"],
+    requires: ["barbell"],
+    level: 2,
+    dose: { en: "5 × 5–8 reps", ru: "5 × 5–8 повторений" },
+    demo: "squat",
+    kcal10min: 95,
+    workSec: 50,
+  },
+  {
+    id: "double-unders",
+    name: { en: "Double Unders", ru: "Двойные прыжки" },
+    desc: {
+      en: "Two rope turns per jump — elite timing and a furious engine.",
+      ru: "Два оборота троса за прыжок — элитный тайминг и бешеная дыхалка.",
+    },
+    steps: {
+      en: [
+        "Jump slightly higher than a regular skip",
+        "Spin the wrists twice per jump — fast, small circles",
+        "Stay tall, land on the balls of the feet",
+      ],
+      ru: [
+        "Прыгай чуть выше обычного",
+        "Два быстрых маленьких оборота кистями за прыжок",
+        "Держись ровно, приземляйся на носки",
+      ],
+    },
+    bodyPart: "fullbody",
+    muscles: ["calves", "forearms", "shoulders", "abs"],
+    requires: ["jumprope"],
+    level: 3,
+    dose: { en: "5 × 20 reps", ru: "5 × 20 повторений" },
+    demo: "jumprope",
+    kcal10min: 150,
+    workSec: 40,
   },
 ];
 

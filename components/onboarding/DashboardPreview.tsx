@@ -196,9 +196,9 @@ export function DashboardPreview({
               </li>
             ))}
           </ol>
-          <button type="button" disabled className="btn btn-primary mt-5 w-full opacity-40">
-            <Icon name="lock" size={16} /> {t("startSession")}
-          </button>
+          <Link href="/train" className="btn btn-primary shine mt-5 w-full">
+            <Icon name="bolt" size={16} /> {t("startSession")}
+          </Link>
         </Card>
 
         {/* side column */}

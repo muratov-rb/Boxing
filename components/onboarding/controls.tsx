@@ -6,7 +6,7 @@ export const cx = (...c: (string | false | undefined)[]) =>
   c.filter(Boolean).join(" ");
 
 export const inputCls =
-  "w-full border border-line bg-void px-4 py-3 font-condensed text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none";
+  "w-full border border-line bg-void px-4 py-3 font-condensed text-base text-bone placeholder:text-ash-dim transition-colors duration-200 focus:border-blood focus:outline-none";
 
 export function Field({
   label,
@@ -21,7 +21,8 @@ export function Field({
 }) {
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-2">
+      {/* min-h keeps fields aligned whether or not an action is present */}
+      <div className="mb-2 flex min-h-[26px] items-center justify-between gap-2">
         <label
           htmlFor={htmlFor}
           className="font-condensed text-xs uppercase tracking-widest text-ash"
@@ -55,7 +56,7 @@ export function SelectCard({
       aria-pressed={active}
       onClick={onClick}
       className={cx(
-        "flex flex-col items-start border px-4 py-3 text-left transition-colors",
+        "flex flex-col items-start border px-4 py-3 text-left transition-all duration-200 hover:-translate-y-0.5",
         active ? "border-blood bg-surface-2" : "border-line hover:border-blood/50",
       )}
     >

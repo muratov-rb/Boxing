@@ -22,6 +22,7 @@ export default async function DashboardPage() {
 
   const t = await getTranslations("dashPage");
   const tr = await getTranslations("ranks");
+  const tt = await getTranslations("train");
   const email = user?.email ?? "fighter@preview";
   const rank0 = tr("0n");
 
@@ -66,7 +67,24 @@ export default async function DashboardPage() {
         </h1>
         <p className="mt-2 text-ash">{t("sub")}</p>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        {/* today's workout — the main action */}
+        <section className="panel mt-8 flex flex-col justify-between gap-5 p-7 sm:flex-row sm:items-center">
+          <div>
+            <span className="badge border-blood/40 text-blood">
+              <Icon name="bolt" size={13} /> {tt("dashBadge")}
+            </span>
+            <h2 className="mt-4 font-condensed text-2xl font-bold uppercase tracking-wide">
+              {tt("dashTitle")}
+            </h2>
+            <p className="mt-2 max-w-lg text-sm text-ash">{tt("dashCopy")}</p>
+          </div>
+          <Link href="/train" className="btn btn-primary shine shrink-0">
+            {tt("dashCta")}
+            <Icon name="arrow" size={18} />
+          </Link>
+        </section>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {/* plan */}
           <section className="panel p-7">
             <span className="badge border-blood/40 text-blood">

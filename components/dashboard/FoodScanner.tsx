@@ -175,7 +175,7 @@ export function FoodScanner({
               ref={videoRef}
               playsInline
               muted
-              className="aspect-[4/3] w-full rounded-lg bg-black object-cover"
+              className="aspect-[4/3] w-full rounded-lg border border-line/70 bg-black object-cover"
             />
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button type="button" onClick={capture} className="btn btn-primary">
@@ -202,7 +202,7 @@ export function FoodScanner({
             <img
               src={photo}
               alt="Meal preview"
-              className="aspect-[4/3] w-full rounded-lg object-cover"
+              className="aspect-[4/3] w-full rounded-lg border border-line/70 object-cover"
             />
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button type="button" onClick={scan} className="btn btn-primary">

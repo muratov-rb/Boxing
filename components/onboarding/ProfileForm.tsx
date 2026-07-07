@@ -64,7 +64,8 @@ function Field({
 }) {
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-2">
+      {/* min-h keeps fields aligned whether or not a unit toggle is present */}
+      <div className="mb-2 flex min-h-[26px] items-center justify-between gap-2">
         <label
           htmlFor={htmlFor}
           className="font-condensed text-xs uppercase tracking-widest text-ash"
@@ -79,7 +80,7 @@ function Field({
 }
 
 const inputCls =
-  "w-full border border-line bg-void px-4 py-3 font-condensed text-lg text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none";
+  "w-full border border-line bg-void px-4 py-3 font-condensed text-lg text-bone placeholder:text-ash-dim transition-colors duration-200 focus:border-blood focus:outline-none";
 
 export function ProfileForm({
   profile,

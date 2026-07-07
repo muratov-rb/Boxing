@@ -81,7 +81,7 @@ function LessonDetail({
         {/* 3D demo + body map */}
         <div className="mt-6 grid gap-4 sm:grid-cols-5">
           <div className="sm:col-span-3">
-            <div className="overflow-hidden rounded-xl border border-line/70 bg-void/40">
+            <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
               <Exercise3D preset={ex.demo} className="h-64 w-full sm:h-80" />
             </div>
             <p className="mt-2 flex items-center gap-1.5 text-xs text-ash-dim">
@@ -89,7 +89,7 @@ function LessonDetail({
             </p>
           </div>
           <div className="sm:col-span-2">
-            <div className="rounded-xl border border-line/70 bg-void/40 p-3">
+            <div className="rounded-lg border border-line/70 bg-void/40 p-3">
               <BodyMap muscles={ex.muscles} className="h-auto w-full" />
             </div>
             <p className="mt-2 text-xs text-ash-dim">{t("musclesHint")}</p>
@@ -112,7 +112,7 @@ function LessonDetail({
         <ol className="mt-3 space-y-2.5">
           {ex.steps[locale].map((s, i) => (
             <li key={i} className="flex items-start gap-3 text-sm text-bone/90">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md border border-line font-condensed text-xs text-ash">
+              <span className="grid h-6 w-6 shrink-0 place-items-center border border-line font-condensed text-xs text-ash">
                 {i + 1}
               </span>
               {s}
@@ -263,7 +263,7 @@ export function LessonsClient() {
               className="panel group p-5 text-left transition-transform duration-200 hover:-translate-y-0.5"
             >
               {/* the lesson's body-part picture */}
-              <div className="rounded-lg border border-line/60 bg-void/40 p-2">
+              <div className="border border-line/60 bg-void/40 p-2">
                 <BodyMap muscles={ex.muscles} className="h-36 w-full" />
               </div>
               <div className="mt-4 flex items-center justify-between gap-2">

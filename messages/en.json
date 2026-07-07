@@ -421,5 +421,33 @@
   },
   "common": {
     "language": "Language"
+  },
+  "train": {
+    "kicker": "Guided session",
+    "titlePre": "Today's ",
+    "titleAccent": "workout.",
+    "sub": "Built from your profile — press Start and follow the coach. Timers run themselves; you just work.",
+    "meta": "{n} exercises · ~{min} min",
+    "start": "Start Workout",
+    "pause": "Pause",
+    "resume": "Resume",
+    "skip": "Skip",
+    "quit": "Quit",
+    "rest": "Rest",
+    "nextUp": "Next up",
+    "exOf": "Exercise {i} / {n}",
+    "doneTitle": "Session complete.",
+    "doneSub": "That's how champions are built — one honest session at a time.",
+    "statMin": "minutes",
+    "statKcal": "kcal burned (est.)",
+    "statEx": "exercises",
+    "again": "Go Again",
+    "backDash": "Back to Dashboard",
+    "streakMarked": "Logged to your streak",
+    "dashBadge": "Ready to go",
+    "dashTitle": "Today's Workout",
+    "dashCopy": "A guided session from your profile — timers, technique demos and rest built in.",
+    "dashCta": "Start Training",
+    "noExercises": "Complete onboarding so the coach knows your setup — using the full library for now."
   }
 }

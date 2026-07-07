@@ -372,6 +372,177 @@ const ANIMS: Record<DemoPreset, Anim> = {
     r.foreL.rotation.x = -1.6 * k;
     r.foreR.rotation.x = -1.6 * k;
   },
+  uppercut(t, r) {
+    guard(r);
+    const cycle = t % 1.6;
+    const lead = cycle < 0.8;
+    const k = Math.sin(Math.PI * ((cycle % 0.8) / 0.8));
+    r.root.rotation.y = -0.3;
+    r.root.position.y = 0.95 - 0.12 * k; // dip from the legs...
+    r.legL.rotation.x = -0.5 * k;
+    r.legR.rotation.x = -0.5 * k;
+    r.shinL.rotation.x = 0.6 * k;
+    r.shinR.rotation.x = 0.6 * k;
+    const arm = lead ? r.armL : r.armR; // ...then dig up
+    const fore = lead ? r.foreL : r.foreR;
+    arm.rotation.x = -0.5 - 0.5 * k;
+    fore.rotation.x = -1.9 - 0.45 * k;
+    r.torso.rotation.y = (lead ? 0.25 : -0.25) * k;
+  },
+  footwork(t, r) {
+    guard(r);
+    const bounce = Math.abs(Math.sin(t * 4));
+    const side = Math.sin(t * 1.3);
+    r.root.rotation.y = -0.3;
+    r.root.position.y = 0.93 + 0.05 * bounce;
+    r.root.position.x = 0.3 * side; // gliding side to side
+    r.legL.rotation.x = -0.18 - 0.2 * bounce;
+    r.legR.rotation.x = 0.12 + 0.2 * bounce;
+    r.shinL.rotation.x = 0.3 * bounce;
+    r.shinR.rotation.x = 0.3 * bounce;
+  },
+  speedbag(t, r) {
+    r.root.rotation.y = 0;
+    r.armL.rotation.x = -1.9; // elbows high, hands at head height
+    r.armR.rotation.x = -1.9;
+    r.foreL.rotation.x = -0.6 + 0.4 * Math.sin(t * 12);
+    r.foreR.rotation.x = -0.6 + 0.4 * Math.sin(t * 12 + Math.PI);
+    r.root.position.y = 0.95 + 0.01 * Math.sin(t * 6);
+  },
+  jack(t, r) {
+    const k = wave(t, 0.9); // 0 closed → 1 star
+    const hop = Math.sin(Math.PI * ((t % 0.9) / 0.9));
+    r.root.position.y = 0.95 + 0.07 * hop;
+    r.armL.rotation.z = -0.15 - 2.6 * k; // arms sweep overhead
+    r.armR.rotation.z = 0.15 + 2.6 * k;
+    r.legL.rotation.z = -0.45 * k; // feet jump wide
+    r.legR.rotation.z = 0.45 * k;
+  },
+  highknees(t, r) {
+    const s = Math.sin(t * 7);
+    r.root.position.y = 0.98 + 0.03 * Math.abs(s);
+    r.legL.rotation.x = -1.5 * Math.max(0, s); // sprint knees
+    r.shinL.rotation.x = 1.3 * Math.max(0, s);
+    r.legR.rotation.x = -1.5 * Math.max(0, -s);
+    r.shinR.rotation.x = 1.3 * Math.max(0, -s);
+    r.armL.rotation.x = -0.4 + 0.9 * s; // sprinter arms
+    r.armR.rotation.x = -0.4 - 0.9 * s;
+    r.foreL.rotation.x = -1.4;
+    r.foreR.rotation.x = -1.4;
+  },
+  squatjump(t, r) {
+    const cycle = (t % 1.6) / 1.6;
+    if (cycle < 0.5) {
+      const k = Math.sin(Math.PI * (cycle / 0.5)); // load the squat
+      r.root.position.y = 0.95 - 0.32 * k;
+      r.legL.rotation.x = -1.4 * k;
+      r.legR.rotation.x = -1.4 * k;
+      r.shinL.rotation.x = 1.6 * k;
+      r.shinR.rotation.x = 1.6 * k;
+      r.torso.rotation.x = 0.3 * k;
+      r.armL.rotation.x = 0.7 * k; // arms swing back
+      r.armR.rotation.x = 0.7 * k;
+    } else {
+      const k = Math.sin(Math.PI * ((cycle - 0.5) / 0.5)); // fly
+      r.root.position.y = 0.95 + 0.42 * k;
+      r.armL.rotation.x = -2.6 * k; // arms drive overhead
+      r.armR.rotation.x = -2.6 * k;
+      r.legL.rotation.x = -0.15 * k;
+      r.legR.rotation.x = -0.15 * k;
+    }
+  },
+  dip(t, r) {
+    const k = wave(t, 2.0); // 0 up → 1 down
+    r.root.position.y = 0.62 - 0.14 * k; // seated dip on a bench edge
+    r.legL.rotation.x = -1.15;
+    r.legR.rotation.x = -1.15;
+    r.shinL.rotation.x = 0.9;
+    r.shinR.rotation.x = 0.9;
+    r.torso.rotation.x = 0.12;
+    r.armL.rotation.x = 0.55 + 0.35 * k; // arms behind, bending
+    r.armR.rotation.x = 0.55 + 0.35 * k;
+    r.foreL.rotation.x = -0.9 * k;
+    r.foreR.rotation.x = -0.9 * k;
+  },
+  superman(t, r) {
+    const k = wave(t, 2.4);
+    r.root.rotation.x = -Math.PI / 2 + 0.04; // face down
+    r.root.position.y = 0.22;
+    r.torso.rotation.x = -0.35 * k; // chest lifts
+    r.armL.rotation.x = Math.PI - 0.3 - 0.25 * k; // arms reach forward/up
+    r.armR.rotation.x = Math.PI - 0.3 - 0.25 * k;
+    r.legL.rotation.x = 0.35 * k; // legs lift
+    r.legR.rotation.x = 0.35 * k;
+  },
+  twist(t, r) {
+    const s = Math.sin(t * 2.6);
+    r.root.rotation.x = Math.PI / 2 - 0.7; // leaned-back V-sit
+    r.root.position.y = 0.5;
+    r.legL.rotation.x = -1.35;
+    r.legR.rotation.x = -1.35;
+    r.shinL.rotation.x = 1.2;
+    r.shinR.rotation.x = 1.2;
+    r.torso.rotation.y = 0.7 * s; // shoulders rotate side to side
+    r.armL.rotation.x = -1.3;
+    r.armR.rotation.x = -1.3;
+    r.foreL.rotation.x = -0.7;
+    r.foreR.rotation.x = -0.7;
+  },
+  sidelunge(t, r) {
+    const cycle = t % 2.4;
+    const left = cycle < 1.2;
+    const k = Math.sin(Math.PI * ((cycle % 1.2) / 1.2));
+    const bendLeg = left ? r.legL : r.legR;
+    const bendShin = left ? r.shinL : r.shinR;
+    const straight = left ? r.legR : r.legL;
+    r.root.position.y = 0.95 - 0.24 * k;
+    r.root.position.x = (left ? -0.22 : 0.22) * k;
+    bendLeg.rotation.x = -1.1 * k;
+    bendShin.rotation.x = 1.3 * k;
+    straight.rotation.z = (left ? 0.55 : -0.55) * k; // other leg stays long
+    r.torso.rotation.x = 0.25 * k;
+    r.armL.rotation.x = -0.6 * k;
+    r.armR.rotation.x = -0.6 * k;
+  },
+  calfraise(t, r) {
+    const k = wave(t, 1.6);
+    r.root.position.y = 0.95 + 0.09 * k; // rise to the toes
+    r.shinL.rotation.x = -0.12 * k;
+    r.shinR.rotation.x = -0.12 * k;
+    r.armL.rotation.x = -0.15;
+    r.armR.rotation.x = -0.15;
+  },
+  wallsit(t, r) {
+    const breathe = 0.012 * Math.sin(t * 2.2); // static hold
+    r.root.position.y = 0.6 + breathe;
+    r.root.position.z = -0.12;
+    r.legL.rotation.x = -1.55;
+    r.legR.rotation.x = -1.55;
+    r.shinL.rotation.x = 1.55;
+    r.shinR.rotation.x = 1.55;
+    r.torso.rotation.x = -0.06;
+    r.armL.rotation.x = -0.25;
+    r.armR.rotation.x = -0.25;
+  },
+  deadlift(t, r) {
+    const k = wave(t, 2.4); // 0 lockout → 1 bar at the floor
+    r.torso.rotation.x = 0.95 * k; // hip hinge
+    r.root.position.y = 0.95 - 0.24 * k;
+    r.legL.rotation.x = -0.75 * k;
+    r.legR.rotation.x = -0.75 * k;
+    r.shinL.rotation.x = 0.55 * k;
+    r.shinR.rotation.x = 0.55 * k;
+    const hang = -0.15 - 0.85 * k; // arms hang straight to the bar
+    r.armL.rotation.x = hang;
+    r.armR.rotation.x = hang;
+  },
+  latraise(t, r) {
+    const k = wave(t, 2.0);
+    r.armL.rotation.z = -0.12 - 1.35 * k; // wings out to shoulder height
+    r.armR.rotation.z = 0.12 + 1.35 * k;
+    r.foreL.rotation.x = -0.15;
+    r.foreR.rotation.x = -0.15;
+  },
 };
 
 export function Exercise3D({

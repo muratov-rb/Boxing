@@ -43,7 +43,7 @@ export function CalorieCard() {
   };
 
   const inputCls =
-    "w-full border border-line bg-transparent px-3 py-2 text-sm text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none rounded-md";
+    "w-full border border-line bg-transparent px-3 py-2 text-sm rounded-md text-bone placeholder:text-ash-dim focus:border-blood transition-colors duration-200 focus:outline-none";
 
   return (
     <section className="panel p-6">
@@ -77,9 +77,9 @@ export function CalorieCard() {
           {left >= 0 ? t("left", { n: left }) : t("over", { n: -left })}
         </span>
       </div>
-      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-void">
+      <div className="mt-3 h-2 w-full overflow-hidden rounded-full border border-line/60 bg-void">
         <div
-          className={`h-full rounded-full ${
+          className={`h-full rounded-full transition-[width] duration-500 ${
             left < 0
               ? "bg-blood-bright"
               : "bg-gradient-to-r from-blood to-ember"

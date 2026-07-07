@@ -248,6 +248,25 @@ body {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: 16px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.16, 0.84, 0.44, 1),
+    background-color 0.3s ease;
+}
+
+/* form controls glide between states instead of snapping */
+input,
+textarea,
+select {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(227, 15, 42, 0.12);
 }
 
 /* ===========================================================================
