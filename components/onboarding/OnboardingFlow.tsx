@@ -1,9 +1,10 @@
 "use client";
 
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { profileReducer, initialProfile } from "@/lib/onboarding";
+import { saveProfile } from "@/lib/tracking";
 import type { Analysis } from "@/lib/analysis";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -23,6 +24,12 @@ export function OnboardingFlow() {
   const [profile, dispatch] = useReducer(profileReducer, initialProfile);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [step, setStep] = useState(0);
+
+  // keep the fighter profile locally so the lesson library and calorie
+  // target can personalise themselves (until DB persistence lands)
+  useEffect(() => {
+    if (profile.path) saveProfile(profile);
+  }, [profile]);
 
   const rail = [
     t("railPath"),

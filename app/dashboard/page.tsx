@@ -6,6 +6,8 @@ import { Logo } from "@/components/ui/Logo";
 import { Icon } from "@/components/ui/Icons";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { StreakCard } from "@/components/dashboard/StreakCard";
+import { CalorieCard } from "@/components/dashboard/CalorieCard";
 import { RANKS } from "@/lib/onboarding";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
@@ -22,7 +24,6 @@ export default async function DashboardPage() {
   const tr = await getTranslations("ranks");
   const email = user?.email ?? "fighter@preview";
   const rank0 = tr("0n");
-  const comingItems = [t("f1"), t("f2"), t("f3"), t("f4")];
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -66,6 +67,7 @@ export default async function DashboardPage() {
         <p className="mt-2 text-ash">{t("sub")}</p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          {/* plan */}
           <section className="panel p-7">
             <span className="badge border-blood/40 text-blood">
               <Icon name="belt" size={13} />{" "}
@@ -81,26 +83,38 @@ export default async function DashboardPage() {
             </Link>
           </section>
 
+          {/* lesson library */}
           <section className="panel flex flex-col justify-between p-7">
             <div>
-              <h2 className="font-condensed text-2xl font-bold uppercase tracking-wide">
-                {t("comingSoon")}
+              <span className="badge border-azure/40 text-azure">
+                <Icon name="video" size={13} /> {t("lessonsBadge")}
+              </span>
+              <h2 className="mt-5 font-condensed text-2xl font-bold uppercase tracking-wide">
+                {t("lessonsTitle")}
               </h2>
-              <ul className="mt-4 space-y-2 text-sm text-ash">
-                {comingItems.map((f) => (
-                  <li key={f} className="flex items-center gap-2.5">
-                    <span className="text-ash-dim">
-                      <Icon name="lock" size={14} />
-                    </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-2 text-sm text-ash">{t("lessonsCopy")}</p>
             </div>
-            <Link href="/" className="btn btn-ghost mt-6">
-              {t("backHome")}
+            <Link href="/lessons" className="btn btn-ghost mt-6">
+              {t("lessonsCta")}
+              <Icon name="arrow" size={18} />
             </Link>
           </section>
+
+          {/* live tracking */}
+          <StreakCard />
+          <CalorieCard />
+        </div>
+
+        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-line/70 pt-5 sm:flex-row">
+          <p className="flex items-center gap-2 text-xs text-ash-dim">
+            <Icon name="lock" size={12} /> {t("soonNote")}
+          </p>
+          <Link
+            href="/"
+            className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
+          >
+            {t("backHome")}
+          </Link>
         </div>
       </main>
     </div>

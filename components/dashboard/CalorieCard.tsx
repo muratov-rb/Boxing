@@ -1,0 +1,147 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Icon } from "@/components/ui/Icons";
+import {
+  addMeal,
+  calorieTarget,
+  loadProfile,
+  mealsToday,
+  removeMeal,
+  type Meal,
+} from "@/lib/tracking";
+import { FoodScanner } from "./FoodScanner";
+
+/* Calorie counter — manual meal log + AI photo scan, vs a target computed
+   from the saved fighter profile (Mifflin–St Jeor, adjusted for the goal). */
+
+export function CalorieCard() {
+  const t = useTranslations("track");
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [target, setTarget] = useState(2200);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [kcal, setKcal] = useState("");
+
+  useEffect(() => {
+    setMeals(mealsToday());
+    setTarget(calorieTarget(loadProfile()));
+  }, []);
+
+  const eaten = meals.reduce((s, m) => s + m.kcal, 0);
+  const left = target - eaten;
+  const pct = Math.min(100, Math.round((eaten / target) * 100));
+
+  const submitManual = (e: React.FormEvent) => {
+    e.preventDefault();
+    const n = Number(kcal);
+    if (!name.trim() || !Number.isFinite(n) || n <= 0) return;
+    setMeals(addMeal(name, n, "manual"));
+    setName("");
+    setKcal("");
+  };
+
+  const inputCls =
+    "w-full border border-line bg-transparent px-3 py-2 text-sm text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none rounded-md";
+
+  return (
+    <section className="panel p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="text-blood">
+            <Icon name="calorie" size={18} />
+          </span>
+          <h2 className="font-condensed text-sm font-bold uppercase tracking-widest">
+            {t("calTitle")}
+          </h2>
+        </div>
+        <button
+          type="button"
+          onClick={() => setScannerOpen(true)}
+          className="btn btn-ghost !px-3 !py-1.5 text-xs"
+        >
+          {t("scanMeal")}
+        </button>
+      </div>
+
+      {/* totals */}
+      <div className="flex items-baseline justify-between">
+        <div>
+          <span className="font-display text-4xl leading-none">{eaten}</span>
+          <span className="ml-1.5 text-xs text-ash-dim">/ {target} kcal</span>
+        </div>
+        <span
+          className={`font-condensed text-sm ${left < 0 ? "text-blood-bright" : "text-ash"}`}
+        >
+          {left >= 0 ? t("left", { n: left }) : t("over", { n: -left })}
+        </span>
+      </div>
+      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-void">
+        <div
+          className={`h-full rounded-full ${
+            left < 0
+              ? "bg-blood-bright"
+              : "bg-gradient-to-r from-blood to-ember"
+          }`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      {/* today's meals */}
+      {meals.length > 0 && (
+        <ul className="mt-4 max-h-40 divide-y divide-line/70 overflow-y-auto">
+          {meals.map((m) => (
+            <li key={m.id} className="flex items-center justify-between gap-2 py-2 text-sm">
+              <span className="min-w-0 flex-1 truncate text-bone/90">
+                {m.name}
+                {m.source === "scan" && (
+                  <span className="ml-1.5 align-middle font-condensed text-[0.6rem] uppercase tracking-wider text-azure"> AI</span>
+                )}
+              </span>
+              <span className="font-condensed text-ash">{m.kcal}</span>
+              <button
+                type="button"
+                aria-label={t("remove")}
+                onClick={() => setMeals(removeMeal(m.id))}
+                className="text-ash-dim transition-colors hover:text-blood"
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* manual add */}
+      <form onSubmit={submitManual} className="mt-4 flex gap-2">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t("mealName")}
+          className={`${inputCls} flex-1`}
+        />
+        <input
+          value={kcal}
+          onChange={(e) => setKcal(e.target.value)}
+          placeholder="kcal"
+          type="number"
+          min="1"
+          inputMode="numeric"
+          className={`${inputCls} w-24`}
+        />
+        <button type="submit" className="btn btn-primary !px-4 !py-2 text-sm">
+          +
+        </button>
+      </form>
+      <p className="mt-2 text-xs text-ash-dim">{t("calHint")}</p>
+
+      {scannerOpen && (
+        <FoodScanner
+          onAdd={(n, k) => setMeals(addMeal(n, k, "scan"))}
+          onClose={() => setScannerOpen(false)}
+        />
+      )}
+    </section>
+  );
+}
