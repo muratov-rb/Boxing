@@ -6,12 +6,10 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   BODY_PARTS,
   EXERCISES,
-  filterExercises,
   type BodyPart,
   type Exercise,
 } from "@/lib/exercises";
-import type { Profile } from "@/lib/onboarding";
-import { loadProfile, markTrainedToday, trainedToday } from "@/lib/tracking";
+import { markTrainedToday, trainedToday } from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -150,24 +148,13 @@ export function LessonsClient() {
   const t = useTranslations("lessons");
   const locale = useLocale() === "ru" ? "ru" : "en";
 
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [onlyMine, setOnlyMine] = useState(false);
   const [part, setPart] = useState<BodyPart | "all">("all");
   const [open, setOpen] = useState<Exercise | null>(null);
 
-  useEffect(() => {
-    const p = loadProfile();
-    setProfile(p);
-    setOnlyMine(!!p?.environment); // default to "my equipment" when we know it
-    setLoaded(true);
-  }, []);
-
-  const list = useMemo(() => {
-    let l = onlyMine && profile ? filterExercises(profile) : EXERCISES;
-    if (part !== "all") l = l.filter((e) => e.bodyPart === part);
-    return l;
-  }, [onlyMine, profile, part]);
+  const list = useMemo(
+    () => (part === "all" ? EXERCISES : EXERCISES.filter((e) => e.bodyPart === part)),
+    [part],
+  );
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -223,35 +210,7 @@ export function LessonsClient() {
               {t(`bp_${bp}`)}
             </button>
           ))}
-
-          <span className="mx-1 hidden h-4 w-px bg-line sm:block" />
-
-          <button
-            type="button"
-            aria-pressed={onlyMine}
-            onClick={() => setOnlyMine((v) => !v)}
-            disabled={!profile}
-            className={cx(
-              "badge transition-colors disabled:opacity-40",
-              onlyMine && "!border-azure !text-azure",
-            )}
-            title={!profile ? t("noProfile") : undefined}
-          >
-            <Icon name="check" size={12} /> {t("myEquipment")}
-          </button>
         </div>
-
-        {onlyMine && profile && (
-          <p className="mt-2 text-xs text-ash-dim">{t("filteredNote")}</p>
-        )}
-        {!profile && loaded && (
-          <p className="mt-2 text-xs text-ash-dim">
-            {t("noProfile")}{" "}
-            <Link href="/onboarding" className="text-blood hover:text-blood-bright">
-              {t("buildProfile")}
-            </Link>
-          </p>
-        )}
 
         {/* grid */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -22,7 +22,8 @@ A new fighter has filled out their profile. Give them an honest, motivating read
 
 Rules:
 - Be realistic about feasibility (0-100). Don't inflate it. Weigh their timeframe against their goals, stats, training setup and nutrition access.
-- Tailor everything to what they actually have: heavy-bag vs shadow boxing, weights vs bodyweight, and a food plan that fits their budget/access (don't tell a tight-budget fighter to buy supplements).
+- IMPORTANT: the program is home bodyweight training only for now. Every training recommendation must be doable in a room with no equipment (a wall or a chair at most): shadow boxing, footwork, push-up variations, squats, lunges, planks, core work, jump conditioning. Do NOT prescribe bags, ropes, weights, bars or machines even if the fighter owns them — treat gear as "coming later".
+- Food plan must fit their budget/access (don't tell a tight-budget fighter to buy supplements).
 - Roadmap: 3-4 phases that fit their timeframe, each with a week range label, a punchy title, and 2-4 concrete focus points.
 - Nutrition: 3-5 short, practical pointers matched to their access tier and goals.
 - Cautions: 0-3 honest "straight talk" notes only if warranted (e.g. an aggressive weight-loss pace or bodyweight-only for a power goal). Empty array if none.
