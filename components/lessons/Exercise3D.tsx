@@ -377,7 +377,7 @@ const ANIMS: Record<DemoPreset, Anim> = {
     const k = wave(t, 2.2);
     r.root.rotation.x = 0.3 + 0.1 * k; // straight body leaning to the wall
     r.root.position.y = 0.93;
-    r.root.position.z = -0.05 - 0.06 * k;
+    r.root.position.z = 0.05 + 0.06 * k;
     r.armL.rotation.x = -1.35 + 0.45 * k;
     r.armR.rotation.x = -1.35 + 0.45 * k;
     r.foreL.rotation.x = -0.9 * k;
@@ -490,17 +490,17 @@ const ANIMS: Record<DemoPreset, Anim> = {
   },
   dip(t, r) {
     const k = wave(t, 2.0); // seated dip on the bench edge behind
-    r.root.position.y = 0.52 - 0.12 * k;
-    r.root.position.z = -0.2;
-    r.legL.rotation.x = -0.95; // legs long, heels on the floor
-    r.legR.rotation.x = -0.95;
-    r.shinL.rotation.x = 0.4;
-    r.shinR.rotation.x = 0.4;
+    r.root.position.y = 0.48 - 0.11 * k;
+    r.root.position.z = 0.06;
+    r.legL.rotation.x = -1.2; // heels planted out front
+    r.legR.rotation.x = -1.2;
+    r.shinL.rotation.x = 0.75;
+    r.shinR.rotation.x = 0.75;
     r.footL.rotation.x = -0.5; // heels down, toes up
     r.footR.rotation.x = -0.5;
     r.torso.rotation.x = 0.1;
-    r.armL.rotation.x = 0.5 + 0.4 * k; // arms braced on the edge behind
-    r.armR.rotation.x = 0.5 + 0.4 * k;
+    r.armL.rotation.x = 0.35 + 0.4 * k; // arms braced on the edge behind
+    r.armR.rotation.x = 0.35 + 0.4 * k;
     r.foreL.rotation.x = -0.5 * k;
     r.foreR.rotation.x = -0.5 * k;
   },
@@ -705,7 +705,7 @@ const ANIMS: Record<DemoPreset, Anim> = {
   goodmorning(t, r) {
     const k = wave(t, 2.6);
     r.root.position.y = 0.95 - 0.07 * k;
-    r.root.position.z = 0.08 * k; // hips ride back
+    r.root.position.z = -0.08 * k; // hips ride back
     r.torso.rotation.x = 1.15 * k; // flat-back hinge
     r.legL.rotation.x = -0.22 * k;
     r.legR.rotation.x = -0.22 * k;
@@ -840,7 +840,7 @@ const ANIMS: Record<DemoPreset, Anim> = {
   bulgarian(t, r) {
     const k = wave(t, 2.4);
     r.root.position.y = 0.88 - 0.26 * k;
-    r.root.position.z = -0.08;
+    r.root.position.z = 0.08;
     r.legR.rotation.x = 0.6; // rear foot rests on the bench behind
     r.shinR.rotation.x = 1.3;
     r.legL.rotation.x = -1.05 * k; // front leg does the work
@@ -852,7 +852,7 @@ const ANIMS: Record<DemoPreset, Anim> = {
   stepup(t, r) {
     const k = wave(t, 2.8); // 0 = floor, 1 = standing tall on the box
     r.root.position.y = 0.95 + 0.3 * k;
-    r.root.position.z = -0.16 * k;
+    r.root.position.z = 0.16 * k;
     r.legL.rotation.x = -1.15 * (1 - k); // lead foot starts up on the box
     r.shinL.rotation.x = 1.35 * (1 - k);
     r.legR.rotation.x = 0.25 * k; // trailing leg leaves the floor
@@ -864,7 +864,7 @@ const ANIMS: Record<DemoPreset, Anim> = {
   wallsit(t, r) {
     const breathe = 0.012 * Math.sin(t * 2.2); // static hold
     r.root.position.y = 0.6 + breathe;
-    r.root.position.z = 0.12;
+    r.root.position.z = -0.12;
     r.legL.rotation.x = -1.55;
     r.legR.rotation.x = -1.55;
     r.shinL.rotation.x = 1.55;
@@ -1172,13 +1172,13 @@ const ANIMS: Record<DemoPreset, Anim> = {
 type PropPose = { box?: [number, number, number]; wall?: [number, number, number] };
 
 const PROPS: Partial<Record<DemoPreset, PropPose>> = {
-  dip: { box: [0, 0.19, 0.3] },
-  stepup: { box: [0, 0.19, -0.42] },
-  bulgarian: { box: [0, 0.19, 0.55] },
-  inclinepushup: { box: [0, 0.19, -0.62] },
-  declinepushup: { box: [0, 0.19, 0.72] },
-  wallpushup: { wall: [0, 1.05, -0.62] },
-  wallsit: { wall: [0, 1.05, 0.34] },
+  dip: { box: [0, 0.19, -0.32] },
+  stepup: { box: [0, 0.19, 0.42] },
+  bulgarian: { box: [0, 0.19, -0.55] },
+  inclinepushup: { box: [0, 0.19, 0.62] },
+  declinepushup: { box: [0, 0.19, -0.72] },
+  wallpushup: { wall: [0, 1.05, 0.62] },
+  wallsit: { wall: [0, 1.05, -0.34] },
   handstand: { wall: [0, 1.05, -0.5] },
 };
 
@@ -1267,6 +1267,8 @@ export function Exercise3D({
 
     const rig = buildRig();
     scene.add(rig.root);
+    // debug handle for the /dev/rig workbench
+    (window as unknown as Record<string, unknown>).__rig3d = { rig, box, wall, THREE };
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0.78, 0);
