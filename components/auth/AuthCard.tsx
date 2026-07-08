@@ -129,7 +129,7 @@ export function AuthCard({
 
       <div className="panel mt-8 p-7">
         {!configured && (
-          <p className="mb-5 flex items-start gap-2 border border-blood/40 bg-blood/5 px-3 py-2.5 text-xs text-ash">
+          <p className="mb-5 flex items-start gap-2 rounded-xl border border-blood/40 bg-blood/5 px-3 py-2.5 text-xs text-ash">
             <span className="mt-0.5 text-blood">
               <Icon name="lock" size={13} />
             </span>

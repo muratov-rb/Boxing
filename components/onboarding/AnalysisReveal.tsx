@@ -198,7 +198,7 @@ export function AnalysisReveal({
         <ol className="mt-4 space-y-3">
           {analysis.roadmap.map((phase, i) => (
             <li key={phase.label} className="panel flex gap-4 p-5">
-              <span className="grid h-9 w-9 shrink-0 place-items-center bg-blood font-display text-lg text-white">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-blood font-display text-lg text-white">
                 {i + 1}
               </span>
               <div>
@@ -250,7 +250,7 @@ export function AnalysisReveal({
 
       {/* cautions */}
       {analysis.cautions.length > 0 && (
-        <div className="mt-6 border border-blood/40 bg-blood/5 p-6">
+        <div className="mt-6 rounded-xl border border-blood/40 bg-blood/5 p-6">
           <h2 className="font-condensed text-sm font-bold uppercase tracking-widest text-blood">
             {t("straightTalk")}
           </h2>

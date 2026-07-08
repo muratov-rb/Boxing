@@ -20,7 +20,7 @@ export function ProgressRail({
               <div className="flex items-center gap-2.5">
                 <span
                   className={[
-                    "grid h-8 w-8 shrink-0 place-items-center border font-condensed text-sm font-bold transition-colors",
+                    "grid h-8 w-8 shrink-0 place-items-center rounded-full border font-condensed text-sm font-bold transition-colors",
                     done
                       ? "border-blood bg-blood text-white"
                       : active

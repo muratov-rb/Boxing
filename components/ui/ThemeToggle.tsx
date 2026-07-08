@@ -24,7 +24,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label="Toggle theme"
       aria-pressed={dark}
-      className={`grid h-8 w-8 place-items-center rounded-md border border-line text-ash transition-colors hover:text-blood ${className}`}
+      className={`grid h-8 w-8 place-items-center rounded-lg border border-line text-ash transition-colors hover:text-blood ${className}`}
     >
       {/* show the icon of the mode you'd switch TO */}
       {mounted && dark ? (

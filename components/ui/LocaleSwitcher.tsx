@@ -19,7 +19,7 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
 
   return (
     <div
-      className={`inline-flex border border-line ${className}`}
+      className={`inline-flex overflow-hidden rounded-lg border border-line ${className}`}
       role="group"
       aria-label="Language"
     >

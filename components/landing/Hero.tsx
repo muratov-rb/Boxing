@@ -55,7 +55,7 @@ export function Hero() {
               key={label}
               className="flex items-center gap-2 font-condensed text-sm uppercase tracking-wider text-ash"
             >
-              <span className="h-1.5 w-1.5 bg-blood" />
+              <span className="h-1.5 w-1.5 rounded-full bg-blood" />
               {label}
             </li>
           ))}

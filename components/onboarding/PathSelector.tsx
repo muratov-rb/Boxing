@@ -38,7 +38,7 @@ export function PathSelector({
               onClick={() => dispatch({ type: "patch", patch: { path: p.id } })}
               aria-pressed={selected}
               className={[
-                "group relative flex flex-col p-7 text-left transition-all duration-200",
+                "group relative flex flex-col rounded-[20px] p-7 text-left transition-all duration-200",
                 selected
                   ? "border border-blood bg-surface-2 shadow-[0_0_44px_-10px_rgba(224,16,41,0.5)]"
                   : "panel hover:border-blood/50",
@@ -48,7 +48,7 @@ export function PathSelector({
                 <span className="badge">{tp(`${p.id}Tag`)}</span>
                 <span
                   className={[
-                    "grid h-6 w-6 place-items-center border transition-colors",
+                    "grid h-6 w-6 place-items-center rounded-full border transition-colors",
                     selected
                       ? "border-blood bg-blood text-white"
                       : "border-line text-transparent",

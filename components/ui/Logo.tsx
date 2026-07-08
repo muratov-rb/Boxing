@@ -11,7 +11,7 @@ export function Logo({
 }) {
   const content = (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <span className="relative grid h-8 w-8 place-items-center bg-blood">
+      <span className="relative grid h-8 w-8 place-items-center rounded-lg bg-blood">
         <svg
           width="18"
           height="18"

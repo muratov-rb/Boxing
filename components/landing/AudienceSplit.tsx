@@ -52,7 +52,7 @@ export function AudienceSplit() {
             >
               <div className="flex items-center justify-between">
                 <span className="badge">{t(c.tagKey)}</span>
-                <span className="grid h-11 w-11 place-items-center border border-line text-ash transition-colors group-hover:border-blood/60 group-hover:text-blood">
+                <span className="grid h-11 w-11 place-items-center rounded-xl border border-line text-ash transition-colors group-hover:border-blood/60 group-hover:text-blood">
                   <Icon name={c.icon} size={22} />
                 </span>
               </div>
@@ -77,7 +77,7 @@ export function AudienceSplit() {
 
           {/* center seam badge */}
           <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block">
-            <span className="grid h-14 w-14 place-items-center border border-line bg-void font-display text-lg text-blood">
+            <span className="grid h-14 w-14 place-items-center rounded-full border border-line bg-void font-display text-lg text-blood">
               &
             </span>
           </div>

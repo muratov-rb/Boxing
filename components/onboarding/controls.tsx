@@ -56,7 +56,7 @@ export function SelectCard({
       aria-pressed={active}
       onClick={onClick}
       className={cx(
-        "flex flex-col items-start border px-4 py-3 text-left transition-all duration-200 hover:-translate-y-0.5",
+        "flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-all duration-200 hover:-translate-y-0.5",
         active ? "border-blood bg-surface-2" : "border-line hover:border-blood/50",
       )}
     >

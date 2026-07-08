@@ -112,7 +112,7 @@ function LessonDetail({
         <ol className="mt-3 space-y-2.5">
           {ex.steps[locale].map((s, i) => (
             <li key={i} className="flex items-start gap-3 text-sm text-bone/90">
-              <span className="grid h-6 w-6 shrink-0 place-items-center border border-line font-condensed text-xs text-ash">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg border border-line font-condensed text-xs text-ash">
                 {i + 1}
               </span>
               {s}

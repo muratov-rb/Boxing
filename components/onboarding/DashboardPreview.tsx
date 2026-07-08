@@ -103,7 +103,7 @@ export function DashboardPreview({
   return (
     <div className="mx-auto w-full max-w-5xl">
       {/* not-live banner */}
-      <div className="mb-6 flex items-center gap-3 border border-blood/40 bg-blood/5 px-4 py-3">
+      <div className="mb-6 flex items-center gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3">
         <span className="text-blood">
           <Icon name="lock" size={18} />
         </span>
@@ -142,7 +142,7 @@ export function DashboardPreview({
                 <div
                   key={r.name}
                   className={[
-                    "flex w-28 shrink-0 flex-col border p-3",
+                    "flex w-28 shrink-0 flex-col rounded-xl border p-3",
                     current
                       ? "border-blood bg-surface-2 shadow-[0_0_30px_-10px_rgba(224,16,41,0.6)]"
                       : "border-line",
@@ -187,7 +187,7 @@ export function DashboardPreview({
             {session.map((r, i) => (
               <li key={r.key} className="flex items-center justify-between py-3">
                 <span className="flex items-center gap-3">
-                  <span className="grid h-7 w-7 place-items-center border border-line font-condensed text-xs text-ash-dim">
+                  <span className="grid h-7 w-7 place-items-center rounded-lg border border-line font-condensed text-xs text-ash-dim">
                     {i + 1}
                   </span>
                   <span className="text-sm text-bone/90">{tses(r.key)}</span>

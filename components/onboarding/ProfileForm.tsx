@@ -32,7 +32,7 @@ function Segmented<T extends string>({
   label: string;
 }) {
   return (
-    <div className="inline-flex border border-line" role="group" aria-label={label}>
+    <div className="inline-flex overflow-hidden rounded-lg border border-line" role="group" aria-label={label}>
       {options.map((o) => (
         <button
           key={o.value}
@@ -228,7 +228,7 @@ export function ProfileForm({
                     set({ goals: toggle<GoalId>(profile.goals, g.id) })
                   }
                   className={cx(
-                    "flex flex-col items-start border px-4 py-3 text-left transition-colors",
+                    "flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-colors",
                     active
                       ? "border-blood bg-surface-2"
                       : "border-line hover:border-blood/50",
@@ -298,7 +298,7 @@ export function ProfileForm({
                   aria-pressed={active}
                   onClick={() => set({ timeframe: item.id })}
                   className={cx(
-                    "flex flex-col items-start border px-4 py-3 text-left transition-colors",
+                    "flex flex-col items-start rounded-xl border px-4 py-3 text-left transition-colors",
                     active
                       ? "border-blood bg-surface-2"
                       : "border-line hover:border-blood/50",

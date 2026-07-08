@@ -15,7 +15,7 @@ export default async function VerifyEmailPage({
 
   return (
     <div className="w-full max-w-md text-center">
-      <div className="mx-auto grid h-16 w-16 place-items-center border border-blood/50 text-blood">
+      <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-blood/50 text-blood">
         <svg
           width="30"
           height="30"

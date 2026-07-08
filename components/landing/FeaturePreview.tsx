@@ -35,13 +35,13 @@ export function FeaturePreview() {
           </span>
         </div>
 
-        <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((f) => (
             <article
               key={f.k}
               className="group relative flex flex-col bg-surface p-6 transition-colors duration-300 hover:bg-surface-2"
             >
-              <span className="grid h-12 w-12 place-items-center border border-line text-blood transition-transform duration-300 group-hover:-translate-y-0.5">
+              <span className="grid h-12 w-12 place-items-center rounded-xl border border-line text-blood transition-transform duration-300 group-hover:-translate-y-0.5">
                 <Icon name={f.icon} size={24} />
               </span>
               <h3 className="mt-5 font-condensed text-xl font-semibold uppercase tracking-wide">

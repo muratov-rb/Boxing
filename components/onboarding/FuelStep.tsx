@@ -62,7 +62,7 @@ export function FuelStep({
             type="button"
             aria-pressed={profile.supplements}
             onClick={() => set({ supplements: !profile.supplements })}
-            className={`flex w-full items-center justify-between border px-4 py-3 text-left transition-colors ${
+            className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
               profile.supplements
                 ? "border-blood bg-surface-2"
                 : "border-line hover:border-blood/50"
@@ -77,7 +77,7 @@ export function FuelStep({
               </span>
             </span>
             <span
-              className={`grid h-6 w-6 shrink-0 place-items-center border ${
+              className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border ${
                 profile.supplements
                   ? "border-blood bg-blood text-white"
                   : "border-line text-transparent"

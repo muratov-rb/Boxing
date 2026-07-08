@@ -93,7 +93,7 @@ export function SetupStep({
         )}
 
         {profile.environment === "home_bodyweight" && (
-          <p className="animate-rise border border-line/70 bg-surface/50 px-4 py-3 text-sm text-ash">
+          <p className="animate-rise rounded-xl border border-line/70 bg-surface/50 px-4 py-3 text-sm text-ash">
             {t("bodyweightNote")}
           </p>
         )}

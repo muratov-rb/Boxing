@@ -49,7 +49,7 @@ export default async function DashboardPage() {
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-12">
         {!configured && (
-          <div className="mb-6 flex items-center gap-3 border border-blood/40 bg-blood/5 px-4 py-3">
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3">
             <span className="text-blood">
               <Icon name="lock" size={18} />
             </span>
