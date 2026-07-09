@@ -9,9 +9,12 @@
 import {
   type Profile,
   type GoalId,
+  type StatIssue,
   timeframeWeeks,
   hasBag,
   hasWeights,
+  statIssues,
+  kgFrom,
 } from "./onboarding";
 
 export type Locale = "en" | "ru";
@@ -45,8 +48,51 @@ const GOAL_DIFFICULTY: Record<GoalId, number> = {
   compete: 3,
 };
 
+/* ---- reality check: impossible stats never get a motivational score ---- */
+
+const ISSUE_LINES: Record<Locale, Record<StatIssue, string>> = {
+  en: {
+    weight: "Weight: no human weighs that. Real range is roughly 25–350 kg (55–770 lb).",
+    height: "Height: enter a real height — roughly 90–250 cm (3–8 ft).",
+    age: "Age: the plan works for ages 8–100. Enter your real age.",
+    targetWeight: "Target weight: that's not a weight a human body can reach. Keep it within 25–350 kg (55–770 lb).",
+  },
+  ru: {
+    weight: "Вес: столько не весит ни один человек. Реальный диапазон — примерно 25–350 кг.",
+    height: "Рост: укажи настоящий рост — примерно 90–250 см.",
+    age: "Возраст: план рассчитан на 8–100 лет. Укажи реальный возраст.",
+    targetWeight: "Целевой вес: тело человека не может столько весить. Держись в пределах 25–350 кг.",
+  },
+};
+
+function realityCheck(issues: StatIssue[], L: Locale): Analysis {
+  const en = L !== "ru";
+  return {
+    feasibility: 0,
+    verdict: en ? "Not possible" : "Нереально",
+    headline: en
+      ? "0% — these numbers aren't real."
+      : "0% — эти цифры не настоящие.",
+    summary: en
+      ? "A coach can't build a plan from stats no human has. Fix the numbers below and run the analysis again — then we'll talk about what's actually achievable."
+      : "Тренер не может построить план по данным, которых не бывает у людей. Исправь цифры ниже и запусти анализ заново — тогда поговорим о том, что реально достижимо.",
+    roadmap: [
+      {
+        label: en ? "Step 0" : "Шаг 0",
+        title: en ? "Fix your profile" : "Исправь профиль",
+        focus: en
+          ? ["Enter your real weight, height and age", "Re-run the analysis"]
+          : ["Укажи настоящий вес, рост и возраст", "Запусти анализ заново"],
+      },
+    ],
+    nutrition: [],
+    cautions: issues.map((i) => ISSUE_LINES[L][i] ?? ISSUE_LINES.en[i]),
+    source: "local",
+  };
+}
+
 function toKg(value: number, unit: "kg" | "lb"): number {
-  return unit === "lb" ? value * 0.4536 : value;
+  return kgFrom(value, unit);
 }
 
 const VERDICTS: Record<Locale, string[]> = {
@@ -107,6 +153,11 @@ export function localAnalysis(
   locale: Locale = "en",
 ): Analysis {
   const L = locale === "ru" ? "ru" : "en";
+
+  /* impossible stats → no plan, no score, just the truth */
+  const issues = statIssues(profile);
+  if (issues.length > 0) return realityCheck(issues, L);
+
   const weeks = timeframeWeeks(profile);
   const goals = profile.goals;
   const cautions: string[] = [];
@@ -125,12 +176,21 @@ export function localAnalysis(
 
   const w = Number(profile.weight);
   const tw = Number(profile.targetWeight);
+  let impossibleRate = false;
   if (goals.includes("lose_fat") && w > 0 && tw > 0 && weeks > 0) {
     const deltaKg = Math.abs(
       toKg(w, profile.weightUnit) - toKg(tw, profile.weightUnit),
     );
     const rate = deltaKg / weeks;
-    if (rate > 1) {
+    if (rate > 2.5) {
+      /* beyond any safe or physically plausible pace */
+      impossibleRate = true;
+      cautions.push(
+        L === "ru"
+          ? `Менять около ${rate.toFixed(1)} кг в неделю физически невозможно без вреда. Либо продли срок, либо приблизь целевой вес — иначе этот план обречён.`
+          : `Changing about ${rate.toFixed(1)} kg per week is physically impossible to do safely. Extend the timeframe or bring the target closer — otherwise this plan is dead on arrival.`,
+      );
+    } else if (rate > 1) {
       score -= Math.min(16, Math.round((rate - 1) * 14));
       cautions.push(
         L === "ru"
@@ -172,6 +232,7 @@ export function localAnalysis(
   if (profile.path === "experienced") score += 4;
 
   score = Math.max(35, Math.min(96, Math.round(score)));
+  if (impossibleRate) score = Math.min(score, 12); // honesty beats motivation
 
   if (weeks <= 6 && goals.some((g) => ["compete", "build"].includes(g))) {
     cautions.push(

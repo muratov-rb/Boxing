@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Anton, Oswald, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { publicSupabaseEnv } from "@/lib/supabase/config";
 import "./globals.css";
 
 /* Heavy condensed display — fight-poster headlines */
@@ -47,12 +48,17 @@ export default async function RootLayout({
   const store = await cookies();
   const isDark = store.get("theme")?.value === "dark";
 
+  /* Public Supabase pair, read at request time and handed to the client —
+     keeps auth working even when a cached build inlined stale empty values. */
+  const envScript = `window.__PRESSURE_ENV=${JSON.stringify(publicSupabaseEnv()).replace(/</g, "\\u003c")}`;
+
   return (
     <html
       lang={locale}
       className={`${anton.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full">
+        <script dangerouslySetInnerHTML={{ __html: envScript }} />
         <div className="aura" aria-hidden="true" />
         <div className="grain" aria-hidden="true" />
         <NextIntlClientProvider locale={locale} messages={messages}>

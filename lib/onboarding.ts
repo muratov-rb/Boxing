@@ -339,6 +339,54 @@ export function nutritionAccessLabel(id: NutritionAccessId | null): string {
   return NUTRITION_ACCESS.find((n) => n.id === id)?.label ?? "";
 }
 
+/* --------------------------------------------------------------------------
+   stat sanity — bounds no human falls outside of. Anything beyond these is
+   a typo or a joke entry, and both the form and the analysis engine refuse it.
+   -------------------------------------------------------------------------- */
+export const STAT_BOUNDS = {
+  weightKg: { min: 25, max: 350 },
+  heightCm: { min: 90, max: 250 },
+  age: { min: 8, max: 100 },
+} as const;
+
+export function kgFrom(value: number, unit: WeightUnit): number {
+  return unit === "lb" ? value * 0.4536 : value;
+}
+
+export function cmFrom(value: number, unit: HeightUnit): number {
+  return unit === "ft" ? value * 30.48 : value;
+}
+
+export type StatIssue = "weight" | "height" | "age" | "targetWeight";
+
+/* Returns the filled-in stats that can't belong to a living human.
+   Empty fields are not flagged — required-ness is the form's concern. */
+export function statIssues(p: Profile): StatIssue[] {
+  const out: StatIssue[] = [];
+  const bad = (raw: unknown, ok: (n: number) => boolean): boolean => {
+    const s = String(raw ?? "").trim(); // raw API posts may send numbers
+    if (s === "") return false;
+    const n = Number(s);
+    return !Number.isFinite(n) || !ok(n);
+  };
+  const { weightKg, heightCm, age } = STAT_BOUNDS;
+  const wOk = (n: number) => {
+    const kg = kgFrom(n, p.weightUnit);
+    return kg >= weightKg.min && kg <= weightKg.max;
+  };
+  if (bad(p.weight, wOk)) out.push("weight");
+  if (
+    bad(p.height, (n) => {
+      const cm = cmFrom(n, p.heightUnit);
+      return cm >= heightCm.min && cm <= heightCm.max;
+    })
+  )
+    out.push("height");
+  if (bad(p.age, (n) => n >= age.min && n <= age.max)) out.push("age");
+  if (bad(p.targetWeight, wOk)) out.push("targetWeight");
+  return out;
+}
+
 /* has any punching/bag capability? drives bag vs shadow work in the plan */
 export function hasBag(profile: Profile): boolean {
   return (

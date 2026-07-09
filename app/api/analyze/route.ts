@@ -9,6 +9,7 @@ import {
   environmentLabel,
   equipmentLabels,
   nutritionAccessLabel,
+  statIssues,
   type Profile,
 } from "@/lib/onboarding";
 
@@ -27,7 +28,8 @@ Rules:
 - Roadmap: 3-4 phases that fit their timeframe, each with a week range label, a punchy title, and 2-4 concrete focus points.
 - Nutrition: 3-5 short, practical pointers matched to their access tier and goals.
 - Cautions: 0-3 honest "straight talk" notes only if warranted (e.g. an aggressive weight-loss pace or bodyweight-only for a power goal). Empty array if none.
-- Voice: a real coach welcoming a fighter — bold and direct, never clinical or corporate. Keep each string tight.`;
+- Voice: a real coach welcoming a fighter — bold and direct, never clinical or corporate. Keep each string tight.
+- If any stat is physically impossible or obviously fake (absurd weight/height/age, a weight-change pace no body survives), do NOT play along: set feasibility to 0-5, say plainly the numbers aren't real, and make the only roadmap step "fix your profile and re-run".`;
 
 function buildPrompt(p: Profile): string {
   const lines = [
@@ -86,6 +88,12 @@ export async function POST(req: Request) {
 
   const store = await cookies();
   const locale = store.get("locale")?.value === "ru" ? "ru" : "en";
+
+  // Impossible stats: skip the model entirely — the local engine returns
+  // the 0% reality check and there's nothing worth an API call.
+  if (statIssues(profile).length > 0) {
+    return NextResponse.json(localAnalysis(profile, locale));
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {

@@ -6,10 +6,12 @@ import {
   TIMEFRAMES,
   toggle,
   goalNeedsTargetWeight,
+  statIssues,
   type Profile,
   type ProfileAction,
   type GoalId,
   type Sex,
+  type StatIssue,
 } from "@/lib/onboarding";
 import { Icon } from "@/components/ui/Icons";
 
@@ -104,13 +106,30 @@ export function ProfileForm({
     profile.timeframe !== null &&
     (profile.timeframe !== "custom" || profile.customTimeframe.trim() !== "");
 
+  /* filled-in numbers no human can have (typos, joke entries) */
+  const issues = statIssues(profile);
+  const issue = (k: StatIssue) => issues.includes(k);
+  const errKey: Record<StatIssue, string> = {
+    weight: "errWeight",
+    height: "errHeight",
+    age: "errAge",
+    targetWeight: "errTarget",
+  };
+  const fieldError = (k: StatIssue) =>
+    issue(k) ? (
+      <p className="mt-1.5 text-xs text-blood" role="alert">
+        {t(errKey[k])}
+      </p>
+    ) : null;
+
   const valid =
     isPos(profile.weight) &&
     isPos(profile.height) &&
     isPos(profile.age) &&
     hasGoal &&
     timeframeOk &&
-    (!needsTarget || isPos(profile.targetWeight));
+    (!needsTarget || isPos(profile.targetWeight)) &&
+    issues.length === 0;
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -155,8 +174,10 @@ export function ProfileForm({
               placeholder="0"
               value={profile.weight}
               onChange={(e) => set({ weight: e.target.value })}
-              className={inputCls}
+              aria-invalid={issue("weight")}
+              className={cx(inputCls, issue("weight") && "!border-blood")}
             />
+            {fieldError("weight")}
           </Field>
 
           <Field
@@ -182,8 +203,10 @@ export function ProfileForm({
               placeholder="0"
               value={profile.height}
               onChange={(e) => set({ height: e.target.value })}
-              className={inputCls}
+              aria-invalid={issue("height")}
+              className={cx(inputCls, issue("height") && "!border-blood")}
             />
+            {fieldError("height")}
           </Field>
 
           <Field label={t("age")} htmlFor="age">
@@ -195,8 +218,10 @@ export function ProfileForm({
               placeholder="0"
               value={profile.age}
               onChange={(e) => set({ age: e.target.value })}
-              className={inputCls}
+              aria-invalid={issue("age")}
+              className={cx(inputCls, issue("age") && "!border-blood")}
             />
+            {fieldError("age")}
           </Field>
         </div>
 
@@ -280,8 +305,10 @@ export function ProfileForm({
                 })}
                 value={profile.targetWeight}
                 onChange={(e) => set({ targetWeight: e.target.value })}
-                className={inputCls}
+                aria-invalid={issue("targetWeight")}
+                className={cx(inputCls, issue("targetWeight") && "!border-blood")}
               />
+              {fieldError("targetWeight")}
             </Field>
           </div>
         )}
