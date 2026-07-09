@@ -7,12 +7,12 @@ import { Icon } from "@/components/ui/Icons";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { StreakCard } from "@/components/dashboard/StreakCard";
+import { RankCard } from "@/components/dashboard/RankCard";
 import { CalorieCard } from "@/components/dashboard/CalorieCard";
-import { RANKS } from "@/lib/onboarding";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
 
-export const metadata: Metadata = { title: "Dashboard — Pressure" };
+export const metadata: Metadata = { title: "Dashboard — RingBornn" };
 
 export default async function DashboardPage() {
   const configured = isSupabaseConfigured();
@@ -21,10 +21,8 @@ export default async function DashboardPage() {
   if (configured && !user) redirect("/login?next=/dashboard");
 
   const t = await getTranslations("dashPage");
-  const tr = await getTranslations("ranks");
   const tt = await getTranslations("train");
   const email = user?.email ?? "fighter@preview";
-  const rank0 = tr("0n");
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -85,21 +83,9 @@ export default async function DashboardPage() {
         </section>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {/* plan */}
-          <section className="panel p-7">
-            <span className="badge border-blood/40 text-blood">
-              <Icon name="belt" size={13} />{" "}
-              {t("rankBadge", { rank: rank0, total: RANKS.length })}
-            </span>
-            <h2 className="mt-5 font-condensed text-2xl font-bold uppercase tracking-wide">
-              {t("noPlan")}
-            </h2>
-            <p className="mt-2 text-sm text-ash">{t("noPlanCopy")}</p>
-            <Link href="/onboarding" className="btn btn-primary shine mt-6">
-              {t("buildPlan")}
-              <Icon name="arrow" size={18} />
-            </Link>
-          </section>
+          {/* progression */}
+          <RankCard />
+          <StreakCard />
 
           {/* lesson library */}
           <section className="panel flex flex-col justify-between p-7">
@@ -118,8 +104,24 @@ export default async function DashboardPage() {
             </Link>
           </section>
 
+          {/* nutrition */}
+          <section className="panel flex flex-col justify-between p-7">
+            <div>
+              <span className="badge border-blood/40 text-blood">
+                <Icon name="nutrition" size={13} /> {t("nutritionBadge")}
+              </span>
+              <h2 className="mt-5 font-condensed text-2xl font-bold uppercase tracking-wide">
+                {t("nutritionTitle")}
+              </h2>
+              <p className="mt-2 text-sm text-ash">{t("nutritionCopy")}</p>
+            </div>
+            <Link href="/nutrition" className="btn btn-ghost mt-6">
+              {t("nutritionCta")}
+              <Icon name="arrow" size={18} />
+            </Link>
+          </section>
+
           {/* live tracking */}
-          <StreakCard />
           <CalorieCard />
         </div>
 

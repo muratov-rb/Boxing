@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-/* PRESSURE wordmark with an angular blood-red mark. */
+/* RINGBORNN wordmark with an angular blood-red mark. */
 
 export function Logo({
   className = "",
@@ -28,7 +28,7 @@ export function Logo({
         </svg>
       </span>
       <span className="font-display text-2xl leading-none tracking-wide">
-        PRESSURE
+        RINGBORNN
       </span>
     </span>
   );
@@ -36,7 +36,7 @@ export function Logo({
   if (!href) return content;
 
   return (
-    <Link href={href} aria-label="Pressure — home" className="inline-flex">
+    <Link href={href} aria-label="RingBornn — home" className="inline-flex">
       {content}
     </Link>
   );

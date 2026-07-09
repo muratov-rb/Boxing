@@ -9,7 +9,7 @@ import {
   type BodyPart,
   type Exercise,
 } from "@/lib/exercises";
-import { markTrainedToday, trainedToday } from "@/lib/tracking";
+import { markTrainedToday, trainedToday, awardXp } from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -125,6 +125,7 @@ function LessonDetail({
             disabled={done}
             onClick={() => {
               markTrainedToday();
+              awardXp("lesson"); // each lesson done earns rank XP
               setDone(true);
             }}
             className="btn btn-primary"

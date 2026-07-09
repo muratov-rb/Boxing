@@ -16,7 +16,9 @@ export type IconName =
   | "bolt"
   | "arrow"
   | "lock"
-  | "check";
+  | "check"
+  | "telegram"
+  | "instagram";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   plan: (
@@ -105,6 +107,19 @@ const PATHS: Record<IconName, React.ReactNode> = {
   check: (
     <>
       <path d="m5 12 4 4 10-10" />
+    </>
+  ),
+  telegram: (
+    <>
+      <path d="m21 4-3 15.5-6.2-4.6L8.6 19l-.9-5.4L21 4z" />
+      <path d="M21 4 3.5 10.8l4.2 2.8" />
+    </>
+  ),
+  instagram: (
+    <>
+      <rect x="4" y="4" width="16" height="16" rx="4.5" />
+      <circle cx="12" cy="12" r="3.6" />
+      <circle cx="16.8" cy="7.2" r="0.6" fill="currentColor" stroke="none" />
     </>
   ),
 };

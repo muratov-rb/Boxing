@@ -13,21 +13,27 @@ const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["items", "total_kcal", "note"],
+  required: ["items", "total_kcal", "total_protein", "total_carbs", "total_fat", "note"],
   properties: {
     items: {
       type: "array",
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["name", "kcal"],
+        required: ["name", "kcal", "protein", "carbs", "fat"],
         properties: {
           name: { type: "string" },
           kcal: { type: "integer" },
+          protein: { type: "integer" },
+          carbs: { type: "integer" },
+          fat: { type: "integer" },
         },
       },
     },
     total_kcal: { type: "integer" },
+    total_protein: { type: "integer" },
+    total_carbs: { type: "integer" },
+    total_fat: { type: "integer" },
     note: { type: "string" },
   },
 } as const;
@@ -76,10 +82,12 @@ export async function POST(req: Request) {
       max_tokens: 1024,
       thinking: { type: "adaptive" },
       system:
-        "You estimate calories from a photo of food for a boxing training app. " +
-        "List each distinct food item you can identify with a realistic kcal estimate for the visible portion, " +
-        "sum them into total_kcal, and add one short practical note (portion caveat or a coach tip). " +
-        "If the photo clearly contains no food, return an empty items array, total_kcal 0, and say so in the note." +
+        "You estimate nutrition from a photo of food for a boxing training app. " +
+        "For each distinct food item you can identify, give a realistic estimate for the VISIBLE PORTION: " +
+        "kcal, plus protein, carbs and fat in whole grams. Judge the portion size from the plate/hand/utensils for realism — " +
+        "don't over- or under-shoot. Sum the items into total_kcal, total_protein, total_carbs and total_fat, " +
+        "and add one short practical note (a portion caveat or a coach tip). " +
+        "If the photo clearly contains no food, return an empty items array with all totals 0 and say so in the note." +
         (locale === "ru" ? " Write item names and the note in Russian." : ""),
       messages: [
         {
@@ -93,7 +101,7 @@ export async function POST(req: Request) {
                 data,
               },
             },
-            { type: "text", text: "Estimate the calories in this meal." },
+            { type: "text", text: "Estimate the calories and macros in this meal." },
           ],
         },
       ],

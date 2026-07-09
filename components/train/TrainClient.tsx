@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { EXERCISES, filterExercises, type Exercise } from "@/lib/exercises";
-import { loadProfile, markTrainedToday } from "@/lib/tracking";
+import { buildDailyPlan, type FocusId } from "@/lib/session";
+import { loadProfile, markTrainedToday, awardXp } from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -21,30 +22,6 @@ import { Exercise3D } from "@/components/lessons/Exercise3D";
 
 const REST_SEC = 15;
 
-/* pick a varied session from what the user can actually do */
-function buildSession(all: Exercise[]): Exercise[] {
-  const by = (f: (e: Exercise) => boolean) => all.filter(f);
-  const picked: Exercise[] = [];
-  const take = (pool: Exercise[], n: number) => {
-    for (const e of pool) {
-      if (picked.length >= 8) break;
-      if (n <= 0) break;
-      if (!picked.includes(e)) {
-        picked.push(e);
-        n--;
-      }
-    }
-  };
-
-  take(by((e) => e.bodyPart === "fullbody" && e.level === 1), 1); // warm-up
-  take(by((e) => e.bodyPart === "technique"), 2); // boxing skill block
-  take(by((e) => ["chest", "arms", "shoulders", "back"].includes(e.bodyPart)), 2);
-  take(by((e) => e.bodyPart === "legs"), 1);
-  take(by((e) => e.bodyPart === "core"), 1);
-  if (picked.length < 4) take(all, 4 - picked.length); // sparse setups
-  return picked;
-}
-
 type Phase = "idle" | "work" | "rest" | "done";
 
 export function TrainClient() {
@@ -52,6 +29,7 @@ export function TrainClient() {
   const locale = useLocale() === "ru" ? "ru" : "en";
 
   const [session, setSession] = useState<Exercise[]>([]);
+  const [focus, setFocus] = useState<FocusId>("fullbody");
   const [usedFallback, setUsedFallback] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [idx, setIdx] = useState(0);
@@ -60,12 +38,14 @@ export function TrainClient() {
   const [workedSec, setWorkedSec] = useState(0);
   const streakDone = useRef(false);
 
-  /* build the session once from the saved profile */
+  /* build today's structured plan from the saved profile */
   useEffect(() => {
     const p = loadProfile();
     const pool = p?.environment ? filterExercises(p) : EXERCISES;
     setUsedFallback(!p?.environment);
-    setSession(buildSession(pool));
+    const plan = buildDailyPlan(pool, p);
+    setSession(plan.items);
+    setFocus(plan.focus);
   }, []);
 
   const totalSec = useMemo(
@@ -110,6 +90,7 @@ export function TrainClient() {
     if (phase === "done" && !streakDone.current) {
       streakDone.current = true;
       markTrainedToday();
+      awardXp("workout"); // completing a full session moves the rank
     }
   }, [phase]);
 
@@ -176,8 +157,11 @@ export function TrainClient() {
             )}
 
             <div className="panel mt-8 p-6">
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-wrap items-center gap-2">
                 <span className="badge border-blood/40 text-blood">
+                  <Icon name="target" size={12} /> {t(`focus_${focus}`)}
+                </span>
+                <span className="badge">
                   {t("meta", { n: session.length, min: Math.round(totalSec / 60) })}
                 </span>
                 <span className="badge">~{estKcal} kcal</span>

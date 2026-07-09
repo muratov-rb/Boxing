@@ -13,11 +13,23 @@ import { Icon } from "@/components/ui/Icons";
 interface ScanItem {
   name: string;
   kcal: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
 }
 export interface ScanResult {
   items: ScanItem[];
   total_kcal: number;
+  total_protein?: number;
+  total_carbs?: number;
+  total_fat?: number;
   note: string;
+}
+
+export interface ScanMacros {
+  protein?: number;
+  carbs?: number;
+  fat?: number;
 }
 
 type Stage = "consent" | "camera" | "preview" | "scanning" | "result" | "error";
@@ -26,7 +38,7 @@ export function FoodScanner({
   onAdd,
   onClose,
 }: {
-  onAdd: (name: string, kcal: number) => void;
+  onAdd: (name: string, kcal: number, macros: ScanMacros) => void;
   onClose: () => void;
 }) {
   const t = useTranslations("scan");
@@ -117,7 +129,11 @@ export function FoodScanner({
     if (!result) return;
     if (result.items.length === 0) return onClose();
     const name = result.items.map((i) => i.name).join(", ");
-    onAdd(name, result.total_kcal);
+    onAdd(name, result.total_kcal, {
+      protein: result.total_protein,
+      carbs: result.total_carbs,
+      fat: result.total_fat,
+    });
     onClose();
   }
 
@@ -250,7 +266,33 @@ export function FoodScanner({
               </span>
               <span className="font-display text-2xl">{result.total_kcal} kcal</span>
             </div>
-            {result.note && <p className="mt-2 text-xs text-ash-dim">{result.note}</p>}
+            {/* macro breakdown */}
+            {result.items.length > 0 &&
+              (result.total_protein != null ||
+                result.total_carbs != null ||
+                result.total_fat != null) && (
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {[
+                    { label: t("protein"), value: result.total_protein },
+                    { label: t("carbs"), value: result.total_carbs },
+                    { label: t("fat"), value: result.total_fat },
+                  ].map((m) => (
+                    <div
+                      key={m.label}
+                      className="rounded-xl border border-line/70 bg-void/40 py-2 text-center"
+                    >
+                      <p className="font-display text-xl leading-none">
+                        {m.value ?? 0}
+                        <span className="text-xs text-ash-dim">g</span>
+                      </p>
+                      <p className="mt-1 font-condensed text-[0.6rem] uppercase tracking-widest text-ash-dim">
+                        {m.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            {result.note && <p className="mt-3 text-xs text-ash-dim">{result.note}</p>}
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
                 type="button"

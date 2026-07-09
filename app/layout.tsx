@@ -33,7 +33,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pressure — Train Like a Fighter. Look Like an Athlete.",
+  title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
   description:
     "Free, web-first boxing training for everyone — from total beginners to seasoned pros. AI-built plans, progress ranks, nutrition and technique, no app and no gear required.",
 };

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = { title: "Verify Your Email — Pressure" };
+export const metadata: Metadata = { title: "Verify Your Email — RingBornn" };
 
 export default async function VerifyEmailPage({
   searchParams,

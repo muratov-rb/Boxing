@@ -18,7 +18,7 @@ export const runtime = "nodejs";
 // Default to the current flagship; override with ANTHROPIC_MODEL (e.g. claude-sonnet-5).
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
 
-const SYSTEM = `You are the head coach at Pressure, a gritty, no-nonsense boxing gym.
+const SYSTEM = `You are the head coach at RingBornn, a gritty, no-nonsense boxing gym.
 A new fighter has filled out their profile. Give them an honest, motivating read on their goal.
 
 Rules:

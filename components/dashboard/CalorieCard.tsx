@@ -30,6 +30,7 @@ export function CalorieCard() {
   }, []);
 
   const eaten = meals.reduce((s, m) => s + m.kcal, 0);
+  const eatenProtein = meals.reduce((s, m) => s + (m.protein ?? 0), 0);
   const left = target - eaten;
   const pct = Math.min(100, Math.round((eaten / target) * 100));
 
@@ -56,13 +57,11 @@ export function CalorieCard() {
             {t("calTitle")}
           </h2>
         </div>
-        <button
-          type="button"
-          onClick={() => setScannerOpen(true)}
-          className="btn btn-ghost !px-3 !py-1.5 text-xs"
-        >
-          {t("scanMeal")}
-        </button>
+        {eatenProtein > 0 && (
+          <span className="font-condensed text-[0.65rem] uppercase tracking-[0.2em] text-ash-dim">
+            {eatenProtein}g {t("protein")}
+          </span>
+        )}
       </div>
 
       {/* totals */}
@@ -87,6 +86,15 @@ export function CalorieCard() {
           style={{ width: `${pct}%` }}
         />
       </div>
+
+      {/* camera-first scan — the primary way to log a meal */}
+      <button
+        type="button"
+        onClick={() => setScannerOpen(true)}
+        className="btn btn-primary shine mt-4 w-full"
+      >
+        <Icon name="calorie" size={16} /> {t("scanMeal")}
+      </button>
 
       {/* today's meals */}
       {meals.length > 0 && (
@@ -138,7 +146,7 @@ export function CalorieCard() {
 
       {scannerOpen && (
         <FoodScanner
-          onAdd={(n, k) => setMeals(addMeal(n, k, "scan"))}
+          onAdd={(n, k, macros) => setMeals(addMeal(n, k, "scan", macros))}
           onClose={() => setScannerOpen(false)}
         />
       )}
