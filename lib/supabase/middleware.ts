@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "./config";
+import { supabaseUrl, supabaseAnonKey, isSupabaseConfigured } from "./config";
 
 const PROTECTED = ["/dashboard"];
 
@@ -11,7 +11,7 @@ export async function updateSession(request: NextRequest) {
 
   if (!isSupabaseConfigured()) return response;
 
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const supabase = createServerClient(supabaseUrl(), supabaseAnonKey(), {
     cookies: {
       getAll() {
         return request.cookies.getAll();

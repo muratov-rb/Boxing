@@ -1,13 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config";
+import { supabaseUrl, supabaseAnonKey } from "./config";
 
 /* Server-side Supabase client (App Router). Reads/writes the auth cookies.
    Only call after isSupabaseConfigured(). */
 export async function createClient() {
   const cookieStore = await cookies();
 
-  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  return createServerClient(supabaseUrl(), supabaseAnonKey(), {
     cookies: {
       getAll() {
         return cookieStore.getAll();
