@@ -51,9 +51,9 @@ export function NutritionClient() {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
           <Logo />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <LocaleSwitcher />
             <Link
@@ -66,7 +66,7 @@ export function NutritionClient() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <p className="kicker">{t("kicker")}</p>
         <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
           {t("titlePre")}

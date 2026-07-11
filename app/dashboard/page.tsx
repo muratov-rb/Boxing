@@ -9,6 +9,7 @@ import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { StreakCard } from "@/components/dashboard/StreakCard";
 import { RankCard } from "@/components/dashboard/RankCard";
 import { CalorieCard } from "@/components/dashboard/CalorieCard";
+import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
 
@@ -27,12 +28,12 @@ export default async function DashboardPage() {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <LocaleSwitcher />
-            <span className="hidden text-sm text-ash sm:block">{email}</span>
+            <span className="hidden text-sm text-ash md:block">{email}</span>
             <form action="/auth/signout" method="post">
               <button
                 type="submit"
@@ -45,7 +46,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-12">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         {!configured && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3">
             <span className="text-blood">
@@ -66,7 +67,7 @@ export default async function DashboardPage() {
         <p className="mt-2 text-ash">{t("sub")}</p>
 
         {/* today's workout — the main action */}
-        <section className="panel mt-8 flex flex-col justify-between gap-5 p-7 sm:flex-row sm:items-center">
+        <section className="panel mt-8 flex flex-col justify-between gap-5 p-6 sm:flex-row sm:items-center sm:p-7">
           <div>
             <span className="badge border-blood/40 text-blood">
               <Icon name="bolt" size={13} /> {tt("dashBadge")}
@@ -104,6 +105,23 @@ export default async function DashboardPage() {
             </Link>
           </section>
 
+          {/* technique check */}
+          <section className="panel flex flex-col justify-between p-7">
+            <div>
+              <span className="badge border-azure/40 text-azure">
+                <Icon name="video" size={13} /> {t("techBadge")}
+              </span>
+              <h2 className="mt-5 font-condensed text-2xl font-bold uppercase tracking-wide">
+                {t("techTitle")}
+              </h2>
+              <p className="mt-2 text-sm text-ash">{t("techCopy")}</p>
+            </div>
+            <Link href="/technique" className="btn btn-ghost mt-6">
+              {t("techCta")}
+              <Icon name="arrow" size={18} />
+            </Link>
+          </section>
+
           {/* nutrition */}
           <section className="panel flex flex-col justify-between p-7">
             <div>
@@ -120,6 +138,9 @@ export default async function DashboardPage() {
               <Icon name="arrow" size={18} />
             </Link>
           </section>
+
+          {/* rest & recovery */}
+          <RecoveryCard />
 
           {/* live tracking */}
           <CalorieCard />

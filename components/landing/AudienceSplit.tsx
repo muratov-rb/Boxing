@@ -34,7 +34,7 @@ export function AudienceSplit() {
 
   return (
     <section id="audience" className="relative border-t border-line/70 bg-charcoal">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <p className="kicker justify-center">{t("kicker")}</p>
           <h2 className="mt-5 font-display text-[clamp(2rem,5vw,3.5rem)] uppercase leading-none">

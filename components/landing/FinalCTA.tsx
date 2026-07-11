@@ -18,7 +18,7 @@ export function FinalCTA() {
             "radial-gradient(80% 120% at 50% 0%, rgba(224,16,41,0.16), transparent 60%)",
         }}
       />
-      <div className="relative mx-auto max-w-3xl px-6 py-24 text-center sm:py-28">
+      <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 sm:py-28">
         <p className="kicker justify-center">{t("kicker")}</p>
         <h2 className="mt-6 font-display text-[clamp(2.4rem,7vw,5rem)] uppercase leading-[0.9]">
           {t("titlePre")}

@@ -1,9 +1,10 @@
 /* ===========================================================================
-   RINGBORNN — daily session builder.
-   Turns the bodyweight catalog into a structured, genuinely useful workout:
-   warm-up → boxing skill → strength (focus rotates by weekday) → conditioning
-   finisher → core. Deterministic per calendar day, so "today's workout" is
-   stable through the day and changes tomorrow.
+   RINGBORNN — daily session builder + weekly rest scheduling.
+   Turns the bodyweight catalog into a structured, genuinely useful week:
+   five training days (focus rotates), one active-recovery day and one full
+   rest day, so the fighter builds strength instead of burning out.
+   Deterministic per calendar day — "today's workout" is stable through the
+   day and changes tomorrow.
    =========================================================================== */
 
 import type { Exercise, BodyPart } from "./exercises";
@@ -18,21 +19,30 @@ export type FocusId =
   | "power"
   | "core";
 
+/** train = full session · active = light recovery flow · rest = day off */
+export type DayKind = "train" | "active" | "rest";
+
 export interface DailyPlan {
+  kind: DayKind;
   focus: FocusId;
   items: Exercise[];
   level: 1 | 2 | 3;
 }
 
-/* which muscle groups each weekday leans into */
-const WEEK_FOCUS: FocusId[] = [
-  "fullbody", // Sun
-  "push", // Mon
-  "legs", // Tue
-  "skill", // Wed
-  "pull", // Thu
-  "power", // Fri
-  "core", // Sat
+interface DaySpec {
+  kind: DayKind;
+  focus: FocusId;
+}
+
+/* the weekly split (index 0 = Sunday … 6 = Saturday) */
+const WEEK: DaySpec[] = [
+  { kind: "rest", focus: "fullbody" }, // Sun — full rest
+  { kind: "train", focus: "push" }, // Mon
+  { kind: "train", focus: "legs" }, // Tue
+  { kind: "train", focus: "skill" }, // Wed
+  { kind: "active", focus: "core" }, // Thu — active recovery
+  { kind: "train", focus: "power" }, // Fri
+  { kind: "train", focus: "core" }, // Sat
 ];
 
 const FOCUS_PARTS: Record<FocusId, BodyPart[]> = {
@@ -44,6 +54,44 @@ const FOCUS_PARTS: Record<FocusId, BodyPart[]> = {
   power: ["fullbody", "legs"],
   core: ["core"],
 };
+
+/* gentle movements that make up an active-recovery flow */
+const RECOVERY_IDS = [
+  "arm-circles",
+  "shadow-footwork",
+  "birddog",
+  "good-morning",
+  "dead-bug",
+  "superman",
+  "calf-raises",
+  "glute-bridge",
+];
+
+const dayIndex = (d: Date) => ((d.getDay() % 7) + 7) % 7;
+
+export function daySpec(date = new Date()): DaySpec {
+  return WEEK[dayIndex(date)];
+}
+
+export function dayKind(date = new Date()): DayKind {
+  return WEEK[dayIndex(date)].kind;
+}
+
+/** The next date that is a training day (used when someone opts to train on a
+    scheduled rest day anyway). */
+export function nextTrainingDate(from = new Date()): Date {
+  const d = new Date(from);
+  for (let i = 0; i < 8; i++) {
+    if (daySpec(d).kind === "train") return d;
+    d.setDate(d.getDate() + 1);
+  }
+  return d;
+}
+
+/** The 7-day plan for the schedule strip on the dashboard. */
+export function weekSchedule(): { kind: DayKind; focus: FocusId }[] {
+  return WEEK.map((d) => ({ kind: d.kind, focus: d.focus }));
+}
 
 export function daysSinceEpoch(d = new Date()): number {
   return Math.floor(
@@ -68,9 +116,9 @@ function levelOf(profile: Profile | null): 1 | 2 | 3 {
 }
 
 /**
- * Build today's session from the (already equipment-filtered) exercise pool.
- * The structure is fixed and useful; the specific exercises rotate daily and
- * respect the fighter's level (beginners never get level-3 movements).
+ * Build today's plan from the (already equipment-filtered) exercise pool.
+ * Rest days return an empty list; active-recovery days return a short, light
+ * flow; training days return the full structured session for the day's focus.
  */
 export function buildDailyPlan(
   all: Exercise[],
@@ -78,10 +126,25 @@ export function buildDailyPlan(
   date = new Date(),
 ): DailyPlan {
   const level = levelOf(profile);
+  const spec = daySpec(date);
+  const seed = daysSinceEpoch(date);
+
+  if (spec.kind === "rest") {
+    return { kind: "rest", focus: spec.focus, items: [], level };
+  }
+
+  if (spec.kind === "active") {
+    // a light, low-intensity flow: mobility, easy core, footwork — level 1 only
+    const recovery = RECOVERY_IDS.map((id) => all.find((e) => e.id === id)).filter(
+      (e): e is Exercise => !!e && e.level === 1,
+    );
+    const items = rotate(recovery, seed, 5);
+    return { kind: "active", focus: spec.focus, items, level };
+  }
+
   const maxLevel = level >= 2 ? 3 : 2; // experienced fighters unlock advanced work
   const pool = all.filter((e) => e.level <= maxLevel);
-  const seed = daysSinceEpoch(date);
-  const focus = WEEK_FOCUS[((date.getDay() % 7) + 7) % 7];
+  const focus = spec.focus;
 
   const picked: Exercise[] = [];
   const seen = new Set<string>();
@@ -121,5 +184,5 @@ export function buildDailyPlan(
   // top up to a full session if the pool was thin
   if (picked.length < 5) add(rotate(pool, seed + 7, 5 - picked.length));
 
-  return { focus, items: picked, level };
+  return { kind: "train", focus, items: picked, level };
 }

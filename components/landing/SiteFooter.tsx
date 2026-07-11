@@ -10,7 +10,7 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-line/70 bg-void">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-12 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="max-w-sm">
           <Logo href={null} />
           <p className="mt-4 text-sm leading-relaxed text-ash-dim">

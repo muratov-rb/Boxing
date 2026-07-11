@@ -48,7 +48,7 @@ export function OnboardingFlow() {
     <div className="flex min-h-dvh flex-col">
       {/* top bar */}
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -65,7 +65,7 @@ export function OnboardingFlow() {
 
       {step < LAST && <ProgressRail steps={rail} current={step} />}
 
-      <main className="flex flex-1 items-start justify-center px-6 py-12 sm:py-16">
+      <main className="flex flex-1 items-start justify-center px-4 py-12 sm:px-6 sm:py-16">
         <div key={step} className="animate-rise w-full">
           {step === 0 && (
             <PathSelector

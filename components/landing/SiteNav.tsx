@@ -11,7 +11,7 @@ export function SiteNav({ authed = false }: { authed?: boolean }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-void/70 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
 
         <div className="hidden items-center gap-8 md:flex">
@@ -30,10 +30,12 @@ export function SiteNav({ authed = false }: { authed?: boolean }) {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
+          <span className="hidden sm:inline-flex">
+            <ThemeToggle />
+          </span>
           <LocaleSwitcher />
           {authed ? (
-            <Link href="/dashboard" className="btn btn-primary !px-5 !py-2.5 text-sm">
+            <Link href="/dashboard" className="btn btn-primary !px-3.5 !py-2 text-sm sm:!px-5 sm:!py-2.5">
               {t("dashboard")}
             </Link>
           ) : (
@@ -46,7 +48,7 @@ export function SiteNav({ authed = false }: { authed?: boolean }) {
               </Link>
               <Link
                 href="/onboarding"
-                className="btn btn-primary !px-5 !py-2.5 text-sm"
+                className="btn btn-primary !px-3.5 !py-2 text-sm sm:!px-5 sm:!py-2.5"
               >
                 {t("start")}
               </Link>

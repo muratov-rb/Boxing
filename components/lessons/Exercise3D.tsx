@@ -1207,6 +1207,11 @@ export function Exercise3D({
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
+    // let CSS own the canvas box so it always fits its container (never forces
+    // its parent wider on mobile); we drive only the drawing-buffer size below
+    renderer.domElement.style.display = "block";
+    renderer.domElement.style.width = "100%";
+    renderer.domElement.style.height = "100%";
     host.appendChild(renderer.domElement);
 
     /* soft studio light — hemisphere fill + one shadow-casting key */
@@ -1280,7 +1285,7 @@ export function Exercise3D({
     const resize = () => {
       const w = host.clientWidth || 300;
       const h = host.clientHeight || 300;
-      renderer.setSize(w, h);
+      renderer.setSize(w, h, false); // updateStyle=false — CSS keeps it 100%
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     };

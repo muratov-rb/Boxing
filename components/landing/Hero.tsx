@@ -24,7 +24,7 @@ export function Hero() {
         <div className="absolute right-0 bottom-24 h-px w-[45%] rotate-[-8deg] bg-gradient-to-r from-transparent via-azure/30 to-transparent" />
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-28 lg:pb-32">
+      <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-28 lg:pb-32">
         <p className="kicker animate-rise">{t("kicker")}</p>
 
         <h1 className="animate-rise mt-6 font-display text-[clamp(2.9rem,9vw,7.5rem)] uppercase text-bone [animation-delay:80ms]">

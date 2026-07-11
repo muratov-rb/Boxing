@@ -4,7 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { EXERCISES, filterExercises, type Exercise } from "@/lib/exercises";
-import { buildDailyPlan, type FocusId } from "@/lib/session";
+import {
+  buildDailyPlan,
+  nextTrainingDate,
+  type FocusId,
+  type DayKind,
+} from "@/lib/session";
 import { loadProfile, markTrainedToday, awardXp } from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -30,6 +35,7 @@ export function TrainClient() {
 
   const [session, setSession] = useState<Exercise[]>([]);
   const [focus, setFocus] = useState<FocusId>("fullbody");
+  const [kind, setKind] = useState<DayKind>("train");
   const [usedFallback, setUsedFallback] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [idx, setIdx] = useState(0);
@@ -44,8 +50,14 @@ export function TrainClient() {
     const pool = p?.environment ? filterExercises(p) : EXERCISES;
     setUsedFallback(!p?.environment);
     const plan = buildDailyPlan(pool, p);
-    setSession(plan.items);
+    setKind(plan.kind);
     setFocus(plan.focus);
+    // on a full rest day, keep a real session ready in case they train anyway
+    setSession(
+      plan.kind === "rest"
+        ? buildDailyPlan(pool, p, nextTrainingDate()).items
+        : plan.items,
+    );
   }, []);
 
   const totalSec = useMemo(
@@ -127,9 +139,9 @@ export function TrainClient() {
     <div className="flex min-h-dvh flex-col">
       {/* top bar */}
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <LocaleSwitcher />
             <Link
@@ -142,24 +154,67 @@ export function TrainClient() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+        {/* ------------------------------ rest day ------------------------------ */}
+        {phase === "idle" && kind === "rest" && (
+          <div className="animate-rise mx-auto max-w-lg text-center">
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-full border border-azure/50 text-azure">
+              <Icon name="rest" size={38} />
+            </div>
+            <h1 className="mt-6 font-display text-[clamp(2rem,7vw,3.25rem)] uppercase leading-none">
+              {t("restDayTitle")}
+            </h1>
+            <p className="mx-auto mt-3 max-w-sm text-ash">{t("restDaySub")}</p>
+            <ul className="mx-auto mt-6 max-w-sm space-y-2 text-left">
+              {[t("restTip1"), t("restTip2"), t("restTip3")].map((tip, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-sm text-bone/90">
+                  <span className="mt-0.5 text-azure">
+                    <Icon name="check" size={15} />
+                  </span>
+                  {tip}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Link href="/dashboard" className="btn btn-primary">
+                {t("backDash")}
+              </Link>
+              <button
+                type="button"
+                onClick={start}
+                disabled={session.length === 0}
+                className="btn btn-ghost"
+              >
+                {t("trainAnyway")}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ------------------------------ overview ------------------------------ */}
-        {phase === "idle" && (
+        {phase === "idle" && kind !== "rest" && (
           <div className="animate-rise">
-            <p className="kicker">{t("kicker")}</p>
+            <p className="kicker">{kind === "active" ? t("kickerActive") : t("kicker")}</p>
             <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
               {t("titlePre")}
-              <span className="text-blood">{t("titleAccent")}</span>
+              <span className="text-blood">
+                {kind === "active" ? t("titleAccentActive") : t("titleAccent")}
+              </span>
             </h1>
-            <p className="mt-3 max-w-xl text-ash">{t("sub")}</p>
+            <p className="mt-3 max-w-xl text-ash">
+              {kind === "active" ? t("activeSub") : t("sub")}
+            </p>
             {usedFallback && (
               <p className="mt-2 text-xs text-ash-dim">{t("noExercises")}</p>
             )}
 
             <div className="panel mt-8 p-6">
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="badge border-blood/40 text-blood">
-                  <Icon name="target" size={12} /> {t(`focus_${focus}`)}
+                <span
+                  className={`badge ${kind === "active" ? "border-azure/50 text-azure" : "border-blood/40 text-blood"}`}
+                >
+                  <Icon name={kind === "active" ? "rest" : "target"} size={12} />{" "}
+                  {kind === "active" ? t("today_active") : t(`focus_${focus}`)}
                 </span>
                 <span className="badge">
                   {t("meta", { n: session.length, min: Math.round(totalSec / 60) })}
@@ -239,7 +294,7 @@ export function TrainClient() {
 
             {/* 3D coach + cues */}
             <div className="mt-6 grid gap-4 sm:grid-cols-5">
-              <div className="sm:col-span-3">
+              <div className="min-w-0 sm:col-span-3">
                 <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
                   <Exercise3D preset={shown.demo} className="h-64 w-full sm:h-80" />
                 </div>

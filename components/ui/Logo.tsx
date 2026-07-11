@@ -10,8 +10,8 @@ export function Logo({
   href?: string | null;
 }) {
   const content = (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <span className="relative grid h-8 w-8 place-items-center rounded-lg bg-blood">
+    <span className={`inline-flex items-center gap-2 sm:gap-2.5 ${className}`}>
+      <span className="relative grid h-7 w-7 place-items-center rounded-lg bg-blood sm:h-8 sm:w-8">
         <svg
           width="18"
           height="18"
@@ -27,7 +27,7 @@ export function Logo({
           <path d="m13 5 6 7-6 7" />
         </svg>
       </span>
-      <span className="font-display text-2xl leading-none tracking-wide">
+      <span className="font-display text-xl leading-none tracking-wide sm:text-2xl">
         RINGBORNN
       </span>
     </span>

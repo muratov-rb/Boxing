@@ -20,7 +20,7 @@ export function FeaturePreview() {
 
   return (
     <section id="features" className="relative border-t border-line/70">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">
             <p className="kicker">{t("kicker")}</p>

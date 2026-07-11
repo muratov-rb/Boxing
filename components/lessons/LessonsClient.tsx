@@ -78,7 +78,7 @@ function LessonDetail({
 
         {/* 3D demo + body map */}
         <div className="mt-6 grid gap-4 sm:grid-cols-5">
-          <div className="sm:col-span-3">
+          <div className="min-w-0 sm:col-span-3">
             <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
               <Exercise3D preset={ex.demo} className="h-64 w-full sm:h-80" />
             </div>
@@ -161,9 +161,9 @@ export function LessonsClient() {
     <div className="flex min-h-dvh flex-col">
       {/* top bar */}
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <LocaleSwitcher />
             <Link
@@ -176,7 +176,7 @@ export function LessonsClient() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <p className="kicker">{t("kicker")}</p>
         <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
           {t("titlePre")}
