@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -44,7 +44,14 @@ export function AuthCard({
   hadError?: boolean;
 }) {
   const t = useTranslations("auth");
-  const configured = isSupabaseConfigured();
+  /* Whether Supabase keys are present is only knowable in the real browser
+     (the runtime env is injected into window.__PRESSURE_ENV). We render
+     optimistically (assume connected) so a correctly-configured deploy never
+     flashes a false "not connected", then confirm on mount. */
+  const [configured, setConfigured] = useState(true);
+  useEffect(() => {
+    setConfigured(isSupabaseConfigured());
+  }, []);
   // only show the Google button once the provider is actually set up in Supabase
   const googleOn = process.env.NEXT_PUBLIC_GOOGLE_ENABLED === "true";
   const router = useRouter();
