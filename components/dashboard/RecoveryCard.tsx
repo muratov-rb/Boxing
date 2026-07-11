@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import { weekSchedule, dayKind, type DayKind } from "@/lib/session";
+import { entitlements } from "@/lib/tracking";
+import { LockedFeature } from "./LockedFeature";
 
 /* Rest & Recovery — surfaces the weekly split so rest days are a planned part
    of the program, not an afterthought. Today's kind drives the call-to-action:
@@ -14,11 +16,17 @@ const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ")
 
 export function RecoveryCard() {
   const t = useTranslations("recovery");
+  const tp = useTranslations("plans");
   const [todayIdx, setTodayIdx] = useState<number | null>(null);
+  const [locked, setLocked] = useState(false);
 
   useEffect(() => {
+    setLocked(!entitlements().restRecovery);
     setTodayIdx(new Date().getDay());
   }, []);
+
+  if (locked)
+    return <LockedFeature icon="rest" title={tp("f_recovery")} body={tp("lockedRecovery")} />;
 
   const week = weekSchedule();
   const kind: DayKind | null = todayIdx == null ? null : week[todayIdx].kind;

@@ -10,7 +10,14 @@ import {
   type FocusId,
   type DayKind,
 } from "@/lib/session";
-import { loadProfile, markTrainedToday, awardXp } from "@/lib/tracking";
+import {
+  loadProfile,
+  markTrainedToday,
+  awardXp,
+  dailyPlanLimit,
+  bumpUsage,
+  type LimitState,
+} from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -31,6 +38,7 @@ type Phase = "idle" | "work" | "rest" | "done";
 
 export function TrainClient() {
   const t = useTranslations("train");
+  const tp = useTranslations("plans");
   const locale = useLocale() === "ru" ? "ru" : "en";
 
   const [session, setSession] = useState<Exercise[]>([]);
@@ -42,6 +50,7 @@ export function TrainClient() {
   const [remaining, setRemaining] = useState(0);
   const [paused, setPaused] = useState(false);
   const [workedSec, setWorkedSec] = useState(0);
+  const [planLimit, setPlanLimit] = useState<LimitState | null>(null);
   const streakDone = useRef(false);
 
   /* build today's structured plan from the saved profile */
@@ -52,6 +61,7 @@ export function TrainClient() {
     const plan = buildDailyPlan(pool, p);
     setKind(plan.kind);
     setFocus(plan.focus);
+    setPlanLimit(dailyPlanLimit());
     // on a full rest day, keep a real session ready in case they train anyway
     setSession(
       plan.kind === "rest"
@@ -114,6 +124,20 @@ export function TrainClient() {
     setPhase("work");
     setRemaining(session[0].workSec);
   };
+
+  /* first start of a session — counts against the weekly plan quota (active
+     recovery is free; replays via "Go Again" don't re-charge) */
+  const beginSession = () => {
+    if (kind !== "active") {
+      if (planLimit && !planLimit.ok) return;
+      bumpUsage("dailyPlan");
+      setPlanLimit(dailyPlanLimit());
+    }
+    start();
+  };
+
+  const planMetered = !!planLimit && Number.isFinite(planLimit.limit) && kind !== "active";
+  const planBlocked = !!planLimit && !planLimit.ok && kind !== "active";
 
   const skip = () => {
     if (phase === "work" || phase === "rest") setRemaining(0);
@@ -181,7 +205,7 @@ export function TrainClient() {
               </Link>
               <button
                 type="button"
-                onClick={start}
+                onClick={beginSession}
                 disabled={session.length === 0}
                 className="btn btn-ghost"
               >
@@ -238,15 +262,29 @@ export function TrainClient() {
                   </li>
                 ))}
               </ol>
-              <button
-                type="button"
-                onClick={start}
-                disabled={session.length === 0}
-                className="btn btn-primary shine mt-6 w-full"
-              >
-                {t("start")}
-                <Icon name="bolt" size={18} />
-              </button>
+              {planBlocked ? (
+                <Link href="/plans" className="btn btn-ghost mt-6 w-full">
+                  <Icon name="lock" size={16} /> {tp("plansThisWeek")}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={beginSession}
+                  disabled={session.length === 0}
+                  className="btn btn-primary shine mt-6 w-full"
+                >
+                  {t("start")}
+                  <Icon name="bolt" size={18} />
+                </button>
+              )}
+              {planMetered && planLimit && (
+                <p className="mt-2 text-center text-xs text-ash-dim">
+                  {tp("plansLeftWeek", {
+                    n: Math.max(0, planLimit.limit - planLimit.used),
+                    limit: planLimit.limit,
+                  })}
+                </p>
+              )}
             </div>
           </div>
         )}

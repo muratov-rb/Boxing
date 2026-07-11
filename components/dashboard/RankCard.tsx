@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import { Celebration } from "./Celebration";
-import { rankProgress, consumeRankUp, RANK_XP } from "@/lib/tracking";
+import { LockedFeature } from "./LockedFeature";
+import { rankProgress, consumeRankUp, RANK_XP, entitlements } from "@/lib/tracking";
 
 /* Rank — earned from XP (training + daily use), shown with a progress bar to
    the next tier. Climbing a rank fires a celebration; slipping shows a quiet
@@ -13,14 +14,26 @@ import { rankProgress, consumeRankUp, RANK_XP } from "@/lib/tracking";
 export function RankCard() {
   const t = useTranslations("track");
   const tr = useTranslations("ranks");
+  const tp = useTranslations("plans");
   const [prog, setProg] = useState<ReturnType<typeof rankProgress> | null>(null);
   const [rankedUp, setRankedUp] = useState<number | null>(null);
+  const [locked, setLocked] = useState<boolean | null>(null);
 
   useEffect(() => {
+    if (!entitlements().ranks) {
+      setLocked(true);
+      return;
+    }
+    setLocked(false);
     setProg(rankProgress());
     const up = consumeRankUp(); // celebrate only a genuine climb
     if (up !== null) setRankedUp(up);
   }, []);
+
+  if (locked)
+    return (
+      <LockedFeature icon="belt" title={tp("f_ranks")} body={tp("lockedRanks")} />
+    );
 
   const idx = prog?.rankIndex ?? 0;
   const epicRank = idx >= 8; // Champion and above

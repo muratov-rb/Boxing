@@ -5,6 +5,13 @@
    =========================================================================== */
 
 import { RANKS, type Profile } from "./onboarding";
+import {
+  entitlementsFor,
+  TRIAL_DAYS,
+  type Entitlements,
+  type PlanId,
+  type PaidPlanId,
+} from "./subscription";
 
 const K_PROFILE = "pressure.profile";
 const K_STREAK = "pressure.streak"; // string[] of training days "YYYY-MM-DD"
@@ -12,6 +19,8 @@ const K_MEALS = "pressure.meals"; // Record<date, Meal[]>
 const K_VISITS = "pressure.visits"; // string[] of usage days "YYYY-MM-DD"
 const K_XP = "pressure.xp"; // XpState
 const K_RANK_SEEN = "pressure.rankSeen"; // last rank index the user celebrated
+const K_SUB = "pressure.sub"; // SubState
+const K_USAGE = "pressure.usage"; // Record<date, Record<UsageKey, number>>
 
 export interface Meal {
   id: string;
@@ -359,4 +368,116 @@ export function macroTargets(p: Profile | null): Macros {
   const carbs = Math.max(0, Math.round((kcal - protein * 4 - fat * 9) / 4));
 
   return { kcal, protein, carbs, fat };
+}
+
+/* --------------------------- subscription/trial -------------------------- */
+/* The active plan resolves from a stored choice + the trial clock. A paid
+   choice wins; otherwise you're on the trial until it runs out, then expired.
+   `trialStart` is stamped the first time the app asks (call ensureTrial on
+   load, alongside registerVisit). */
+
+interface SubState {
+  plan: PaidPlanId | null; // an explicit paid choice, or null = still on trial
+  trialStart: string; // YYYY-MM-DD
+}
+
+function readSub(): SubState {
+  return read<SubState>(K_SUB, { plan: null, trialStart: todayKey() });
+}
+
+/** Stamp the trial start on first run. Safe to call every load. */
+export function ensureTrial(): void {
+  if (!isBrowser()) return;
+  const raw = localStorage.getItem(K_SUB);
+  if (!raw) write(K_SUB, { plan: null, trialStart: todayKey() });
+}
+
+/** Days left in the free trial (0 once it's over). */
+export function trialDaysLeft(): number {
+  const s = readSub();
+  const used = dayGap(s.trialStart, todayKey());
+  return Math.max(0, TRIAL_DAYS - used);
+}
+
+/** Which day of the trial we're on, 1-based (1..TRIAL_DAYS, then >TRIAL_DAYS). */
+export function trialDay(): number {
+  const s = readSub();
+  return dayGap(s.trialStart, todayKey()) + 1;
+}
+
+/** The effective plan right now. */
+export function activePlan(): PlanId {
+  const s = readSub();
+  if (s.plan) return s.plan;
+  return trialDaysLeft() > 0 ? "trial" : "expired";
+}
+
+/** Record the user's chosen paid plan (local until real billing lands). */
+export function setPlan(plan: PaidPlanId): void {
+  write(K_SUB, { ...readSub(), plan });
+}
+
+/** Reset to the trial (used by a "restart trial" dev affordance / downgrade). */
+export function clearPlan(): void {
+  write(K_SUB, { ...readSub(), plan: null });
+}
+
+export function entitlements(): Entitlements {
+  return entitlementsFor(activePlan());
+}
+
+/* ------------------------------ usage meters ----------------------------- */
+export type UsageKey = "calorieScan" | "techniqueVideo" | "dailyPlan";
+
+type UsageMap = Record<string, Record<string, number>>;
+
+export function usageToday(key: UsageKey): number {
+  const all = read<UsageMap>(K_USAGE, {});
+  return all[todayKey()]?.[key] ?? 0;
+}
+
+/** Usage over the rolling 7-day window (for weekly limits). */
+export function usageThisWeek(key: UsageKey): number {
+  const all = read<UsageMap>(K_USAGE, {});
+  const today = todayKey();
+  let sum = 0;
+  for (const [date, m] of Object.entries(all)) {
+    const gap = dayGap(date, today);
+    if (gap >= 0 && gap < 7) sum += m[key] ?? 0;
+  }
+  return sum;
+}
+
+export function bumpUsage(key: UsageKey): number {
+  const all = read<UsageMap>(K_USAGE, {});
+  const day = todayKey();
+  all[day] = all[day] ?? {};
+  all[day][key] = (all[day][key] ?? 0) + 1;
+  write(K_USAGE, all);
+  return all[day][key];
+}
+
+export interface LimitState {
+  ok: boolean; // is there quota left?
+  used: number;
+  limit: number; // Infinity = unlimited, 0 = feature locked
+  locked: boolean; // limit === 0 → not in this plan at all
+}
+
+/** Daily-metered features: calorie scans, technique videos. */
+export function dailyLimit(
+  key: "calorieScan" | "techniqueVideo",
+): LimitState {
+  const e = entitlements();
+  const limit =
+    key === "calorieScan" ? e.calorieScansPerDay : e.techniqueVideosPerDay;
+  const used = usageToday(key);
+  return { ok: used < limit, used, limit, locked: limit === 0 };
+}
+
+/** Weekly-metered feature: starting a guided daily plan. */
+export function dailyPlanLimit(): LimitState {
+  const limit = entitlements().dailyPlansPerWeek;
+  const used = usageThisWeek("dailyPlan");
+  return { ok: used < limit, used, limit, locked: limit === 0 };
 }

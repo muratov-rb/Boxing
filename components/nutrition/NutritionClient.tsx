@@ -7,9 +7,10 @@ import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon, type IconName } from "@/components/ui/Icons";
-import { loadProfile } from "@/lib/tracking";
+import { loadProfile, entitlements } from "@/lib/tracking";
 import { requestNutrition, type NutritionPlan, type Slot } from "@/lib/nutrition";
 import { statIssues, type Profile } from "@/lib/onboarding";
+import { LockedFeature } from "@/components/dashboard/LockedFeature";
 
 const SLOT_ICON: Record<Slot, IconName> = {
   breakfast: "bolt",
@@ -20,14 +21,22 @@ const SLOT_ICON: Record<Slot, IconName> = {
 
 export function NutritionClient() {
   const t = useTranslations("nutri");
+  const tp = useTranslations("plans");
   const locale = useLocale() === "ru" ? "ru" : "en";
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [plan, setPlan] = useState<NutritionPlan | null>(null);
   const [loading, setLoading] = useState(false);
+  const [access, setAccess] = useState<{ ai: boolean; slots: number } | null>(null);
 
   useEffect(() => {
+    const e = entitlements();
+    setAccess({ ai: e.aiNutrition, slots: e.nutritionMealSlots });
+    if (!e.aiNutrition) {
+      setLoaded(true);
+      return; // feature not in this plan — don't fetch
+    }
     const p = loadProfile();
     setProfile(p);
     setLoaded(true);
@@ -38,6 +47,11 @@ export function NutritionClient() {
         .finally(() => setLoading(false));
     }
   }, [locale]);
+
+  // pro shows a subset of meals (e.g. breakfast + lunch); max/trial show all
+  const shownMeals =
+    plan && access ? plan.meals.slice(0, access.slots >= 4 ? plan.meals.length : access.slots) : [];
+  const mealsLimited = !!plan && !!access && access.slots < plan.meals.length;
 
   const macroItems = plan
     ? [
@@ -76,8 +90,15 @@ export function NutritionClient() {
           {plan?.headline || t("sub")}
         </p>
 
+        {/* not in this plan */}
+        {loaded && access && !access.ai && (
+          <div className="mt-8">
+            <LockedFeature icon="nutrition" title={tp("f_nutrition")} body={tp("lockedNutrition")} />
+          </div>
+        )}
+
         {/* no profile yet */}
-        {loaded && !profile && (
+        {loaded && access?.ai && !profile && (
           <div className="panel mt-8 p-7 text-center">
             <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-blood/40 text-blood">
               <Icon name="nutrition" size={26} />
@@ -140,7 +161,7 @@ export function NutritionClient() {
               {t("mealsTitle")}
             </h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {plan.meals.map((meal) => (
+              {shownMeals.map((meal) => (
                 <div key={meal.slot} className="panel p-5">
                   <div className="flex items-center justify-between">
                     <span className="badge border-blood/40 text-blood">
@@ -157,6 +178,14 @@ export function NutritionClient() {
                 </div>
               ))}
             </div>
+            {mealsLimited && (
+              <Link
+                href="/plans"
+                className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3 text-sm text-ash transition-colors hover:text-bone"
+              >
+                <Icon name="lock" size={14} /> {tp("mealsLimited")}
+              </Link>
+            )}
 
             {/* tips */}
             {plan.tips.length > 0 && (

@@ -10,6 +10,7 @@ import { StreakCard } from "@/components/dashboard/StreakCard";
 import { RankCard } from "@/components/dashboard/RankCard";
 import { CalorieCard } from "@/components/dashboard/CalorieCard";
 import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
+import { TrialBanner } from "@/components/dashboard/TrialBanner";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
 
@@ -33,6 +34,12 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <LocaleSwitcher />
+            <Link
+              href="/plans"
+              className="hidden font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone sm:inline"
+            >
+              {t("plansLink")}
+            </Link>
             <span className="hidden text-sm text-ash md:block">{email}</span>
             <form action="/auth/signout" method="post">
               <button
@@ -47,6 +54,7 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+        <TrialBanner />
         {!configured && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3">
             <span className="text-blood">

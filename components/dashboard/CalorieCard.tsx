@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import {
@@ -9,25 +10,41 @@ import {
   loadProfile,
   mealsToday,
   removeMeal,
+  dailyLimit,
+  bumpUsage,
   type Meal,
+  type LimitState,
 } from "@/lib/tracking";
 import { FoodScanner } from "./FoodScanner";
+import { LockedFeature } from "./LockedFeature";
 
 /* Calorie counter — manual meal log + AI photo scan, vs a target computed
    from the saved fighter profile (Mifflin–St Jeor, adjusted for the goal). */
 
 export function CalorieCard() {
   const t = useTranslations("track");
+  const tp = useTranslations("plans");
   const [meals, setMeals] = useState<Meal[]>([]);
   const [target, setTarget] = useState(2200);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [name, setName] = useState("");
   const [kcal, setKcal] = useState("");
+  const [limit, setLimit] = useState<LimitState | null>(null);
 
   useEffect(() => {
     setMeals(mealsToday());
     setTarget(calorieTarget(loadProfile()));
+    setLimit(dailyLimit("calorieScan"));
   }, []);
+
+  // budget/expired plans don't include the calorie counter at all
+  if (limit?.locked)
+    return (
+      <LockedFeature icon="calorie" title={tp("f_calorie")} body={tp("lockedCalorie")} />
+    );
+
+  const metered = !!limit && Number.isFinite(limit.limit);
+  const scanOk = !limit || limit.ok;
 
   const eaten = meals.reduce((s, m) => s + m.kcal, 0);
   const eatenProtein = meals.reduce((s, m) => s + (m.protein ?? 0), 0);
@@ -88,13 +105,24 @@ export function CalorieCard() {
       </div>
 
       {/* camera-first scan — the primary way to log a meal */}
-      <button
-        type="button"
-        onClick={() => setScannerOpen(true)}
-        className="btn btn-primary shine mt-4 w-full"
-      >
-        <Icon name="calorie" size={16} /> {t("scanMeal")}
-      </button>
+      {scanOk ? (
+        <button
+          type="button"
+          onClick={() => setScannerOpen(true)}
+          className="btn btn-primary shine mt-4 w-full"
+        >
+          <Icon name="calorie" size={16} /> {t("scanMeal")}
+        </button>
+      ) : (
+        <Link href="/plans" className="btn btn-ghost mt-4 w-full">
+          <Icon name="lock" size={15} /> {tp("limitReached")}
+        </Link>
+      )}
+      {metered && limit && (
+        <p className="mt-2 text-center text-xs text-ash-dim">
+          {tp("scansToday", { used: limit.used, limit: limit.limit })}
+        </p>
+      )}
 
       {/* today's meals */}
       {meals.length > 0 && (
@@ -146,7 +174,11 @@ export function CalorieCard() {
 
       {scannerOpen && (
         <FoodScanner
-          onAdd={(n, k, macros) => setMeals(addMeal(n, k, "scan", macros))}
+          onAdd={(n, k, macros) => {
+            setMeals(addMeal(n, k, "scan", macros));
+            bumpUsage("calorieScan"); // a completed scan spends one of today's quota
+            setLimit(dailyLimit("calorieScan"));
+          }}
           onClose={() => setScannerOpen(false)}
         />
       )}

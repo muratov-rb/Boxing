@@ -53,10 +53,12 @@ export function TechniqueAnalyzer({
   techniqueId,
   techniqueName,
   onClose,
+  onAnalyzed,
 }: {
   techniqueId: string;
   techniqueName: string;
   onClose: () => void;
+  onAnalyzed?: () => void;
 }) {
   const t = useTranslations("tech");
   const [stage, setStage] = useState<Stage>("consent");
@@ -169,6 +171,7 @@ export function TechniqueAnalyzer({
       const data = (await res.json()) as TechReview;
       setResult(data);
       setStage("result");
+      onAnalyzed?.(); // count this completed review against the daily quota
     } catch {
       setError(t("analyzeFailed"));
       setStage("error");

@@ -9,7 +9,9 @@ import {
   type BodyPart,
   type Exercise,
 } from "@/lib/exercises";
-import { markTrainedToday, trainedToday, awardXp } from "@/lib/tracking";
+import { markTrainedToday, trainedToday, awardXp, entitlements } from "@/lib/tracking";
+import { lessonLimitFor } from "@/lib/subscription";
+import { LockedFeature } from "@/components/dashboard/LockedFeature";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -149,13 +151,24 @@ export function LessonsClient() {
   const t = useTranslations("lessons");
   const locale = useLocale() === "ru" ? "ru" : "en";
 
+  const tp = useTranslations("plans");
   const [part, setPart] = useState<BodyPart | "all">("all");
   const [open, setOpen] = useState<Exercise | null>(null);
+  const [cap, setCap] = useState<number>(Number.POSITIVE_INFINITY);
+  const [locked, setLocked] = useState(false);
 
-  const list = useMemo(
+  useEffect(() => {
+    const tier = entitlements().lessonTier;
+    setLocked(tier === "none");
+    setCap(lessonLimitFor(tier));
+  }, []);
+
+  const full = useMemo(
     () => (part === "all" ? EXERCISES : EXERCISES.filter((e) => e.bodyPart === part)),
     [part],
   );
+  const list = useMemo(() => full.slice(0, cap), [full, cap]);
+  const truncated = full.length > list.length;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -184,6 +197,12 @@ export function LessonsClient() {
         </h1>
         <p className="mt-3 max-w-xl text-ash">{t("sub")}</p>
 
+        {locked ? (
+          <div className="mt-8">
+            <LockedFeature icon="video" title={tp("f_lessons")} body={tp("lockedLessons")} />
+          </div>
+        ) : (
+        <>
         {/* filters */}
         <div className="mt-8 flex flex-wrap items-center gap-2">
           <button
@@ -243,8 +262,19 @@ export function LessonsClient() {
           ))}
         </div>
 
-        {list.length === 0 && (
+        {truncated && (
+          <Link
+            href="/plans"
+            className="mt-6 flex items-center justify-center gap-2 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3 text-sm text-ash transition-colors hover:text-bone"
+          >
+            <Icon name="lock" size={14} /> {tp("lessonsLimited", { shown: list.length, total: full.length })}
+          </Link>
+        )}
+
+        {list.length === 0 && !locked && (
           <p className="mt-10 text-center text-ash">{t("empty")}</p>
+        )}
+        </>
         )}
       </main>
 

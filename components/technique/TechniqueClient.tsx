@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { TECHNIQUES } from "@/lib/technique";
+import { dailyLimit, bumpUsage, type LimitState } from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -15,11 +16,20 @@ const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ")
 
 export function TechniqueClient() {
   const t = useTranslations("tech");
+  const tp = useTranslations("plans");
   const locale = useLocale() === "ru" ? "ru" : "en";
 
   const [activeId, setActiveId] = useState(TECHNIQUES[0].id);
   const [ticked, setTicked] = useState<Record<string, boolean>>({});
   const [analyzing, setAnalyzing] = useState(false);
+  const [limit, setLimit] = useState<LimitState | null>(null);
+
+  useEffect(() => {
+    setLimit(dailyLimit("techniqueVideo"));
+  }, []);
+
+  const metered = !!limit && Number.isFinite(limit.limit);
+  const reviewOk = !limit || limit.ok;
 
   const tech = useMemo(
     () => TECHNIQUES.find((x) => x.id === activeId) ?? TECHNIQUES[0],
@@ -137,14 +147,25 @@ export function TechniqueClient() {
                 })}
               </ul>
 
-              <button
-                type="button"
-                onClick={() => setAnalyzing(true)}
-                className="btn btn-primary shine mt-6 w-full"
-              >
-                <Icon name="video" size={17} /> {t("getFeedback")}
-              </button>
-              <p className="mt-2 text-center text-xs text-ash-dim">{t("feedbackHint")}</p>
+              {reviewOk ? (
+                <button
+                  type="button"
+                  onClick={() => setAnalyzing(true)}
+                  className="btn btn-primary shine mt-6 w-full"
+                >
+                  <Icon name="video" size={17} /> {t("getFeedback")}
+                </button>
+              ) : (
+                <Link href="/plans" className="btn btn-ghost mt-6 w-full">
+                  <Icon name="lock" size={15} />{" "}
+                  {limit?.locked ? tp("f_technique") : tp("limitReached")}
+                </Link>
+              )}
+              <p className="mt-2 text-center text-xs text-ash-dim">
+                {metered && limit
+                  ? tp("videosToday", { used: limit.used, limit: limit.limit })
+                  : t("feedbackHint")}
+              </p>
             </div>
           </div>
         </div>
@@ -154,6 +175,10 @@ export function TechniqueClient() {
         <TechniqueAnalyzer
           techniqueId={tech.id}
           techniqueName={tech.name[locale]}
+          onAnalyzed={() => {
+            bumpUsage("techniqueVideo"); // a completed review spends one of today's quota
+            setLimit(dailyLimit("techniqueVideo"));
+          }}
           onClose={() => setAnalyzing(false)}
         />
       )}
