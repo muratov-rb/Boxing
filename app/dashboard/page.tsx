@@ -11,8 +11,18 @@ import { RankCard } from "@/components/dashboard/RankCard";
 import { CalorieCard } from "@/components/dashboard/CalorieCard";
 import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
+import { SubscriptionSync } from "@/components/dashboard/SubscriptionSync";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
+
+/* emails allowed into /admin — env-extendable, owner by default */
+function isAdminEmail(email: string | undefined): boolean {
+  const list = (process.env.ADMIN_EMAILS || "smithsonses7@gmail.com")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return !!email && list.includes(email.toLowerCase());
+}
 
 export const metadata: Metadata = { title: "Dashboard — RingBornn" };
 
@@ -40,6 +50,14 @@ export default async function DashboardPage() {
             >
               {t("plansLink")}
             </Link>
+            {isAdminEmail(user?.email) && (
+              <Link
+                href="/admin"
+                className="hidden font-condensed text-sm uppercase tracking-widest text-blood transition-colors hover:text-blood-bright sm:inline"
+              >
+                {t("adminLink")}
+              </Link>
+            )}
             <span className="hidden text-sm text-ash md:block">{email}</span>
             <form action="/auth/signout" method="post">
               <button
@@ -54,6 +72,7 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+        <SubscriptionSync />
         <TrialBanner />
         {!configured && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3">

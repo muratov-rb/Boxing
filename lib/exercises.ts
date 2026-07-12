@@ -1,8 +1,9 @@
 /* ===========================================================================
-   PRESSURE — exercise / lesson library
-   Static bilingual catalog, 100% home bodyweight for now: every entry can be
-   done in a room with no equipment (a wall / chair / sturdy edge at most).
-   `demo` picks the 3D technique animation, `muscles` drives the body map.
+   RINGBORNN — exercise / lesson library
+   Static bilingual catalog: the full home bodyweight program plus the gym
+   work boxers actually use (bar, bells, bag, rope). `requires` gates each
+   entry to the user's equipment; `demo` picks the 2D technique animation;
+   `muscles` drives the body map.
    =========================================================================== */
 
 import type { EquipmentId, EnvId, Profile } from "./onboarding";
@@ -107,7 +108,25 @@ export type DemoPreset =
   | "bearcrawl"
   | "inchworm"
   /* mobility */
-  | "armcircle";
+  | "armcircle"
+  /* gym */
+  | "benchpress"
+  | "barbellsquat"
+  | "deadlift"
+  | "overheadpress"
+  | "barbellrow"
+  | "pullup"
+  | "kneeraise"
+  | "dbpress"
+  | "curl"
+  | "latraise"
+  | "dbrow"
+  | "gobletsquat"
+  | "kbswing"
+  | "heavybag"
+  | "speedbag"
+  | "jumprope"
+  | "farmercarry";
 
 export interface I18nText {
   en: string;
@@ -143,6 +162,7 @@ function ex(
   demo: DemoPreset,
   kcal10min: number,
   workSec: number,
+  requires: Requirement[] = [],
 ): Exercise {
   return {
     id,
@@ -151,7 +171,7 @@ function ex(
     steps: { en: stepsEn, ru: stepsRu },
     bodyPart,
     muscles,
-    requires: [],
+    requires,
     level,
     dose: { en: dose[0], ru: dose[1] },
     demo,
@@ -1775,6 +1795,476 @@ export const EXERCISES: Exercise[] = [
     "inchworm",
     70,
     45,
+  ),
+
+  /* ------------------------- gym (boxing-relevant) ----------------------- */
+  ex(
+    "heavy-bag-combos",
+    ["Heavy Bag Combos", "Комбинации на мешке"],
+    [
+      "Put your punches together with real resistance. Power meets rhythm.",
+      "Собери удары в связки с реальным сопротивлением. Сила встречает ритм.",
+    ],
+    [
+      "Start with 1-2 (jab–cross), add the hook: 1-2-3",
+      "Move around the bag between combos",
+      "Hit through the bag, don't push it",
+    ],
+    [
+      "Начни с «раз-два», добавь хук: 1-2-3",
+      "Двигайся вокруг мешка между связками",
+      "Бей сквозь мешок, а не толкай его",
+    ],
+    "technique",
+    ["shoulders", "triceps", "obliques", "abs"],
+    2,
+    ["4 rounds × 3 min", "4 раунда × 3 мин"],
+    "heavybag",
+    130,
+    180,
+    ["heavybag"],
+  ),
+  ex(
+    "speed-bag",
+    ["Speed Bag", "Пневмогруша"],
+    [
+      "Rhythm, hand speed and shoulder endurance — the classic gym soundtrack.",
+      "Ритм, скорость рук и выносливость плеч — классический саундтрек зала.",
+    ],
+    [
+      "Bag at eye level, elbows high",
+      "Small circular strikes with the side of the fist",
+      "Find the 1-2-3 rebound rhythm before speeding up",
+    ],
+    [
+      "Груша на уровне глаз, локти высоко",
+      "Маленькие круговые удары ребром кулака",
+      "Поймай ритм отскока на 1-2-3, потом ускоряйся",
+    ],
+    "technique",
+    ["shoulders", "forearms", "triceps"],
+    2,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "speedbag",
+    80,
+    120,
+    ["speedbag"],
+  ),
+  ex(
+    "jump-rope",
+    ["Jump Rope", "Скакалка"],
+    [
+      "The boxer's engine builder — footwork, rhythm and lungs in one tool.",
+      "Движок боксёра — работа ног, ритм и дыхалка в одном инструменте.",
+    ],
+    [
+      "Elbows in, wrists spin the rope — not the arms",
+      "Jump just high enough to clear the rope",
+      "Stay on the balls of your feet",
+    ],
+    [
+      "Локти прижаты, крутят кисти — не руки",
+      "Прыгай ровно настолько, чтобы пропустить трос",
+      "Оставайся на носках",
+    ],
+    "fullbody",
+    ["calves", "shoulders", "forearms"],
+    1,
+    ["3 rounds × 3 min", "3 раунда × 3 мин"],
+    "jumprope",
+    120,
+    180,
+    ["jumprope"],
+  ),
+  ex(
+    "double-unders",
+    ["Double Unders", "Двойные прыжки"],
+    [
+      "Two rope turns per jump — elite timing and a furious engine.",
+      "Два оборота троса за прыжок — элитный тайминг и бешеная дыхалка.",
+    ],
+    [
+      "Jump slightly higher than a regular skip",
+      "Spin the wrists twice per jump — fast, small circles",
+      "Stay tall, land on the balls of the feet",
+    ],
+    [
+      "Прыгай чуть выше обычного",
+      "Два быстрых маленьких оборота кистями за прыжок",
+      "Держись ровно, приземляйся на носки",
+    ],
+    "fullbody",
+    ["calves", "forearms", "shoulders", "abs"],
+    3,
+    ["5 × 20 reps", "5 × 20 повторений"],
+    "jumprope",
+    150,
+    40,
+    ["jumprope"],
+  ),
+  ex(
+    "pullups",
+    ["Pull-Up", "Подтягивания"],
+    [
+      "The king of back builders — clinch strength and posture in one move.",
+      "Король упражнений на спину — сила в клинче и осанка в одном движении.",
+    ],
+    [
+      "Grip slightly wider than shoulders",
+      "Pull the chest to the bar, elbows down",
+      "Lower fully under control",
+    ],
+    [
+      "Хват чуть шире плеч",
+      "Тяни грудь к перекладине, локти вниз",
+      "Полностью и подконтрольно опустись",
+    ],
+    "back",
+    ["lats", "biceps", "forearms", "traps"],
+    2,
+    ["4 × 5–12 reps", "4 × 5–12 повторений"],
+    "pullup",
+    85,
+    40,
+    ["pullupbar"],
+  ),
+  ex(
+    "hanging-knee-raise",
+    ["Hanging Knee Raise", "Подъём коленей в висе"],
+    [
+      "Lower abs and grip — armor and clinch control together.",
+      "Нижний пресс и хват — броня и контроль в клинче вместе.",
+    ],
+    [
+      "Dead hang, shoulders active",
+      "Raise knees to chest without swinging",
+      "Lower slow, keep tension",
+    ],
+    [
+      "Вис на прямых руках, плечи в тонусе",
+      "Подними колени к груди без раскачки",
+      "Опускай медленно, держи напряжение",
+    ],
+    "core",
+    ["abs", "forearms", "obliques"],
+    2,
+    ["3 × 10–15 reps", "3 × 10–15 повторений"],
+    "kneeraise",
+    60,
+    40,
+    ["pullupbar"],
+  ),
+  ex(
+    "bench-press",
+    ["Bench Press", "Жим лёжа"],
+    [
+      "Raw pressing power for the whole punching chain.",
+      "Чистая жимовая сила для всей ударной цепи.",
+    ],
+    [
+      "Shoulder blades pinned, feet planted",
+      "Lower the bar to mid-chest",
+      "Press up and slightly back, elbows ~45°",
+    ],
+    [
+      "Лопатки сведены, стопы упёрты",
+      "Опусти гриф к середине груди",
+      "Жми вверх и чуть назад, локти ~45°",
+    ],
+    "chest",
+    ["chest", "triceps", "shoulders"],
+    2,
+    ["4 × 6–10 reps", "4 × 6–10 повторений"],
+    "benchpress",
+    70,
+    50,
+    ["barbell", "bench"],
+  ),
+  ex(
+    "barbell-squat",
+    ["Barbell Squat", "Присед со штангой"],
+    [
+      "The king of leg strength — loaded power from the ground up.",
+      "Король силы ног — нагруженная мощь от самого пола.",
+    ],
+    [
+      "Bar on the upper back, core braced",
+      "Sit down between the knees to parallel",
+      "Drive up through the whole foot",
+    ],
+    [
+      "Гриф на верхе спины, кор напряжён",
+      "Садись между коленей до параллели",
+      "Вставай, давя всей стопой",
+    ],
+    "legs",
+    ["quads", "glutes", "hamstrings", "lowerback"],
+    2,
+    ["5 × 5–8 reps", "5 × 5–8 повторений"],
+    "barbellsquat",
+    95,
+    50,
+    ["barbell"],
+  ),
+  ex(
+    "deadlifts",
+    ["Deadlift", "Становая тяга"],
+    [
+      "The whole posterior chain in one lift — raw fight-ending strength.",
+      "Вся задняя цепь в одном движении — грубая, завершающая бой сила.",
+    ],
+    [
+      "Bar over mid-foot, flat back, chest up",
+      "Push the floor away, bar close to the legs",
+      "Lock out tall — don't lean back",
+    ],
+    [
+      "Гриф над серединой стопы, спина ровная, грудь вверх",
+      "Отталкивай пол, гриф идёт вдоль ног",
+      "Выпрямись полностью — не отклоняйся назад",
+    ],
+    "back",
+    ["hamstrings", "glutes", "lowerback", "traps", "forearms"],
+    3,
+    ["5 × 5 reps", "5 × 5 повторений"],
+    "deadlift",
+    90,
+    50,
+    ["barbell"],
+  ),
+  ex(
+    "overhead-press",
+    ["Overhead Press", "Жим штанги стоя"],
+    [
+      "Strong shoulders keep the guard high in round twelve.",
+      "Сильные плечи держат защиту высоко и в двенадцатом раунде.",
+    ],
+    [
+      "Bar at the collarbone, core and glutes braced",
+      "Press straight up until arms lock",
+      "Lower with control back to the rack position",
+    ],
+    [
+      "Гриф на ключицах, кор и ягодицы напряжены",
+      "Выжми строго вверх до выпрямления",
+      "Подконтрольно опусти обратно",
+    ],
+    "shoulders",
+    ["shoulders", "triceps", "traps"],
+    2,
+    ["4 × 6–10 reps", "4 × 6–10 повторений"],
+    "overheadpress",
+    65,
+    50,
+    ["barbell"],
+  ),
+  ex(
+    "barbell-row",
+    ["Barbell Row", "Тяга штанги в наклоне"],
+    [
+      "Pulling strength balances all that punching — healthy shoulders, big back.",
+      "Тяговая сила уравновешивает удары — здоровые плечи, мощная спина.",
+    ],
+    [
+      "Hinge to ~45°, flat back, bar hanging long",
+      "Pull the bar to the lower ribs, elbows close",
+      "Lower long and controlled — no jerking",
+    ],
+    [
+      "Наклон ~45°, спина ровная, гриф висит на прямых руках",
+      "Тяни гриф к нижним рёбрам, локти вдоль корпуса",
+      "Опускай длинно и подконтрольно — без рывков",
+    ],
+    "back",
+    ["lats", "biceps", "traps", "lowerback"],
+    2,
+    ["4 × 8–10 reps", "4 × 8–10 повторений"],
+    "barbellrow",
+    75,
+    50,
+    ["barbell"],
+  ),
+  ex(
+    "db-shoulder-press",
+    ["Dumbbell Shoulder Press", "Жим гантелей стоя"],
+    [
+      "Overhead pressing with free balance — guard endurance in the bank.",
+      "Жим над головой со свободным балансом — запас прочности для защиты.",
+    ],
+    [
+      "Dumbbells at shoulder height, core braced",
+      "Press straight up until arms lock",
+      "Lower with control to the ears",
+    ],
+    [
+      "Гантели на уровне плеч, кор напряжён",
+      "Выжми строго вверх до выпрямления",
+      "Подконтрольно опусти к ушам",
+    ],
+    "shoulders",
+    ["shoulders", "triceps", "traps"],
+    1,
+    ["4 × 8–12 reps", "4 × 8–12 повторений"],
+    "dbpress",
+    65,
+    45,
+    ["dumbbells"],
+  ),
+  ex(
+    "db-curl",
+    ["Dumbbell Curl", "Сгибания с гантелями"],
+    [
+      "Biceps assist every pull, clinch and guard — keep them honest.",
+      "Бицепс работает в каждой тяге, клинче и защите — не запускай его.",
+    ],
+    [
+      "Elbows pinned to the ribs",
+      "Curl without swinging the torso",
+      "Lower slow — the negative builds most",
+    ],
+    [
+      "Локти прижаты к рёбрам",
+      "Сгибай руки без раскачки корпуса",
+      "Опускай медленно — негатив строит больше всего",
+    ],
+    "arms",
+    ["biceps", "forearms"],
+    1,
+    ["3 × 10–15 reps", "3 × 10–15 повторений"],
+    "curl",
+    50,
+    45,
+    ["dumbbells"],
+  ),
+  ex(
+    "lateral-raise",
+    ["Lateral Raise", "Махи гантелями"],
+    [
+      "Wide shoulders that carry a long guard deep into the fight.",
+      "Широкие плечи, которые держат защиту до конца боя.",
+    ],
+    [
+      "Dumbbells at your sides, slight elbow bend",
+      "Raise to shoulder height, lead with the elbows",
+      "Lower slower than you lifted",
+    ],
+    [
+      "Гантели по бокам, локти слегка согнуты",
+      "Подними до уровня плеч, веди локтями",
+      "Опускай медленнее, чем поднимал",
+    ],
+    "shoulders",
+    ["shoulders", "traps"],
+    1,
+    ["3 × 12–15 reps", "3 × 12–15 повторений"],
+    "latraise",
+    50,
+    45,
+    ["dumbbells"],
+  ),
+  ex(
+    "db-row",
+    ["One-Arm Dumbbell Row", "Тяга гантели в наклоне"],
+    [
+      "Single-side pulling — a balanced back behind every punch you take back.",
+      "Тяга одной рукой — сбалансированная спина за каждым ответным ударом.",
+    ],
+    [
+      "One hand braced on a bench, flat back",
+      "Pull the dumbbell to your hip, elbow close",
+      "Lower long and controlled",
+    ],
+    [
+      "Одна рука на скамье, спина ровная",
+      "Тяни гантель к бедру, локоть вдоль корпуса",
+      "Опускай длинно и подконтрольно",
+    ],
+    "back",
+    ["lats", "biceps", "traps", "forearms"],
+    1,
+    ["4 × 10 / arm", "4 × 10 на руку"],
+    "dbrow",
+    70,
+    50,
+    ["dumbbells"],
+  ),
+  ex(
+    "goblet-squat",
+    ["Goblet Squat", "Гоблет-присед"],
+    [
+      "Loaded legs with built-in posture coaching from the front-held weight.",
+      "Присед с весом у груди — нагрузка на ноги и осанка в комплекте.",
+    ],
+    [
+      "Hold a dumbbell or kettlebell at your chest",
+      "Squat between your knees, elbows inside",
+      "Drive up, keep the chest proud",
+    ],
+    [
+      "Держи гантель или гирю у груди",
+      "Приседай между коленей, локти внутри",
+      "Вставай мощно, грудь развёрнута",
+    ],
+    "legs",
+    ["quads", "glutes", "abs"],
+    1,
+    ["4 × 10–12 reps", "4 × 10–12 повторений"],
+    "gobletsquat",
+    85,
+    50,
+    ["kettlebell", "dumbbells"],
+  ),
+  ex(
+    "kb-swing",
+    ["Kettlebell Swing", "Махи гирей"],
+    [
+      "Explosive hips — the same snap that ends fights.",
+      "Взрывные бёдра — тот же щелчок, что заканчивает бои.",
+    ],
+    [
+      "Hinge at the hips, kettlebell between knees",
+      "Snap the hips forward — the bell floats to chest height",
+      "Let it swing back, don't squat it",
+    ],
+    [
+      "Наклон в тазобедренных, гиря между коленей",
+      "Резко выпрями таз — гиря взлетает до груди",
+      "Дай ей уйти назад, это не присед",
+    ],
+    "fullbody",
+    ["glutes", "hamstrings", "lowerback", "shoulders"],
+    2,
+    ["5 × 15 reps", "5 × 15 повторений"],
+    "kbswing",
+    120,
+    40,
+    ["kettlebell"],
+  ),
+  ex(
+    "farmer-carry",
+    ["Farmer Carry", "Прогулка фермера"],
+    [
+      "Old-school grit — grip, traps and a core that transfers straight to the clinch.",
+      "Старая школа — хват, трапеции и кор, которые напрямую переносятся в клинч.",
+    ],
+    [
+      "Heavy weight in each hand, shoulders back",
+      "Walk tall with short, quick steps",
+      "Don't let the weights pull you sideways",
+    ],
+    [
+      "Тяжёлый вес в каждой руке, плечи назад",
+      "Иди с прямой осанкой короткими быстрыми шагами",
+      "Не давай весу утянуть тебя вбок",
+    ],
+    "fullbody",
+    ["forearms", "traps", "abs", "quads"],
+    2,
+    ["5 × 20–40 m", "5 × 20–40 м"],
+    "farmercarry",
+    100,
+    60,
+    ["dumbbells", "kettlebell", "oddobjects"],
   ),
 ];
 

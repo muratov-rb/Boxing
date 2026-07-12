@@ -422,6 +422,20 @@ export function clearPlan(): void {
   write(K_SUB, { ...readSub(), plan: null });
 }
 
+/** Snapshot for syncing to the server (plan null = still on the trial clock). */
+export function exportSubState(): { plan: PaidPlanId | null; trialStart: string } {
+  const s = readSub();
+  return { plan: s.plan, trialStart: s.trialStart };
+}
+
+/** Server row wins over local state (admin changes propagate this way).
+    Server plan 'trial'/'expired' means "no paid plan — run on the trial clock". */
+export function applyServerSub(plan: string, trialStart: string): void {
+  const paid: PaidPlanId | null =
+    plan === "budget" || plan === "pro" || plan === "max" ? plan : null;
+  write(K_SUB, { plan: paid, trialStart: trialStart || todayKey() });
+}
+
 export function entitlements(): Entitlements {
   return entitlementsFor(activePlan());
 }

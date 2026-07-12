@@ -23,7 +23,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "@/components/lessons/BodyMap";
-import { Exercise3D } from "@/components/lessons/Exercise3D";
+import { Exercise2D } from "@/components/lessons/Exercise2D";
 
 /* ===========================================================================
    TrainClient — the guided session player.
@@ -334,7 +334,7 @@ export function TrainClient() {
             <div className="mt-6 grid gap-4 sm:grid-cols-5">
               <div className="min-w-0 sm:col-span-3">
                 <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
-                  <Exercise3D preset={shown.demo} className="h-64 w-full sm:h-80" />
+                  <Exercise2D preset={shown.demo} className="h-64 w-full sm:h-80" />
                 </div>
               </div>
               <div className="sm:col-span-2">
