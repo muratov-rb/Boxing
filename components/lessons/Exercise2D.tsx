@@ -852,6 +852,49 @@ function fk(p: Pose): Joints {
   };
 }
 
+/* ------------------------- motion-path precompute ------------------------ */
+/* The single biggest readability aid: show the trajectory of the part that
+   moves the most (hand, foot or hip) as a dashed path with a direction
+   arrow — exactly how classic exercise diagrams communicate a movement. */
+
+type EffectorKey = "handF" | "toeF" | "hip" | "headC" | "shoulder";
+
+interface MotionPath {
+  pts: [number, number][]; // sampled loop of the chosen effector
+  key: EffectorKey | null;
+}
+
+const PATH_SAMPLES = 56;
+
+function computeMotionPath(def: PresetDef): MotionPath {
+  const keys: EffectorKey[] = ["handF", "toeF", "hip", "headC", "shoulder"];
+  const tracks: Record<EffectorKey, [number, number][]> = {
+    handF: [], toeF: [], hip: [], headC: [], shoulder: [],
+  };
+  for (let i = 0; i <= PATH_SAMPLES; i++) {
+    const j = fk(poseAt(def, (i / PATH_SAMPLES) * def.dur));
+    keys.forEach((k) => tracks[k].push(j[k]));
+  }
+  let best: EffectorKey | null = null;
+  let bestTravel = 0;
+  keys.forEach((k) => {
+    let travel = 0;
+    const pts = tracks[k];
+    for (let i = 1; i < pts.length; i++) {
+      travel += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    }
+    /* prefer hands/feet over trunk points when travel is comparable */
+    const weighted = k === "hip" || k === "headC" || k === "shoulder" ? travel * 0.6 : travel;
+    if (weighted > bestTravel) {
+      bestTravel = weighted;
+      best = k;
+    }
+  });
+  /* static holds (plank, wall sit…) don't need an arrow */
+  if (bestTravel < 0.15) return { pts: [], key: null };
+  return { pts: best ? tracks[best] : [], key: best };
+}
+
 /* --------------------------------- component ----------------------------- */
 
 export function Exercise2D({
@@ -889,25 +932,27 @@ export function Exercise2D({
     ro.observe(host);
 
     /* theme colours, re-read periodically so a theme flip updates the figure */
-    let cNear = "#1f242e", cFar = "rgba(31,36,46,0.35)", cAccent = "#e30f2a", cProp = "#8a93a3";
+    let cNear = "#1f242e", cAccent = "#e30f2a", cProp = "#8a93a3";
     let paletteTick = 0;
     const readPalette = () => {
       const cs = getComputedStyle(host);
       const bone = cs.getPropertyValue("--color-bone").trim();
       const blood = cs.getPropertyValue("--color-blood").trim();
       const ash = cs.getPropertyValue("--color-ash").trim();
-      if (bone) { cNear = bone; cFar = bone; }
+      if (bone) cNear = bone;
       if (blood) cAccent = blood;
       if (ash) cProp = ash;
     };
     readPalette();
 
-    /* world→screen: figure area ~2.3 units wide, floor near the bottom */
+    /* world→screen. The figure is ~1.05 units tall, so frame ~1.5 units of
+       height and ~2 of width — the athlete fills the canvas instead of
+       floating in empty space. */
+    const S = () => Math.min(w / 2.05, h / 1.5);
     const toPx = (pt: [number, number]): [number, number] => {
-      const scale = Math.min(w / 2.5, h / 2.1);
-      return [w / 2 + pt[0] * scale, h * 0.86 - pt[1] * scale];
+      const s = S();
+      return [w / 2 + pt[0] * s, h * 0.9 - pt[1] * s];
     };
-    const S = () => Math.min(w / 2.5, h / 2.1);
 
     const line = (a: [number, number], b: [number, number], width: number, color: string, alpha = 1) => {
       const [x1, y1] = toPx(a);
@@ -932,24 +977,25 @@ export function Exercise2D({
       ctx.globalAlpha = 1;
     };
 
+    /* limbs: near side solid, far side clearly lighter + thinner so the two
+       sides never read as one tangled shape */
     const drawLimbArm = (sh: [number, number], el: [number, number], hd: [number, number], near: boolean, gloves?: boolean) => {
-      const color = cNear;
-      const alpha = near ? 1 : 0.38;
-      line(sh, el, 0.075, color, alpha);
-      line(el, hd, 0.065, color, alpha);
-      circle(hd, gloves ? 0.055 : 0.034, gloves ? cAccent : color, alpha);
+      const alpha = near ? 1 : 0.28;
+      line(sh, el, near ? 0.08 : 0.065, cNear, alpha);
+      line(el, hd, near ? 0.068 : 0.055, cNear, alpha);
+      circle(hd, gloves ? 0.06 : 0.036, gloves ? cAccent : cNear, near ? 1 : 0.35);
     };
     const drawLimbLeg = (hip: [number, number], kn: [number, number], an: [number, number], toe: [number, number], near: boolean) => {
-      const alpha = near ? 1 : 0.38;
-      line(hip, kn, 0.085, cNear, alpha);
-      line(kn, an, 0.07, cNear, alpha);
-      line(an, toe, 0.06, cNear, alpha);
+      const alpha = near ? 1 : 0.28;
+      line(hip, kn, near ? 0.09 : 0.075, cNear, alpha);
+      line(kn, an, near ? 0.075 : 0.062, cNear, alpha);
+      line(an, toe, near ? 0.065 : 0.055, cNear, alpha);
     };
 
-    const drawProps = (props: Props | undefined, j: Joints, t: number, behind: boolean) => {
+    const drawProps = (props: Props | undefined, j: Joints, t: number, dur: number, behind: boolean) => {
       if (!props) return;
       if (behind) {
-        if (props.wall !== undefined) line([props.wall, 0], [props.wall, 1.95], 0.03, cProp, 0.45);
+        if (props.wall !== undefined) line([props.wall, 0], [props.wall, 1.2], 0.032, cProp, 0.45);
         if (props.box) {
           const [cx, bh] = props.box;
           const [x1, y1] = toPx([cx - 0.19, bh]);
@@ -966,66 +1012,125 @@ export function Exercise2D({
           line([cx + bw / 2 - 0.08, 0.38], [cx + bw / 2 - 0.08, 0], 0.035, cProp, 0.5);
         }
         if (props.pullbar) {
-          line([-0.6, 1.92], [0.6, 1.92], 0.035, cProp, 0.6);
-          line([-0.6, 1.92], [-0.6, 2.05], 0.03, cProp, 0.4);
-          line([0.6, 1.92], [0.6, 2.05], 0.03, cProp, 0.4);
+          /* within reach of the hanging figure (hands hang at ~1.28) */
+          line([-0.55, 1.3], [0.55, 1.3], 0.035, cProp, 0.65);
+          line([-0.55, 1.3], [-0.55, 1.42], 0.03, cProp, 0.4);
+          line([0.55, 1.3], [0.55, 1.42], 0.03, cProp, 0.4);
         }
         if (props.bag) {
-          line([0.62, 1.98], [0.62, 1.62], 0.015, cProp, 0.6);
-          const [bx, by] = toPx([0.62, 1.13]);
+          line([0.6, 1.34], [0.6, 1.06], 0.015, cProp, 0.6);
+          const [bx, by] = toPx([0.6, 0.78]);
           ctx.globalAlpha = 0.85;
           ctx.fillStyle = cAccent;
           ctx.beginPath();
-          const rw = 0.15 * S(), rh = 0.5 * S();
+          const rw = 0.13 * S(), rh = 0.3 * S();
           ctx.roundRect(bx - rw, by - rh, rw * 2, rh * 2, rw);
           ctx.fill();
           ctx.globalAlpha = 1;
         }
         if (props.speedbag) {
-          line([0.18, 1.66], [0.52, 1.66], 0.03, cProp, 0.6);
-          circle([0.36, 1.52], 0.085, cAccent, 0.9);
-          line([0.36, 1.66], [0.36, 1.6], 0.02, cProp, 0.7);
+          line([0.2, 1.06], [0.54, 1.06], 0.03, cProp, 0.6);
+          line([0.37, 1.06], [0.37, 1.0], 0.02, cProp, 0.7);
+          circle([0.37, 0.93], 0.075, cAccent, 0.9);
         }
-        if (props.rope) {
-          /* rope swings around the body through the hands */
-          const phase = (t / 0.55) * Math.PI * 2;
-          const swing = Math.sin(phase);
-          const mid: [number, number] = [(j.handF[0] + j.handB[0]) / 2, (j.handF[1] + j.handB[1]) / 2];
-          const [hx, hy] = toPx(j.handF);
-          const [, cyTop] = toPx([mid[0], swing > 0 ? -0.12 : 2.0]);
-          ctx.globalAlpha = 0.55;
+      }
+
+      /* the rope alternates: behind the body going overhead, in front when
+         it passes under the feet */
+      if (props.rope) {
+        const phase = (t / dur) * Math.PI * 2;
+        const swing = Math.sin(phase);
+        const inFront = swing > 0;
+        if (inFront !== behind) {
+          const midX = (j.handF[0] + j.handB[0]) / 2;
+          const midY = (j.handF[1] + j.handB[1]) / 2;
+          const ctrlY = midY + (inFront ? -1 : 1) * (0.55 + 0.75 * Math.abs(swing));
+          const [ax, ay] = toPx([j.handB[0] - 0.02, j.handB[1]]);
+          const [bx2, by2] = toPx([j.handF[0] + 0.02, j.handF[1]]);
+          const [cx2, cy2] = toPx([midX, ctrlY]);
+          ctx.globalAlpha = 0.5;
           ctx.strokeStyle = cProp;
           ctx.lineWidth = 0.016 * S();
           ctx.beginPath();
-          ctx.moveTo(hx - 0.06 * S(), hy);
-          ctx.quadraticCurveTo(toPx(mid)[0] - 0.9 * S() * Math.abs(swing) * 0 + (toPx(mid)[0] - toPx(mid)[0]), cyTop, hx + 0.12 * S(), hy);
+          ctx.moveTo(ax, ay);
+          ctx.quadraticCurveTo(cx2, cy2, bx2, by2);
           ctx.stroke();
           ctx.globalAlpha = 1;
         }
-      } else {
+      }
+
+      if (!behind) {
         if (props.barbell) {
           const c = j.handF;
           line([c[0] - 0.3, c[1]], [c[0] + 0.3, c[1]], 0.03, cProp, 0.9);
-          circle([c[0], c[1]], 0.115, cNear, 0.9, false);
-          circle([c[0], c[1]], 0.115, cProp, 0.25);
+          circle([c[0], c[1]], 0.105, cNear, 0.9, false);
+          circle([c[0], c[1]], 0.105, cProp, 0.25);
         }
         if (props.dumbbells) {
           for (const hnd of [j.handB, j.handF]) {
-            line([hnd[0] - 0.09, hnd[1]], [hnd[0] + 0.09, hnd[1]], 0.026, cProp, 0.95);
-            circle([hnd[0] - 0.09, hnd[1]], 0.045, cNear, 0.9);
-            circle([hnd[0] + 0.09, hnd[1]], 0.045, cNear, 0.9);
+            line([hnd[0] - 0.08, hnd[1]], [hnd[0] + 0.08, hnd[1]], 0.026, cProp, 0.95);
+            circle([hnd[0] - 0.08, hnd[1]], 0.042, cNear, 0.9);
+            circle([hnd[0] + 0.08, hnd[1]], 0.042, cNear, 0.9);
           }
         }
         if (props.kettlebell) {
           const c: [number, number] = [(j.handF[0] + j.handB[0]) / 2, (j.handF[1] + j.handB[1]) / 2];
-          circle([c[0], c[1] - 0.11], 0.085, cNear, 0.95);
+          circle([c[0], c[1] - 0.1], 0.08, cNear, 0.95);
           const [x, y] = toPx(c);
           ctx.strokeStyle = cNear;
           ctx.lineWidth = 0.022 * S();
           ctx.beginPath();
-          ctx.arc(x, y - 0.02 * S(), 0.06 * S(), Math.PI, 0, false);
+          ctx.arc(x, y - 0.02 * S(), 0.055 * S(), Math.PI, 0, false);
           ctx.stroke();
         }
+      }
+    };
+
+    /* dashed movement path + travelling arrowhead for the busiest effector */
+    let pathCacheKey: DemoPreset | null = null;
+    let path: MotionPath = { pts: [], key: null };
+
+    const drawMotionPath = (def: PresetDef, t: number, j: Joints) => {
+      if (pathCacheKey !== presetRef.current) {
+        pathCacheKey = presetRef.current;
+        path = computeMotionPath(def);
+      }
+      if (!path.key || path.pts.length === 0) return;
+
+      /* the loop trajectory */
+      ctx.globalAlpha = 0.4;
+      ctx.strokeStyle = cAccent;
+      ctx.lineWidth = Math.max(1.5, 0.014 * S());
+      ctx.setLineDash([0.035 * S(), 0.045 * S()]);
+      ctx.beginPath();
+      const [mx, my] = toPx(path.pts[0]);
+      ctx.moveTo(mx, my);
+      for (let i = 1; i < path.pts.length; i++) {
+        const [x, y] = toPx(path.pts[i]);
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+
+      /* arrowhead at the effector, pointing along its velocity */
+      const cur = j[path.key];
+      const ahead = fk(poseAt(def, t + def.dur * 0.03))[path.key];
+      const vx = ahead[0] - cur[0];
+      const vy = ahead[1] - cur[1];
+      if (Math.hypot(vx, vy) > 0.004) {
+        const ang = Math.atan2(-vy, vx); // screen-space angle (y flipped)
+        const [px, py] = toPx(cur);
+        const r = 0.07 * S();
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = cAccent;
+        ctx.beginPath();
+        ctx.moveTo(px + Math.cos(ang) * r * 1.7, py + Math.sin(ang) * r * 1.7);
+        ctx.lineTo(px + Math.cos(ang + 2.6) * r, py + Math.sin(ang + 2.6) * r);
+        ctx.lineTo(px + Math.cos(ang - 2.6) * r, py + Math.sin(ang - 2.6) * r);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
       }
     };
 
@@ -1042,31 +1147,50 @@ export function Exercise2D({
       ctx.clearRect(0, 0, w, h);
 
       /* floor + soft ground shadow */
-      line([-1.15, 0], [1.15, 0], 0.018, cProp, 0.5);
+      line([-1.02, 0], [1.02, 0], 0.016, cProp, 0.55);
       const [sx, sy] = toPx([pose.x, 0]);
       ctx.globalAlpha = 0.1;
       ctx.fillStyle = cNear;
       ctx.beginPath();
-      ctx.ellipse(sx, sy, 0.42 * S(), 0.05 * S(), 0, 0, Math.PI * 2);
+      ctx.ellipse(sx, sy, 0.4 * S(), 0.045 * S(), 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1;
 
-      drawProps(def.props, j, t, true);
+      drawProps(def.props, j, t, def.dur, true);
+
+      /* movement trajectory behind the figure */
+      drawMotionPath(def, t, j);
 
       /* far limbs */
       drawLimbArm(j.shoulder, j.elbowB, j.handB, false, def.props?.gloves);
       drawLimbLeg(j.hip, j.kneeB, j.ankleB, j.toeB, false);
 
-      /* torso + head */
-      line(j.hip, j.shoulder, 0.115, cNear);
-      circle(j.hip, 0.055, cNear);
+      /* torso: pelvis + trunk + shoulder cap */
+      circle(j.hip, 0.07, cNear);
+      line(j.hip, j.shoulder, 0.125, cNear);
+      circle(j.shoulder, 0.062, cNear);
+
+      /* head with a nose wedge so the facing direction is obvious */
       circle(j.headC, L.headR, cNear);
+      {
+        const faceAng = pose.body + pose.torso + pose.head + 90;
+        const [fx, fy] = dir(faceAng);
+        const noseBase: [number, number] = [
+          j.headC[0] + fx * L.headR * 0.82,
+          j.headC[1] + fy * L.headR * 0.82,
+        ];
+        const noseTip: [number, number] = [
+          j.headC[0] + fx * L.headR * 1.3,
+          j.headC[1] + fy * L.headR * 1.3,
+        ];
+        line(noseBase, noseTip, 0.05, cNear);
+      }
 
       /* near limbs */
       drawLimbLeg(j.hip, j.kneeF, j.ankleF, j.toeF, true);
       drawLimbArm(j.shoulder, j.elbowF, j.handF, true, def.props?.gloves);
 
-      drawProps(def.props, j, t, false);
+      drawProps(def.props, j, t, def.dur, false);
 
       raf = requestAnimationFrame(tick);
     };
