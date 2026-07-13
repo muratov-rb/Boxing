@@ -51,6 +51,10 @@ interface PresetDef {
   dur: number; // seconds per loop
   frames: Frame[];
   props?: Props;
+  /** Pin these effectors to their phase-0 position (feet stay glued to the
+      floor in squats/hinges, hands stay on the pull-up bar). Fixes the
+      "sliding feet" artifact of pure joint-angle animation. */
+  plant?: "both" | "F" | "B" | "hands";
 }
 
 const BASE: Pose = {
@@ -151,17 +155,17 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
   pushup: {
     dur: 2.2,
     frames: [
-      { t: 0, body: 88, y: 0.36, torso: 0, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
-      { t: 0.5, body: 88, y: 0.22, shF: 48, elF: 96, shB: 48, elB: 96, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
-      { t: 1, body: 88, y: 0.36, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
+      { t: 0, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.5, body: 84, y: 0.19, shF: 46, elF: 98, shB: 46, elB: 98, hipF: 16, knF: 4, hipB: 16, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 1, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
     ],
   },
   kneepushup: {
     dur: 2.2,
     frames: [
-      { t: 0, body: 72, y: 0.34, shF: 88, elF: 10, shB: 88, elB: 10, hipF: 10, knF: 96, hipB: 10, knB: 96, head: -12 },
-      { t: 0.5, body: 78, y: 0.24, shF: 50, elF: 92, shB: 50, elB: 92, hipF: 10, knF: 96, hipB: 10, knB: 96, head: -12 },
-      { t: 1, body: 72, y: 0.34, shF: 88, elF: 10, shB: 88, elB: 10, hipF: 10, knF: 96, hipB: 10, knB: 96, head: -12 },
+      { t: 0, body: 75, y: 0.3, shF: 92, elF: 8, shB: 92, elB: 8, hipF: 38, knF: 122, hipB: 38, knB: 122, head: -8 },
+      { t: 0.5, body: 78, y: 0.21, shF: 50, elF: 96, shB: 50, elB: 96, hipF: 34, knF: 122, hipB: 34, knB: 122, head: -8 },
+      { t: 1, body: 75, y: 0.3, shF: 92, elF: 8, shB: 92, elB: 8, hipF: 38, knF: 122, hipB: 38, knB: 122, head: -8 },
     ],
   },
   wallpushup: {
@@ -175,62 +179,62 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
   inclinepushup: {
     dur: 2.2, props: { box: [0.48, 0.38] },
     frames: [
-      { t: 0, body: 58, y: 0.44, shF: 86, elF: 8, shB: 86, elB: 8, hipF: -4, hipB: -4, head: -10 },
-      { t: 0.5, body: 64, y: 0.36, shF: 56, elF: 78, shB: 56, elB: 78, hipF: -4, hipB: -4, head: -10 },
-      { t: 1, body: 58, y: 0.44, shF: 86, elF: 8, shB: 86, elB: 8, hipF: -4, hipB: -4, head: -10 },
+      { t: 0, body: 55, y: 0.38, shF: 107, elF: 55, shB: 107, elB: 55, hipF: 13, knF: 3, hipB: 13, knB: 3, ankF: -40, ankB: -40, head: -8 },
+      { t: 0.5, body: 60, y: 0.33, shF: 82, elF: 95, shB: 82, elB: 95, hipF: 11, knF: 3, hipB: 11, knB: 3, ankF: -40, ankB: -40, head: -8 },
+      { t: 1, body: 55, y: 0.38, shF: 107, elF: 55, shB: 107, elB: 55, hipF: 13, knF: 3, hipB: 13, knB: 3, ankF: -40, ankB: -40, head: -8 },
     ],
   },
   declinepushup: {
     dur: 2.2, props: { box: [-0.62, 0.38] },
     frames: [
-      { t: 0, body: 94, y: 0.42, shF: 92, elF: 8, shB: 92, elB: 8, hipF: -20, hipB: -20, head: -14 },
-      { t: 0.5, body: 96, y: 0.28, shF: 52, elF: 96, shB: 52, elB: 96, hipF: -22, hipB: -22, head: -14 },
-      { t: 1, body: 94, y: 0.42, shF: 92, elF: 8, shB: 92, elB: 8, hipF: -20, hipB: -20, head: -14 },
+      { t: 0, body: 92, y: 0.34, shF: 88, elF: 8, shB: 88, elB: 8, hipF: -12, knF: 4, hipB: -12, knB: 4, head: -10 },
+      { t: 0.5, body: 94, y: 0.26, shF: 48, elF: 96, shB: 48, elB: 96, hipF: -14, knF: 4, hipB: -14, knB: 4, head: -10 },
+      { t: 1, body: 92, y: 0.34, shF: 88, elF: 8, shB: 88, elB: 8, hipF: -12, knF: 4, hipB: -12, knB: 4, head: -10 },
     ],
   },
   archerpushup: {
     dur: 4.4,
     frames: [
-      { t: 0, body: 88, y: 0.34, shF: 90, elF: 8, shB: 95, elB: 4, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
-      { t: 0.25, body: 88, y: 0.24, x: 0.07, shF: 52, elF: 98, shB: 108, elB: 4, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.5, body: 88, y: 0.34, shF: 90, elF: 8, shB: 95, elB: 4, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.75, body: 88, y: 0.24, x: -0.07, shF: 108, elF: 4, shB: 52, elB: 98, hipF: -3, hipB: -3, head: -14 },
-      { t: 1, body: 88, y: 0.34, shF: 90, elF: 8, shB: 95, elB: 4, hipF: -3, hipB: -3, head: -14 },
+      { t: 0, body: 80, y: 0.3, shF: 88, elF: 6, shB: 96, elB: 4, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.25, body: 82, y: 0.21, x: 0.07, shF: 50, elF: 100, shB: 112, elB: 4, hipF: 18, knF: 4, hipB: 18, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.5, body: 80, y: 0.3, shF: 88, elF: 6, shB: 96, elB: 4, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.75, body: 82, y: 0.21, x: -0.07, shF: 112, elF: 4, shB: 50, elB: 100, hipF: 18, knF: 4, hipB: 18, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 1, body: 80, y: 0.3, shF: 88, elF: 6, shB: 96, elB: 4, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
     ],
   },
   pikepushup: {
     dur: 2.4,
     frames: [
-      { t: 0, body: 128, y: 0.6, shF: 95, elF: 8, shB: 95, elB: 8, hipF: -108, hipB: -108, knF: 4, knB: 4, head: -10 },
-      { t: 0.5, body: 134, y: 0.54, shF: 70, elF: 62, shB: 70, elB: 62, hipF: -112, hipB: -112, head: -10 },
-      { t: 1, body: 128, y: 0.6, shF: 95, elF: 8, shB: 95, elB: 8, hipF: -108, hipB: -108, head: -10 },
+      { t: 0, body: 126, y: 0.42, shF: 145, elF: 35, shB: 145, elB: 35, hipF: 94, knF: 4, hipB: 94, knB: 4, ankF: -20, ankB: -20, head: 0 },
+      { t: 0.5, body: 128, y: 0.38, shF: 122, elF: 80, shB: 122, elB: 80, hipF: 94, knF: 4, hipB: 94, knB: 4, ankF: -20, ankB: -20, head: 0 },
+      { t: 1, body: 126, y: 0.42, shF: 145, elF: 35, shB: 145, elB: 35, hipF: 94, knF: 4, hipB: 94, knB: 4, ankF: -20, ankB: -20, head: 0 },
     ],
   },
   handstand: {
     dur: 2.6, props: { wall: -0.34 },
     frames: [
-      { t: 0, body: 176, y: 1.02, shF: 176, elF: 4, shB: 176, elB: 4, hipF: -4, hipB: -2, head: 18 },
-      { t: 0.5, body: 178, y: 1.02, shF: 178, elF: 4, shB: 178, elB: 4, hipF: -7, hipB: -4, head: 18 },
-      { t: 1, body: 176, y: 1.02, shF: 176, elF: 4, shB: 176, elB: 4, hipF: -4, hipB: -2, head: 18 },
+      { t: 0, body: 176, y: 0.66, shF: 176, elF: 4, shB: 176, elB: 4, hipF: -4, hipB: -2, head: 18 },
+      { t: 0.5, body: 178, y: 0.66, shF: 178, elF: 4, shB: 178, elB: 4, hipF: -7, hipB: -4, head: 18 },
+      { t: 1, body: 176, y: 0.66, shF: 176, elF: 4, shB: 176, elB: 4, hipF: -4, hipB: -2, head: 18 },
     ],
   },
   shouldertap: {
     dur: 1.8,
     frames: [
-      { t: 0, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.25, body: 88, y: 0.35, shF: 128, elF: 118, shB: 92, elB: 8, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.5, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.75, body: 88, y: 0.35, shF: 92, elF: 8, shB: 128, elB: 118, hipF: -3, hipB: -3, head: -14 },
-      { t: 1, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
+      { t: 0, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.25, body: 80, y: 0.3, shF: 128, elF: 118, shB: 90, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.5, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.75, body: 80, y: 0.3, shF: 90, elF: 6, shB: 128, elB: 118, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 1, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
     ],
   },
   plankup: {
     dur: 2.6,
     frames: [
-      { t: 0, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.45, body: 88, y: 0.3, shF: 66, elF: 112, shB: 66, elB: 112, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.55, body: 88, y: 0.3, shF: 66, elF: 112, shB: 66, elB: 112, hipF: -3, hipB: -3, head: -14 },
-      { t: 1, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
+      { t: 0, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.45, body: 84, y: 0.21, shF: 78, elF: 95, shB: 78, elB: 95, hipF: 15, knF: 3, hipB: 15, knB: 3, ankF: -48, ankB: -48, head: -6 },
+      { t: 0.55, body: 84, y: 0.21, shF: 78, elF: 95, shB: 78, elB: 95, hipF: 15, knF: 3, hipB: 15, knB: 3, ankF: -48, ankB: -48, head: -6 },
+      { t: 1, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
     ],
   },
   dip: {
@@ -246,41 +250,41 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
   plank: {
     dur: 2.4,
     frames: [
-      { t: 0, body: 87, y: 0.3, shF: 64, elF: 116, shB: 64, elB: 116, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.5, body: 87, y: 0.31, shF: 64, elF: 116, shB: 64, elB: 116, hipF: -3, hipB: -3, head: -14 },
-      { t: 1, body: 87, y: 0.3, shF: 64, elF: 116, shB: 64, elB: 116, hipF: -3, hipB: -3, head: -14 },
+      { t: 0, body: 84, y: 0.21, shF: 78, elF: 95, shB: 78, elB: 95, hipF: 15, knF: 3, hipB: 15, knB: 3, ankF: -48, ankB: -48, head: -6 },
+      { t: 0.5, body: 84, y: 0.22, shF: 78, elF: 95, shB: 78, elB: 95, hipF: 15, knF: 3, hipB: 15, knB: 3, ankF: -48, ankB: -48, head: -6 },
+      { t: 1, body: 84, y: 0.21, shF: 78, elF: 95, shB: 78, elB: 95, hipF: 15, knF: 3, hipB: 15, knB: 3, ankF: -48, ankB: -48, head: -6 },
     ],
   },
   sideplank: {
     dur: 2.4,
     frames: [
-      { t: 0, body: 82, y: 0.33, shF: 64, elF: 116, shB: 262, elB: 6, hipF: -4, hipB: -4, head: -10 },
-      { t: 0.5, body: 82, y: 0.29, shF: 64, elF: 116, shB: 262, elB: 6, hipF: -4, hipB: -4, head: -10 },
-      { t: 1, body: 82, y: 0.33, shF: 64, elF: 116, shB: 262, elB: 6, hipF: -4, hipB: -4, head: -10 },
+      { t: 0, body: 78, y: 0.24, shF: 76, elF: 95, shB: 258, elB: 6, hipF: 8, knF: 2, hipB: 8, knB: 2, ankF: -20, ankB: -20, head: -6 },
+      { t: 0.5, body: 78, y: 0.2, shF: 76, elF: 95, shB: 258, elB: 6, hipF: 8, knF: 2, hipB: 8, knB: 2, ankF: -20, ankB: -20, head: -6 },
+      { t: 1, body: 78, y: 0.24, shF: 76, elF: 95, shB: 258, elB: 6, hipF: 8, knF: 2, hipB: 8, knB: 2, ankF: -20, ankB: -20, head: -6 },
     ],
   },
   plankjack: {
     dur: 0.9,
     frames: [
-      { t: 0, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
-      { t: 0.5, body: 88, y: 0.37, shF: 90, elF: 8, shB: 90, elB: 8, hipF: 8, hipB: -16, head: -14 },
-      { t: 1, body: 88, y: 0.35, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, hipB: -3, head: -14 },
+      { t: 0, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 20, knF: 4, hipB: 20, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.5, body: 80, y: 0.32, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 32, knF: 4, hipB: 8, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 1, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 20, knF: 4, hipB: 20, knB: 4, ankF: -45, ankB: -45, head: -6 },
     ],
   },
   climber: {
     dur: 0.9,
     frames: [
-      { t: 0, body: 82, y: 0.36, shF: 92, elF: 8, shB: 92, elB: 8, hipF: 76, knF: 100, hipB: -6, knB: 4, head: -14 },
-      { t: 0.5, body: 82, y: 0.36, shF: 92, elF: 8, shB: 92, elB: 8, hipF: -6, knF: 4, hipB: 76, knB: 100, head: -14 },
-      { t: 1, body: 82, y: 0.36, shF: 92, elF: 8, shB: 92, elB: 8, hipF: 76, knF: 100, hipB: -6, knB: 4, head: -14 },
+      { t: 0, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 85, knF: 105, hipB: 18, knB: 4, ankB: -45, head: -6 },
+      { t: 0.5, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 18, knF: 4, hipB: 85, knB: 105, ankF: -45, head: -6 },
+      { t: 1, body: 80, y: 0.3, shF: 88, elF: 6, shB: 88, elB: 6, hipF: 85, knF: 105, hipB: 18, knB: 4, ankB: -45, head: -6 },
     ],
   },
   situp: {
     dur: 2.4,
     frames: [
-      { t: 0, body: -85, y: 0.13, torso: 0, shF: 142, elF: 138, shB: 142, elB: 138, hipF: 72, knF: 102, hipB: 72, knB: 102, head: 6 },
-      { t: 0.45, body: -85, y: 0.13, torso: 80, shF: 142, elF: 138, shB: 142, elB: 138, hipF: 72, knF: 102, hipB: 72, knB: 102, head: 14 },
-      { t: 1, body: -85, y: 0.13, torso: 0, shF: 142, elF: 138, shB: 142, elB: 138, hipF: 72, knF: 102, hipB: 72, knB: 102, head: 6 },
+      { t: 0, body: -85, y: 0.13, torso: 0, shF: 142, elF: 138, shB: 142, elB: 138, hipF: 55, knF: 125, hipB: 55, knB: 125, head: 6 },
+      { t: 0.45, body: -85, y: 0.13, torso: 80, shF: 142, elF: 138, shB: 142, elB: 138, hipF: 55, knF: 125, hipB: 55, knB: 125, head: 14 },
+      { t: 1, body: -85, y: 0.13, torso: 0, shF: 142, elF: 138, shB: 142, elB: 138, hipF: 55, knF: 125, hipB: 55, knB: 125, head: 6 },
     ],
   },
   bicycle: {
@@ -362,9 +366,9 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
   snowangel: {
     dur: 3,
     frames: [
-      { t: 0, body: 90, y: 0.11, torso: -12, shF: 120, elF: 6, shB: 120, elB: 6, hipF: -6, hipB: -6, head: -12 },
+      { t: 0, body: 90, y: 0.11, torso: -12, shF: 148, elF: 6, shB: 148, elB: 6, hipF: -6, hipB: -6, head: -12 },
       { t: 0.5, body: 90, y: 0.11, torso: -14, shF: 186, elF: 4, shB: 186, elB: 4, hipF: -6, hipB: -6, head: -12 },
-      { t: 1, body: 90, y: 0.11, torso: -12, shF: 120, elF: 6, shB: 120, elB: 6, hipF: -6, hipB: -6, head: -12 },
+      { t: 1, body: 90, y: 0.11, torso: -12, shF: 148, elF: 6, shB: 148, elB: 6, hipF: -6, hipB: -6, head: -12 },
     ],
   },
   birddog: {
@@ -378,7 +382,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   goodmorning: {
-    dur: 2.6,
+    dur: 2.6, plant: "both",
     frames: [
       { t: 0, y: 0.5, torso: 4, shF: 148, elF: 138, shB: 148, elB: 138, knF: 6, knB: 6 },
       { t: 0.5, y: 0.46, torso: 82, shF: 148, elF: 138, shB: 148, elB: 138, knF: 16, knB: 16, hipF: 8, hipB: 8, head: -18 },
@@ -388,7 +392,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
 
   /* -------------------------------- legs ------------------------------- */
   squat: {
-    dur: 2.4,
+    dur: 2.4, plant: "both",
     frames: [
       { t: 0, y: 0.5, shF: 30, elF: 10, shB: 30, elB: 10 },
       { t: 0.5, y: 0.3, torso: 34, hipF: 104, knF: 116, hipB: 104, knB: 116, shF: 88, elF: 8, shB: 88, elB: 8, head: -8 },
@@ -396,7 +400,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   sumosquat: {
-    dur: 2.4,
+    dur: 2.4, plant: "both",
     frames: [
       { t: 0, y: 0.5, shF: 30, elF: 10, shB: 30, elB: 10 },
       { t: 0.5, y: 0.33, torso: 18, hipF: 94, knF: 104, hipB: 94, knB: 104, shF: 78, elF: 8, shB: 78, elB: 8 },
@@ -414,7 +418,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   pistol: {
-    dur: 3.2,
+    dur: 3.2, plant: "B",
     frames: [
       { t: 0, y: 0.5, shF: 60, elF: 8, shB: 60, elB: 8, hipF: 30, knF: 2 },
       { t: 0.5, y: 0.26, torso: 42, hipF: 92, knF: 4, hipB: 118, knB: 136, shF: 92, elF: 6, shB: 92, elB: 6, head: -8 },
@@ -458,7 +462,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   bulgarian: {
-    dur: 2.4, props: { box: [-0.5, 0.38] },
+    dur: 2.4, plant: "F", props: { box: [-0.5, 0.38] },
     frames: [
       { t: 0, y: 0.46, hipF: 12, knF: 8, hipB: -38, knB: 92, shF: 40, elF: 110, shB: 40, elB: 110 },
       { t: 0.5, y: 0.32, torso: 16, hipF: 74, knF: 96, hipB: -42, knB: 102, shF: 52, elF: 104, shB: 52, elB: 104 },
@@ -475,7 +479,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   wallsit: {
-    dur: 2.6, props: { wall: -0.3 },
+    dur: 2.6, plant: "both", props: { wall: -0.3 },
     frames: [
       { t: 0, y: 0.33, body: -2, hipF: 90, knF: 92, hipB: 90, knB: 92, shF: 16, elF: 8, shB: 16, elB: 8 },
       { t: 0.5, y: 0.335, body: -2, hipF: 90, knF: 92, hipB: 90, knB: 92, shF: 16, elF: 8, shB: 16, elB: 8 },
@@ -523,7 +527,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   singledeadlift: {
-    dur: 2.8,
+    dur: 2.8, plant: "F",
     frames: [
       { t: 0, y: 0.5, shF: 20, elF: 6, shB: 20, elB: 6 },
       { t: 0.5, y: 0.47, torso: 78, hipF: 6, knF: 12, hipB: -82, knB: 6, shF: 78, elF: 4, shB: 78, elB: 4, head: -16 },
@@ -569,7 +573,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     frames: [
       { t: 0, y: 0.5 },
       { t: 0.18, y: 0.26, torso: 55, hipF: 118, knF: 132, hipB: 118, knB: 132, shF: 118, elF: 10, shB: 118, elB: 10, head: -10 },
-      { t: 0.38, body: 88, y: 0.34, torso: 0, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
+      { t: 0.38, body: 80, y: 0.3, torso: 0, shF: 88, elF: 8, shB: 88, elB: 8, hipF: 20, knF: 4, hipB: 20, knB: 4, ankF: -45, ankB: -45, head: -6 },
       { t: 0.58, y: 0.26, body: 0, torso: 55, hipF: 118, knF: 132, hipB: 118, knB: 132, shF: 118, elF: 10, shB: 118, elB: 10, head: -10 },
       { t: 0.74, y: 0.76, torso: -6, hipF: 4, knF: 6, hipB: 4, knB: 6, shF: 174, elF: 4, shB: 174, elB: 4, ankF: -22, ankB: -22 },
       { t: 0.88, y: 0.44, torso: 14, hipF: 48, knF: 58, hipB: 48, knB: 58, shF: 16, elF: 10, shB: 16, elB: 10 },
@@ -580,8 +584,8 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     dur: 2.2, props: { gloves: true },
     frames: [
       { t: 0, ...GUARD },
-      { t: 0.3, body: 88, y: 0.3, torso: -8, shF: 88, elF: 10, shB: 88, elB: 10, hipF: -8, knF: 8, hipB: -8, knB: 8, head: -16 },
-      { t: 0.5, body: 88, y: 0.3, torso: -10, shF: 88, elF: 10, shB: 88, elB: 10, hipF: -8, knF: 8, hipB: -8, knB: 8, head: -16 },
+      { t: 0.3, body: 80, y: 0.3, torso: -6, shF: 88, elF: 10, shB: 88, elB: 10, hipF: 18, knF: 6, hipB: 18, knB: 6, ankF: -45, ankB: -45, head: -8 },
+      { t: 0.5, body: 80, y: 0.3, torso: -8, shF: 88, elF: 10, shB: 88, elB: 10, hipF: 18, knF: 6, hipB: 18, knB: 6, ankF: -45, ankB: -45, head: -8 },
       { t: 0.78, ...GUARD, y: 0.46, knF: 22, knB: 22 },
       { t: 1, ...GUARD },
     ],
@@ -619,8 +623,8 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     frames: [
       { t: 0, y: 0.5 },
       { t: 0.16, y: 0.47, torso: 94, shF: 120, elF: 8, shB: 120, elB: 8, knF: 14, knB: 14, head: -14 },
-      { t: 0.42, body: 88, y: 0.34, torso: 0, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
-      { t: 0.58, body: 88, y: 0.34, torso: 0, shF: 90, elF: 8, shB: 90, elB: 8, hipF: -3, knF: 2, hipB: -3, knB: 2, head: -14 },
+      { t: 0.42, body: 80, y: 0.3, torso: 0, shF: 88, elF: 8, shB: 88, elB: 8, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
+      { t: 0.58, body: 80, y: 0.3, torso: 0, shF: 88, elF: 8, shB: 88, elB: 8, hipF: 22, knF: 4, hipB: 22, knB: 4, ankF: -45, ankB: -45, head: -6 },
       { t: 0.84, body: 0, y: 0.47, torso: 94, shF: 120, elF: 8, shB: 120, elB: 8, knF: 14, knB: 14, head: -14 },
       { t: 1, y: 0.5 },
     ],
@@ -640,13 +644,13 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
   benchpress: {
     dur: 2.2, props: { bench: [0, 1.1], barbell: true },
     frames: [
-      { t: 0, body: -88, y: 0.5, shF: 95, elF: 6, shB: 95, elB: 6, hipF: 64, knF: 96, hipB: 64, knB: 96 },
-      { t: 0.5, body: -88, y: 0.5, shF: 62, elF: 88, shB: 62, elB: 88, hipF: 64, knF: 96, hipB: 64, knB: 96 },
-      { t: 1, body: -88, y: 0.5, shF: 95, elF: 6, shB: 95, elB: 6, hipF: 64, knF: 96, hipB: 64, knB: 96 },
+      { t: 0, body: -88, y: 0.45, shF: 95, elF: 6, shB: 95, elB: 6, hipF: -35, knF: 62, hipB: -35, knB: 62 },
+      { t: 0.5, body: -88, y: 0.45, shF: 62, elF: 88, shB: 62, elB: 88, hipF: -35, knF: 62, hipB: -35, knB: 62 },
+      { t: 1, body: -88, y: 0.45, shF: 95, elF: 6, shB: 95, elB: 6, hipF: -35, knF: 62, hipB: -35, knB: 62 },
     ],
   },
   barbellsquat: {
-    dur: 2.6, props: { barbell: true },
+    dur: 2.6, plant: "both", props: { barbell: true },
     frames: [
       { t: 0, y: 0.5, shF: 24, elF: 152, shB: 24, elB: 152 },
       { t: 0.5, y: 0.31, torso: 30, hipF: 100, knF: 112, hipB: 100, knB: 112, shF: 40, elF: 150, shB: 40, elB: 150, head: -6 },
@@ -654,7 +658,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   deadlift: {
-    dur: 2.6, props: { barbell: true },
+    dur: 2.6, plant: "both", props: { barbell: true },
     frames: [
       { t: 0, y: 0.38, torso: 66, knF: 52, knB: 52, hipF: 12, hipB: 12, shF: 70, elF: 4, shB: 70, elB: 4, head: -14 },
       { t: 0.5, y: 0.5, torso: 2, knF: 4, knB: 4, shF: 10, elF: 4, shB: 10, elB: 4 },
@@ -662,7 +666,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   overheadpress: {
-    dur: 2.2, props: { barbell: true },
+    dur: 2.2, plant: "both", props: { barbell: true },
     frames: [
       { t: 0, y: 0.5, shF: 34, elF: 138, shB: 34, elB: 138 },
       { t: 0.5, y: 0.51, shF: 176, elF: 4, shB: 176, elB: 4 },
@@ -670,7 +674,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   barbellrow: {
-    dur: 1.8, props: { barbell: true },
+    dur: 1.8, plant: "both", props: { barbell: true },
     frames: [
       { t: 0, y: 0.44, torso: 56, knF: 26, knB: 26, shF: 62, elF: 6, shB: 62, elB: 6, head: -12 },
       { t: 0.5, y: 0.44, torso: 56, knF: 26, knB: 26, shF: 34, elF: 96, shB: 34, elB: 96, head: -12 },
@@ -678,7 +682,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   pullup: {
-    dur: 2.6, props: { pullbar: true },
+    dur: 2.6, plant: "hands", props: { pullbar: true },
     frames: [
       { t: 0, y: 0.62, shF: 178, elF: 6, shB: 178, elB: 6, hipF: 10, knF: 28, hipB: 10, knB: 28 },
       { t: 0.5, y: 0.88, shF: 150, elF: 120, shB: 150, elB: 120, hipF: 12, knF: 32, hipB: 12, knB: 32 },
@@ -686,7 +690,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   kneeraise: {
-    dur: 2.2, props: { pullbar: true },
+    dur: 2.2, plant: "hands", props: { pullbar: true },
     frames: [
       { t: 0, y: 0.62, shF: 178, elF: 6, shB: 178, elB: 6, hipF: 6, knF: 8, hipB: 6, knB: 8 },
       { t: 0.5, y: 0.62, shF: 176, elF: 6, shB: 176, elB: 6, hipF: 96, knF: 104, hipB: 96, knB: 104 },
@@ -694,7 +698,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   dbpress: {
-    dur: 2.2, props: { dumbbells: true },
+    dur: 2.2, plant: "both", props: { dumbbells: true },
     frames: [
       { t: 0, y: 0.5, shF: 40, elF: 128, shB: 40, elB: 128 },
       { t: 0.5, y: 0.51, shF: 174, elF: 6, shB: 174, elB: 6 },
@@ -702,7 +706,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   curl: {
-    dur: 2, props: { dumbbells: true },
+    dur: 2, plant: "both", props: { dumbbells: true },
     frames: [
       { t: 0, y: 0.5, shF: 8, elF: 8, shB: 8, elB: 8 },
       { t: 0.5, y: 0.5, shF: 12, elF: 136, shB: 12, elB: 136 },
@@ -710,7 +714,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   latraise: {
-    dur: 2, props: { dumbbells: true },
+    dur: 2, plant: "both", props: { dumbbells: true },
     frames: [
       { t: 0, y: 0.5, shF: 12, elF: 14, shB: 12, elB: 14 },
       { t: 0.5, y: 0.5, shF: 92, elF: 10, shB: 92, elB: 10 },
@@ -718,7 +722,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   dbrow: {
-    dur: 1.8, props: { bench: [0.32, 0.55], dumbbells: true },
+    dur: 1.8, plant: "both", props: { bench: [0.32, 0.55], dumbbells: true },
     frames: [
       { t: 0, y: 0.46, torso: 62, knF: 20, knB: 34, hipF: 10, hipB: 30, shF: 96, elF: 8, shB: 64, elB: 6, head: -12 },
       { t: 0.5, y: 0.46, torso: 62, knF: 20, knB: 34, hipF: 10, hipB: 30, shF: 96, elF: 8, shB: 30, elB: 102, head: -12 },
@@ -726,7 +730,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   gobletsquat: {
-    dur: 2.4, props: { kettlebell: true },
+    dur: 2.4, plant: "both", props: { kettlebell: true },
     frames: [
       { t: 0, y: 0.5, shF: 46, elF: 118, shB: 46, elB: 118 },
       { t: 0.5, y: 0.32, torso: 22, hipF: 98, knF: 110, hipB: 98, knB: 110, shF: 52, elF: 116, shB: 52, elB: 116 },
@@ -734,7 +738,7 @@ const PRESETS: Record<DemoPreset, PresetDef> = {
     ],
   },
   kbswing: {
-    dur: 1.9, props: { kettlebell: true },
+    dur: 1.9, plant: "both", props: { kettlebell: true },
     frames: [
       { t: 0, y: 0.42, torso: 58, knF: 36, knB: 36, hipF: 10, hipB: 10, shF: -18, elF: 4, shB: -18, elB: 4, head: -12 },
       { t: 0.5, y: 0.51, torso: 2, knF: 4, knB: 4, shF: 92, elF: 4, shB: 92, elB: 4 },
@@ -852,6 +856,45 @@ function fk(p: Pose): Joints {
   };
 }
 
+/* planting: translate the whole figure so the planted effector(s) stay at
+   their phase-0 spot — feet don't slide or float during squats and hinges */
+function plantTarget(j: Joints, mode: NonNullable<PresetDef["plant"]>): [number, number] {
+  if (mode === "hands") {
+    return [(j.handF[0] + j.handB[0]) / 2, (j.handF[1] + j.handB[1]) / 2];
+  }
+  if (mode === "F") return [j.ankleF[0], j.ankleF[1]];
+  if (mode === "B") return [j.ankleB[0], j.ankleB[1]];
+  return [
+    (j.ankleF[0] + j.ankleB[0]) / 2,
+    (j.ankleF[1] + j.ankleB[1]) / 2,
+  ];
+}
+
+function translateJoints(j: Joints, dx: number, dy: number): Joints {
+  const mv = (p: [number, number]): [number, number] => [p[0] + dx, p[1] + dy];
+  return {
+    hip: mv(j.hip), shoulder: mv(j.shoulder), headC: mv(j.headC),
+    elbowF: mv(j.elbowF), handF: mv(j.handF), elbowB: mv(j.elbowB), handB: mv(j.handB),
+    kneeF: mv(j.kneeF), ankleF: mv(j.ankleF), toeF: mv(j.toeF),
+    kneeB: mv(j.kneeB), ankleB: mv(j.ankleB), toeB: mv(j.toeB),
+  };
+}
+
+/** Full pose → joints pipeline: planting + a floor clamp so no foot ever
+    sinks through the ground, whatever the authored angles say. */
+function jointsFor(def: PresetDef, time: number): Joints {
+  let j = fk(poseAt(def, time));
+  if (def.plant) {
+    const anchor = plantTarget(fk(poseAt(def, 0)), def.plant);
+    if (def.plant !== "hands") anchor[1] = Math.max(anchor[1], 0.03);
+    const cur = plantTarget(j, def.plant);
+    j = translateJoints(j, anchor[0] - cur[0], anchor[1] - cur[1]);
+  }
+  const minFoot = Math.min(j.ankleF[1], j.toeF[1], j.ankleB[1], j.toeB[1]);
+  if (minFoot < 0.015) j = translateJoints(j, 0, 0.015 - minFoot);
+  return j;
+}
+
 /* ------------------------- motion-path precompute ------------------------ */
 /* The single biggest readability aid: show the trajectory of the part that
    moves the most (hand, foot or hip) as a dashed path with a direction
@@ -872,7 +915,7 @@ function computeMotionPath(def: PresetDef): MotionPath {
     handF: [], toeF: [], hip: [], headC: [], shoulder: [],
   };
   for (let i = 0; i <= PATH_SAMPLES; i++) {
-    const j = fk(poseAt(def, (i / PATH_SAMPLES) * def.dur));
+    const j = jointsFor(def, (i / PATH_SAMPLES) * def.dur);
     keys.forEach((k) => tracks[k].push(j[k]));
   }
   let best: EffectorKey | null = null;
@@ -893,6 +936,15 @@ function computeMotionPath(def: PresetDef): MotionPath {
   /* static holds (plank, wall sit…) don't need an arrow */
   if (bestTravel < 0.15) return { pts: [], key: null };
   return { pts: best ? tracks[best] : [], key: best };
+}
+
+/* Debug hook for numeric pose checks from the browser console / dev tools. */
+function __sampleJoints(preset: DemoPreset, phase: number) {
+  const def = PRESETS[preset] ?? PRESETS.squat;
+  return jointsFor(def, phase * def.dur);
+}
+if (typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__samplePose = __sampleJoints;
 }
 
 /* --------------------------------- component ----------------------------- */
@@ -931,15 +983,23 @@ export function Exercise2D({
     const ro = new ResizeObserver(resize);
     ro.observe(host);
 
-    /* theme colours, re-read periodically so a theme flip updates the figure */
-    let cNear = "#1f242e", cAccent = "#e30f2a", cProp = "#8a93a3";
+    /* flat-illustration palette (fixed — reads on light & dark themes alike);
+       only the floor/prop grey follows the theme */
+    const P = {
+      shirt: "#e2372b", shirtFar: "#a2261d",
+      pants: "#2b3345", pantsFar: "#1c2330",
+      skin: "#f0bd95", skinFar: "#cf9d75",
+      hair: "#3a281d",
+      shoe: "#c9302c", shoeFar: "#8c201b",
+      glove: "#c11f1f", gloveFar: "#871411",
+      metal: "#6e7787", plate: "#39404f",
+    };
+    let cAccent = "#e30f2a", cProp = "#8a93a3";
     let paletteTick = 0;
     const readPalette = () => {
       const cs = getComputedStyle(host);
-      const bone = cs.getPropertyValue("--color-bone").trim();
       const blood = cs.getPropertyValue("--color-blood").trim();
       const ash = cs.getPropertyValue("--color-ash").trim();
-      if (bone) cNear = bone;
       if (blood) cAccent = blood;
       if (ash) cProp = ash;
     };
@@ -977,19 +1037,23 @@ export function Exercise2D({
       ctx.globalAlpha = 1;
     };
 
-    /* limbs: near side solid, far side clearly lighter + thinner so the two
-       sides never read as one tangled shape */
+    /* limbs, flat-illustration style: shirt-coloured sleeve, skin forearm and
+       hand, pants legs, red shoes. The far side uses darker shades so the two
+       sides never read as one tangled shape. */
     const drawLimbArm = (sh: [number, number], el: [number, number], hd: [number, number], near: boolean, gloves?: boolean) => {
-      const alpha = near ? 1 : 0.28;
-      line(sh, el, near ? 0.08 : 0.065, cNear, alpha);
-      line(el, hd, near ? 0.068 : 0.055, cNear, alpha);
-      circle(hd, gloves ? 0.06 : 0.036, gloves ? cAccent : cNear, near ? 1 : 0.35);
+      const sleeve = near ? P.shirt : P.shirtFar;
+      const skin = near ? P.skin : P.skinFar;
+      const glove = near ? P.glove : P.gloveFar;
+      line(sh, el, near ? 0.082 : 0.068, sleeve);
+      line(el, hd, near ? 0.06 : 0.05, skin);
+      circle(hd, gloves ? 0.062 : 0.038, gloves ? glove : skin);
     };
     const drawLimbLeg = (hip: [number, number], kn: [number, number], an: [number, number], toe: [number, number], near: boolean) => {
-      const alpha = near ? 1 : 0.28;
-      line(hip, kn, near ? 0.09 : 0.075, cNear, alpha);
-      line(kn, an, near ? 0.075 : 0.062, cNear, alpha);
-      line(an, toe, near ? 0.065 : 0.055, cNear, alpha);
+      const pants = near ? P.pants : P.pantsFar;
+      const shoe = near ? P.shoe : P.shoeFar;
+      line(hip, kn, near ? 0.095 : 0.08, pants);
+      line(kn, an, near ? 0.078 : 0.065, pants);
+      line(an, toe, near ? 0.075 : 0.062, shoe);
     };
 
     const drawProps = (props: Props | undefined, j: Joints, t: number, dur: number, behind: boolean) => {
@@ -1062,22 +1126,22 @@ export function Exercise2D({
       if (!behind) {
         if (props.barbell) {
           const c = j.handF;
-          line([c[0] - 0.3, c[1]], [c[0] + 0.3, c[1]], 0.03, cProp, 0.9);
-          circle([c[0], c[1]], 0.105, cNear, 0.9, false);
-          circle([c[0], c[1]], 0.105, cProp, 0.25);
+          line([c[0] - 0.3, c[1]], [c[0] + 0.3, c[1]], 0.03, P.metal, 0.95);
+          circle([c[0], c[1]], 0.105, P.plate);
+          circle([c[0], c[1]], 0.045, P.metal);
         }
         if (props.dumbbells) {
           for (const hnd of [j.handB, j.handF]) {
-            line([hnd[0] - 0.08, hnd[1]], [hnd[0] + 0.08, hnd[1]], 0.026, cProp, 0.95);
-            circle([hnd[0] - 0.08, hnd[1]], 0.042, cNear, 0.9);
-            circle([hnd[0] + 0.08, hnd[1]], 0.042, cNear, 0.9);
+            line([hnd[0] - 0.08, hnd[1]], [hnd[0] + 0.08, hnd[1]], 0.026, P.metal, 0.95);
+            circle([hnd[0] - 0.08, hnd[1]], 0.042, P.plate);
+            circle([hnd[0] + 0.08, hnd[1]], 0.042, P.plate);
           }
         }
         if (props.kettlebell) {
           const c: [number, number] = [(j.handF[0] + j.handB[0]) / 2, (j.handF[1] + j.handB[1]) / 2];
-          circle([c[0], c[1] - 0.1], 0.08, cNear, 0.95);
+          circle([c[0], c[1] - 0.1], 0.08, P.plate);
           const [x, y] = toPx(c);
-          ctx.strokeStyle = cNear;
+          ctx.strokeStyle = P.metal;
           ctx.lineWidth = 0.022 * S();
           ctx.beginPath();
           ctx.arc(x, y - 0.02 * S(), 0.055 * S(), Math.PI, 0, false);
@@ -1090,12 +1154,36 @@ export function Exercise2D({
     let pathCacheKey: DemoPreset | null = null;
     let path: MotionPath = { pts: [], key: null };
 
-    const drawMotionPath = (def: PresetDef, t: number, j: Joints) => {
+    const drawMotionPath = (def: PresetDef, t: number, j: Joints, layer: "trail" | "arrow") => {
       if (pathCacheKey !== presetRef.current) {
         pathCacheKey = presetRef.current;
         path = computeMotionPath(def);
       }
       if (!path.key || path.pts.length === 0) return;
+
+      if (layer === "arrow") {
+        /* arrowhead at the effector, pointing along its velocity — drawn in
+           front of the figure so it's always visible */
+        const cur = j[path.key];
+        const ahead = jointsFor(def, t + def.dur * 0.03)[path.key];
+        const vx = ahead[0] - cur[0];
+        const vy = ahead[1] - cur[1];
+        if (Math.hypot(vx, vy) > 0.004) {
+          const ang = Math.atan2(-vy, vx); // screen-space angle (y flipped)
+          const [px, py] = toPx(cur);
+          const r = 0.07 * S();
+          ctx.globalAlpha = 0.9;
+          ctx.fillStyle = cAccent;
+          ctx.beginPath();
+          ctx.moveTo(px + Math.cos(ang) * r * 1.7, py + Math.sin(ang) * r * 1.7);
+          ctx.lineTo(px + Math.cos(ang + 2.6) * r, py + Math.sin(ang + 2.6) * r);
+          ctx.lineTo(px + Math.cos(ang - 2.6) * r, py + Math.sin(ang - 2.6) * r);
+          ctx.closePath();
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+        return;
+      }
 
       /* the loop trajectory */
       ctx.globalAlpha = 0.4;
@@ -1112,26 +1200,6 @@ export function Exercise2D({
       ctx.stroke();
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
-
-      /* arrowhead at the effector, pointing along its velocity */
-      const cur = j[path.key];
-      const ahead = fk(poseAt(def, t + def.dur * 0.03))[path.key];
-      const vx = ahead[0] - cur[0];
-      const vy = ahead[1] - cur[1];
-      if (Math.hypot(vx, vy) > 0.004) {
-        const ang = Math.atan2(-vy, vx); // screen-space angle (y flipped)
-        const [px, py] = toPx(cur);
-        const r = 0.07 * S();
-        ctx.globalAlpha = 0.9;
-        ctx.fillStyle = cAccent;
-        ctx.beginPath();
-        ctx.moveTo(px + Math.cos(ang) * r * 1.7, py + Math.sin(ang) * r * 1.7);
-        ctx.lineTo(px + Math.cos(ang + 2.6) * r, py + Math.sin(ang + 2.6) * r);
-        ctx.lineTo(px + Math.cos(ang - 2.6) * r, py + Math.sin(ang - 2.6) * r);
-        ctx.closePath();
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
     };
 
     let raf = 0;
@@ -1141,16 +1209,16 @@ export function Exercise2D({
       if (++paletteTick % 60 === 0) readPalette();
       const def = PRESETS[presetRef.current] ?? PRESETS.squat;
       const pose = poseAt(def, t);
-      const j = fk(pose);
+      const j = jointsFor(def, t);
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
       /* floor + soft ground shadow */
       line([-1.02, 0], [1.02, 0], 0.016, cProp, 0.55);
-      const [sx, sy] = toPx([pose.x, 0]);
-      ctx.globalAlpha = 0.1;
-      ctx.fillStyle = cNear;
+      const [sx, sy] = toPx([j.hip[0], 0]);
+      ctx.globalAlpha = 0.12;
+      ctx.fillStyle = "#20242c";
       ctx.beginPath();
       ctx.ellipse(sx, sy, 0.4 * S(), 0.045 * S(), 0, 0, Math.PI * 2);
       ctx.fill();
@@ -1159,31 +1227,39 @@ export function Exercise2D({
       drawProps(def.props, j, t, def.dur, true);
 
       /* movement trajectory behind the figure */
-      drawMotionPath(def, t, j);
+      drawMotionPath(def, t, j, "trail");
 
       /* far limbs */
       drawLimbArm(j.shoulder, j.elbowB, j.handB, false, def.props?.gloves);
       drawLimbLeg(j.hip, j.kneeB, j.ankleB, j.toeB, false);
 
-      /* torso: pelvis + trunk + shoulder cap */
-      circle(j.hip, 0.07, cNear);
-      line(j.hip, j.shoulder, 0.125, cNear);
-      circle(j.shoulder, 0.062, cNear);
+      /* torso: pants at the hips, shirt trunk + shoulder cap */
+      circle(j.hip, 0.072, P.pants);
+      line(j.hip, j.shoulder, 0.13, P.shirt);
+      circle(j.shoulder, 0.064, P.shirt);
 
-      /* head with a nose wedge so the facing direction is obvious */
-      circle(j.headC, L.headR, cNear);
+      /* neck + head: skin face with a hair crescent at the back-top, so the
+         facing direction reads instantly (no nose needed) */
       {
-        const faceAng = pose.body + pose.torso + pose.head + 90;
-        const [fx, fy] = dir(faceAng);
-        const noseBase: [number, number] = [
-          j.headC[0] + fx * L.headR * 0.82,
-          j.headC[1] + fy * L.headR * 0.82,
+        const a = pose.body + pose.torso + pose.head; // head "up" direction
+        const [ux, uy] = dir(a);
+        const [fx, fy] = dir(a + 90); // facing direction
+        const neckBase: [number, number] = [
+          j.headC[0] - ux * (L.headR + L.neck),
+          j.headC[1] - uy * (L.headR + L.neck),
         ];
-        const noseTip: [number, number] = [
-          j.headC[0] + fx * L.headR * 1.3,
-          j.headC[1] + fy * L.headR * 1.3,
+        line(neckBase, [j.headC[0] - ux * L.headR * 0.4, j.headC[1] - uy * L.headR * 0.4], 0.055, P.skin);
+        /* hair behind, face in front (offset toward facing) */
+        const hairC: [number, number] = [
+          j.headC[0] - fx * 0.012 + ux * 0.01,
+          j.headC[1] - fy * 0.012 + uy * 0.01,
         ];
-        line(noseBase, noseTip, 0.05, cNear);
+        circle(hairC, L.headR * 1.04, P.hair);
+        const faceC: [number, number] = [
+          j.headC[0] + fx * 0.03 - ux * 0.008,
+          j.headC[1] + fy * 0.03 - uy * 0.008,
+        ];
+        circle(faceC, L.headR * 0.92, P.skin);
       }
 
       /* near limbs */
@@ -1191,6 +1267,9 @@ export function Exercise2D({
       drawLimbArm(j.shoulder, j.elbowF, j.handF, true, def.props?.gloves);
 
       drawProps(def.props, j, t, def.dur, false);
+
+      /* direction arrow on top so it never hides behind a limb */
+      drawMotionPath(def, t, j, "arrow");
 
       raf = requestAnimationFrame(tick);
     };
