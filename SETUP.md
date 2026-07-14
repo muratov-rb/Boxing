@@ -96,6 +96,26 @@ Restart the dev server and you're live: real auth on the nav/login/register, Cla
 
 ---
 
+## 3D coach model (optional)
+
+Lesson demos always show the 2D movement guide. If a compressed model exists at
+`public/models/coach.glb`, lessons additionally show a **3D model** tab (rotate/zoom
+viewer). To install one from a Tripo3D / Blender export:
+
+1. Export a **binary GLB**: Blender → File → Export → glTF 2.0 (`.glb`), or download
+   the GLB from Tripo3D directly. **Never open/save the file with a text editor and
+   avoid copy tools that convert encodings** — that corrupts the binary data
+   (the script detects this and refuses the file).
+2. Compress + install it (targets < 10 MB from a raw scan of any size):
+
+   ```bash
+   node scripts/prepare-coach-model.mjs "C:/path/to/your-model.glb"
+   ```
+
+3. Commit `public/models/coach.glb` and push — the 3D tab appears automatically.
+
+---
+
 ## Deploying
 
 Set the same four variables in your host's environment (e.g. Vercel Project → Settings → Environment Variables), update the Supabase **Site URL** and **Redirect URLs** to your production domain (`https://yourdomain.com/auth/callback`), and redeploy.
