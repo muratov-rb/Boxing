@@ -92,6 +92,81 @@ await doc.transform(
   simplify({ simplifier: MeshoptSimplifier, ratio: 0.05, error: 0.01 }),
   prune(),
 );
+
+/**
+ * Untextured scans get baked vertex colors: the coach model's clothing is
+ * geometry, so body zones can be classified from position alone. Thresholds
+ * are fractions of model height, tuned against the Tripo reference renders.
+ * COLOR_0 is linear RGB per glTF spec (values below are sRGB→linear).
+ */
+function paintCoach() {
+  const srgb = (r, g, b) => [r, g, b].map((v) => Math.pow(v / 255, 2.2));
+  const C = {
+    shirt: srgb(139, 145, 139),
+    shorts: srgb(117, 123, 119),
+    skin: srgb(216, 158, 122),
+    hair: srgb(66, 49, 38),
+    shoe: srgb(148, 150, 153),
+  };
+  for (const mesh of doc.getRoot().listMeshes())
+    for (const prim of mesh.listPrimitives()) {
+      const pos = prim.getAttribute("POSITION");
+      if (!pos) continue;
+      const p = pos.getArray();
+      const n = pos.getCount();
+      // model bounds
+      let minY = 1e9, maxY = -1e9;
+      for (let i = 0; i < n; i++) {
+        const y = p[i * 3 + 1];
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+      const H = maxY - minY;
+      // front = direction the toes point (largest |z| near the floor)
+      let toeZ = 0;
+      for (let i = 0; i < n; i++) {
+        const y = (p[i * 3 + 1] - minY) / H;
+        const z = p[i * 3 + 2];
+        if (y < 0.06 && Math.abs(z) > Math.abs(toeZ)) toeZ = z;
+      }
+      const front = Math.sign(toeZ) || 1;
+
+      const col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        const x = Math.abs(p[i * 3]);
+        const y = (p[i * 3 + 1] - minY) / H;
+        const zf = p[i * 3 + 2] * front; // + = front of body
+        let c;
+        if (y < 0.07) c = C.shoe;
+        else if (y < 0.3) c = C.skin; // calves, knees
+        else if (y < 0.5 && x < 0.28) c = C.shorts;
+        else if (y > 0.855) {
+          // head: hair cap + back of skull, face/neck skin in front
+          c = y > 0.94 || (y > 0.875 && zf < -0.01) ? C.hair : C.skin;
+        } else if (x > 0.4) c = C.skin; // forearms + hands
+        else if (x > 0.22 && y < 0.55) c = C.skin; // arm below sleeve line
+        else c = C.shirt; // torso + shoulder caps + upper-arm sleeves
+        col[i * 3] = c[0];
+        col[i * 3 + 1] = c[1];
+        col[i * 3 + 2] = c[2];
+      }
+      const buffer = doc.getRoot().listBuffers()[0];
+      const acc = doc
+        .createAccessor("COLOR_0")
+        .setType("VEC3")
+        .setArray(col)
+        .setBuffer(buffer);
+      prim.setAttribute("COLOR_0", acc);
+      const mat = doc
+        .createMaterial("coachPainted")
+        .setBaseColorFactor([1, 1, 1, 1])
+        .setRoughnessFactor(0.65)
+        .setMetallicFactor(0);
+      prim.setMaterial(mat);
+    }
+}
+if (!before.textured) paintCoach();
+
 // no normals written on purpose: three's GLTFLoader computes smooth vertex
 // normals for indexed geometry, which looks better than flat normals here
 await doc.transform(meshopt({ encoder: MeshoptEncoder, level: "medium" }));
