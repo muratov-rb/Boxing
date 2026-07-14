@@ -646,6 +646,12 @@
     "plansLeftWeek": "осталось {n} из {limit} тренировок на этой неделе"
   },
   "admin": {
+    "gateTitle": "Доступ администратора",
+    "gateSub": "Введи пароль администратора, чтобы открыть панель управления.",
+    "gatePlaceholder": "Пароль администратора",
+    "gateEnter": "Открыть",
+    "gateWrong": "Неверный пароль.",
+    "gateUnconfigured": "Задай переменную окружения ADMIN_PASSWORD (Vercel → Settings → Environment Variables), чтобы включить админ-панель.",
     "backDash": "Панель",
     "kicker": "Админ",
     "titlePre": "Управляй ",

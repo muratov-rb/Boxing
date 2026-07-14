@@ -646,6 +646,12 @@
     "plansLeftWeek": "{n} of {limit} guided sessions left this week"
   },
   "admin": {
+    "gateTitle": "Admin access",
+    "gateSub": "Enter the admin password to open the control panel.",
+    "gatePlaceholder": "Admin password",
+    "gateEnter": "Unlock",
+    "gateWrong": "Wrong password.",
+    "gateUnconfigured": "Set the ADMIN_PASSWORD environment variable (in Vercel → Settings → Environment Variables) to enable the admin panel.",
     "backDash": "Dashboard",
     "kicker": "Admin",
     "titlePre": "Run the ",

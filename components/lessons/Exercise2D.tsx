@@ -983,14 +983,15 @@ export function Exercise2D({
     const ro = new ResizeObserver(resize);
     ro.observe(host);
 
-    /* flat-illustration palette (fixed — reads on light & dark themes alike);
-       only the floor/prop grey follows the theme */
+    /* flat-vector palette, matched to the classic workout-app illustration
+       style: blue tank, dark shorts, faceless dark head, skin limbs, blue
+       shoes. Fixed colours — reads on light & dark themes alike; only the
+       floor/prop grey follows the theme. */
     const P = {
-      shirt: "#e2372b", shirtFar: "#a2261d",
-      pants: "#2b3345", pantsFar: "#1c2330",
-      skin: "#f0bd95", skinFar: "#cf9d75",
-      hair: "#3a281d",
-      shoe: "#c9302c", shoeFar: "#8c201b",
+      tank: "#3f9fe8", tankFar: "#2c77b4",
+      dark: "#262a33", darkFar: "#15181e",
+      skin: "#e8b48c", skinFar: "#c8976c",
+      shoe: "#3b74d9", shoeFar: "#28509c",
       glove: "#c11f1f", gloveFar: "#871411",
       metal: "#6e7787", plate: "#39404f",
     };
@@ -1037,23 +1038,102 @@ export function Exercise2D({
       ctx.globalAlpha = 1;
     };
 
-    /* limbs, flat-illustration style: shirt-coloured sleeve, skin forearm and
-       hand, pants legs, red shoes. The far side uses darker shades so the two
-       sides never read as one tangled shape. */
+    /* tapered filled limb — the "between 2D and 3D" volume of the reference
+       illustrations comes from limbs that thin toward the extremity */
+    const tapered = (a: [number, number], b: [number, number], wa: number, wb: number, color: string, alpha = 1) => {
+      const [x1, y1] = toPx(a);
+      const [x2, y2] = toPx(b);
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len, ny = dx / len;
+      const r1 = (wa * S()) / 2, r2 = (wb * S()) / 2;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x1 + nx * r1, y1 + ny * r1);
+      ctx.lineTo(x2 + nx * r2, y2 + ny * r2);
+      ctx.lineTo(x2 - nx * r2, y2 - ny * r2);
+      ctx.lineTo(x1 - nx * r1, y1 - ny * r1);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath(); ctx.arc(x1, y1, r1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x2, y2, r2, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+    };
+
+    /* arms are bare skin (tank top); hands get gloves on boxing moves */
     const drawLimbArm = (sh: [number, number], el: [number, number], hd: [number, number], near: boolean, gloves?: boolean) => {
-      const sleeve = near ? P.shirt : P.shirtFar;
       const skin = near ? P.skin : P.skinFar;
       const glove = near ? P.glove : P.gloveFar;
-      line(sh, el, near ? 0.082 : 0.068, sleeve);
-      line(el, hd, near ? 0.06 : 0.05, skin);
-      circle(hd, gloves ? 0.062 : 0.038, gloves ? glove : skin);
+      tapered(sh, el, near ? 0.088 : 0.074, near ? 0.064 : 0.054, skin);
+      tapered(el, hd, near ? 0.062 : 0.052, near ? 0.044 : 0.038, skin);
+      circle(hd, gloves ? 0.062 : 0.036, gloves ? glove : skin);
     };
+    /* legs: dark shorts over the upper thigh, skin below, blue shoe */
+    const mix = (a: [number, number], b: [number, number], k: number): [number, number] =>
+      [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
     const drawLimbLeg = (hip: [number, number], kn: [number, number], an: [number, number], toe: [number, number], near: boolean) => {
-      const pants = near ? P.pants : P.pantsFar;
+      const skin = near ? P.skin : P.skinFar;
+      const dark = near ? P.dark : P.darkFar;
       const shoe = near ? P.shoe : P.shoeFar;
-      line(hip, kn, near ? 0.095 : 0.08, pants);
-      line(kn, an, near ? 0.078 : 0.065, pants);
-      line(an, toe, near ? 0.075 : 0.062, shoe);
+      tapered(hip, kn, near ? 0.1 : 0.085, near ? 0.07 : 0.06, skin);
+      tapered(kn, an, near ? 0.068 : 0.058, near ? 0.046 : 0.04, skin);
+      /* shorts leg covers the upper 45% of the thigh */
+      tapered(hip, mix(hip, kn, 0.45), near ? 0.115 : 0.098, near ? 0.095 : 0.082, dark);
+      /* shoe: chunky capsule from ankle past the toe */
+      tapered(an, toe, near ? 0.075 : 0.064, near ? 0.085 : 0.072, shoe);
+    };
+
+    /* tank-top torso (widens waist→chest), dark shorts block at the hips,
+       skin neck and the reference's faceless dark head */
+    const drawTorso = (jj: Joints, upAngle: number, headAngle: number) => {
+      const [hx, hy] = toPx(jj.hip);
+      const [sx2, sy2] = toPx(jj.shoulder);
+      const dx = sx2 - hx, dy = sy2 - hy;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len, ny = dx / len;
+      const wWaist = 0.082 * S(), wChest = 0.112 * S();
+      ctx.fillStyle = P.tank;
+      ctx.beginPath();
+      ctx.moveTo(hx + nx * wWaist, hy + ny * wWaist);
+      ctx.lineTo(sx2 + nx * wChest, sy2 + ny * wChest);
+      ctx.lineTo(sx2 - nx * wChest, sy2 - ny * wChest);
+      ctx.lineTo(hx - nx * wWaist, hy - ny * wWaist);
+      ctx.closePath();
+      ctx.fill();
+      circle(jj.shoulder, 0.098, P.tank); // rounded chest cap
+      circle(jj.hip, 0.088, P.dark); // shorts hip block
+      const [ux, uy] = dir(upAngle);
+      const neckTop: [number, number] = [
+        jj.headC[0] - ux * L.headR * 0.55,
+        jj.headC[1] - uy * L.headR * 0.55,
+      ];
+      tapered(jj.shoulder, neckTop, 0.06, 0.048, P.skin);
+      const [cxp, cyp] = toPx(jj.headC);
+      ctx.fillStyle = P.dark;
+      ctx.beginPath();
+      ctx.ellipse(cxp, cyp, 0.08 * S(), 0.099 * S(), rad(headAngle), 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    /* ghost of the movement's far pose (the "B" position in classic A→B
+       exercise diagrams), drawn as a faint silhouette behind the live figure */
+    const drawGhost = (g: Joints | null) => {
+      if (!g) return;
+      const c = cProp;
+      const A = 0.16;
+      tapered(g.shoulder, g.elbowB, 0.078, 0.056, c, A);
+      tapered(g.elbowB, g.handB, 0.054, 0.04, c, A);
+      tapered(g.hip, g.kneeB, 0.09, 0.062, c, A);
+      tapered(g.kneeB, g.ankleB, 0.06, 0.042, c, A);
+      tapered(g.ankleB, g.toeB, 0.066, 0.074, c, A);
+      tapered(g.hip, g.shoulder, 0.17, 0.21, c, A);
+      circle(g.headC, L.headR, c, A);
+      tapered(g.hip, g.kneeF, 0.09, 0.062, c, A);
+      tapered(g.kneeF, g.ankleF, 0.06, 0.042, c, A);
+      tapered(g.ankleF, g.toeF, 0.066, 0.074, c, A);
+      tapered(g.shoulder, g.elbowF, 0.078, 0.056, c, A);
+      tapered(g.elbowF, g.handF, 0.054, 0.04, c, A);
     };
 
     const drawProps = (props: Props | undefined, j: Joints, t: number, dur: number, behind: boolean) => {
@@ -1153,12 +1233,26 @@ export function Exercise2D({
     /* dashed movement path + travelling arrowhead for the busiest effector */
     let pathCacheKey: DemoPreset | null = null;
     let path: MotionPath = { pts: [], key: null };
+    let ghostJ: Joints | null = null;
+
+    const refreshPathCache = (def: PresetDef) => {
+      if (pathCacheKey === presetRef.current) return;
+      pathCacheKey = presetRef.current;
+      path = computeMotionPath(def);
+      /* ghost = the pose farthest from the start (the "B" position) */
+      ghostJ = null;
+      if (path.key && path.pts.length > 0) {
+        let bi = 0, bd = 0;
+        for (let i = 0; i < path.pts.length; i++) {
+          const d = Math.hypot(path.pts[i][0] - path.pts[0][0], path.pts[i][1] - path.pts[0][1]);
+          if (d > bd) { bd = d; bi = i; }
+        }
+        if (bd > 0.12) ghostJ = jointsFor(def, (bi / PATH_SAMPLES) * def.dur);
+      }
+    };
 
     const drawMotionPath = (def: PresetDef, t: number, j: Joints, layer: "trail" | "arrow") => {
-      if (pathCacheKey !== presetRef.current) {
-        pathCacheKey = presetRef.current;
-        path = computeMotionPath(def);
-      }
+      refreshPathCache(def);
       if (!path.key || path.pts.length === 0) return;
 
       if (layer === "arrow") {
@@ -1171,7 +1265,7 @@ export function Exercise2D({
         if (Math.hypot(vx, vy) > 0.004) {
           const ang = Math.atan2(-vy, vx); // screen-space angle (y flipped)
           const [px, py] = toPx(cur);
-          const r = 0.07 * S();
+          const r = 0.085 * S();
           ctx.globalAlpha = 0.9;
           ctx.fillStyle = cAccent;
           ctx.beginPath();
@@ -1185,11 +1279,11 @@ export function Exercise2D({
         return;
       }
 
-      /* the loop trajectory */
-      ctx.globalAlpha = 0.4;
+      /* the loop trajectory — bold enough to read as the guidance line */
+      ctx.globalAlpha = 0.55;
       ctx.strokeStyle = cAccent;
-      ctx.lineWidth = Math.max(1.5, 0.014 * S());
-      ctx.setLineDash([0.035 * S(), 0.045 * S()]);
+      ctx.lineWidth = Math.max(2, 0.02 * S());
+      ctx.setLineDash([0.05 * S(), 0.05 * S()]);
       ctx.beginPath();
       const [mx, my] = toPx(path.pts[0]);
       ctx.moveTo(mx, my);
@@ -1229,38 +1323,16 @@ export function Exercise2D({
       /* movement trajectory behind the figure */
       drawMotionPath(def, t, j, "trail");
 
+      /* faint "B-position" silhouette so both ends of the movement are
+         visible at once, like classic A→B exercise diagrams */
+      drawGhost(ghostJ);
+
       /* far limbs */
       drawLimbArm(j.shoulder, j.elbowB, j.handB, false, def.props?.gloves);
       drawLimbLeg(j.hip, j.kneeB, j.ankleB, j.toeB, false);
 
-      /* torso: pants at the hips, shirt trunk + shoulder cap */
-      circle(j.hip, 0.072, P.pants);
-      line(j.hip, j.shoulder, 0.13, P.shirt);
-      circle(j.shoulder, 0.064, P.shirt);
-
-      /* neck + head: skin face with a hair crescent at the back-top, so the
-         facing direction reads instantly (no nose needed) */
-      {
-        const a = pose.body + pose.torso + pose.head; // head "up" direction
-        const [ux, uy] = dir(a);
-        const [fx, fy] = dir(a + 90); // facing direction
-        const neckBase: [number, number] = [
-          j.headC[0] - ux * (L.headR + L.neck),
-          j.headC[1] - uy * (L.headR + L.neck),
-        ];
-        line(neckBase, [j.headC[0] - ux * L.headR * 0.4, j.headC[1] - uy * L.headR * 0.4], 0.055, P.skin);
-        /* hair behind, face in front (offset toward facing) */
-        const hairC: [number, number] = [
-          j.headC[0] - fx * 0.012 + ux * 0.01,
-          j.headC[1] - fy * 0.012 + uy * 0.01,
-        ];
-        circle(hairC, L.headR * 1.04, P.hair);
-        const faceC: [number, number] = [
-          j.headC[0] + fx * 0.03 - ux * 0.008,
-          j.headC[1] + fy * 0.03 - uy * 0.008,
-        ];
-        circle(faceC, L.headR * 0.92, P.skin);
-      }
+      /* torso + faceless head, reference style */
+      drawTorso(j, pose.body + pose.torso, pose.body + pose.torso + pose.head);
 
       /* near limbs */
       drawLimbLeg(j.hip, j.kneeF, j.ankleF, j.toeF, true);
