@@ -113,6 +113,7 @@ function LessonDetail({
             <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
               {demoMode === "3d" && has3d ? (
                 <Coach3D
+                  preset={ex.demo}
                   className="h-64 w-full sm:h-80"
                   unavailableText={t("demo3dError")}
                 />

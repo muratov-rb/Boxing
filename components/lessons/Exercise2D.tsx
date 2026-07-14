@@ -938,6 +938,17 @@ function computeMotionPath(def: PresetDef): MotionPath {
   return { pts: best ? tracks[best] : [], key: best };
 }
 
+/* Joint sampler shared with the 3D coach (Coach3D drives its skeleton from
+   the same audited keyframe data, so 2D and 3D always agree on form). */
+export type { Joints };
+export function demoJoints(preset: DemoPreset, time: number): Joints {
+  const def = PRESETS[preset] ?? PRESETS.squat;
+  return jointsFor(def, time);
+}
+export function demoDuration(preset: DemoPreset): number {
+  return (PRESETS[preset] ?? PRESETS.squat).dur;
+}
+
 /* Debug hook for numeric pose checks from the browser console / dev tools. */
 function __sampleJoints(preset: DemoPreset, phase: number) {
   const def = PRESETS[preset] ?? PRESETS.squat;

@@ -379,7 +379,7 @@
     "dragHint": "Watch the loop — every rep shows the exact movement path.",
     "demo2d": "2D guide",
     "demo3d": "3D model",
-    "rotateHint": "Drag to rotate the 3D model — scroll or pinch to zoom.",
+    "rotateHint": "The coach performs the exercise — drag to rotate, scroll or pinch to zoom.",
     "demo3dError": "The 3D model could not be loaded.",
     "musclesHint": "Red = the muscles this lesson targets.",
     "technique": "The right technique",
