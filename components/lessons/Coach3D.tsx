@@ -40,28 +40,35 @@ export function Coach3D({
 
     (async () => {
       const THREE = await import("three");
-      const [{ GLTFLoader }, { OrbitControls }, { MeshoptDecoder }] =
+      const [{ GLTFLoader }, { OrbitControls }, { MeshoptDecoder }, { RoomEnvironment }] =
         await Promise.all([
           import("three/examples/jsm/loaders/GLTFLoader.js"),
           import("three/examples/jsm/controls/OrbitControls.js"),
           import("three/examples/jsm/libs/meshopt_decoder.module.js"),
+          import("three/examples/jsm/environments/RoomEnvironment.js"),
         ]);
       if (disposed) return;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(host.clientWidth, host.clientHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 0.9;
       renderer.domElement.style.display = "block";
       renderer.domElement.style.width = "100%";
       renderer.domElement.style.height = "100%";
       host.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
-      scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x241f1a, 1.1));
-      const key = new THREE.DirectionalLight(0xffffff, 2.0);
+      // studio IBL so PBR skin/cloth textures read like the Tripo viewer
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      pmrem.dispose();
+      scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x241f1a, 0.35));
+      const key = new THREE.DirectionalLight(0xffffff, 1.1);
       key.position.set(2.5, 4, 2.5);
       scene.add(key);
-      const rim = new THREE.DirectionalLight(0x9db8ff, 0.7);
+      const rim = new THREE.DirectionalLight(0x9db8ff, 0.5);
       rim.position.set(-2, 1.5, -2.5);
       scene.add(rim);
 
@@ -82,18 +89,32 @@ export function Coach3D({
       controls.maxDistance = 5;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 1.1;
+      // drag/zoom stays responsive even where rAF is throttled
+      controls.addEventListener("change", () => renderer.render(scene, camera));
 
-      // soft contact shadow (fake — cheap radial disc)
+      // platform: soft contact shadow + tick ring (matches the reference look)
       const discCanvas = document.createElement("canvas");
-      discCanvas.width = discCanvas.height = 128;
+      discCanvas.width = discCanvas.height = 256;
       const dc = discCanvas.getContext("2d")!;
-      const grad = dc.createRadialGradient(64, 64, 8, 64, 64, 64);
-      grad.addColorStop(0, "rgba(0,0,0,0.42)");
+      const grad = dc.createRadialGradient(128, 128, 12, 128, 128, 104);
+      grad.addColorStop(0, "rgba(0,0,0,0.5)");
       grad.addColorStop(1, "rgba(0,0,0,0)");
       dc.fillStyle = grad;
-      dc.fillRect(0, 0, 128, 128);
+      dc.fillRect(0, 0, 256, 256);
+      dc.strokeStyle = "rgba(255,255,255,0.6)";
+      dc.lineCap = "round";
+      for (let i = 0; i < 48; i++) {
+        const a = (i / 48) * Math.PI * 2;
+        const long = i % 4 === 0;
+        const r0 = long ? 104 : 112;
+        dc.lineWidth = long ? 3 : 2;
+        dc.beginPath();
+        dc.moveTo(128 + Math.cos(a) * r0, 128 + Math.sin(a) * r0);
+        dc.lineTo(128 + Math.cos(a) * 122, 128 + Math.sin(a) * 122);
+        dc.stroke();
+      }
       const disc = new THREE.Mesh(
-        new THREE.CircleGeometry(0.8, 48),
+        new THREE.CircleGeometry(1.0, 64),
         new THREE.MeshBasicMaterial({
           map: new THREE.CanvasTexture(discCanvas),
           transparent: true,
@@ -107,6 +128,11 @@ export function Coach3D({
       let mixer: import("three").AnimationMixer | null = null;
       const clock = new THREE.Clock();
 
+      const dbg: Record<string, unknown> = { scene, camera, renderer };
+      if (process.env.NODE_ENV !== "production") {
+        (window as unknown as Record<string, unknown>).__coach3d = dbg;
+      }
+
       const loader = new GLTFLoader();
       loader.setMeshoptDecoder(MeshoptDecoder);
       loader.load(
@@ -116,13 +142,16 @@ export function Coach3D({
           const root = gltf.scene;
           // the scan ships without materials/textures — studio clay look
           const clay = new THREE.MeshStandardMaterial({
-            color: 0x97a2b8,
-            roughness: 0.55,
+            color: 0x67748c,
+            roughness: 0.6,
             metalness: 0.05,
           });
           root.traverse((o) => {
             const mesh = o as import("three").Mesh;
             if (mesh.isMesh) {
+              // model ships without normals (smaller file) — indexed geometry
+              // gives smooth vertex normals here
+              if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
               const m = mesh.material as import("three").MeshStandardMaterial;
               if (!m || !("map" in m) || (!m.map && m.name === "")) mesh.material = clay;
             }
@@ -138,11 +167,16 @@ export function Coach3D({
           root.position.z -= c.z;
           root.position.y -= box2.min.y;
           scene.add(root);
+          dbg.root = root;
           controls.target.set(0, (box2.max.y - box2.min.y) / 2, 0);
           if (gltf.animations.length) {
             mixer = new THREE.AnimationMixer(root);
             mixer.clipAction(gltf.animations[0]).play();
           }
+          // present the loaded model immediately — rAF can be throttled in
+          // background/occluded tabs, and the first impression matters
+          controls.update();
+          renderer.render(scene, camera);
         },
         undefined,
         () => {

@@ -1,16 +1,26 @@
 /**
  * Compress a raw (Tripo3D / Blender) GLB into a web-ready coach model.
  *
- *   node scripts/prepare-coach-model.mjs "D:/Practise/3D model/modelToUsed.glb"
+ *   node scripts/prepare-coach-model.mjs "D:/path/to/model.glb"
  *
- * Pipeline: weld duplicate vertices → simplify to ~5% of triangles →
- * meshopt-compress → public/models/coach.glb (target well under 10 MB).
- * The site auto-detects the file and shows the "3D model" tab in lessons.
+ * Scan exports are "vertex soup" (no shared vertices), so the pipeline is:
+ * strip normals/UVs → weld positions into real topology → simplify to ~5%
+ * of the triangles → recompute smooth normals → meshopt-compress →
+ * public/models/coach.glb. The site auto-detects the file and shows the
+ * "3D model" tab in lessons.
  */
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import os from "node:os";
+import { NodeIO } from "@gltf-transform/core";
+import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
+import {
+  dedup,
+  prune,
+  simplify,
+  weld,
+  meshopt,
+} from "@gltf-transform/functions";
+import { MeshoptEncoder, MeshoptSimplifier } from "meshoptimizer";
 
 const input = process.argv[2];
 if (!input || !fs.existsSync(input)) {
@@ -41,26 +51,54 @@ if (chunkTag !== "JSON" || Math.abs(fileSize - declared) > 64) {
 const outDir = path.join(process.cwd(), "public", "models");
 fs.mkdirSync(outDir, { recursive: true });
 const out = path.join(outDir, "coach.glb");
-const tmp1 = path.join(os.tmpdir(), "coach_weld.glb");
-const tmp2 = path.join(os.tmpdir(), "coach_simplify.glb");
 
-function run(args) {
-  console.log("> gltf-transform", args.join(" "));
-  const r = spawnSync("npx", ["--yes", "@gltf-transform/cli", ...args], {
-    stdio: "inherit",
-    shell: process.platform === "win32",
-  });
-  if (r.status !== 0) process.exit(r.status ?? 1);
+await MeshoptEncoder.ready;
+await MeshoptSimplifier.ready;
+
+const io = new NodeIO()
+  .registerExtensions(ALL_EXTENSIONS)
+  .registerDependencies({ "meshopt.encoder": MeshoptEncoder });
+
+console.log("reading", input, `(${(fileSize / 1048576).toFixed(1)} MB)…`);
+const doc = await io.read(input);
+
+const stats = () => {
+  let verts = 0, tris = 0, textured = false;
+  for (const mesh of doc.getRoot().listMeshes())
+    for (const prim of mesh.listPrimitives()) {
+      const vc = prim.getAttribute("POSITION")?.getCount() ?? 0;
+      verts += vc;
+      tris += (prim.getIndices()?.getCount() ?? vc) / 3;
+      if (prim.getMaterial()?.getBaseColorTexture()) textured = true;
+    }
+  return { verts, tris, textured };
+};
+const before = stats();
+console.log(`before: ${before.verts} verts, ${before.tris} tris, textured=${before.textured}`);
+
+// Untextured scan: normals/UVs per-corner are what block welding — drop them
+// (normals get recomputed after simplification). Textured models keep UVs.
+if (!before.textured) {
+  for (const mesh of doc.getRoot().listMeshes())
+    for (const prim of mesh.listPrimitives())
+      for (const sem of prim.listSemantics())
+        if (sem !== "POSITION") prim.setAttribute(sem, null);
 }
 
-run(["weld", input, tmp1]);
-run(["simplify", tmp1, tmp2, "--ratio", "0.05", "--error", "0.001"]);
-run(["meshopt", tmp2, out, "--level", "medium"]);
+await doc.transform(
+  prune(),
+  dedup(),
+  weld(),
+  simplify({ simplifier: MeshoptSimplifier, ratio: 0.05, error: 0.01 }),
+  prune(),
+);
+// no normals written on purpose: three's GLTFLoader computes smooth vertex
+// normals for indexed geometry, which looks better than flat normals here
+await doc.transform(meshopt({ encoder: MeshoptEncoder, level: "medium" }));
 
-const mb = (p) => (fs.statSync(p).size / 1048576).toFixed(1) + " MB";
-console.log(`\nDone: ${input} (${mb(input)}) -> public/models/coach.glb (${mb(out)})`);
-if (fs.statSync(out).size > 12 * 1048576) {
-  console.warn("Still heavy — consider --ratio 0.02 or texture downscaling.");
-}
-fs.rmSync(tmp1, { force: true });
-fs.rmSync(tmp2, { force: true });
+const after = stats();
+await io.write(out, doc);
+const outMB = fs.statSync(out).size / 1048576;
+console.log(`after:  ${after.verts} verts, ${Math.round(after.tris)} tris`);
+console.log(`Done: public/models/coach.glb (${outMB.toFixed(1)} MB)`);
+if (outMB > 12) console.warn("Still heavy — try ratio 0.02 in this script.");
