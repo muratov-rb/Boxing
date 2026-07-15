@@ -7,7 +7,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { EXERCISES, type DemoPreset } from "@/lib/exercises";
-import { Exercise2D } from "@/components/lessons/Exercise2D";
+import { Coach3D } from "@/components/lessons/Coach3D";
 
 const PRESETS = [...new Set(EXERCISES.map((e) => e.demo))];
 
@@ -24,7 +24,7 @@ function RigBench() {
         Rig bench — <span className="text-blood">{preset}</span>
       </h1>
       <div className="mt-4 overflow-hidden rounded-[20px] border border-line/70 bg-void/40">
-        <Exercise2D key={preset} preset={preset} className="h-[420px] w-full" />
+        <Coach3D key={preset} preset={preset} className="h-[420px] w-full" />
       </div>
       <div className="mt-4 flex flex-wrap gap-1.5">
         {PRESETS.map((p) => (

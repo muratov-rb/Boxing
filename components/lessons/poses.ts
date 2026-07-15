@@ -1,24 +1,13 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import type { DemoPreset } from "@/lib/exercises";
 
 /* ===========================================================================
-   Exercise2D — precise 2D exercise demos.
-   A side-view figure drawn on canvas, animated through keyframed joint
-   angles (the classic exercise-illustration style). Clearer than a 3D scene:
-   one canonical viewing angle, exact joint articulation, equipment props
-   (barbell, bench, bag, rope…) drawn in-plane. No assets — everything is
-   procedural.
-
-   Conventions (author-side, degrees):
-   - Figure faces +x (right). Floor at y = 0. Units ≈ metres.
-   - body  : whole-figure pitch from vertical. +90 = face-down horizontal
-             (head right), -90 = lying on the back (head left).
-   - torso : bend at the waist relative to the pelvis. + folds toward belly.
-   - sh/el : shoulder flexion (+ toward belly/front) and elbow flexion.
-   - hip/kn: hip flexion (+ toward belly) and knee flexion (+ heel to butt).
-   - F = near-side limb (drawn dark), B = far side (drawn faded).
+   poses — the exercise animation library.
+   Keyframed joint angles for every demo preset, with FK, planting and floor
+   clamps. This data drives the 3D coach (Coach3D). Author conventions
+   (degrees, side view): figure faces +x, floor y = 0, units ≈ metres.
+   - body : whole-figure pitch. +90 prone (head right), -90 supine.
+   - torso: waist bend (+ toward belly). sh/el, hip/kn: joint flexion.
+   - F = near-side limb (maps to the coach's right), B = far side (left).
    =========================================================================== */
 
 /* ------------------------------ pose model ------------------------------- */
@@ -47,7 +36,7 @@ interface Props {
   wall?: number; // x position
 }
 
-interface PresetDef {
+export interface PresetDef {
   dur: number; // seconds per loop
   frames: Frame[];
   props?: Props;
@@ -84,7 +73,7 @@ const GUARD: Partial<Pose> = {
 
 /* ------------------------- the animation library ------------------------- */
 
-const PRESETS: Record<DemoPreset, PresetDef> = {
+export const PRESETS: Record<DemoPreset, PresetDef> = {
   /* ------------------------------ boxing ------------------------------- */
   jab: {
     dur: 2, props: { gloves: true },
@@ -900,16 +889,16 @@ function jointsFor(def: PresetDef, time: number): Joints {
    moves the most (hand, foot or hip) as a dashed path with a direction
    arrow — exactly how classic exercise diagrams communicate a movement. */
 
-type EffectorKey = "handF" | "toeF" | "hip" | "headC" | "shoulder";
+export type EffectorKey = "handF" | "toeF" | "hip" | "headC" | "shoulder";
 
-interface MotionPath {
+export interface MotionPath {
   pts: [number, number][]; // sampled loop of the chosen effector
   key: EffectorKey | null;
 }
 
 const PATH_SAMPLES = 56;
 
-function computeMotionPath(def: PresetDef): MotionPath {
+export function computeMotionPath(def: PresetDef): MotionPath {
   const keys: EffectorKey[] = ["handF", "toeF", "hip", "headC", "shoulder"];
   const tracks: Record<EffectorKey, [number, number][]> = {
     handF: [], toeF: [], hip: [], headC: [], shoulder: [],
@@ -958,412 +947,7 @@ if (typeof window !== "undefined") {
   (window as unknown as Record<string, unknown>).__samplePose = __sampleJoints;
 }
 
-/* --------------------------------- component ----------------------------- */
-
-export function Exercise2D({
-  preset,
-  className = "",
-}: {
-  preset: DemoPreset;
-  className?: string;
-}) {
-  const hostRef = useRef<HTMLDivElement>(null);
-  const presetRef = useRef(preset);
-  presetRef.current = preset;
-
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-    const canvas = document.createElement("canvas");
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    canvas.style.display = "block";
-    host.appendChild(canvas);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let w = 0, h = 0, dpr = 1;
-    const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = host.clientWidth || 300;
-      h = host.clientHeight || 300;
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-    };
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(host);
-
-    /* flat-vector palette, matched to the classic workout-app illustration
-       style: blue tank, dark shorts, faceless dark head, skin limbs, blue
-       shoes. Fixed colours — reads on light & dark themes alike; only the
-       floor/prop grey follows the theme. */
-    const P = {
-      tank: "#3f9fe8", tankFar: "#2c77b4",
-      dark: "#262a33", darkFar: "#15181e",
-      skin: "#e8b48c", skinFar: "#c8976c",
-      shoe: "#3b74d9", shoeFar: "#28509c",
-      glove: "#c11f1f", gloveFar: "#871411",
-      metal: "#6e7787", plate: "#39404f",
-    };
-    let cAccent = "#e30f2a", cProp = "#8a93a3";
-    let paletteTick = 0;
-    const readPalette = () => {
-      const cs = getComputedStyle(host);
-      const blood = cs.getPropertyValue("--color-blood").trim();
-      const ash = cs.getPropertyValue("--color-ash").trim();
-      if (blood) cAccent = blood;
-      if (ash) cProp = ash;
-    };
-    readPalette();
-
-    /* world→screen. The figure is ~1.05 units tall, so frame ~1.5 units of
-       height and ~2 of width — the athlete fills the canvas instead of
-       floating in empty space. */
-    const S = () => Math.min(w / 2.05, h / 1.5);
-    const toPx = (pt: [number, number]): [number, number] => {
-      const s = S();
-      return [w / 2 + pt[0] * s, h * 0.9 - pt[1] * s];
-    };
-
-    const line = (a: [number, number], b: [number, number], width: number, color: string, alpha = 1) => {
-      const [x1, y1] = toPx(a);
-      const [x2, y2] = toPx(b);
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width * S();
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-    };
-    const circle = (c: [number, number], r: number, color: string, alpha = 1, fill = true) => {
-      const [x, y] = toPx(c);
-      ctx.globalAlpha = alpha;
-      ctx.beginPath();
-      ctx.arc(x, y, r * S(), 0, Math.PI * 2);
-      if (fill) { ctx.fillStyle = color; ctx.fill(); }
-      else { ctx.strokeStyle = color; ctx.lineWidth = 0.02 * S(); ctx.stroke(); }
-      ctx.globalAlpha = 1;
-    };
-
-    /* tapered filled limb — the "between 2D and 3D" volume of the reference
-       illustrations comes from limbs that thin toward the extremity */
-    const tapered = (a: [number, number], b: [number, number], wa: number, wb: number, color: string, alpha = 1) => {
-      const [x1, y1] = toPx(a);
-      const [x2, y2] = toPx(b);
-      const dx = x2 - x1, dy = y2 - y1;
-      const len = Math.hypot(dx, dy) || 1;
-      const nx = -dy / len, ny = dx / len;
-      const r1 = (wa * S()) / 2, r2 = (wb * S()) / 2;
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.moveTo(x1 + nx * r1, y1 + ny * r1);
-      ctx.lineTo(x2 + nx * r2, y2 + ny * r2);
-      ctx.lineTo(x2 - nx * r2, y2 - ny * r2);
-      ctx.lineTo(x1 - nx * r1, y1 - ny * r1);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath(); ctx.arc(x1, y1, r1, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x2, y2, r2, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1;
-    };
-
-    /* arms are bare skin (tank top); hands get gloves on boxing moves */
-    const drawLimbArm = (sh: [number, number], el: [number, number], hd: [number, number], near: boolean, gloves?: boolean) => {
-      const skin = near ? P.skin : P.skinFar;
-      const glove = near ? P.glove : P.gloveFar;
-      tapered(sh, el, near ? 0.088 : 0.074, near ? 0.064 : 0.054, skin);
-      tapered(el, hd, near ? 0.062 : 0.052, near ? 0.044 : 0.038, skin);
-      circle(hd, gloves ? 0.062 : 0.036, gloves ? glove : skin);
-    };
-    /* legs: dark shorts over the upper thigh, skin below, blue shoe */
-    const mix = (a: [number, number], b: [number, number], k: number): [number, number] =>
-      [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
-    const drawLimbLeg = (hip: [number, number], kn: [number, number], an: [number, number], toe: [number, number], near: boolean) => {
-      const skin = near ? P.skin : P.skinFar;
-      const dark = near ? P.dark : P.darkFar;
-      const shoe = near ? P.shoe : P.shoeFar;
-      tapered(hip, kn, near ? 0.1 : 0.085, near ? 0.07 : 0.06, skin);
-      tapered(kn, an, near ? 0.068 : 0.058, near ? 0.046 : 0.04, skin);
-      /* shorts leg covers the upper 45% of the thigh */
-      tapered(hip, mix(hip, kn, 0.45), near ? 0.115 : 0.098, near ? 0.095 : 0.082, dark);
-      /* shoe: chunky capsule from ankle past the toe */
-      tapered(an, toe, near ? 0.075 : 0.064, near ? 0.085 : 0.072, shoe);
-    };
-
-    /* tank-top torso (widens waist→chest), dark shorts block at the hips,
-       skin neck and the reference's faceless dark head */
-    const drawTorso = (jj: Joints, upAngle: number, headAngle: number) => {
-      const [hx, hy] = toPx(jj.hip);
-      const [sx2, sy2] = toPx(jj.shoulder);
-      const dx = sx2 - hx, dy = sy2 - hy;
-      const len = Math.hypot(dx, dy) || 1;
-      const nx = -dy / len, ny = dx / len;
-      const wWaist = 0.082 * S(), wChest = 0.112 * S();
-      ctx.fillStyle = P.tank;
-      ctx.beginPath();
-      ctx.moveTo(hx + nx * wWaist, hy + ny * wWaist);
-      ctx.lineTo(sx2 + nx * wChest, sy2 + ny * wChest);
-      ctx.lineTo(sx2 - nx * wChest, sy2 - ny * wChest);
-      ctx.lineTo(hx - nx * wWaist, hy - ny * wWaist);
-      ctx.closePath();
-      ctx.fill();
-      circle(jj.shoulder, 0.098, P.tank); // rounded chest cap
-      circle(jj.hip, 0.088, P.dark); // shorts hip block
-      const [ux, uy] = dir(upAngle);
-      const neckTop: [number, number] = [
-        jj.headC[0] - ux * L.headR * 0.55,
-        jj.headC[1] - uy * L.headR * 0.55,
-      ];
-      tapered(jj.shoulder, neckTop, 0.06, 0.048, P.skin);
-      const [cxp, cyp] = toPx(jj.headC);
-      ctx.fillStyle = P.dark;
-      ctx.beginPath();
-      ctx.ellipse(cxp, cyp, 0.08 * S(), 0.099 * S(), rad(headAngle), 0, Math.PI * 2);
-      ctx.fill();
-    };
-
-    /* ghost of the movement's far pose (the "B" position in classic A→B
-       exercise diagrams), drawn as a faint silhouette behind the live figure */
-    const drawGhost = (g: Joints | null) => {
-      if (!g) return;
-      const c = cProp;
-      const A = 0.16;
-      tapered(g.shoulder, g.elbowB, 0.078, 0.056, c, A);
-      tapered(g.elbowB, g.handB, 0.054, 0.04, c, A);
-      tapered(g.hip, g.kneeB, 0.09, 0.062, c, A);
-      tapered(g.kneeB, g.ankleB, 0.06, 0.042, c, A);
-      tapered(g.ankleB, g.toeB, 0.066, 0.074, c, A);
-      tapered(g.hip, g.shoulder, 0.17, 0.21, c, A);
-      circle(g.headC, L.headR, c, A);
-      tapered(g.hip, g.kneeF, 0.09, 0.062, c, A);
-      tapered(g.kneeF, g.ankleF, 0.06, 0.042, c, A);
-      tapered(g.ankleF, g.toeF, 0.066, 0.074, c, A);
-      tapered(g.shoulder, g.elbowF, 0.078, 0.056, c, A);
-      tapered(g.elbowF, g.handF, 0.054, 0.04, c, A);
-    };
-
-    const drawProps = (props: Props | undefined, j: Joints, t: number, dur: number, behind: boolean) => {
-      if (!props) return;
-      if (behind) {
-        if (props.wall !== undefined) line([props.wall, 0], [props.wall, 1.2], 0.032, cProp, 0.45);
-        if (props.box) {
-          const [cx, bh] = props.box;
-          const [x1, y1] = toPx([cx - 0.19, bh]);
-          const [x2, y2] = toPx([cx + 0.19, 0]);
-          ctx.globalAlpha = 0.4;
-          ctx.fillStyle = cProp;
-          ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
-          ctx.globalAlpha = 1;
-        }
-        if (props.bench) {
-          const [cx, bw] = props.bench;
-          line([cx - bw / 2, 0.38], [cx + bw / 2, 0.38], 0.05, cProp, 0.5);
-          line([cx - bw / 2 + 0.08, 0.38], [cx - bw / 2 + 0.08, 0], 0.035, cProp, 0.5);
-          line([cx + bw / 2 - 0.08, 0.38], [cx + bw / 2 - 0.08, 0], 0.035, cProp, 0.5);
-        }
-        if (props.pullbar) {
-          /* within reach of the hanging figure (hands hang at ~1.28) */
-          line([-0.55, 1.3], [0.55, 1.3], 0.035, cProp, 0.65);
-          line([-0.55, 1.3], [-0.55, 1.42], 0.03, cProp, 0.4);
-          line([0.55, 1.3], [0.55, 1.42], 0.03, cProp, 0.4);
-        }
-        if (props.bag) {
-          line([0.6, 1.34], [0.6, 1.06], 0.015, cProp, 0.6);
-          const [bx, by] = toPx([0.6, 0.78]);
-          ctx.globalAlpha = 0.85;
-          ctx.fillStyle = cAccent;
-          ctx.beginPath();
-          const rw = 0.13 * S(), rh = 0.3 * S();
-          ctx.roundRect(bx - rw, by - rh, rw * 2, rh * 2, rw);
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
-        if (props.speedbag) {
-          line([0.2, 1.06], [0.54, 1.06], 0.03, cProp, 0.6);
-          line([0.37, 1.06], [0.37, 1.0], 0.02, cProp, 0.7);
-          circle([0.37, 0.93], 0.075, cAccent, 0.9);
-        }
-      }
-
-      /* the rope alternates: behind the body going overhead, in front when
-         it passes under the feet */
-      if (props.rope) {
-        const phase = (t / dur) * Math.PI * 2;
-        const swing = Math.sin(phase);
-        const inFront = swing > 0;
-        if (inFront !== behind) {
-          const midX = (j.handF[0] + j.handB[0]) / 2;
-          const midY = (j.handF[1] + j.handB[1]) / 2;
-          const ctrlY = midY + (inFront ? -1 : 1) * (0.55 + 0.75 * Math.abs(swing));
-          const [ax, ay] = toPx([j.handB[0] - 0.02, j.handB[1]]);
-          const [bx2, by2] = toPx([j.handF[0] + 0.02, j.handF[1]]);
-          const [cx2, cy2] = toPx([midX, ctrlY]);
-          ctx.globalAlpha = 0.5;
-          ctx.strokeStyle = cProp;
-          ctx.lineWidth = 0.016 * S();
-          ctx.beginPath();
-          ctx.moveTo(ax, ay);
-          ctx.quadraticCurveTo(cx2, cy2, bx2, by2);
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-        }
-      }
-
-      if (!behind) {
-        if (props.barbell) {
-          const c = j.handF;
-          line([c[0] - 0.3, c[1]], [c[0] + 0.3, c[1]], 0.03, P.metal, 0.95);
-          circle([c[0], c[1]], 0.105, P.plate);
-          circle([c[0], c[1]], 0.045, P.metal);
-        }
-        if (props.dumbbells) {
-          for (const hnd of [j.handB, j.handF]) {
-            line([hnd[0] - 0.08, hnd[1]], [hnd[0] + 0.08, hnd[1]], 0.026, P.metal, 0.95);
-            circle([hnd[0] - 0.08, hnd[1]], 0.042, P.plate);
-            circle([hnd[0] + 0.08, hnd[1]], 0.042, P.plate);
-          }
-        }
-        if (props.kettlebell) {
-          const c: [number, number] = [(j.handF[0] + j.handB[0]) / 2, (j.handF[1] + j.handB[1]) / 2];
-          circle([c[0], c[1] - 0.1], 0.08, P.plate);
-          const [x, y] = toPx(c);
-          ctx.strokeStyle = P.metal;
-          ctx.lineWidth = 0.022 * S();
-          ctx.beginPath();
-          ctx.arc(x, y - 0.02 * S(), 0.055 * S(), Math.PI, 0, false);
-          ctx.stroke();
-        }
-      }
-    };
-
-    /* dashed movement path + travelling arrowhead for the busiest effector */
-    let pathCacheKey: DemoPreset | null = null;
-    let path: MotionPath = { pts: [], key: null };
-    let ghostJ: Joints | null = null;
-
-    const refreshPathCache = (def: PresetDef) => {
-      if (pathCacheKey === presetRef.current) return;
-      pathCacheKey = presetRef.current;
-      path = computeMotionPath(def);
-      /* ghost = the pose farthest from the start (the "B" position) */
-      ghostJ = null;
-      if (path.key && path.pts.length > 0) {
-        let bi = 0, bd = 0;
-        for (let i = 0; i < path.pts.length; i++) {
-          const d = Math.hypot(path.pts[i][0] - path.pts[0][0], path.pts[i][1] - path.pts[0][1]);
-          if (d > bd) { bd = d; bi = i; }
-        }
-        if (bd > 0.12) ghostJ = jointsFor(def, (bi / PATH_SAMPLES) * def.dur);
-      }
-    };
-
-    const drawMotionPath = (def: PresetDef, t: number, j: Joints, layer: "trail" | "arrow") => {
-      refreshPathCache(def);
-      if (!path.key || path.pts.length === 0) return;
-
-      if (layer === "arrow") {
-        /* arrowhead at the effector, pointing along its velocity — drawn in
-           front of the figure so it's always visible */
-        const cur = j[path.key];
-        const ahead = jointsFor(def, t + def.dur * 0.03)[path.key];
-        const vx = ahead[0] - cur[0];
-        const vy = ahead[1] - cur[1];
-        if (Math.hypot(vx, vy) > 0.004) {
-          const ang = Math.atan2(-vy, vx); // screen-space angle (y flipped)
-          const [px, py] = toPx(cur);
-          const r = 0.085 * S();
-          ctx.globalAlpha = 0.9;
-          ctx.fillStyle = cAccent;
-          ctx.beginPath();
-          ctx.moveTo(px + Math.cos(ang) * r * 1.7, py + Math.sin(ang) * r * 1.7);
-          ctx.lineTo(px + Math.cos(ang + 2.6) * r, py + Math.sin(ang + 2.6) * r);
-          ctx.lineTo(px + Math.cos(ang - 2.6) * r, py + Math.sin(ang - 2.6) * r);
-          ctx.closePath();
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
-        return;
-      }
-
-      /* the loop trajectory — bold enough to read as the guidance line */
-      ctx.globalAlpha = 0.55;
-      ctx.strokeStyle = cAccent;
-      ctx.lineWidth = Math.max(2, 0.02 * S());
-      ctx.setLineDash([0.05 * S(), 0.05 * S()]);
-      ctx.beginPath();
-      const [mx, my] = toPx(path.pts[0]);
-      ctx.moveTo(mx, my);
-      for (let i = 1; i < path.pts.length; i++) {
-        const [x, y] = toPx(path.pts[i]);
-        ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-    };
-
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = () => {
-      const t = (performance.now() - t0) / 1000;
-      if (++paletteTick % 60 === 0) readPalette();
-      const def = PRESETS[presetRef.current] ?? PRESETS.squat;
-      const pose = poseAt(def, t);
-      const j = jointsFor(def, t);
-
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-
-      /* floor + soft ground shadow */
-      line([-1.02, 0], [1.02, 0], 0.016, cProp, 0.55);
-      const [sx, sy] = toPx([j.hip[0], 0]);
-      ctx.globalAlpha = 0.12;
-      ctx.fillStyle = "#20242c";
-      ctx.beginPath();
-      ctx.ellipse(sx, sy, 0.4 * S(), 0.045 * S(), 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-
-      drawProps(def.props, j, t, def.dur, true);
-
-      /* movement trajectory behind the figure */
-      drawMotionPath(def, t, j, "trail");
-
-      /* faint "B-position" silhouette so both ends of the movement are
-         visible at once, like classic A→B exercise diagrams */
-      drawGhost(ghostJ);
-
-      /* far limbs */
-      drawLimbArm(j.shoulder, j.elbowB, j.handB, false, def.props?.gloves);
-      drawLimbLeg(j.hip, j.kneeB, j.ankleB, j.toeB, false);
-
-      /* torso + faceless head, reference style */
-      drawTorso(j, pose.body + pose.torso, pose.body + pose.torso + pose.head);
-
-      /* near limbs */
-      drawLimbLeg(j.hip, j.kneeF, j.ankleF, j.toeF, true);
-      drawLimbArm(j.shoulder, j.elbowF, j.handF, true, def.props?.gloves);
-
-      drawProps(def.props, j, t, def.dur, false);
-
-      /* direction arrow on top so it never hides behind a limb */
-      drawMotionPath(def, t, j, "arrow");
-
-      raf = requestAnimationFrame(tick);
-    };
-    tick();
-
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      host.removeChild(canvas);
-    };
-  }, []);
-
-  return <div ref={hostRef} className={className} aria-label="Exercise technique demo" />;
+/** Motion path of the busiest effector for a preset (empty for static holds). */
+export function demoMotionPath(preset: DemoPreset): MotionPath {
+  return computeMotionPath(PRESETS[preset] ?? PRESETS.squat);
 }

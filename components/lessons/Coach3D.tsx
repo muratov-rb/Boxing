@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { DemoPreset } from "@/lib/exercises";
-import { demoJoints, demoDuration, type Joints } from "./Exercise2D";
+import {
+  demoJoints,
+  demoDuration,
+  demoMotionPath,
+  type Joints,
+} from "./poses";
 
 export const COACH_MODEL_URL = "/models/coach.glb";
 
@@ -23,8 +28,8 @@ export function coachModelAvailable(): Promise<boolean> {
  * the model's local space (height 2, floor y=-1, faces +z, A-pose) and match
  * the proportions verified while painting the vertex colors. Each bone is a
  * segment (a→b); vertices are skinned to their nearest segments.
- * At runtime the bones are driven by the SAME keyframe data as the 2D guide
- * (demoJoints), mapped sagittal-plane → 3D (2D forward x → 3D z).
+ * At runtime the bones are driven by the exercise keyframe library (poses.ts),
+ * mapped sagittal-plane → 3D (2D forward x → 3D z, F chain → right side).
  */
 
 type V3 = [number, number, number];
@@ -32,7 +37,7 @@ interface BoneDef {
   name: string;
   a: V3; // bind head
   b: V3; // bind tail
-  ja: keyof Joints | "hip"; // runtime joint for head
+  ja: keyof Joints; // runtime joint for head
   jb: keyof Joints; // runtime joint for tail
   lata: number; // lateral (x) offset applied to the mapped 2D joint
   latb: number;
@@ -43,10 +48,10 @@ interface BoneDef {
 const BONE_DEFS: BoneDef[] = [
   { name: "spine", a: [0, 0.04, 0], b: [0, 0.66, 0], ja: "hip", jb: "shoulder", lata: 0, latb: 0 },
   { name: "head", a: [0, 0.66, 0], b: [0, 0.9, 0], ja: "shoulder", jb: "headC", lata: 0, latb: 0 },
-  { name: "uArmR", a: [0.17, 0.66, 0], b: [0.43, 0.38, 0], ja: "shoulder", jb: "elbowF", lata: 0.17, latb: 0.19, armPenalty: true },
-  { name: "fArmR", a: [0.43, 0.38, 0], b: [0.66, 0.1, 0], ja: "elbowF", jb: "handF", lata: 0.19, latb: 0.2, armPenalty: true },
-  { name: "uArmL", a: [-0.17, 0.66, 0], b: [-0.43, 0.38, 0], ja: "shoulder", jb: "elbowB", lata: -0.17, latb: -0.19, armPenalty: true },
-  { name: "fArmL", a: [-0.43, 0.38, 0], b: [-0.66, 0.1, 0], ja: "elbowB", jb: "handB", lata: -0.19, latb: -0.2, armPenalty: true },
+  { name: "uArmR", a: [0.17, 0.66, 0], b: [0.43, 0.38, 0], ja: "shoulder", jb: "elbowF", lata: 0.17, latb: 0.21, armPenalty: true },
+  { name: "fArmR", a: [0.43, 0.38, 0], b: [0.66, 0.1, 0], ja: "elbowF", jb: "handF", lata: 0.21, latb: 0.23, armPenalty: true },
+  { name: "uArmL", a: [-0.17, 0.66, 0], b: [-0.43, 0.38, 0], ja: "shoulder", jb: "elbowB", lata: -0.17, latb: -0.21, armPenalty: true },
+  { name: "fArmL", a: [-0.43, 0.38, 0], b: [-0.66, 0.1, 0], ja: "elbowB", jb: "handB", lata: -0.21, latb: -0.23, armPenalty: true },
   { name: "thighR", a: [0.09, 0.02, 0], b: [0.09, -0.44, 0], ja: "hip", jb: "kneeF", lata: 0.09, latb: 0.09 },
   { name: "shinR", a: [0.09, -0.44, 0], b: [0.09, -0.9, 0], ja: "kneeF", jb: "ankleF", lata: 0.09, latb: 0.09 },
   { name: "footR", a: [0.09, -0.9, 0], b: [0.09, -0.97, 0.16], ja: "ankleF", jb: "toeF", lata: 0.09, latb: 0.09 },
@@ -57,6 +62,15 @@ const BONE_DEFS: BoneDef[] = [
 
 /** 2D figure is ~1.04 units tall, model local space is 2 units tall. */
 const K2D = 2 / 1.04;
+
+/** lateral offset of the guidance path per effector (just outside the limb) */
+const PATH_LAT: Record<string, number> = {
+  handF: 0.3,
+  toeF: 0.2,
+  hip: 0.24,
+  headC: 0.2,
+  shoulder: 0.24,
+};
 
 function segDist(px: number, py: number, pz: number, a: V3, b: V3): number {
   const abx = b[0] - a[0], aby = b[1] - a[1], abz = b[2] - a[2];
@@ -69,8 +83,8 @@ function segDist(px: number, py: number, pz: number, a: V3, b: V3): number {
 }
 
 /**
- * 3D coach — the user's scan, auto-rigged and driven by the same keyframes
- * as the 2D movement guide, so both views always demonstrate identical form.
+ * 3D coach — the user's scan, auto-rigged and driven by the exercise keyframe
+ * library, with a dashed trajectory line showing the movement path.
  * Without a `preset` it is a static rotate/inspect view.
  */
 export function Coach3D({
@@ -182,14 +196,27 @@ export function Coach3D({
 
       const clock = new THREE.Clock();
 
+      // debug/verification handle (read-only scene refs; harmless in prod)
       const dbg: Record<string, unknown> = { scene, camera, renderer };
-      if (process.env.NODE_ENV !== "production") {
-        (window as unknown as Record<string, unknown>).__coach3d = dbg;
-      }
+      (window as unknown as Record<string, unknown>).__coach3d = dbg;
 
-      /* ------------------- runtime rig state ------------------- */
+      /* ------------------- rig + animation driver ------------------- */
       let bones: import("three").Bone[] = [];
-      let applyPose: ((time: number) => void) | null = null;
+      const bindDirs = BONE_DEFS.map((def) =>
+        new THREE.Vector3(def.b[0] - def.a[0], def.b[1] - def.a[1], def.b[2] - def.a[2]).normalize(),
+      );
+      let modelRoot: import("three").Object3D | null = null;
+      let pathGroup: import("three").Group | null = null;
+      let driver: ((time: number) => void) | null = null;
+
+      const vA = new THREE.Vector3();
+      const vB = new THREE.Vector3();
+      const dirV = new THREE.Vector3();
+      const q = new THREE.Quaternion();
+      const qa = new THREE.Quaternion();
+      const qb = new THREE.Quaternion();
+      const FRONT = new THREE.Vector3(0, 0, 1);
+      const ONE = new THREE.Vector3(1, 1, 1);
 
       const buildRig = (src: import("three").Mesh): import("three").SkinnedMesh => {
         const geo = src.geometry;
@@ -209,7 +236,6 @@ export function Coach3D({
             if (def.armPenalty && torsoZone) d *= 2.2;
             dists[b] = Math.max(d, 0.02);
           }
-          // top three influences
           const order = [...dists.keys()].sort((x, y) => dists[x] - dists[y]).slice(0, 3);
           let sum = 0;
           const w = order.map((b) => {
@@ -237,35 +263,84 @@ export function Coach3D({
           return new THREE.Matrix4().makeTranslation(-def.a[0], -def.a[1], -def.a[2]);
         });
         smesh.bind(new THREE.Skeleton(bones, inverses));
-
-        // --- per-frame driver: 2D joints → bone world (mesh-local) matrices ---
-        if (preset) {
-          const dur = demoDuration(preset);
-          const centerX = demoJoints(preset, 0).hip[0];
-          const bindDir = BONE_DEFS.map((def) =>
-            new THREE.Vector3(def.b[0] - def.a[0], def.b[1] - def.a[1], def.b[2] - def.a[2]).normalize(),
-          );
-          const vA = new THREE.Vector3();
-          const vB = new THREE.Vector3();
-          const dirV = new THREE.Vector3();
-          const q = new THREE.Quaternion();
-          const one = new THREE.Vector3(1, 1, 1);
-          const map = (p: [number, number], lat: number, out: import("three").Vector3) =>
-            out.set(lat, p[1] * K2D - 1, (p[0] - centerX) * K2D);
-          applyPose = (time: number) => {
-            const j = demoJoints(preset, time % dur);
-            for (let b = 0; b < BONE_DEFS.length; b++) {
-              const def = BONE_DEFS[b];
-              map(j[def.ja], def.lata, vA);
-              map(j[def.jb], def.latb, vB);
-              dirV.subVectors(vB, vA).normalize();
-              q.setFromUnitVectors(bindDir[b], dirV);
-              bones[b].matrix.compose(vA, q, one);
-            }
-          };
-          applyPose(0);
-        }
         return smesh;
+      };
+
+      /** dashed trajectory of the busiest effector + a marker that rides it */
+      const buildPath = (p: DemoPreset, centerX: number) => {
+        if (pathGroup) {
+          modelRoot?.remove(pathGroup);
+          pathGroup.traverse((o) => {
+            const m = o as import("three").Mesh;
+            if (m.isMesh || (o as import("three").Line).isLine) {
+              m.geometry?.dispose();
+              (m.material as import("three").Material)?.dispose();
+            }
+          });
+          pathGroup = null;
+        }
+        const mp = demoMotionPath(p);
+        if (!mp.key || mp.pts.length < 2) return null;
+        const lat = PATH_LAT[mp.key] ?? 0.24;
+        const pts3 = mp.pts.map(
+          (pt) => new THREE.Vector3(lat, pt[1] * K2D - 1, (pt[0] - centerX) * K2D),
+        );
+        pathGroup = new THREE.Group();
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts3);
+        const line = new THREE.Line(
+          lineGeo,
+          new THREE.LineDashedMaterial({
+            color: 0xe0263a,
+            dashSize: 0.05,
+            gapSize: 0.035,
+            transparent: true,
+            opacity: 0.9,
+          }),
+        );
+        line.computeLineDistances();
+        pathGroup.add(line);
+        const marker = new THREE.Mesh(
+          new THREE.SphereGeometry(0.032, 16, 12),
+          new THREE.MeshBasicMaterial({ color: 0xe0263a }),
+        );
+        marker.name = "pathMarker";
+        pathGroup.add(marker);
+        modelRoot?.add(pathGroup);
+        return { pts3, marker };
+      };
+
+      const makeDriver = (p: DemoPreset) => {
+        const dur = demoDuration(p);
+        const centerX = demoJoints(p, 0).hip[0];
+        const path = buildPath(p, centerX);
+        driver = (time: number) => {
+          const j = demoJoints(p, time % dur);
+          for (let b = 0; b < BONE_DEFS.length; b++) {
+            const def = BONE_DEFS[b];
+            const ja = j[def.ja];
+            const jb = j[def.jb];
+            vA.set(def.lata, ja[1] * K2D - 1, (ja[0] - centerX) * K2D);
+            vB.set(def.latb, jb[1] * K2D - 1, (jb[0] - centerX) * K2D);
+            dirV.subVectors(vB, vA).normalize();
+            // near-antiparallel targets (legs straight up etc.) go through an
+            // intermediate axis so the limb never pops to a flipped roll
+            if (bindDirs[b].dot(dirV) < -0.9) {
+              qa.setFromUnitVectors(bindDirs[b], FRONT);
+              qb.setFromUnitVectors(FRONT, dirV);
+              q.multiplyQuaternions(qb, qa);
+            } else {
+              q.setFromUnitVectors(bindDirs[b], dirV);
+            }
+            bones[b].matrix.compose(vA, q, ONE);
+          }
+          if (path) {
+            const f = ((time % dur) / dur) * (path.pts3.length - 1);
+            const i0 = Math.floor(f);
+            const i1 = Math.min(i0 + 1, path.pts3.length - 1);
+            path.marker.position.lerpVectors(path.pts3[i0], path.pts3[i1], f - i0);
+          }
+        };
+        driver(0);
       };
 
       const loader = new GLTFLoader();
@@ -310,11 +385,14 @@ export function Coach3D({
           root.position.z -= c.z;
           root.position.y -= box2.min.y;
           scene.add(root);
+          modelRoot = root;
+          if (preset) makeDriver(preset);
           dbg.root = root;
           dbg.setTime = (t: number) => {
-            applyPose?.(t);
+            driver?.(t);
             renderer.render(scene, camera);
           };
+          dbg.setPreset = (p: DemoPreset) => makeDriver(p);
           controls.target.set(0, (box2.max.y - box2.min.y) / 2, 0);
           // present the loaded model immediately — rAF can be throttled in
           // background/occluded tabs, and the first impression matters
@@ -331,7 +409,7 @@ export function Coach3D({
       const tick = () => {
         raf = requestAnimationFrame(tick);
         controls.update();
-        if (applyPose) applyPose(clock.getElapsedTime());
+        if (driver) driver(clock.getElapsedTime());
         renderer.render(scene, camera);
       };
       tick();

@@ -17,8 +17,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "./BodyMap";
-import { Exercise2D } from "./Exercise2D";
-import { Coach3D, coachModelAvailable } from "./Coach3D";
+import { Coach3D } from "./Coach3D";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
 
@@ -49,18 +48,9 @@ function LessonDetail({
   const t = useTranslations("lessons");
   const locale = useLocale() === "ru" ? "ru" : "en";
   const [done, setDone] = useState(false);
-  const [demoMode, setDemoMode] = useState<"2d" | "3d">("2d");
-  const [has3d, setHas3d] = useState(false);
 
   useEffect(() => {
     setDone(trainedToday());
-    let on = true;
-    coachModelAvailable().then((ok) => {
-      if (on && ok) setHas3d(true);
-    });
-    return () => {
-      on = false;
-    };
   }, []);
 
   return (
@@ -88,42 +78,18 @@ function LessonDetail({
           </button>
         </div>
 
-        {/* movement demo (2D guide / 3D model) + body map */}
+        {/* 3D coach demo + body map */}
         <div className="mt-6 grid gap-4 sm:grid-cols-5">
           <div className="min-w-0 sm:col-span-3">
-            {has3d && (
-              <div className="mb-2 inline-flex overflow-hidden rounded-md border border-line/70">
-                {(["2d", "3d"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setDemoMode(m)}
-                    className={cx(
-                      "px-3 py-1.5 font-condensed text-[11px] uppercase tracking-widest transition-colors",
-                      demoMode === m
-                        ? "bg-blood text-white"
-                        : "bg-void/40 text-ash hover:text-white",
-                    )}
-                  >
-                    {t(m === "2d" ? "demo2d" : "demo3d")}
-                  </button>
-                ))}
-              </div>
-            )}
             <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
-              {demoMode === "3d" && has3d ? (
-                <Coach3D
-                  preset={ex.demo}
-                  className="h-64 w-full sm:h-80"
-                  unavailableText={t("demo3dError")}
-                />
-              ) : (
-                <Exercise2D preset={ex.demo} className="h-64 w-full sm:h-80" />
-              )}
+              <Coach3D
+                preset={ex.demo}
+                className="h-64 w-full sm:h-80"
+                unavailableText={t("demo3dError")}
+              />
             </div>
             <p className="mt-2 flex items-center gap-1.5 text-xs text-ash-dim">
-              <Icon name="target" size={12} />{" "}
-              {demoMode === "3d" && has3d ? t("rotateHint") : t("dragHint")}
+              <Icon name="target" size={12} /> {t("rotateHint")}
             </p>
           </div>
           <div className="sm:col-span-2">
