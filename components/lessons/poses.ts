@@ -139,6 +139,85 @@ export const PRESETS: Record<DemoPreset, PresetDef> = {
       { t: 1, ...GUARD },
     ],
   },
+  cross: {
+    dur: 1.8, props: { gloves: true },
+    frames: [
+      { t: 0, ...GUARD },
+      { t: 0.18, ...GUARD, y: 0.48, knB: 16, torso: 2 },
+      { t: 0.4, ...GUARD, shB: 98, elB: 4, body: 10, torso: 8, x: 0.06 },
+      { t: 0.62, ...GUARD },
+      { t: 1, ...GUARD },
+    ],
+  },
+  doublejab: {
+    dur: 2.6, props: { gloves: true },
+    frames: [
+      { t: 0, ...GUARD },
+      { t: 0.12, ...GUARD, shF: 96, elF: 4, body: 6 },
+      { t: 0.24, ...GUARD, shF: 74, elF: 66, body: 5 },
+      { t: 0.36, ...GUARD, shF: 96, elF: 4, body: 6, x: 0.04 },
+      { t: 0.5, ...GUARD },
+      { t: 0.66, ...GUARD, shB: 98, elB: 4, body: 10, torso: 6, x: 0.06 },
+      { t: 0.82, ...GUARD },
+      { t: 1, ...GUARD },
+    ],
+  },
+  combo123: {
+    dur: 3, props: { gloves: true },
+    frames: [
+      { t: 0, ...GUARD },
+      { t: 0.12, ...GUARD, shF: 96, elF: 4, body: 6 },
+      { t: 0.24, ...GUARD },
+      { t: 0.38, ...GUARD, shB: 98, elB: 4, body: 10, torso: 6, x: 0.05 },
+      { t: 0.52, ...GUARD },
+      { t: 0.62, ...GUARD, shF: 40, elF: 120, torso: -4 },
+      { t: 0.74, ...GUARD, shF: 100, elF: 80, torso: 8, body: 8, x: 0.04 },
+      { t: 0.88, ...GUARD },
+      { t: 1, ...GUARD },
+    ],
+  },
+  parry: {
+    dur: 2.2, props: { gloves: true },
+    frames: [
+      { t: 0, ...GUARD },
+      { t: 0.22, ...GUARD, shB: 78, elB: 108, torso: -5, x: -0.03 },
+      { t: 0.42, ...GUARD },
+      { t: 0.64, ...GUARD, shF: 72, elF: 118, torso: -4, x: -0.03 },
+      { t: 0.84, ...GUARD },
+      { t: 1, ...GUARD },
+    ],
+  },
+  roll: {
+    dur: 2.4, props: { gloves: true },
+    frames: [
+      { t: 0, ...GUARD },
+      { t: 0.2, ...GUARD, y: 0.42, knF: 34, knB: 36, hipF: 32, torso: 20, head: 8 },
+      { t: 0.45, ...GUARD, y: 0.4, knF: 40, knB: 42, hipF: 40, torso: 32, head: 10, x: 0.05 },
+      { t: 0.68, ...GUARD, y: 0.46, knF: 20, knB: 22, torso: 6 },
+      { t: 1, ...GUARD },
+    ],
+  },
+  stepdrag: {
+    dur: 2.2, props: { gloves: true },
+    frames: [
+      { t: 0, ...GUARD, x: -0.1 },
+      { t: 0.18, ...GUARD, x: -0.02, hipF: 28, knF: 22, y: 0.5 },
+      { t: 0.36, ...GUARD, x: 0.06 },
+      { t: 0.56, ...GUARD, x: 0, hipB: -24, knB: 26, y: 0.5 },
+      { t: 0.76, ...GUARD, x: -0.1 },
+      { t: 1, ...GUARD, x: -0.1 },
+    ],
+  },
+  pivot: {
+    dur: 2.2, props: { gloves: true }, plant: "F",
+    frames: [
+      { t: 0, ...GUARD },
+      { t: 0.28, ...GUARD, hipB: 18, knB: 32, body: -2, torso: -6, x: -0.04 },
+      { t: 0.55, ...GUARD, hipB: -30, knB: 14, body: 6, torso: 6, x: 0.03 },
+      { t: 0.8, ...GUARD },
+      { t: 1, ...GUARD },
+    ],
+  },
 
   /* ---------------------------- push family ---------------------------- */
   pushup: {

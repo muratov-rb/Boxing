@@ -10,8 +10,10 @@ import {
   loadProfile,
   mealsToday,
   removeMeal,
+  burnedToday,
   dailyLimit,
   bumpUsage,
+  MEAL_KCAL_MAX,
   type Meal,
   type LimitState,
 } from "@/lib/tracking";
@@ -29,11 +31,14 @@ export function CalorieCard() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [name, setName] = useState("");
   const [kcal, setKcal] = useState("");
+  const [kcalError, setKcalError] = useState(false);
+  const [burned, setBurned] = useState(0);
   const [limit, setLimit] = useState<LimitState | null>(null);
 
   useEffect(() => {
     setMeals(mealsToday());
     setTarget(calorieTarget(loadProfile()));
+    setBurned(burnedToday());
     setLimit(dailyLimit("calorieScan"));
   }, []);
 
@@ -48,20 +53,29 @@ export function CalorieCard() {
 
   const eaten = meals.reduce((s, m) => s + m.kcal, 0);
   const eatenProtein = meals.reduce((s, m) => s + (m.protein ?? 0), 0);
-  const left = target - eaten;
-  const pct = Math.min(100, Math.round((eaten / target) * 100));
+  /* training burn is credited back to the day's budget */
+  const budget = target + burned;
+  const left = budget - eaten;
+  const pct = Math.min(100, Math.round((eaten / budget) * 100));
 
   const submitManual = (e: React.FormEvent) => {
     e.preventDefault();
     const n = Number(kcal);
     if (!name.trim() || !Number.isFinite(n) || n <= 0) return;
+    if (n > MEAL_KCAL_MAX) {
+      setKcalError(true);
+      return;
+    }
+    setKcalError(false);
     setMeals(addMeal(name, n, "manual"));
     setName("");
     setKcal("");
   };
 
+  /* solid background + ≥16px font on mobile: keeps typed text visible and
+     stops iOS from zoom-jumping the viewport on focus */
   const inputCls =
-    "w-full border border-line bg-transparent px-3 py-2 text-sm rounded-md text-bone placeholder:text-ash-dim focus:border-blood transition-colors duration-200 focus:outline-none";
+    "w-full border border-line bg-void/70 px-3 py-2 text-base sm:text-sm rounded-md text-bone placeholder:text-ash-dim focus:border-blood transition-colors duration-200 focus:outline-none";
 
   return (
     <section className="panel p-6">
@@ -85,7 +99,7 @@ export function CalorieCard() {
       <div className="flex items-baseline justify-between">
         <div>
           <span className="font-display text-4xl leading-none">{eaten}</span>
-          <span className="ml-1.5 text-xs text-ash-dim">/ {target} kcal</span>
+          <span className="ml-1.5 text-xs text-ash-dim">/ {budget} kcal</span>
         </div>
         <span
           className={`font-condensed text-sm ${left < 0 ? "text-blood-bright" : "text-ash"}`}
@@ -103,6 +117,11 @@ export function CalorieCard() {
           style={{ width: `${pct}%` }}
         />
       </div>
+      {burned > 0 && (
+        <p className="mt-2 text-xs text-ash-dim">
+          {t("burned", { n: burned })}
+        </p>
+      )}
 
       {/* camera-first scan — the primary way to log a meal */}
       {scanOk ? (
@@ -159,18 +178,24 @@ export function CalorieCard() {
         />
         <input
           value={kcal}
-          onChange={(e) => setKcal(e.target.value)}
+          onChange={(e) => {
+            setKcal(e.target.value);
+            setKcalError(Number(e.target.value) > MEAL_KCAL_MAX);
+          }}
           placeholder="kcal"
           type="number"
           min="1"
+          max={MEAL_KCAL_MAX}
           inputMode="numeric"
-          className={`${inputCls} w-24`}
+          className={`${inputCls} w-24 ${kcalError ? "!border-blood-bright" : ""}`}
         />
         <button type="submit" className="btn btn-primary !px-4 !py-2 text-sm">
           +
         </button>
       </form>
-      <p className="mt-2 text-xs text-ash-dim">{t("calHint")}</p>
+      <p className={`mt-2 text-xs ${kcalError ? "text-blood-bright" : "text-ash-dim"}`}>
+        {kcalError ? t("kcalTooBig", { max: MEAL_KCAL_MAX }) : t("calHint")}
+      </p>
 
       {scannerOpen && (
         <FoodScanner

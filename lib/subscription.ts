@@ -1,9 +1,10 @@
 /* ===========================================================================
    RINGBORNN — subscription plans & entitlements.
-   A 7-day free trial (full access) then one of three paid tiers. Every feature
-   reads its access + numeric limits from the active plan's entitlements, so
-   gating lives in one place. Billing is not wired yet — `setPlan` just records
-   the choice locally; a later Stripe pass swaps that for a real checkout.
+   A 7-day free trial (Budget-level access) then one of three paid tiers.
+   Every feature reads its access + numeric limits from the active plan's
+   entitlements, so gating lives in one place. Billing is not wired yet —
+   `setPlan` just records the choice locally; a later Stripe pass swaps that
+   for a real checkout.
    =========================================================================== */
 
 export type PaidPlanId = "budget" | "pro" | "max";
@@ -27,17 +28,17 @@ export interface Entitlements {
 const INF = Number.POSITIVE_INFINITY;
 
 export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
-  // trial = full Max-level access, unlimited, for 7 days
+  // trial = Budget-level access for 7 days: a real taste, not the whole meal
   trial: {
-    ranks: true,
+    ranks: false,
     streaks: true,
     restRecovery: true,
-    lessonTier: "full",
-    dailyPlansPerWeek: INF,
-    aiNutrition: true,
-    nutritionMealSlots: 4,
-    calorieScansPerDay: INF,
-    techniqueVideosPerDay: INF,
+    lessonTier: "limited",
+    dailyPlansPerWeek: 3,
+    aiNutrition: false,
+    nutritionMealSlots: 0,
+    calorieScansPerDay: 0,
+    techniqueVideosPerDay: 0,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled
   expired: {
@@ -101,15 +102,16 @@ export function entitlementsFor(plan: PlanId): Entitlements {
   return ENTITLEMENTS[plan];
 }
 
-/** Max number of library exercises a tier may see. */
+/** Max number of library lessons a tier may see (the library is the curated
+    boxing-teaching set — techniques/combos/defense/movement, ~16 lessons). */
 export function lessonLimitFor(tier: LessonTier): number {
   switch (tier) {
     case "none":
       return 0;
     case "limited":
-      return 18;
+      return 8;
     case "small":
-      return 40;
+      return 12;
     case "full":
       return INF;
   }

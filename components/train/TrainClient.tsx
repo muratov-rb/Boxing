@@ -14,6 +14,7 @@ import {
   loadProfile,
   markTrainedToday,
   awardXp,
+  addBurned,
   dailyPlanLimit,
   bumpUsage,
   type LimitState,
@@ -113,8 +114,9 @@ export function TrainClient() {
       streakDone.current = true;
       markTrainedToday();
       awardXp("workout"); // completing a full session moves the rank
+      addBurned(estKcal); // credit the burn back to the calorie budget
     }
-  }, [phase]);
+  }, [phase, estKcal]);
 
   const start = () => {
     if (session.length === 0) return;

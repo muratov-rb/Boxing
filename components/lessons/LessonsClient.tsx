@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  BODY_PARTS,
-  EXERCISES,
-  type BodyPart,
+  LIBRARY,
+  LIBRARY_CATS,
+  type LessonCat,
   type Exercise,
 } from "@/lib/exercises";
-import { markTrainedToday, trainedToday, awardXp, entitlements } from "@/lib/tracking";
+import { markTrainedToday, trainedToday, awardXp, addBurned, entitlements } from "@/lib/tracking";
 import { lessonLimitFor } from "@/lib/subscription";
 import { LockedFeature } from "@/components/dashboard/LockedFeature";
 import { Logo } from "@/components/ui/Logo";
@@ -63,7 +63,7 @@ function LessonDetail({
       <div className="panel mx-auto max-w-3xl p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <span className="badge">{t(`bp_${ex.bodyPart}`)}</span>
+            <span className="badge">{t(`cat_${ex.cat}`)}</span>
             <h2 className="mt-3 font-display text-3xl uppercase leading-none sm:text-4xl">
               {ex.name[locale]}
             </h2>
@@ -132,6 +132,7 @@ function LessonDetail({
             onClick={() => {
               markTrainedToday();
               awardXp("lesson"); // each lesson done earns rank XP
+              addBurned(ex.kcal10min); // one lesson ≈ 10 focused minutes
               setDone(true);
             }}
             className="btn btn-primary"
@@ -156,7 +157,7 @@ export function LessonsClient() {
   const locale = useLocale() === "ru" ? "ru" : "en";
 
   const tp = useTranslations("plans");
-  const [part, setPart] = useState<BodyPart | "all">("all");
+  const [cat, setCat] = useState<LessonCat | "all">("all");
   const [open, setOpen] = useState<Exercise | null>(null);
   const [cap, setCap] = useState<number>(Number.POSITIVE_INFINITY);
   const [locked, setLocked] = useState(false);
@@ -168,8 +169,9 @@ export function LessonsClient() {
   }, []);
 
   const full = useMemo(
-    () => (part === "all" ? EXERCISES : EXERCISES.filter((e) => e.bodyPart === part)),
-    [part],
+    () =>
+      LIBRARY.filter((e) => cat === "all" || e.cat === cat),
+    [cat],
   );
   const list = useMemo(() => full.slice(0, cap), [full, cap]);
   const truncated = full.length > list.length;
@@ -207,31 +209,31 @@ export function LessonsClient() {
           </div>
         ) : (
         <>
-        {/* filters */}
+        {/* filters — what the lesson teaches */}
         <div className="mt-8 flex flex-wrap items-center gap-2">
           <button
             type="button"
-            aria-pressed={part === "all"}
-            onClick={() => setPart("all")}
+            aria-pressed={cat === "all"}
+            onClick={() => setCat("all")}
             className={cx(
               "badge transition-colors",
-              part === "all" && "!border-blood !text-blood",
+              cat === "all" && "!border-blood !text-blood",
             )}
           >
             {t("all")}
           </button>
-          {BODY_PARTS.map((bp) => (
+          {LIBRARY_CATS.map((c) => (
             <button
-              key={bp}
+              key={c}
               type="button"
-              aria-pressed={part === bp}
-              onClick={() => setPart(bp)}
+              aria-pressed={cat === c}
+              onClick={() => setCat(c)}
               className={cx(
                 "badge transition-colors",
-                part === bp && "!border-blood !text-blood",
+                cat === c && "!border-blood !text-blood",
               )}
             >
-              {t(`bp_${bp}`)}
+              {t(`cat_${c}`)}
             </button>
           ))}
         </div>
@@ -257,7 +259,7 @@ export function LessonsClient() {
               </div>
               <p className="mt-1 line-clamp-2 text-sm text-ash">{ex.desc[locale]}</p>
               <div className="mt-3 flex items-center justify-between">
-                <span className="badge">{t(`bp_${ex.bodyPart}`)}</span>
+                <span className="badge">{t(`cat_${ex.cat}`)}</span>
                 <span className="font-condensed text-xs uppercase tracking-wider text-blood transition-colors group-hover:text-blood-bright">
                   {t("open")} →
                 </span>

@@ -21,6 +21,7 @@ const K_XP = "pressure.xp"; // XpState
 const K_RANK_SEEN = "pressure.rankSeen"; // last rank index the user celebrated
 const K_SUB = "pressure.sub"; // SubState
 const K_USAGE = "pressure.usage"; // Record<date, Record<UsageKey, number>>
+const K_BURN = "pressure.burn"; // Record<date, number> — kcal burned training
 
 export interface Meal {
   id: string;
@@ -178,18 +179,26 @@ export function isEpicMilestone(streak: number): boolean {
 interface XpState {
   xp: number;
   lastActive: string; // YYYY-MM-DD
+  day?: string; // day the daily-cap counter belongs to
+  dayXp?: number; // XP already earned that day
 }
 
-/** XP thresholds, one per RANKS tier (index-aligned). */
-export const RANK_XP = [0, 100, 240, 430, 680, 1000, 1400, 1900, 2550, 3400, 4500];
+/** XP thresholds, one per RANKS tier (index-aligned).
+    Mastery is measured in years, not sessions: at the daily cap (25 XP) the
+    top rank needs ~2.5 years of PERFECT daily training — real boxers train
+    for years and most never reach elite level, and the ladder reflects that. */
+export const RANK_XP = [0, 150, 400, 850, 1600, 2800, 4600, 7200, 11000, 16500, 24000];
 
 const XP = {
-  visit: 8, // opening the app (once/day)
-  lesson: 25, // marking a lesson done
-  workout: 60, // finishing a guided session
+  visit: 2, // opening the app (once/day)
+  lesson: 6, // marking a lesson done
+  workout: 15, // finishing a guided session
 } as const;
 
-const DECAY_PER_DAY = 18; // XP lost per idle day past the grace window
+/** Hard daily ceiling — grinding ten lessons in one evening is not mastery. */
+const DAILY_XP_CAP = 25;
+
+const DECAY_PER_DAY = 12; // XP lost per idle day past the grace window
 const GRACE_DAYS = 1; // one day off doesn't cost you anything
 
 function dayGap(a: string, b: string): number {
@@ -208,17 +217,19 @@ function writeXp(s: XpState) {
 /** Apply idle decay up to `today` without banking it. */
 function settleXp(state: XpState, today: string): XpState {
   const gap = dayGap(state.lastActive, today);
-  if (gap <= GRACE_DAYS) return { xp: state.xp, lastActive: state.lastActive };
+  if (gap <= GRACE_DAYS) return state;
   const decayed = Math.max(0, Math.round(state.xp - (gap - GRACE_DAYS) * DECAY_PER_DAY));
-  return { xp: decayed, lastActive: today };
+  return { ...state, xp: decayed, lastActive: today };
 }
 
-/** Add XP for an action (banks any pending decay first). */
+/** Add XP for an action (banks any pending decay first, honours the daily cap). */
 export function awardXp(kind: keyof typeof XP): number {
   const today = todayKey();
   const settled = settleXp(readXp(), today);
-  const xp = settled.xp + XP[kind];
-  writeXp({ xp, lastActive: today });
+  const dayXp = settled.day === today ? (settled.dayXp ?? 0) : 0;
+  const grant = Math.max(0, Math.min(XP[kind], DAILY_XP_CAP - dayXp));
+  const xp = settled.xp + grant;
+  writeXp({ xp, lastActive: today, day: today, dayXp: dayXp + grant });
   return xp;
 }
 
@@ -286,6 +297,10 @@ export function mealsToday(): Meal[] {
   return all[todayKey()] ?? [];
 }
 
+/** Sanity bounds for one logged meal — nobody eats a 50,000 kcal lunch. */
+export const MEAL_KCAL_MIN = 1;
+export const MEAL_KCAL_MAX = 2500;
+
 export function addMeal(
   name: string,
   kcal: number,
@@ -297,8 +312,8 @@ export function addMeal(
   const g = (v?: number) => (typeof v === "number" && v >= 0 ? Math.round(v) : undefined);
   const meal: Meal = {
     id: Math.random().toString(36).slice(2, 10),
-    name: name.trim() || "—",
-    kcal: Math.max(0, Math.round(kcal)),
+    name: name.trim().slice(0, 60) || "—",
+    kcal: Math.min(MEAL_KCAL_MAX, Math.max(MEAL_KCAL_MIN, Math.round(kcal))),
     protein: g(macros?.protein),
     carbs: g(macros?.carbs),
     fat: g(macros?.fat),
@@ -316,6 +331,24 @@ export function removeMeal(id: string): Meal[] {
   all[key] = (all[key] ?? []).filter((m) => m.id !== id);
   write(K_MEALS, all);
   return all[key];
+}
+
+/* ------------------------- training burn (kcal) -------------------------- */
+/* Finished workouts/lessons log their kcal estimate, and the calorie counter
+   credits it back against the day's intake. */
+
+export function addBurned(kcal: number): number {
+  const n = Math.max(0, Math.min(3000, Math.round(kcal)));
+  if (n === 0) return burnedToday();
+  const all = read<Record<string, number>>(K_BURN, {});
+  const key = todayKey();
+  all[key] = (all[key] ?? 0) + n;
+  write(K_BURN, all);
+  return all[key];
+}
+
+export function burnedToday(): number {
+  return read<Record<string, number>>(K_BURN, {})[todayKey()] ?? 0;
 }
 
 /* ---------------------------- calorie target ----------------------------- */

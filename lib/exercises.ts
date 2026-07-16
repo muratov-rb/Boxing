@@ -39,14 +39,31 @@ export type MuscleRegion =
    work can come back later without touching the consumers. */
 export type Requirement = "none" | EquipmentId;
 
+/* Library category: what the lesson TEACHES. The Lesson Library shows only
+   teaching content (technique/combo/defense/movement); "conditioning" entries
+   exist for the AI daily-plan builder and never appear in the library. */
+export type LessonCat =
+  | "technique"
+  | "combo"
+  | "defense"
+  | "movement"
+  | "conditioning";
+
 export type DemoPreset =
   /* boxing technique */
   | "jab"
+  | "cross"
   | "hook"
   | "uppercut"
   | "slip"
+  | "parry"
+  | "roll"
   | "footwork"
+  | "stepdrag"
+  | "pivot"
   | "shadowbox"
+  | "doublejab"
+  | "combo123"
   /* push family */
   | "wallpushup"
   | "kneepushup"
@@ -146,6 +163,7 @@ export interface Exercise {
   demo: DemoPreset;
   kcal10min: number; // rough burn per 10 min, for the calorie counter
   workSec: number; // seconds of work per set in a guided session
+  cat: LessonCat; // library category (conditioning = daily-plan only)
 }
 
 /* compact authoring helper — every entry below is pure bodyweight */
@@ -163,6 +181,7 @@ function ex(
   kcal10min: number,
   workSec: number,
   requires: Requirement[] = [],
+  cat?: LessonCat,
 ): Exercise {
   return {
     id,
@@ -177,6 +196,7 @@ function ex(
     demo,
     kcal10min,
     workSec,
+    cat: cat ?? (bodyPart === "technique" ? "technique" : "conditioning"),
   };
 }
 
@@ -206,6 +226,8 @@ export const EXERCISES: Exercise[] = [
     "jab",
     90,
     180,
+    [],
+    "combo",
   ),
   ex(
     "hooks",
@@ -281,6 +303,8 @@ export const EXERCISES: Exercise[] = [
     "slip",
     80,
     120,
+    [],
+    "defense",
   ),
   ex(
     "shadow-footwork",
@@ -306,6 +330,8 @@ export const EXERCISES: Exercise[] = [
     "footwork",
     85,
     180,
+    [],
+    "movement",
   ),
   ex(
     "shadowboxing",
@@ -331,6 +357,197 @@ export const EXERCISES: Exercise[] = [
     "shadowbox",
     110,
     180,
+    [],
+    "combo",
+  ),
+  ex(
+    "cross",
+    ["The Cross", "Кросс"],
+    [
+      "Your power hand. The rear straight travels through the whole body — hip, shoulder, fist.",
+      "Твоя ударная рука. Задний прямой идёт через всё тело — бедро, плечо, кулак.",
+    ],
+    [
+      "From guard: drive off the rear foot",
+      "Rotate hip and shoulder together, arm fires straight",
+      "Chin stays behind the lead shoulder, hand snaps back",
+    ],
+    [
+      "Из стойки: толкнись задней ногой",
+      "Бедро и плечо вращаются вместе, рука летит прямо",
+      "Подбородок за передним плечом, рука мгновенно назад",
+    ],
+    "technique",
+    ["shoulders", "triceps", "obliques"],
+    1,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "cross",
+    90,
+    120,
+    [],
+    "technique",
+  ),
+  ex(
+    "double-jab-cross",
+    ["Double Jab – Cross", "Двойной джеб – кросс"],
+    [
+      "The range-closer: two stabbing jabs blind the target, the cross lands behind them.",
+      "Сокращение дистанции: два джеба слепят цель, кросс приходит следом.",
+    ],
+    [
+      "First jab steps in, second jab keeps the pressure",
+      "Don't fully retract between jabs — keep the pipe in their face",
+      "Fire the cross while their guard is still high",
+    ],
+    [
+      "Первый джеб с шагом, второй — не отпускает давление",
+      "Не убирай руку полностью между джебами",
+      "Кросс летит, пока перчатки соперника ещё подняты",
+    ],
+    "technique",
+    ["shoulders", "triceps", "obliques"],
+    2,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "doublejab",
+    95,
+    120,
+    [],
+    "combo",
+  ),
+  ex(
+    "combo-123",
+    ["1-2-3: Jab–Cross–Hook", "1-2-3: джеб–кросс–хук"],
+    [
+      "The classic three: straight punches open the door, the hook walks through it.",
+      "Классическая тройка: прямые открывают дверь, хук в неё заходит.",
+    ],
+    [
+      "Jab and cross flow as one beat: one-two",
+      "The cross rotation loads the lead hip automatically",
+      "Release it as the hook — then back to guard, always",
+    ],
+    [
+      "Джеб и кросс — единый ритм: раз-два",
+      "Вращение кросса само заряжает переднее бедро",
+      "Выпусти его хуком — и сразу назад в защиту",
+    ],
+    "technique",
+    ["shoulders", "obliques", "abs"],
+    2,
+    ["4 rounds × 2 min", "4 раунда × 2 мин"],
+    "combo123",
+    100,
+    120,
+    [],
+    "combo",
+  ),
+  ex(
+    "parry-block",
+    ["Parry & Block", "Парирование и блок"],
+    [
+      "The first layer of defense: deflect straight punches with a small, late tap.",
+      "Первый слой защиты: сбивай прямые удары маленьким, поздним касанием.",
+    ],
+    [
+      "Rear hand parries the jab: small tap down-across, never a reach",
+      "Lead hand stays up — you're guarded while you parry",
+      "Catch, then answer: every parry sets up your counter",
+    ],
+    [
+      "Задняя рука парирует джеб: короткое касание вниз-в сторону, не тянись",
+      "Передняя рука остаётся у подбородка — защита во время парирования",
+      "Поймал — ответь: каждое парирование готовит контратаку",
+    ],
+    "technique",
+    ["forearms", "shoulders", "abs"],
+    1,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "parry",
+    70,
+    120,
+    [],
+    "defense",
+  ),
+  ex(
+    "roll-under",
+    ["Roll Under (Weave)", "Нырок под удар"],
+    [
+      "Duck under the hook and come up on the other side — in position to punch.",
+      "Пройди под хуком и вынырни с другой стороны — сразу в позиции для удара.",
+    ],
+    [
+      "Bend the knees, not the back — eyes stay on the target",
+      "Draw a 'U' with your head under the imaginary hook",
+      "Come up in stance: the roll ends where your counter begins",
+    ],
+    [
+      "Сгибай колени, не спину — взгляд на цели",
+      "Прочерти головой букву «U» под воображаемым хуком",
+      "Вынырни в стойке: нырок кончается там, где начинается контрудар",
+    ],
+    "technique",
+    ["quads", "obliques", "abs"],
+    2,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "roll",
+    85,
+    120,
+    [],
+    "defense",
+  ),
+  ex(
+    "step-drag",
+    ["Step & Drag", "Шаг-подтяжка"],
+    [
+      "How boxers actually move: the near foot steps, the far foot drags. Never hop, never cross.",
+      "Как на самом деле двигаются боксёры: ближняя нога шагает, дальняя подтягивается.",
+    ],
+    [
+      "Forward: lead foot steps, rear foot drags up the same distance",
+      "Backward: rear foot steps, lead foot drags back",
+      "Stance width never changes — you can punch at any moment",
+    ],
+    [
+      "Вперёд: передняя нога шагает, задняя подтягивается на то же расстояние",
+      "Назад: задняя шагает, передняя подтягивается",
+      "Ширина стойки не меняется — удар готов в любой момент",
+    ],
+    "technique",
+    ["calves", "quads", "abs"],
+    1,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "stepdrag",
+    75,
+    120,
+    [],
+    "movement",
+  ),
+  ex(
+    "pivot",
+    ["The Pivot", "Разворот на ноге"],
+    [
+      "Change the angle without leaving range — spin off the lead foot and make them reset.",
+      "Смени угол, не выходя из дистанции — развернись на передней ноге, пусть соперник ищет тебя заново.",
+    ],
+    [
+      "Weight on the ball of the lead foot",
+      "Swing the rear leg like a gate — 45 to 90 degrees",
+      "Finish in stance, facing the target from the new angle",
+    ],
+    [
+      "Вес на носке передней ноги",
+      "Задняя нога идёт по дуге, как ворота — на 45–90 градусов",
+      "Закончи в стойке, лицом к цели с нового угла",
+    ],
+    "technique",
+    ["calves", "quads", "obliques"],
+    2,
+    ["3 rounds × 2 min", "3 раунда × 2 мин"],
+    "pivot",
+    75,
+    120,
+    [],
+    "movement",
   ),
 
   /* -------------------------------- chest -------------------------------- */
@@ -1823,6 +2040,7 @@ export const EXERCISES: Exercise[] = [
     130,
     180,
     ["heavybag"],
+    "combo",
   ),
   ex(
     "speed-bag",
@@ -1875,6 +2093,7 @@ export const EXERCISES: Exercise[] = [
     120,
     180,
     ["jumprope"],
+    "movement",
   ),
   ex(
     "double-unders",
@@ -2299,3 +2518,19 @@ export const BODY_PARTS: BodyPart[] = [
   "core",
   "legs",
 ];
+
+/* ------------------------------ the Library ------------------------------ */
+/* The Lesson Library teaches boxing: techniques, combinations, defense and
+   movement. Conditioning/strength work stays out of it — the AI daily plan
+   (lib/session.ts) draws on the full EXERCISES catalog for that. */
+
+export const LIBRARY_CATS = [
+  "technique",
+  "combo",
+  "defense",
+  "movement",
+] as const satisfies readonly LessonCat[];
+
+export const LIBRARY: Exercise[] = EXERCISES.filter(
+  (e) => e.cat !== "conditioning",
+);
