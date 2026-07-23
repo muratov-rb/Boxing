@@ -72,10 +72,11 @@ export function CalorieCard() {
     setKcal("");
   };
 
-  /* solid background + ≥16px font on mobile: keeps typed text visible and
-     stops iOS from zoom-jumping the viewport on focus */
+  /* no width class here — each instance sets its own, otherwise the two
+     rules fight and the name field collapses to a sliver. Solid background
+     + ≥16px font on mobile keeps typed text visible (and stops iOS zoom). */
   const inputCls =
-    "w-full border border-line bg-void/70 px-3 py-2 text-base sm:text-sm rounded-md text-bone placeholder:text-ash-dim focus:border-blood transition-colors duration-200 focus:outline-none";
+    "min-w-0 border border-line bg-void/70 px-3 py-2.5 text-base sm:text-sm rounded-md text-bone placeholder:text-ash-dim focus:border-blood transition-colors duration-200 focus:outline-none";
 
   return (
     <section className="panel p-6">
@@ -168,30 +169,34 @@ export function CalorieCard() {
         </ul>
       )}
 
-      {/* manual add */}
-      <form onSubmit={submitManual} className="mt-4 flex gap-2">
+      {/* manual add: name gets a full row of its own so you can see what
+          you're typing; kcal + add button sit below */}
+      <form onSubmit={submitManual} className="mt-4 space-y-2">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder={t("mealName")}
-          className={`${inputCls} flex-1`}
+          maxLength={60}
+          className={`${inputCls} w-full`}
         />
-        <input
-          value={kcal}
-          onChange={(e) => {
-            setKcal(e.target.value);
-            setKcalError(Number(e.target.value) > MEAL_KCAL_MAX);
-          }}
-          placeholder="kcal"
-          type="number"
-          min="1"
-          max={MEAL_KCAL_MAX}
-          inputMode="numeric"
-          className={`${inputCls} w-24 ${kcalError ? "!border-blood-bright" : ""}`}
-        />
-        <button type="submit" className="btn btn-primary !px-4 !py-2 text-sm">
-          +
-        </button>
+        <div className="flex gap-2">
+          <input
+            value={kcal}
+            onChange={(e) => {
+              setKcal(e.target.value);
+              setKcalError(Number(e.target.value) > MEAL_KCAL_MAX);
+            }}
+            placeholder="kcal"
+            type="number"
+            min="1"
+            max={MEAL_KCAL_MAX}
+            inputMode="numeric"
+            className={`${inputCls} flex-1 ${kcalError ? "!border-blood-bright" : ""}`}
+          />
+          <button type="submit" className="btn btn-primary !px-5 !py-2 text-sm">
+            +
+          </button>
+        </div>
       </form>
       <p className={`mt-2 text-xs ${kcalError ? "text-blood-bright" : "text-ash-dim"}`}>
         {kcalError ? t("kcalTooBig", { max: MEAL_KCAL_MAX }) : t("calHint")}
