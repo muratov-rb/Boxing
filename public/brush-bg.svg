@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" fill="none">
+  <defs>
+    <!-- fractal displacement turns clean strokes into torn, painterly brush edges -->
+    <filter id="brush" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.010 0.028" numOctaves="4" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="64" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="brushFine" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.05" numOctaves="4" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="34" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+
+  <!-- dense red mass + broad strokes, torn edges (concentrated upper-left) -->
+  <g filter="url(#brush)" fill="#e01324" stroke="#e01324" stroke-linecap="round">
+    <polygon points="-40,-40 560,-40 150,940 -40,940"/>
+    <line x1="-120" y1="760" x2="1320" y2="-140" stroke-width="150"/>
+    <line x1="-160" y1="560" x2="1180" y2="-120" stroke-width="64"/>
+    <line x1="-120" y1="980" x2="1000" y2="300" stroke-width="40"/>
+    <line x1="-80" y1="420" x2="760" y2="30" stroke-width="46"/>
+  </g>
+
+  <!-- thinner streaks fanning right, with gaps so the base shows through -->
+  <g filter="url(#brushFine)" fill="none" stroke="#e01324" stroke-linecap="round">
+    <line x1="120" y1="940" x2="1460" y2="260" stroke-width="16"/>
+    <line x1="360" y1="980" x2="1500" y2="420" stroke-width="10"/>
+    <line x1="40" y1="700" x2="1240" y2="120" stroke-width="12"/>
+    <line x1="620" y1="960" x2="1500" y2="540" stroke-width="7"/>
+    <line x1="-40" y1="880" x2="820" y2="470" stroke-width="9"/>
+    <line x1="880" y1="900" x2="1500" y2="640" stroke-width="5"/>
+  </g>
+</svg>

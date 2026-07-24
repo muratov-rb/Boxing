@@ -61,7 +61,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full">
         <script dangerouslySetInnerHTML={{ __html: envScript }} />
-        <div className="aura" aria-hidden="true" />
+        <div className="brush" aria-hidden="true" />
         <div className="grain" aria-hidden="true" />
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
