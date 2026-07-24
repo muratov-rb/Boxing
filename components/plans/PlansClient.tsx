@@ -181,7 +181,7 @@ export function PlansClient() {
                 )}
               >
                 {popular && (
-                  <span className="absolute -top-3 left-6 badge !border-blood bg-blood !text-white">
+                  <span className="absolute -top-3 left-6 badge !border-blood !bg-blood !text-white !backdrop-blur-none">
                     {t("popular")}
                   </span>
                 )}

@@ -98,7 +98,26 @@ export const PAID_PLANS: PaidPlanId[] = ["budget", "pro", "max"];
 export const TRIAL_DAYS = 7;
 export const TRIAL_WARN_DAY = 4; // start warning on day 4 of 7
 
+/** QA MODE — opens every feature regardless of plan so the whole app can be
+    tested end-to-end. Set back to false to restore real subscription gating
+    (do this before wiring Stripe / launching). */
+export const TEST_UNLOCK_ALL = true;
+
+/** Everything on, no limits — used while TEST_UNLOCK_ALL is true. */
+export const UNLOCKED: Entitlements = {
+  ranks: true,
+  streaks: true,
+  restRecovery: true,
+  lessonTier: "full",
+  dailyPlansPerWeek: INF,
+  aiNutrition: true,
+  nutritionMealSlots: 4,
+  calorieScansPerDay: INF,
+  techniqueVideosPerDay: INF,
+};
+
 export function entitlementsFor(plan: PlanId): Entitlements {
+  if (TEST_UNLOCK_ALL) return UNLOCKED;
   return ENTITLEMENTS[plan];
 }
 
