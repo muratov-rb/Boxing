@@ -4,6 +4,7 @@ import { Anton, Oswald, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { publicSupabaseEnv } from "@/lib/supabase/config";
+import { isRtlLocale } from "@/i18n/locales";
 import "./globals.css";
 
 /* Heavy condensed display — fight-poster headlines */
@@ -55,6 +56,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      dir={isRtlLocale(locale) ? "rtl" : "ltr"}
       className={`${anton.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full">

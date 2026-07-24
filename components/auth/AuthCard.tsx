@@ -224,7 +224,9 @@ export function AuthCard({
       <p className="mt-6 text-center text-sm text-ash">
         {isLogin ? t("newHere") : t("haveAccount")}
         <Link
-          href={isLogin ? "/register" : "/login"}
+          href={`${isLogin ? "/register" : "/login"}${
+            next && next !== "/dashboard" ? `?next=${encodeURIComponent(next)}` : ""
+          }`}
           className="font-semibold text-blood transition-colors hover:text-blood-bright"
         >
           {isLogin ? t("createLink") : t("loginLink")}
