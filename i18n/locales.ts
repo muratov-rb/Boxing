@@ -12,12 +12,13 @@ export interface LocaleMeta {
 
 /* Only languages with a real catalog in messages/ are listed here — a row is
    added as each translation lands, so the menu never offers an English-only
-   locale. Next waves: de, it, pt, nl, pl, uk, tr, zh, ar (rtl), hi, … */
+   locale. Next waves: ar (rtl), hi, uz + de, it, pt, nl, pl, uk, tr, … */
 export const LOCALES: LocaleMeta[] = [
   { code: "en", native: "English", english: "English" },
   { code: "ru", native: "Русский", english: "Russian" },
   { code: "es", native: "Español", english: "Spanish" },
   { code: "fr", native: "Français", english: "French" },
+  { code: "zh", native: "中文", english: "Chinese" },
 ];
 
 export const DEFAULT_LOCALE = "en";

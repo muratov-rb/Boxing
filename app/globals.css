@@ -34,10 +34,16 @@
   --color-azure-deep: #1e40af;
 
   /* Space Grotesk is Latin-only — chain Inter (has Cyrillic) so RU headings
-     fall through cleanly; script fonts for CJK/Arabic/Devanagari append later */
-  --font-display: var(--font-space), var(--font-inter), system-ui, sans-serif;
-  --font-condensed: var(--font-oswald);
-  --font-body: var(--font-inter);
+     fall through cleanly. --font-scripts appends the device's native fonts for
+     CJK / Arabic / Devanagari (zh, ar, hi) so they render with zero webfont
+     download; a glyph only reaches these when Latin/Cyrillic can't draw it. */
+  --font-scripts: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans SC", "Geeza Pro", "Segoe UI", "Noto Sans Arabic",
+    "Noto Naskh Arabic", "Nirmala UI", "Kohinoor Devanagari",
+    "Noto Sans Devanagari";
+  --font-display: var(--font-space), var(--font-inter), var(--font-scripts), system-ui, sans-serif;
+  --font-condensed: var(--font-oswald), var(--font-scripts);
+  --font-body: var(--font-inter), var(--font-scripts), system-ui, sans-serif;
 }
 
 /* corner-glow strength + glass tuning, per theme */
