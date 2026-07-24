@@ -39,9 +39,9 @@ export async function updateSession(request: NextRequest) {
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
-    // creating a profile is a new-user action → send them to register (they can
-    // switch to log in from there); other guarded routes go to login
-    url.pathname = path.startsWith("/onboarding") ? "/register" : "/login";
+    // log in is always the first step (the login screen links to "create an
+    // account" for new users), then they continue to the page they wanted
+    url.pathname = "/login";
     url.searchParams.set("next", path);
     return NextResponse.redirect(url);
   }
