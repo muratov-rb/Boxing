@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Anton, Oswald, Inter } from "next/font/google";
+import { Space_Grotesk, Oswald, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { publicSupabaseEnv } from "@/lib/supabase/config";
 import { isRtlLocale } from "@/i18n/locales";
 import "./globals.css";
 
-/* Heavy condensed display — fight-poster headlines */
-const anton = Anton({
-  weight: "400",
+/* Geometric display — modern, athletic headlines (Sport Modern direction).
+   Space Grotesk is Latin-only, so the --font-display stack falls through to
+   Inter for Cyrillic (RU) and to script fonts for CJK/Arabic/Devanagari. */
+const spaceGrotesk = Space_Grotesk({
+  weight: ["500", "700"],
   subsets: ["latin"],
-  variable: "--font-anton",
+  variable: "--font-space",
   display: "swap",
-  // drop the auto system fallback so Cyrillic (RU) falls through to Oswald,
-  // set in the --font-display stack, instead of a plain system sans
   adjustFontFallback: false,
 });
 
@@ -57,7 +57,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={isRtlLocale(locale) ? "rtl" : "ltr"}
-      className={`${anton.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
+      className={`${spaceGrotesk.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full">
         <script dangerouslySetInnerHTML={{ __html: envScript }} />
