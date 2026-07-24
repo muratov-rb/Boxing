@@ -63,6 +63,30 @@ const BONE_DEFS: BoneDef[] = [
 /** 2D figure is ~1.04 units tall, model local space is 2 units tall. */
 const K2D = 2 / 1.04;
 
+/* ---- torso rotation for punches ----
+ * The keyframes live in the sagittal plane; real punches rotate the whole
+ * upper body through the shot. Each entry maps loop phase → yaw in degrees
+ * (gaussian pulses centred on each punch; negative = lead side drives). */
+const pulse = (p: number, c: number, w: number, amp: number) =>
+  amp * Math.exp(-(((p - c) / w) ** 2));
+
+const TWIST: Partial<Record<DemoPreset, (p: number) => number>> = {
+  jab: (p) => pulse(p, 0.16, 0.07, -10) + pulse(p, 0.54, 0.09, 22),
+  cross: (p) => pulse(p, 0.4, 0.1, 24),
+  hook: (p) => pulse(p, 0.55, 0.11, -30),
+  uppercut: (p) => pulse(p, 0.36, 0.09, 24) + pulse(p, 0.86, 0.08, -20),
+  doublejab: (p) =>
+    pulse(p, 0.12, 0.06, -9) + pulse(p, 0.36, 0.06, -9) + pulse(p, 0.66, 0.09, 22),
+  combo123: (p) =>
+    pulse(p, 0.12, 0.06, -9) + pulse(p, 0.38, 0.08, 22) + pulse(p, 0.74, 0.09, -30),
+  shadowbox: (p) =>
+    pulse(p, 0.14, 0.06, -9) + pulse(p, 0.42, 0.08, 22) + pulse(p, 0.84, 0.08, -24),
+  heavybag: (p) => pulse(p, 0.16, 0.07, -10) + pulse(p, 0.54, 0.09, 24),
+};
+
+/** bones that rotate with the torso when a punch twists the body */
+const UPPER_BODY = new Set(["spine", "head", "uArmR", "fArmR", "uArmL", "fArmL"]);
+
 function segDist(px: number, py: number, pz: number, a: V3, b: V3): number {
   const abx = b[0] - a[0], aby = b[1] - a[1], abz = b[2] - a[2];
   const apx = px - a[0], apy = py - a[1], apz = pz - a[2];
@@ -278,10 +302,62 @@ export function Coach3D({
       const ropeGeo = () =>
         new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ropePts), 32, 0.01, 6);
 
+      /* static training props (heavy bag, pull-up bar) per preset */
+      let propGroup: import("three").Group | null = null;
+      const buildProps = (p: DemoPreset, centerX: number) => {
+        if (propGroup) {
+          modelRoot?.remove(propGroup);
+          propGroup.traverse((o) => {
+            const m = o as import("three").Mesh;
+            if (m.isMesh) {
+              m.geometry?.dispose();
+              (m.material as import("three").Material)?.dispose();
+            }
+          });
+          propGroup = null;
+        }
+        const pr = PRESETS[p]?.props;
+        if (!modelRoot || !pr || (!pr.bag && !pr.pullbar)) return;
+        propGroup = new THREE.Group();
+        if (pr.bag) {
+          const leather = new THREE.MeshStandardMaterial({ color: 0x7e1620, roughness: 0.62 });
+          const strapM = new THREE.MeshStandardMaterial({ color: 0x272a31, roughness: 0.45, metalness: 0.3 });
+          const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.19, 0.6, 8, 20), leather);
+          body.position.set(0, 0.52, 0.84);
+          const band = new THREE.Mesh(new THREE.CylinderGeometry(0.196, 0.196, 0.1, 20), strapM);
+          band.position.set(0, 0.84, 0.84);
+          const strap = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.1, 8), strapM);
+          strap.position.set(0, 1.5, 0.84);
+          propGroup.add(body, band, strap);
+        }
+        if (pr.pullbar) {
+          const j0 = demoJoints(p, 0);
+          const hy = (j0.handF[1] + j0.handB[1]) / 2;
+          const hx = (j0.handF[0] + j0.handB[0]) / 2;
+          const by = hy * K2D - 1;
+          const bz = (hx - centerX) * K2D;
+          const metal = new THREE.MeshStandardMaterial({ color: 0x8a93a2, roughness: 0.35, metalness: 0.7 });
+          const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 1.15, 12), metal);
+          bar.rotation.z = Math.PI / 2;
+          bar.position.set(0, by, bz);
+          propGroup.add(bar);
+          for (const sx of [-0.55, 0.55]) {
+            const post = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, by + 1, 10), metal);
+            post.position.set(sx, (by - 1) / 2, bz);
+            propGroup.add(post);
+          }
+        }
+        propGroup.traverse((o) => {
+          if ((o as import("three").Mesh).isMesh) o.frustumCulled = false;
+        });
+        modelRoot.add(propGroup);
+      };
+
       const makeDriver = (p: DemoPreset) => {
         const dur = demoDuration(p);
         const centerX = demoJoints(p, 0).hip[0];
         const hasRope = !!PRESETS[p]?.props?.rope;
+        const twistFn = TWIST[p];
 
         if (rope) {
           modelRoot?.remove(rope);
@@ -294,6 +370,12 @@ export function Coach3D({
           modelRoot.add(rope);
         }
         for (const k of Object.keys(armOverride)) delete armOverride[k];
+        buildProps(p, centerX);
+        /* hanging work happens high — lift the camera to frame the bar */
+        if (PRESETS[p]?.props?.pullbar) {
+          controls.target.set(0, 1.15, 0);
+          camera.position.set(1.5, 1.35, 2.45);
+        }
 
         driver = (time: number) => {
           const j = demoJoints(p, time % dur);
@@ -337,6 +419,14 @@ export function Coach3D({
             }
           }
 
+          /* torso yaw for punches: rotate every upper-body target around a
+             vertical axis through the hips, so chest, head and both arms turn
+             into the shot together */
+          const yaw = twistFn ? (twistFn((time % dur) / dur) * Math.PI) / 180 : 0;
+          const yCos = Math.cos(yaw);
+          const ySin = Math.sin(yaw);
+          const hipZ = (j.hip[0] - centerX) * K2D;
+
           for (let b = 0; b < BONE_DEFS.length; b++) {
             const def = BONE_DEFS[b];
             const ov = hasRope ? armOverride[def.name] : undefined;
@@ -348,6 +438,14 @@ export function Coach3D({
               const jb = j[def.jb];
               vA.set(def.lata, ja[1] * K2D - 1, (ja[0] - centerX) * K2D);
               vB.set(def.latb, jb[1] * K2D - 1, (jb[0] - centerX) * K2D);
+            }
+            if (yaw !== 0 && UPPER_BODY.has(def.name)) {
+              for (const v of [vA, vB]) {
+                const dx = v.x;
+                const dz = v.z - hipZ;
+                v.x = dx * yCos + dz * ySin;
+                v.z = hipZ + (-dx * ySin + dz * yCos);
+              }
             }
             dirV.subVectors(vB, vA).normalize();
             // near-antiparallel targets (legs straight up etc.) go through an

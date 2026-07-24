@@ -102,11 +102,13 @@ await doc.transform(
 function paintCoach() {
   const srgb = (r, g, b) => [r, g, b].map((v) => Math.pow(v / 255, 2.2));
   const C = {
-    shirt: srgb(139, 145, 139),
-    shorts: srgb(117, 123, 119),
+    shirt: srgb(38, 40, 46), // black compression shirt
+    shorts: srgb(23, 24, 28), // black shorts…
+    accent: srgb(245, 197, 24), // …with yellow waistband/stripes/sleeve bands
     skin: srgb(216, 158, 122),
-    hair: srgb(66, 49, 38),
-    shoe: srgb(148, 150, 153),
+    hair: srgb(43, 31, 22), // deep brown, single tone
+    shoe: srgb(28, 29, 33), // black shoes
+    sole: srgb(232, 232, 236), // white sole
   };
   for (const mesh of doc.getRoot().listMeshes())
     for (const prim of mesh.listPrimitives()) {
@@ -137,14 +139,19 @@ function paintCoach() {
         const y = (p[i * 3 + 1] - minY) / H;
         const zf = p[i * 3 + 2] * front; // + = front of body
         let c;
-        if (y < 0.07) c = C.shoe;
+        if (y < 0.025) c = C.sole; // white sole
+        else if (y < 0.07) c = C.shoe;
         else if (y < 0.3) c = C.skin; // calves, knees
-        else if (y < 0.5 && x < 0.28) c = C.shorts;
-        else if (y > 0.855) {
-          // head: hair cap + back of skull, face/neck skin in front
-          c = y > 0.94 || (y > 0.875 && zf < -0.01) ? C.hair : C.skin;
+        else if (y < 0.5 && x < 0.28) {
+          // shorts: yellow waistband + yellow outer-leg stripes on black
+          c = y > 0.475 || x > 0.155 ? C.accent : C.shorts;
+        } else if (y > 0.855) {
+          // head: hair covers the cap (incl. the pompadour front) + back of
+          // skull; face/neck skin in front
+          c = y > 0.933 || (y > 0.87 && zf < -0.015) ? C.hair : C.skin;
         } else if (x > 0.4) c = C.skin; // forearms + hands
         else if (x > 0.22 && y < 0.55) c = C.skin; // arm below sleeve line
+        else if (x > 0.34) c = C.accent; // yellow band at the sleeve end
         else c = C.shirt; // torso + shoulder caps + upper-arm sleeves
         col[i * 3] = c[0];
         col[i * 3 + 1] = c[1];

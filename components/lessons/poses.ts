@@ -96,13 +96,20 @@ export const PRESETS: Record<DemoPreset, PresetDef> = {
       { t: 1, ...GUARD },
     ],
   },
+  /* whole-body uppercuts: deep leg dip → hips drive UP through the punch,
+     torso folds then extends, rear uppercut first then the lead. The 3D layer
+     adds torso rotation (yaw) synced to each punch. */
   uppercut: {
-    dur: 1.6, props: { gloves: true },
+    dur: 2.2, props: { gloves: true },
     frames: [
       { t: 0, ...GUARD },
-      { t: 0.3, ...GUARD, y: 0.43, hipF: 30, knF: 30, hipB: 0, knB: 26, torso: 12 },
-      { t: 0.58, ...GUARD, y: 0.5, shF: 38, elF: 130, torso: -4 },
-      { t: 0.85, ...GUARD },
+      { t: 0.14, ...GUARD, y: 0.43, knF: 34, knB: 30, hipF: 28, torso: 16, head: 4, x: -0.02 },
+      { t: 0.26, ...GUARD, y: 0.47, knF: 20, knB: 16, torso: 6 },
+      { t: 0.36, ...GUARD, y: 0.52, shB: 38, elB: 136, torso: -10, body: -4, knB: 4, x: 0.05 },
+      { t: 0.5, ...GUARD, y: 0.485 },
+      { t: 0.64, ...GUARD, y: 0.435, knF: 32, knB: 28, hipF: 26, torso: 14, head: 4, x: -0.01 },
+      { t: 0.76, ...GUARD, y: 0.475, knF: 18, knB: 14, torso: 4 },
+      { t: 0.86, ...GUARD, y: 0.52, shF: 40, elF: 132, torso: -8, body: -3, knF: 4, x: 0.04 },
       { t: 1, ...GUARD },
     ],
   },
