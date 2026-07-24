@@ -5,7 +5,7 @@ import type { DemoPreset } from "@/lib/exercises";
 import {
   demoJoints,
   demoDuration,
-  demoMotionPath,
+  PRESETS,
   type Joints,
 } from "./poses";
 
@@ -63,15 +63,6 @@ const BONE_DEFS: BoneDef[] = [
 /** 2D figure is ~1.04 units tall, model local space is 2 units tall. */
 const K2D = 2 / 1.04;
 
-/** lateral offset of the guidance path per effector (just outside the limb) */
-const PATH_LAT: Record<string, number> = {
-  handF: 0.3,
-  toeF: 0.2,
-  hip: 0.24,
-  headC: 0.2,
-  shoulder: 0.24,
-};
-
 function segDist(px: number, py: number, pz: number, a: V3, b: V3): number {
   const abx = b[0] - a[0], aby = b[1] - a[1], abz = b[2] - a[2];
   const apx = px - a[0], apy = py - a[1], apz = pz - a[2];
@@ -84,7 +75,7 @@ function segDist(px: number, py: number, pz: number, a: V3, b: V3): number {
 
 /**
  * 3D coach — the user's scan, auto-rigged and driven by the exercise keyframe
- * library, with a dashed trajectory line showing the movement path.
+ * library — pure animation, with real props (jump rope) where the move needs them.
  * Without a `preset` it is a static rotate/inspect view.
  */
 export function Coach3D({
@@ -206,7 +197,6 @@ export function Coach3D({
         new THREE.Vector3(def.b[0] - def.a[0], def.b[1] - def.a[1], def.b[2] - def.a[2]).normalize(),
       );
       let modelRoot: import("three").Object3D | null = null;
-      let pathGroup: import("three").Group | null = null;
       let driver: ((time: number) => void) | null = null;
 
       const vA = new THREE.Vector3();
@@ -266,61 +256,99 @@ export function Coach3D({
         return smesh;
       };
 
-      /** dashed trajectory of the busiest effector + a marker that rides it */
-      const buildPath = (p: DemoPreset, centerX: number) => {
-        if (pathGroup) {
-          modelRoot?.remove(pathGroup);
-          pathGroup.traverse((o) => {
-            const m = o as import("three").Mesh;
-            if (m.isMesh || (o as import("three").Line).isLine) {
-              m.geometry?.dispose();
-              (m.material as import("three").Material)?.dispose();
-            }
-          });
-          pathGroup = null;
-        }
-        const mp = demoMotionPath(p);
-        if (!mp.key || mp.pts.length < 2) return null;
-        const lat = PATH_LAT[mp.key] ?? 0.24;
-        const pts3 = mp.pts.map(
-          (pt) => new THREE.Vector3(lat, pt[1] * K2D - 1, (pt[0] - centerX) * K2D),
-        );
-        pathGroup = new THREE.Group();
-        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts3);
-        const line = new THREE.Line(
-          lineGeo,
-          new THREE.LineDashedMaterial({
-            color: 0xe0263a,
-            dashSize: 0.05,
-            gapSize: 0.035,
-            transparent: true,
-            opacity: 0.9,
-          }),
-        );
-        line.computeLineDistances();
-        pathGroup.add(line);
-        const marker = new THREE.Mesh(
-          new THREE.SphereGeometry(0.032, 16, 12),
-          new THREE.MeshBasicMaterial({ color: 0xe0263a }),
-        );
-        marker.name = "pathMarker";
-        pathGroup.add(marker);
-        modelRoot?.add(pathGroup);
-        return { pts3, marker };
-      };
+      /* jump-rope prop: a thin tube swung around the hands' axis, rebuilt each
+         frame. The hands ride a small parametric circle in perfect sync, so
+         the whole thing reads as one smooth, continuous motion. */
+      let rope: import("three").Mesh | null = null;
+      const ropeMat = new THREE.MeshStandardMaterial({
+        color: 0x23262d,
+        roughness: 0.5,
+        metalness: 0.15,
+      });
+      const armOverride: Record<string, [import("three").Vector3, import("three").Vector3]> = {};
+      const oSho = [new THREE.Vector3(), new THREE.Vector3()];
+      const oElb = [new THREE.Vector3(), new THREE.Vector3()];
+      const oHan = [new THREE.Vector3(), new THREE.Vector3()];
+      const ropePts = [
+        new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(),
+        new THREE.Vector3(), new THREE.Vector3(),
+      ];
+      /* fresh curve per rebuild — Curve3 caches arc lengths internally, so
+         reusing one instance with mutated points collapses the tube */
+      const ropeGeo = () =>
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ropePts), 32, 0.01, 6);
 
       const makeDriver = (p: DemoPreset) => {
         const dur = demoDuration(p);
         const centerX = demoJoints(p, 0).hip[0];
-        const path = buildPath(p, centerX);
+        const hasRope = !!PRESETS[p]?.props?.rope;
+
+        if (rope) {
+          modelRoot?.remove(rope);
+          rope.geometry.dispose();
+          rope = null;
+        }
+        if (hasRope && modelRoot) {
+          rope = new THREE.Mesh(ropeGeo(), ropeMat);
+          rope.frustumCulled = false;
+          modelRoot.add(rope);
+        }
+        for (const k of Object.keys(armOverride)) delete armOverride[k];
+
         driver = (time: number) => {
           const j = demoJoints(p, time % dur);
+
+          if (hasRope) {
+            /* rope spins twice per loop; θ = π (straight down) at each hop apex */
+            const theta = ((time % dur) / dur) * Math.PI * 4;
+            const shY = j.shoulder[1] * K2D - 1;
+            const shZ = (j.shoulder[0] - centerX) * K2D;
+            for (let s = 0; s < 2; s++) {
+              const side = s === 0 ? 1 : -1; // R, L
+              oSho[s].set(side * 0.17, shY, shZ);
+              oHan[s].set(
+                side * 0.3,
+                shY - 0.46 + 0.05 * Math.cos(theta),
+                shZ + 0.2 + 0.07 * Math.sin(theta),
+              );
+              oElb[s].lerpVectors(oSho[s], oHan[s], 0.5);
+              oElb[s].x += side * 0.05;
+              oElb[s].z -= 0.06;
+            }
+            armOverride.uArmR = [oSho[0], oElb[0]];
+            armOverride.fArmR = [oElb[0], oHan[0]];
+            armOverride.uArmL = [oSho[1], oElb[1]];
+            armOverride.fArmL = [oElb[1], oHan[1]];
+
+            if (rope) {
+              /* arc from hand to hand, bulging along u(θ); slightly longer
+                 below (under the feet) than above (over the head) */
+              const uy = Math.cos(theta);
+              const uz = Math.sin(theta);
+              const R = 0.99 - 0.05 * uy;
+              const mx = 0, my = (oHan[0].y + oHan[1].y) / 2, mz = (oHan[0].z + oHan[1].z) / 2;
+              ropePts[0].copy(oHan[1]);
+              ropePts[1].set(-0.4, my + uy * R * 0.72, mz + uz * R * 0.72);
+              ropePts[2].set(mx, my + uy * R, mz + uz * R);
+              ropePts[3].set(0.4, my + uy * R * 0.72, mz + uz * R * 0.72);
+              ropePts[4].copy(oHan[0]);
+              rope.geometry.dispose();
+              rope.geometry = ropeGeo();
+            }
+          }
+
           for (let b = 0; b < BONE_DEFS.length; b++) {
             const def = BONE_DEFS[b];
-            const ja = j[def.ja];
-            const jb = j[def.jb];
-            vA.set(def.lata, ja[1] * K2D - 1, (ja[0] - centerX) * K2D);
-            vB.set(def.latb, jb[1] * K2D - 1, (jb[0] - centerX) * K2D);
+            const ov = hasRope ? armOverride[def.name] : undefined;
+            if (ov) {
+              vA.copy(ov[0]);
+              vB.copy(ov[1]);
+            } else {
+              const ja = j[def.ja];
+              const jb = j[def.jb];
+              vA.set(def.lata, ja[1] * K2D - 1, (ja[0] - centerX) * K2D);
+              vB.set(def.latb, jb[1] * K2D - 1, (jb[0] - centerX) * K2D);
+            }
             dirV.subVectors(vB, vA).normalize();
             // near-antiparallel targets (legs straight up etc.) go through an
             // intermediate axis so the limb never pops to a flipped roll
@@ -332,12 +360,6 @@ export function Coach3D({
               q.setFromUnitVectors(bindDirs[b], dirV);
             }
             bones[b].matrix.compose(vA, q, ONE);
-          }
-          if (path) {
-            const f = ((time % dur) / dur) * (path.pts3.length - 1);
-            const i0 = Math.floor(f);
-            const i1 = Math.min(i0 + 1, path.pts3.length - 1);
-            path.marker.position.lerpVectors(path.pts3[i0], path.pts3[i1], f - i0);
           }
         };
         driver(0);

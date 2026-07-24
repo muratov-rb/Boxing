@@ -89,7 +89,7 @@ await doc.transform(
   prune(),
   dedup(),
   weld(),
-  simplify({ simplifier: MeshoptSimplifier, ratio: 0.05, error: 0.01 }),
+  simplify({ simplifier: MeshoptSimplifier, ratio: 0.12, error: 0.01 }),
   prune(),
 );
 

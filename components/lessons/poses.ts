@@ -832,12 +832,21 @@ export const PRESETS: Record<DemoPreset, PresetDef> = {
       { t: 1, y: 0.5, body: 4, shF: 118, elF: 128, shB: 122, elB: 112 },
     ],
   },
+  /* two hops per loop; the 3D layer spins the rope (2 revolutions) and drives
+     the hand circles parametrically, timed so the rope passes under the feet
+     exactly at each hop apex (t = 0.25 and 0.75) */
   jumprope: {
-    dur: 0.55, props: { rope: true },
+    dur: 1.6, props: { rope: true },
     frames: [
-      { t: 0, y: 0.5, shF: 24, elF: 96, shB: 24, elB: 96, knF: 8, knB: 8 },
-      { t: 0.5, y: 0.56, shF: 26, elF: 92, shB: 26, elB: 92, knF: 20, knB: 20, ankF: -14, ankB: -14 },
-      { t: 1, y: 0.5, shF: 24, elF: 96, shB: 24, elB: 96, knF: 8, knB: 8 },
+      { t: 0, y: 0.485, knF: 14, knB: 14, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -8, ankB: -8 },
+      { t: 0.13, y: 0.505, knF: 6, knB: 6, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -18, ankB: -18 },
+      { t: 0.25, y: 0.55, knF: 4, knB: 4, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -24, ankB: -24 },
+      { t: 0.37, y: 0.505, knF: 8, knB: 8, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -12, ankB: -12 },
+      { t: 0.5, y: 0.485, knF: 14, knB: 14, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -8, ankB: -8 },
+      { t: 0.63, y: 0.505, knF: 6, knB: 6, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -18, ankB: -18 },
+      { t: 0.75, y: 0.55, knF: 4, knB: 4, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -24, ankB: -24 },
+      { t: 0.87, y: 0.505, knF: 8, knB: 8, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -12, ankB: -12 },
+      { t: 1, y: 0.485, knF: 14, knB: 14, shF: 20, elF: 95, shB: 20, elB: 95, ankF: -8, ankB: -8 },
     ],
   },
   farmercarry: {
