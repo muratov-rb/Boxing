@@ -10,6 +10,18 @@ import {
 } from "./poses";
 
 export const COACH_MODEL_URL = "/models/coach.glb";
+/** Mixamo-rigged coach carrying real motion-capture clips. */
+export const MOCAP_MODEL_URL = "/models/coach-mocap.glb";
+
+/* Lessons backed by real mocap. Only mapped where the capture genuinely shows
+   that lesson — a generic boxing combo standing in for a "hook" lesson would
+   teach the wrong movement, which defeats the point of the library. Add a row
+   here as each matching Mixamo clip is downloaded. */
+const MOCAP: Partial<Record<DemoPreset, string>> = {
+  shadowbox: "boxing",
+  heavybag: "boxing",
+  combo123: "boxing2",
+};
 
 let probe: Promise<boolean> | null = null;
 
@@ -241,6 +253,7 @@ export function Coach3D({
       );
       let modelRoot: import("three").Object3D | null = null;
       let driver: ((time: number) => void) | null = null;
+      let mocapMixer: import("three").AnimationMixer | null = null;
 
       const vA = new THREE.Vector3();
       const vB = new THREE.Vector3();
@@ -698,8 +711,99 @@ export function Coach3D({
         driver(0);
       };
 
+      /* render loop is armed BEFORE the loaders so both paths (mocap and
+         procedural) share it — whichever finishes loading simply starts
+         contributing on the next frame */
+      let raf = 0;
+      const tick = () => {
+        raf = requestAnimationFrame(tick);
+        controls.update();
+        if (mocapMixer) mocapMixer.update(clock.getDelta());
+        else if (driver) driver(clock.getElapsedTime());
+        renderer.render(scene, camera);
+      };
+      tick();
+
+      const ro = new ResizeObserver(() => {
+        const w = host.clientWidth;
+        const h = Math.max(1, host.clientHeight);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+      ro.observe(host);
+
+      cleanup = () => {
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        controls.dispose();
+        scene.traverse((o) => {
+          const mesh = o as import("three").SkinnedMesh;
+          if (mesh.isMesh) {
+            mesh.skeleton?.dispose();
+            mesh.geometry?.dispose();
+            const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            mats.forEach((m) => m?.dispose());
+          }
+        });
+        renderer.dispose();
+        renderer.domElement.remove();
+      };
+
       const loader = new GLTFLoader();
       loader.setMeshoptDecoder(MeshoptDecoder);
+
+      /* ---- motion-capture path: a real Mixamo clip drives the whole rig,
+         so none of the procedural bone work below runs for these lessons ---- */
+      const mocapName = preset ? MOCAP[preset] : undefined;
+      if (mocapName) {
+        loader.load(
+          MOCAP_MODEL_URL,
+          (gltf) => {
+            if (disposed) return;
+            const root = gltf.scene;
+            root.traverse((o) => {
+              const m = o as import("three").SkinnedMesh;
+              if (m.isMesh) m.frustumCulled = false;
+            });
+            // stand on the floor, centred, ~1.75 units tall
+            const box = new THREE.Box3().setFromObject(root);
+            const size = box.getSize(new THREE.Vector3());
+            root.scale.setScalar(1.75 / (size.y || 1));
+            const b2 = new THREE.Box3().setFromObject(root);
+            const c2 = b2.getCenter(new THREE.Vector3());
+            root.position.x -= c2.x;
+            root.position.z -= c2.z;
+            root.position.y -= b2.min.y;
+            scene.add(root);
+            modelRoot = root;
+
+            const mixer = new THREE.AnimationMixer(root);
+            const clip =
+              gltf.animations.find((a) => a.name === mocapName) ?? gltf.animations[0];
+            if (clip) mixer.clipAction(clip).setLoop(THREE.LoopRepeat, Infinity).play();
+            mocapMixer = mixer;
+
+            const h = new THREE.Box3().setFromObject(root).getSize(new THREE.Vector3()).y;
+            controls.target.set(0, h * 0.55, 0);
+            controls.update();
+            dbg.root = root;
+            dbg.mixer = mixer;
+            dbg.mocapClip = clip?.name ?? null;
+            dbg.setTime = (t: number) => {
+              mixer.setTime(t);
+              renderer.render(scene, camera);
+            };
+            renderer.render(scene, camera);
+          },
+          undefined,
+          () => {
+            if (!disposed) setFailed(true);
+          },
+        );
+        return;
+      }
+
       loader.load(
         COACH_MODEL_URL,
         (gltf) => {
@@ -760,40 +864,6 @@ export function Coach3D({
         },
       );
 
-      let raf = 0;
-      const tick = () => {
-        raf = requestAnimationFrame(tick);
-        controls.update();
-        if (driver) driver(clock.getElapsedTime());
-        renderer.render(scene, camera);
-      };
-      tick();
-
-      const ro = new ResizeObserver(() => {
-        const w = host.clientWidth;
-        const h = Math.max(1, host.clientHeight);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-      });
-      ro.observe(host);
-
-      cleanup = () => {
-        cancelAnimationFrame(raf);
-        ro.disconnect();
-        controls.dispose();
-        scene.traverse((o) => {
-          const mesh = o as import("three").SkinnedMesh;
-          if (mesh.isMesh) {
-            mesh.skeleton?.dispose();
-            mesh.geometry?.dispose();
-            const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            mats.forEach((m) => m?.dispose());
-          }
-        });
-        renderer.dispose();
-        renderer.domElement.remove();
-      };
     })();
 
     return () => {

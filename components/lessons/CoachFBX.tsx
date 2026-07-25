@@ -233,11 +233,39 @@ export function CoachFBX({
         controls.target.set(0, size.y * 0.55, 0);
         controls.update();
 
+        /* one-shot FBX→GLB bake: bundle the rig and every clip into a single
+           glTF binary and hand it to the dev route to write to disk */
+        const exportGlb = async () => {
+          const { GLTFExporter } = await import("three/examples/jsm/exporters/GLTFExporter.js");
+          const clips = Object.values(actions).map((a) => a.getClip());
+          const buf: ArrayBuffer = await new Promise((res, rej) =>
+            new GLTFExporter().parse(
+              model,
+              (r) => res(r as ArrayBuffer),
+              (e) => rej(e),
+              { binary: true, animations: clips },
+            ),
+          );
+          // chunked: one big body gets truncated and yields a corrupt GLB
+          const CHUNK = 3 * 1024 * 1024;
+          let last: unknown = null;
+          for (let off = 0, part = 0; off < buf.byteLength; off += CHUNK, part++) {
+            const slice = buf.slice(off, Math.min(off + CHUNK, buf.byteLength));
+            const r = await fetch(`/api/dev-export?name=coach-anim.glb&part=${part}`, {
+              method: "POST",
+              body: slice,
+            });
+            last = await r.json();
+          }
+          return { ...(last as object), expected: buf.byteLength, clips: clips.map((c) => c.name) };
+        };
+
         Object.assign(dbg, {
           model,
           mixer,
           actions,
           play,
+          exportGlb,
           report: {
             units: rawSize.y > 50 ? "centimetres" : "metres",
             appliedScale: +scale.toFixed(4),

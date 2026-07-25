@@ -43,3 +43,7 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Mixamo conversion intermediates (see scripts/prepare-mocap-model.mjs)
+public/models/*.fbx
+public/models/coach-anim.glb
