@@ -89,6 +89,8 @@ const TWIST: Partial<Record<DemoPreset, (p: number) => number>> = {
    at the floor: the rear heel pivots, the hips turn, the chest follows, the arm
    arrives last. Rotating only the torso (as this used to) reads as a swivelling
    upper body bolted to frozen legs. */
+const LEGS = new Set(["thighR", "shinR", "footR", "thighL", "shinL", "footL"]);
+
 const YAW_SHARE: Record<string, number> = {
   footR: 0.16,
   footL: 0.16,
@@ -251,6 +253,19 @@ export function Coach3D({
       const FRONT = new THREE.Vector3(0, 0, 1);
       const ONE = new THREE.Vector3(1, 1, 1);
 
+      /* Roll reference per bone. Arms use the MEDIAL axis (pointing at the
+         body's centreline) so the inside of the forearm — and the palm — keeps
+         facing inward like a real guard. Using world-front here is what rolled
+         the hands open so they faced outward and looked broken. */
+      const MED_R = new THREE.Vector3(-1, 0, 0); // right arm: medial = -x
+      const MED_L = new THREE.Vector3(1, 0, 0); // left arm: medial = +x
+      const refFor = (name: string) =>
+        name === "uArmR" || name === "fArmR"
+          ? MED_R
+          : name === "uArmL" || name === "fArmL"
+            ? MED_L
+            : FRONT;
+
       /* Bone orientation with a CONTROLLED ROLL.
          setFromUnitVectors alone gives the minimal rotation, which leaves the
          twist around the bone axis undefined — that's what made hands flip and
@@ -261,6 +276,7 @@ export function Coach3D({
       const boneQuat = (
         bind: import("three").Vector3,
         dir: import("three").Vector3,
+        ref: import("three").Vector3,
         out: import("three").Quaternion,
       ) => {
         const d = bind.dot(dir);
@@ -271,11 +287,12 @@ export function Coach3D({
           return out.setFromAxisAngle(t1.normalize(), Math.PI);
         }
         out.setFromUnitVectors(bind, dir);
-        // where FRONT should sit (perpendicular to the bone) vs where it landed
-        t1.copy(FRONT).projectOnPlane(dir);
-        if (t1.lengthSq() < 1e-5) return out; // bone points along FRONT: roll is moot
+        // where the reference should sit (perpendicular to the bone) vs where
+        // it landed after the minimal rotation
+        t1.copy(ref).projectOnPlane(dir);
+        if (t1.lengthSq() < 1e-5) return out; // bone points along ref: roll is moot
         t1.normalize();
-        t2.copy(FRONT).applyQuaternion(out).projectOnPlane(dir);
+        t2.copy(ref).applyQuaternion(out).projectOnPlane(dir);
         if (t2.lengthSq() < 1e-5) return out;
         t2.normalize();
         let ang = Math.acos(Math.max(-1, Math.min(1, t2.dot(t1))));
@@ -359,6 +376,40 @@ export function Coach3D({
         },
       };
 
+      /* ---------------------------- boxing legs ----------------------------
+         The keyframed legs are a bladed side-view stance, and they buckled the
+         moment the torso turned. For punching drills we plant BOTH feet in an
+         even, square stance and solve the knees with IK: the legs stay clean,
+         and when the hips drop the knees simply bend — he sits into the shot,
+         which is the actual technique. */
+      const TH = 0.46; // thigh
+      const SH = 0.46; // shin
+      const ANKLE_Y = -0.9; // planted ankle height (floor is -1)
+      const STANCE_X = 0.15; // half the distance between the feet
+      const oHip = [new THREE.Vector3(), new THREE.Vector3()];
+      const oKnee = [new THREE.Vector3(), new THREE.Vector3()];
+      const oAnk = [new THREE.Vector3(), new THREE.Vector3()];
+      const oToe = [new THREE.Vector3(), new THREE.Vector3()];
+
+      /** knee from hip+ankle: two-bone IK, knee poled forward */
+      const solveKnee = (
+        H: import("three").Vector3,
+        A: import("three").Vector3,
+        out: import("three").Vector3,
+      ) => {
+        const d = Math.min(TH + SH - 0.02, Math.max(0.12, H.distanceTo(A)));
+        const cosA = (d * d + TH * TH - SH * SH) / (2 * TH * d);
+        const ang = Math.acos(Math.max(-1, Math.min(1, cosA)));
+        ikDir.subVectors(A, H).normalize();
+        ikPole.set(0, 0, 1).projectOnPlane(ikDir); // knees bend forward
+        if (ikPole.lengthSq() < 1e-6) ikPole.set(0, 0, 1);
+        ikPole.normalize();
+        out
+          .copy(H)
+          .addScaledVector(ikDir, TH * Math.cos(ang))
+          .addScaledVector(ikPole, TH * Math.sin(ang));
+      };
+
       /** elbow from shoulder+hand: classic two-bone IK, elbow poled down/out */
       const solveElbow = (
         S: import("three").Vector3,
@@ -397,16 +448,19 @@ export function Coach3D({
             if (def.armPenalty && torsoZone) d *= 2.2;
             dists[b] = Math.max(d, 0.02);
           }
-          const order = [...dists.keys()].sort((x, y) => dists[x] - dists[y]).slice(0, 3);
+          /* Four influences with a gentle 1/d² falloff. A sharper falloff makes
+             each vertex follow a single bone, so the shoulder and hip creases
+             tear apart the moment a limb swings — this blends them instead. */
+          const order = [...dists.keys()].sort((x, y) => dists[x] - dists[y]).slice(0, 4);
           let sum = 0;
           const w = order.map((b) => {
-            const v = 1 / Math.pow(dists[b], 4);
+            const v = 1 / (dists[b] * dists[b]);
             sum += v;
             return v;
           });
-          for (let k3 = 0; k3 < 4; k3++) {
-            idx[i * 4 + k3] = k3 < 3 ? order[k3] : 0;
-            wgt[i * 4 + k3] = k3 < 3 ? w[k3] / sum : 0;
+          for (let k4 = 0; k4 < 4; k4++) {
+            idx[i * 4 + k4] = order[k4] ?? 0;
+            wgt[i * 4 + k4] = order[k4] === undefined ? 0 : w[k4] / sum;
           }
         }
         geo.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(idx, 4));
@@ -583,6 +637,23 @@ export function Coach3D({
             armOverride.fArmR = [oElb[0], oHan[0]];
             armOverride.uArmL = [oSho[1], oElb[1]];
             armOverride.fArmL = [oElb[1], oHan[1]];
+
+            /* legs: feet planted square, knees bend as the hips drop */
+            const hipY = j.hip[1] * K2D - 1;
+            const hipZc = (j.hip[0] - centerX) * K2D;
+            for (let s = 0; s < 2; s++) {
+              const side = s === 0 ? 1 : -1;
+              oHip[s].set(side * 0.09, hipY, hipZc);
+              oAnk[s].set(side * STANCE_X, ANKLE_Y, 0);
+              solveKnee(oHip[s], oAnk[s], oKnee[s]);
+              oToe[s].set(side * STANCE_X, ANKLE_Y - 0.07, 0.16);
+            }
+            armOverride.thighR = [oHip[0], oKnee[0]];
+            armOverride.shinR = [oKnee[0], oAnk[0]];
+            armOverride.footR = [oAnk[0], oToe[0]];
+            armOverride.thighL = [oHip[1], oKnee[1]];
+            armOverride.shinL = [oKnee[1], oAnk[1]];
+            armOverride.footL = [oAnk[1], oToe[1]];
           }
 
           /* torso yaw for punches: rotate every upper-body target around a
@@ -605,7 +676,9 @@ export function Coach3D({
               vA.set(def.lata, ja[1] * K2D - 1, (ja[0] - centerX) * K2D);
               vB.set(def.latb, jb[1] * K2D - 1, (jb[0] - centerX) * K2D);
             }
-            const share = YAW_SHARE[def.name] ?? 0;
+            /* planted legs never inherit the twist — otherwise the feet swing
+               off their spot and the whole stance collapses */
+            const share = handFn && LEGS.has(def.name) ? 0 : (YAW_SHARE[def.name] ?? 0);
             if (yaw !== 0 && share > 0) {
               const a = yaw * share;
               const c = Math.cos(a);
@@ -618,7 +691,7 @@ export function Coach3D({
               }
             }
             dirV.subVectors(vB, vA).normalize();
-            boneQuat(bindDirs[b], dirV, q);
+            boneQuat(bindDirs[b], dirV, refFor(def.name), q);
             bones[b].matrix.compose(vA, q, ONE);
           }
         };
