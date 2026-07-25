@@ -227,10 +227,69 @@ export function Coach3D({
       const vB = new THREE.Vector3();
       const dirV = new THREE.Vector3();
       const q = new THREE.Quaternion();
-      const qa = new THREE.Quaternion();
-      const qb = new THREE.Quaternion();
+      const qRoll = new THREE.Quaternion();
+      const t1 = new THREE.Vector3();
+      const t2 = new THREE.Vector3();
+      const t3 = new THREE.Vector3();
       const FRONT = new THREE.Vector3(0, 0, 1);
       const ONE = new THREE.Vector3(1, 1, 1);
+
+      /* Bone orientation with a CONTROLLED ROLL.
+         setFromUnitVectors alone gives the minimal rotation, which leaves the
+         twist around the bone axis undefined — that's what made hands flip and
+         look broken on big swings (uppercuts). Here we take that rotation and
+         then roll the bone about its own axis so its reference direction stays
+         as close to world-front as possible: limbs keep a natural, consistent
+         orientation through the whole range of motion. */
+      const boneQuat = (
+        bind: import("three").Vector3,
+        dir: import("three").Vector3,
+        out: import("three").Quaternion,
+      ) => {
+        const d = bind.dot(dir);
+        if (d < -0.9995) {
+          // exactly opposite — any perpendicular axis gives a stable 180° flip
+          t1.set(1, 0, 0).cross(bind);
+          if (t1.lengthSq() < 1e-6) t1.set(0, 0, 1).cross(bind);
+          return out.setFromAxisAngle(t1.normalize(), Math.PI);
+        }
+        out.setFromUnitVectors(bind, dir);
+        // where FRONT should sit (perpendicular to the bone) vs where it landed
+        t1.copy(FRONT).projectOnPlane(dir);
+        if (t1.lengthSq() < 1e-5) return out; // bone points along FRONT: roll is moot
+        t1.normalize();
+        t2.copy(FRONT).applyQuaternion(out).projectOnPlane(dir);
+        if (t2.lengthSq() < 1e-5) return out;
+        t2.normalize();
+        let ang = Math.acos(Math.max(-1, Math.min(1, t2.dot(t1))));
+        t3.crossVectors(t2, t1);
+        if (t3.dot(dir) < 0) ang = -ang;
+        qRoll.setFromAxisAngle(dir, ang);
+        return out.premultiply(qRoll);
+      };
+
+      /* Boxing gloves — the scan has open, flat palms, so bare hands read as
+         "broken" mid-punch. Real gloves at the hands fix that and sell the
+         movement. Shown only for presets that fight (props.gloves). */
+      let gloveR: import("three").Mesh | null = null;
+      let gloveL: import("three").Mesh | null = null;
+      const gloveMat = new THREE.MeshStandardMaterial({
+        color: 0xc11f1f,
+        roughness: 0.42,
+        metalness: 0.05,
+      });
+      const gloveGeo = new THREE.SphereGeometry(0.115, 20, 16);
+      gloveGeo.scale(1, 1.12, 0.92); // slightly egg-shaped, like a real mitt
+      /** park a glove on the hand end of the forearm, aligned to the arm */
+      const gloveAt = (
+        g: import("three").Mesh,
+        elbow: import("three").Vector3,
+        hand: import("three").Vector3,
+      ) => {
+        t1.subVectors(hand, elbow).normalize();
+        g.position.copy(hand).addScaledVector(t1, 0.035);
+        g.quaternion.setFromUnitVectors(FRONT, t1);
+      };
 
       const buildRig = (src: import("three").Mesh): import("three").SkinnedMesh => {
         const geo = src.geometry;
@@ -369,6 +428,14 @@ export function Coach3D({
           rope.frustumCulled = false;
           modelRoot.add(rope);
         }
+        for (const g of [gloveR, gloveL]) if (g) modelRoot?.remove(g);
+        gloveR = gloveL = null;
+        if (PRESETS[p]?.props?.gloves && modelRoot) {
+          gloveR = new THREE.Mesh(gloveGeo, gloveMat);
+          gloveL = new THREE.Mesh(gloveGeo, gloveMat);
+          gloveR.frustumCulled = gloveL.frustumCulled = false;
+          modelRoot.add(gloveR, gloveL);
+        }
         for (const k of Object.keys(armOverride)) delete armOverride[k];
         buildProps(p, centerX);
         /* hanging work happens high — lift the camera to frame the bar */
@@ -448,16 +515,10 @@ export function Coach3D({
               }
             }
             dirV.subVectors(vB, vA).normalize();
-            // near-antiparallel targets (legs straight up etc.) go through an
-            // intermediate axis so the limb never pops to a flipped roll
-            if (bindDirs[b].dot(dirV) < -0.9) {
-              qa.setFromUnitVectors(bindDirs[b], FRONT);
-              qb.setFromUnitVectors(FRONT, dirV);
-              q.multiplyQuaternions(qb, qa);
-            } else {
-              q.setFromUnitVectors(bindDirs[b], dirV);
-            }
+            boneQuat(bindDirs[b], dirV, q);
             bones[b].matrix.compose(vA, q, ONE);
+            if (gloveR && def.name === "fArmR") gloveAt(gloveR, vA, vB);
+            if (gloveL && def.name === "fArmL") gloveAt(gloveL, vA, vB);
           }
         };
         driver(0);

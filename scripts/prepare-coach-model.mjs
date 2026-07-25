@@ -102,9 +102,8 @@ await doc.transform(
 function paintCoach() {
   const srgb = (r, g, b) => [r, g, b].map((v) => Math.pow(v / 255, 2.2));
   const C = {
-    shirt: srgb(38, 40, 46), // black compression shirt
-    shorts: srgb(23, 24, 28), // black shorts…
-    accent: srgb(245, 197, 24), // …with yellow waistband/stripes/sleeve bands
+    shirt: srgb(247, 200, 24), // yellow t-shirt (top)
+    shorts: srgb(24, 25, 29), // black shorts (bottom)
     skin: srgb(216, 158, 122),
     hair: srgb(43, 31, 22), // deep brown, single tone
     shoe: srgb(28, 29, 33), // black shoes
@@ -133,6 +132,30 @@ function paintCoach() {
       }
       const front = Math.sign(toeZ) || 1;
 
+      // Hairline, measured instead of guessed: the front-most point of the head
+      // is the nose, so the brow/hairline sits a fixed fraction above it. (A
+      // hard-coded threshold cut a dark band across the forehead.)
+      let noseY = 0.9;
+      let maxZf = -1e9;
+      for (let i = 0; i < n; i++) {
+        const y = (p[i * 3 + 1] - minY) / H;
+        if (y < 0.86) continue;
+        const zf = p[i * 3 + 2] * front;
+        if (zf > maxZf) {
+          maxZf = zf;
+          noseY = y;
+        }
+      }
+      const hairline = noseY + (1 - noseY) * 0.42;
+
+      /* Fraction along the A-pose arm axis: 0 at the shoulder, 1 at the hand.
+         The arm hangs diagonally, so a plain x threshold can't separate a
+         sleeve from a bare arm — this can. */
+      const SX = 0.17, SY = 0.83, HX = 0.66, HY = 0.55;
+      const dx = HX - SX, dy = HY - SY;
+      const len2 = dx * dx + dy * dy;
+      const armT = (x, y) => ((x - SX) * dx + (y - SY) * dy) / len2;
+
       const col = new Float32Array(n * 3);
       for (let i = 0; i < n; i++) {
         const x = Math.abs(p[i * 3]);
@@ -140,19 +163,16 @@ function paintCoach() {
         const zf = p[i * 3 + 2] * front; // + = front of body
         let c;
         if (y < 0.025) c = C.sole; // white sole
-        else if (y < 0.07) c = C.shoe;
-        else if (y < 0.3) c = C.skin; // calves, knees
-        else if (y < 0.5 && x < 0.28) {
-          // shorts: yellow waistband + yellow outer-leg stripes on black
-          c = y > 0.475 || x > 0.155 ? C.accent : C.shorts;
-        } else if (y > 0.855) {
-          // head: hair covers the cap (incl. the pompadour front) + back of
-          // skull; face/neck skin in front
-          c = y > 0.933 || (y > 0.87 && zf < -0.015) ? C.hair : C.skin;
-        } else if (x > 0.4) c = C.skin; // forearms + hands
-        else if (x > 0.22 && y < 0.55) c = C.skin; // arm below sleeve line
-        else if (x > 0.34) c = C.accent; // yellow band at the sleeve end
-        else c = C.shirt; // torso + shoulder caps + upper-arm sleeves
+        else if (y < 0.075) c = C.shoe;
+        else if (y < 0.315) c = C.skin; // calves + knees, below the hem
+        else if (y < 0.5 && x < 0.3) c = C.shorts; // solid black shorts
+        else if (y > 0.86) {
+          // head: hair above the measured hairline + the back of the skull
+          c = y > hairline || (y > 0.885 && zf < -0.02) ? C.hair : C.skin;
+        } else {
+          // torso band: yellow tee; past the short sleeve it's a bare arm
+          c = x > 0.2 && armT(x, y) > 0.26 ? C.skin : C.shirt;
+        }
         col[i * 3] = c[0];
         col[i * 3 + 1] = c[1];
         col[i * 3 + 2] = c[2];
