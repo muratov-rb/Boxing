@@ -85,7 +85,24 @@ const TWIST: Partial<Record<DemoPreset, (p: number) => number>> = {
 };
 
 /** bones that rotate with the torso when a punch twists the body */
-const UPPER_BODY = new Set(["spine", "head", "uArmR", "fArmR", "uArmL", "fArmL"]);
+/* How much of the punch's rotation each bone inherits. Power in boxing starts
+   at the floor: the rear heel pivots, the hips turn, the chest follows, the arm
+   arrives last. Rotating only the torso (as this used to) reads as a swivelling
+   upper body bolted to frozen legs. */
+const YAW_SHARE: Record<string, number> = {
+  footR: 0.16,
+  footL: 0.16,
+  shinR: 0.32,
+  shinL: 0.32,
+  thighR: 0.6,
+  thighL: 0.6,
+  spine: 1,
+  head: 0.85, // eyes stay on the target
+  uArmR: 1,
+  fArmR: 1,
+  uArmL: 1,
+  fArmL: 1,
+};
 
 function segDist(px: number, py: number, pz: number, a: V3, b: V3): number {
   const abx = b[0] - a[0], aby = b[1] - a[1], abz = b[2] - a[2];
@@ -286,27 +303,43 @@ export function Coach3D({
       /** hand target per arm: [x, y above shoulder, z in front of shoulder].
           s = +1 lead (near) arm, -1 rear arm. Guard is hands by the chin. */
       const GX = 0.135, GY = 0.02, GZ = 0.25;
+      /* IMPORTANT: every envelope below is timed to the preset's own keyframes
+         (env peaks at the midpoint), so the hand lands exactly when the legs
+         drive and the hips turn. Mistimed hands are what made the punches look
+         disconnected and floppy. */
+      const oneTwo = (u: number, s: number): [number, number, number] => {
+        // lead jab at 0.16, rear cross at 0.54
+        const e = s > 0 ? env(u, 0.02, 0.3) : env(u, 0.4, 0.68);
+        return [s * (GX - 0.1 * e), GY, GZ + 0.55 * e];
+      };
       const HAND: Partial<Record<DemoPreset, (u: number, s: number) => [number, number, number]>> = {
-        jab: (u, s) => {
-          const e = s > 0 ? env(u, 0.04, 0.34) : 0;
-          return [s * (GX - 0.09 * e), GY, GZ + 0.52 * e];
-        },
+        jab: oneTwo, // the "jab" lesson is the one-two
+        heavybag: oneTwo,
         cross: (u, s) => {
-          const e = s < 0 ? env(u, 0.1, 0.46) : 0;
+          const e = s < 0 ? env(u, 0.26, 0.54) : 0; // rear straight at 0.40
           return [s * (GX - 0.11 * e), GY - 0.01 * e, GZ + 0.58 * e];
         },
         doublejab: (u, s) => {
-          const e = s > 0 ? Math.max(env(u, 0.02, 0.22), env(u, 0.24, 0.44)) : env(u, 0.55, 0.9);
+          const e =
+            s > 0
+              ? Math.max(env(u, 0.02, 0.22), env(u, 0.26, 0.46)) // jabs at 0.12 / 0.36
+              : env(u, 0.5, 0.82); // cross at 0.66
           return [s * (GX - 0.1 * e), GY, GZ + 0.55 * e];
         },
         hook: (u, s) => {
-          // travels laterally across the body, elbow up at 90°
-          const e = s > 0 ? env(u, 0.08, 0.5) : 0;
-          return [s * (GX - 0.26 * e), GY + 0.05 * e, GZ + 0.3 * e];
+          if (s < 0) return [s * GX, GY, GZ];
+          const wind = env(u, 0.14, 0.42); // draws back at 0.30…
+          const e = env(u, 0.38, 0.72); // …then swings across at 0.55
+          return [
+            s * (GX + 0.1 * wind - 0.3 * e), // travels across the centreline
+            GY + 0.05 * e,
+            GZ - 0.06 * wind + 0.32 * e,
+          ];
         },
         uppercut: (u, s) => {
-          const rise = s < 0 ? env(u, 0.08, 0.44) : env(u, 0.58, 0.94);
-          const dip = s < 0 ? env(u, 0.0, 0.14) : env(u, 0.5, 0.64);
+          // rear at 0.36, lead at 0.86 — each preceded by a dip on the legs
+          const dip = s < 0 ? env(u, 0.02, 0.26) : env(u, 0.52, 0.76);
+          const rise = s < 0 ? env(u, 0.22, 0.5) : env(u, 0.72, 1.0);
           return [
             s * (GX - 0.06 * rise),
             GY - 0.18 * dip + 0.3 * rise, // drops, then drives up past the chin
@@ -314,20 +347,15 @@ export function Coach3D({
           ];
         },
         combo123: (u, s) => {
-          const jab = s > 0 ? env(u, 0.02, 0.2) : 0;
-          const crs = s < 0 ? env(u, 0.26, 0.5) : 0;
-          const hk = s > 0 ? env(u, 0.56, 0.84) : 0;
+          const jab = s > 0 ? env(u, 0.02, 0.22) : 0; // 0.12
+          const crs = s < 0 ? env(u, 0.26, 0.5) : 0; // 0.38
+          const hk = s > 0 ? env(u, 0.56, 0.84) : 0; // 0.70
           const fwd = Math.max(jab, crs);
           return [
-            s * (GX - 0.1 * fwd - 0.26 * hk),
+            s * (GX - 0.1 * fwd - 0.3 * hk),
             GY + 0.05 * hk,
-            GZ + 0.55 * fwd + 0.3 * hk,
+            GZ + 0.55 * fwd + 0.32 * hk,
           ];
-        },
-        heavybag: (u, s) => {
-          const a = s > 0 ? env(u, 0.02, 0.24) : env(u, 0.3, 0.56);
-          const h = s > 0 ? env(u, 0.62, 0.9) : 0;
-          return [s * (GX - 0.1 * a - 0.24 * h), GY + 0.04 * h, GZ + 0.5 * a + 0.28 * h];
         },
       };
 
@@ -577,12 +605,16 @@ export function Coach3D({
               vA.set(def.lata, ja[1] * K2D - 1, (ja[0] - centerX) * K2D);
               vB.set(def.latb, jb[1] * K2D - 1, (jb[0] - centerX) * K2D);
             }
-            if (yaw !== 0 && UPPER_BODY.has(def.name)) {
+            const share = YAW_SHARE[def.name] ?? 0;
+            if (yaw !== 0 && share > 0) {
+              const a = yaw * share;
+              const c = Math.cos(a);
+              const sn = Math.sin(a);
               for (const v of [vA, vB]) {
                 const dx = v.x;
                 const dz = v.z - hipZ;
-                v.x = dx * yCos + dz * ySin;
-                v.z = hipZ + (-dx * ySin + dz * yCos);
+                v.x = dx * c + dz * sn;
+                v.z = hipZ + (-dx * sn + dz * c);
               }
             }
             dirV.subVectors(vB, vA).normalize();
