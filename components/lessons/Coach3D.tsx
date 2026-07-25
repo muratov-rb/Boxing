@@ -268,27 +268,87 @@ export function Coach3D({
         return out.premultiply(qRoll);
       };
 
-      /* Boxing gloves — the scan has open, flat palms, so bare hands read as
-         "broken" mid-punch. Real gloves at the hands fix that and sell the
-         movement. Shown only for presets that fight (props.gloves). */
-      let gloveR: import("three").Mesh | null = null;
-      let gloveL: import("three").Mesh | null = null;
-      const gloveMat = new THREE.MeshStandardMaterial({
-        color: 0xc11f1f,
-        roughness: 0.42,
-        metalness: 0.05,
-      });
-      const gloveGeo = new THREE.SphereGeometry(0.115, 20, 16);
-      gloveGeo.scale(1, 1.12, 0.92); // slightly egg-shaped, like a real mitt
-      /** park a glove on the hand end of the forearm, aligned to the arm */
-      const gloveAt = (
-        g: import("three").Mesh,
-        elbow: import("three").Vector3,
-        hand: import("three").Vector3,
+      /* ---------------------------- boxing arms ----------------------------
+         The keyframes are a flat SIDE view, so mapping them straight to 3D
+         swings both arms in one plane — elbows never tuck, punches never
+         travel down the centreline, and it reads as flapping. For fighting
+         presets we place the HANDS in real 3D and solve the elbow with
+         two-bone IK, so the arm bends the way an arm actually bends. */
+      const UA = 0.382; // upper-arm length (bind)
+      const FA = 0.362; // forearm length (bind)
+      const ikDir = new THREE.Vector3();
+      const ikPole = new THREE.Vector3();
+
+      /** smooth out-and-back envelope: 0 outside [t0,t1], peaks 1 in the middle */
+      const env = (u: number, t0: number, t1: number) =>
+        u < t0 || u > t1 ? 0 : Math.sin(((u - t0) / (t1 - t0)) * Math.PI);
+
+      /** hand target per arm: [x, y above shoulder, z in front of shoulder].
+          s = +1 lead (near) arm, -1 rear arm. Guard is hands by the chin. */
+      const GX = 0.135, GY = 0.02, GZ = 0.25;
+      const HAND: Partial<Record<DemoPreset, (u: number, s: number) => [number, number, number]>> = {
+        jab: (u, s) => {
+          const e = s > 0 ? env(u, 0.04, 0.34) : 0;
+          return [s * (GX - 0.09 * e), GY, GZ + 0.52 * e];
+        },
+        cross: (u, s) => {
+          const e = s < 0 ? env(u, 0.1, 0.46) : 0;
+          return [s * (GX - 0.11 * e), GY - 0.01 * e, GZ + 0.58 * e];
+        },
+        doublejab: (u, s) => {
+          const e = s > 0 ? Math.max(env(u, 0.02, 0.22), env(u, 0.24, 0.44)) : env(u, 0.55, 0.9);
+          return [s * (GX - 0.1 * e), GY, GZ + 0.55 * e];
+        },
+        hook: (u, s) => {
+          // travels laterally across the body, elbow up at 90°
+          const e = s > 0 ? env(u, 0.08, 0.5) : 0;
+          return [s * (GX - 0.26 * e), GY + 0.05 * e, GZ + 0.3 * e];
+        },
+        uppercut: (u, s) => {
+          const rise = s < 0 ? env(u, 0.08, 0.44) : env(u, 0.58, 0.94);
+          const dip = s < 0 ? env(u, 0.0, 0.14) : env(u, 0.5, 0.64);
+          return [
+            s * (GX - 0.06 * rise),
+            GY - 0.18 * dip + 0.3 * rise, // drops, then drives up past the chin
+            GZ + 0.05 * dip + 0.2 * rise,
+          ];
+        },
+        combo123: (u, s) => {
+          const jab = s > 0 ? env(u, 0.02, 0.2) : 0;
+          const crs = s < 0 ? env(u, 0.26, 0.5) : 0;
+          const hk = s > 0 ? env(u, 0.56, 0.84) : 0;
+          const fwd = Math.max(jab, crs);
+          return [
+            s * (GX - 0.1 * fwd - 0.26 * hk),
+            GY + 0.05 * hk,
+            GZ + 0.55 * fwd + 0.3 * hk,
+          ];
+        },
+        heavybag: (u, s) => {
+          const a = s > 0 ? env(u, 0.02, 0.24) : env(u, 0.3, 0.56);
+          const h = s > 0 ? env(u, 0.62, 0.9) : 0;
+          return [s * (GX - 0.1 * a - 0.24 * h), GY + 0.04 * h, GZ + 0.5 * a + 0.28 * h];
+        },
+      };
+
+      /** elbow from shoulder+hand: classic two-bone IK, elbow poled down/out */
+      const solveElbow = (
+        S: import("three").Vector3,
+        H: import("three").Vector3,
+        s: number,
+        out: import("three").Vector3,
       ) => {
-        t1.subVectors(hand, elbow).normalize();
-        g.position.copy(hand).addScaledVector(t1, 0.035);
-        g.quaternion.setFromUnitVectors(FRONT, t1);
+        const d = Math.min(UA + FA - 0.01, Math.max(0.09, S.distanceTo(H)));
+        const cosA = (d * d + UA * UA - FA * FA) / (2 * UA * d);
+        const A = Math.acos(Math.max(-1, Math.min(1, cosA)));
+        ikDir.subVectors(H, S).normalize();
+        ikPole.set(s * 0.5, -1, -0.3).projectOnPlane(ikDir);
+        if (ikPole.lengthSq() < 1e-6) ikPole.set(0, -1, 0).projectOnPlane(ikDir);
+        ikPole.normalize();
+        out
+          .copy(S)
+          .addScaledVector(ikDir, UA * Math.cos(A))
+          .addScaledVector(ikPole, UA * Math.sin(A));
       };
 
       const buildRig = (src: import("three").Mesh): import("three").SkinnedMesh => {
@@ -428,14 +488,7 @@ export function Coach3D({
           rope.frustumCulled = false;
           modelRoot.add(rope);
         }
-        for (const g of [gloveR, gloveL]) if (g) modelRoot?.remove(g);
-        gloveR = gloveL = null;
-        if (PRESETS[p]?.props?.gloves && modelRoot) {
-          gloveR = new THREE.Mesh(gloveGeo, gloveMat);
-          gloveL = new THREE.Mesh(gloveGeo, gloveMat);
-          gloveR.frustumCulled = gloveL.frustumCulled = false;
-          modelRoot.add(gloveR, gloveL);
-        }
+        const handFn = HAND[p];
         for (const k of Object.keys(armOverride)) delete armOverride[k];
         buildProps(p, centerX);
         /* hanging work happens high — lift the camera to frame the bar */
@@ -486,6 +539,24 @@ export function Coach3D({
             }
           }
 
+          if (handFn) {
+            /* fighting arms: real 3D hand targets + IK elbows (see HAND) */
+            const shY = j.shoulder[1] * K2D - 1;
+            const shZ = (j.shoulder[0] - centerX) * K2D;
+            const u = (time % dur) / dur;
+            for (let s = 0; s < 2; s++) {
+              const side = s === 0 ? 1 : -1; // R = lead, L = rear
+              const [hx, hy, hz] = handFn(u, side);
+              oSho[s].set(side * 0.17, shY, shZ);
+              oHan[s].set(hx, shY + hy, shZ + hz);
+              solveElbow(oSho[s], oHan[s], side, oElb[s]);
+            }
+            armOverride.uArmR = [oSho[0], oElb[0]];
+            armOverride.fArmR = [oElb[0], oHan[0]];
+            armOverride.uArmL = [oSho[1], oElb[1]];
+            armOverride.fArmL = [oElb[1], oHan[1]];
+          }
+
           /* torso yaw for punches: rotate every upper-body target around a
              vertical axis through the hips, so chest, head and both arms turn
              into the shot together */
@@ -496,7 +567,7 @@ export function Coach3D({
 
           for (let b = 0; b < BONE_DEFS.length; b++) {
             const def = BONE_DEFS[b];
-            const ov = hasRope ? armOverride[def.name] : undefined;
+            const ov = armOverride[def.name];
             if (ov) {
               vA.copy(ov[0]);
               vB.copy(ov[1]);
@@ -517,8 +588,6 @@ export function Coach3D({
             dirV.subVectors(vB, vA).normalize();
             boneQuat(bindDirs[b], dirV, q);
             bones[b].matrix.compose(vA, q, ONE);
-            if (gloveR && def.name === "fArmR") gloveAt(gloveR, vA, vB);
-            if (gloveL && def.name === "fArmL") gloveAt(gloveL, vA, vB);
           }
         };
         driver(0);
