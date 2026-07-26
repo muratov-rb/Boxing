@@ -87,13 +87,40 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
   },
 };
 
+/** How the plan is billed. Entitlements are identical either way — only the
+    price and the renewal date differ. */
+export type BillingPeriod = "monthly" | "yearly";
+
 export const PRICES: Record<PaidPlanId, number> = {
   budget: 9.99,
   pro: 24.99,
   max: 79.99,
 };
 
+/** Yearly = 10 months' money for 12 months — the usual "2 months free". */
+export const PRICES_YEARLY: Record<PaidPlanId, number> = {
+  budget: 99.99,
+  pro: 249.99,
+  max: 799.99,
+};
+
+export function priceFor(plan: PaidPlanId, period: BillingPeriod): number {
+  return period === "yearly" ? PRICES_YEARLY[plan] : PRICES[plan];
+}
+
+/** What a yearly plan works out to per month, for the comparison line. */
+export function perMonthOnYearly(plan: PaidPlanId): number {
+  return PRICES_YEARLY[plan] / 12;
+}
+
+/** Whole-percent saving from paying yearly instead of monthly. */
+export function yearlySavingPct(plan: PaidPlanId): number {
+  const monthlyTotal = PRICES[plan] * 12;
+  return Math.round(((monthlyTotal - PRICES_YEARLY[plan]) / monthlyTotal) * 100);
+}
+
 export const PAID_PLANS: PaidPlanId[] = ["budget", "pro", "max"];
+export const BILLING_PERIODS: BillingPeriod[] = ["monthly", "yearly"];
 
 export const TRIAL_DAYS = 7;
 export const TRIAL_WARN_DAY = 4; // start warning on day 4 of 7

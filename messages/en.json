@@ -650,7 +650,13 @@
     "mealsLimited": "Your plan shows part of the day — upgrade to Max for every meal",
     "lessonsLimited": "Showing {shown} of {total} — upgrade for the full library",
     "plansThisWeek": "Weekly plan limit reached — upgrade",
-    "plansLeftWeek": "{n} of {limit} guided sessions left this week"
+    "plansLeftWeek": "{n} of {limit} guided sessions left this week",
+    "perYear": "/ year",
+    "billMonthly": "Monthly",
+    "billYearly": "Yearly",
+    "yearlyEquiv": "{price} / month, billed yearly",
+    "yearlySave": "save {amount} a year ({n}%)",
+    "yearlyHint": "or {price} / year — 2 months free"
   },
   "admin": {
     "gateTitle": "Admin access",
@@ -685,6 +691,9 @@
     "since": "Updated {date}",
     "restartTrial": "Restart trial",
     "saveFailed": "Couldn't save — try again.",
-    "note": "Plan changes reach the user's app the next time they open the dashboard. Real card billing (Stripe) will update this list automatically once connected."
+    "note": "Plan changes reach the user's app the next time they open the dashboard. Real card billing (Stripe) will update this list automatically once connected.",
+    "periodLabel": "Billing period",
+    "period_monthly": "Monthly",
+    "period_yearly": "Yearly"
   }
 }

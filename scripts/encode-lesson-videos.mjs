@@ -15,7 +15,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import ffmpeg from "ffmpeg-static";
 
-const FPS = 30;
+const FPS = 60;
 const SRC = path.join(process.cwd(), ".tmp-frames");
 const OUT = path.join(process.cwd(), "public", "lessons");
 
@@ -39,6 +39,15 @@ for (const clip of clips) {
     continue;
   }
   const dest = path.join(OUT, `${clip}.webp`);
+  /* Long clips (speed bag, warm-up) run 6+ seconds, which at 60fps is a heavy
+     download for one lesson. Measured the options: dropping quality barely
+     helps (q40 still 2.2 MB and looks worse) and downscaling actually made it
+     BIGGER — resampling adds per-frame noise that defeats WebP's inter-frame
+     compression. Capping the loop length is the real lever: 4 seconds cuts it
+     ~44% at full resolution and full smoothness. */
+  const CAP = 240; // 4 s at 60fps
+  const cap = frames.length > CAP ? ["-frames:v", String(CAP)] : [];
+  const q = frames.length > 150 ? "64" : "72";
   execFileSync(
     ffmpeg,
     [
@@ -47,10 +56,11 @@ for (const clip of clips) {
       "-loglevel", "error",
       "-framerate", String(FPS),
       "-i", path.join(dir, "f_%04d.png"),
+      ...cap,
       "-c:v", "libwebp_anim",
       "-pix_fmt", "yuva420p", // keeps the alpha channel
       "-lossless", "0",
-      "-q:v", "72",
+      "-q:v", q,
       "-compression_level", "5",
       "-loop", "0", // loop forever
       "-an",

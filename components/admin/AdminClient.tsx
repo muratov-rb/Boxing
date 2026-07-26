@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { PRICES, priceLabel, type PaidPlanId } from "@/lib/subscription";
+import { PRICES, PRICES_YEARLY, priceLabel, type PaidPlanId } from "@/lib/subscription";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -23,11 +23,15 @@ interface SubRow {
   user_id: string;
   email: string | null;
   plan: string;
+  period: string | null;
   trial_start: string;
   updated_at: string;
 }
 
 const PLAN_OPTIONS = ["trial", "budget", "pro", "max", "expired"] as const;
+const PERIOD_OPTIONS = ["monthly", "yearly"] as const;
+/** period only means anything on a paid plan */
+const isPaid = (plan: string) => plan === "budget" || plan === "pro" || plan === "max";
 
 const trialDayOf = (start: string): number => {
   const ms = Date.now() - new Date(`${start}T00:00:00`).getTime();
@@ -59,7 +63,7 @@ export function AdminClient() {
         }
         const { data, error: qErr } = await supabase
           .from("subscriptions")
-          .select("user_id, email, plan, trial_start, updated_at")
+          .select("user_id, email, plan, period, trial_start, updated_at")
           .order("updated_at", { ascending: false });
         if (qErr) throw qErr;
         setRows(data ?? []);
@@ -71,17 +75,22 @@ export function AdminClient() {
     load();
   }, []);
 
-  const setPlanFor = async (userId: string, plan: string) => {
+  /** Grant any plan — and any billing period — to any user. */
+  const setPlanFor = async (userId: string, plan: string, period?: string) => {
     setSavingId(userId);
     setError(null);
+    const row = rows.find((r) => r.user_id === userId);
+    const nextPeriod = period ?? row?.period ?? "monthly";
     try {
       const supabase = createClient();
       const { error: uErr } = await supabase
         .from("subscriptions")
-        .update({ plan, updated_at: new Date().toISOString() })
+        .update({ plan, period: nextPeriod, updated_at: new Date().toISOString() })
         .eq("user_id", userId);
       if (uErr) throw uErr;
-      setRows((rs) => rs.map((r) => (r.user_id === userId ? { ...r, plan } : r)));
+      setRows((rs) =>
+        rs.map((r) => (r.user_id === userId ? { ...r, plan, period: nextPeriod } : r)),
+      );
     } catch {
       setError(t("saveFailed"));
     } finally {
@@ -122,13 +131,12 @@ export function AdminClient() {
 
   const stats = useMemo(() => {
     const by = (p: string) => rows.filter((r) => r.plan === p).length;
-    const mrr = rows.reduce(
-      (s, r) =>
-        s + (r.plan === "budget" || r.plan === "pro" || r.plan === "max"
-          ? PRICES[r.plan as PaidPlanId]
-          : 0),
-      0,
-    );
+    // yearly plans are spread across 12 months so the figure stays monthly
+    const mrr = rows.reduce((s, r) => {
+      if (!isPaid(r.plan)) return s;
+      const id = r.plan as PaidPlanId;
+      return s + (r.period === "yearly" ? PRICES_YEARLY[id] / 12 : PRICES[id]);
+    }, 0);
     return { total: rows.length, trial: by("trial"), budget: by("budget"), pro: by("pro"), max: by("max"), expired: by("expired"), mrr };
   }, [rows]);
 
@@ -253,6 +261,20 @@ export function AdminClient() {
                       {PLAN_OPTIONS.map((p) => (
                         <option key={p} value={p}>
                           {t(`plan_${p}`)}
+                        </option>
+                      ))}
+                    </select>
+                    {/* billing period — only meaningful on a paid plan */}
+                    <select
+                      value={r.period ?? "monthly"}
+                      disabled={savingId === r.user_id || !isPaid(r.plan)}
+                      onChange={(e) => setPlanFor(r.user_id, r.plan, e.target.value)}
+                      title={t("periodLabel")}
+                      className="rounded-lg border border-line bg-void px-3 py-2 font-condensed text-xs uppercase tracking-wider text-bone focus:border-blood focus:outline-none disabled:opacity-40"
+                    >
+                      {PERIOD_OPTIONS.map((p) => (
+                        <option key={p} value={p}>
+                          {t(`period_${p}`)}
                         </option>
                       ))}
                     </select>

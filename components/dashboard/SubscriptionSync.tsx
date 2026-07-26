@@ -24,18 +24,19 @@ export function SubscriptionSync() {
 
         const { data: row } = await supabase
           .from("subscriptions")
-          .select("plan, trial_start")
+          .select("plan, period, trial_start")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (row) {
-          applyServerSub(row.plan, row.trial_start);
+          applyServerSub(row.plan, row.trial_start, row.period);
         } else {
           const local = exportSubState();
           await supabase.from("subscriptions").insert({
             user_id: user.id,
             email: user.email,
             plan: local.plan ?? activePlan(), // 'trial' or 'expired' when unpaid
+            period: local.period,
             trial_start: local.trialStart,
           });
         }

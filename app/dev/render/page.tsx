@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 
 const W = 1100;
 const H = 800;
-const FPS = 30;
+const FPS = 60;
 /** how far outside the animation's own bounding box to leave — nothing clipped */
 const MARGIN = 1.1;
 

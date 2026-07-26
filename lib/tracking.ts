@@ -11,6 +11,7 @@ import {
   type Entitlements,
   type PlanId,
   type PaidPlanId,
+  type BillingPeriod,
 } from "./subscription";
 
 const K_PROFILE = "pressure.profile";
@@ -412,6 +413,7 @@ export function macroTargets(p: Profile | null): Macros {
 interface SubState {
   plan: PaidPlanId | null; // an explicit paid choice, or null = still on trial
   trialStart: string; // YYYY-MM-DD
+  period?: BillingPeriod; // how that plan is billed (defaults to monthly)
 }
 
 function readSub(): SubState {
@@ -446,8 +448,13 @@ export function activePlan(): PlanId {
 }
 
 /** Record the user's chosen paid plan (local until real billing lands). */
-export function setPlan(plan: PaidPlanId): void {
-  write(K_SUB, { ...readSub(), plan });
+export function setPlan(plan: PaidPlanId, period: BillingPeriod = "monthly"): void {
+  write(K_SUB, { ...readSub(), plan, period });
+}
+
+/** How the active plan is billed. */
+export function billingPeriod(): BillingPeriod {
+  return readSub().period === "yearly" ? "yearly" : "monthly";
 }
 
 /** Reset to the trial (used by a "restart trial" dev affordance / downgrade). */
@@ -456,17 +463,29 @@ export function clearPlan(): void {
 }
 
 /** Snapshot for syncing to the server (plan null = still on the trial clock). */
-export function exportSubState(): { plan: PaidPlanId | null; trialStart: string } {
+export function exportSubState(): {
+  plan: PaidPlanId | null;
+  trialStart: string;
+  period: BillingPeriod;
+} {
   const s = readSub();
-  return { plan: s.plan, trialStart: s.trialStart };
+  return { plan: s.plan, trialStart: s.trialStart, period: s.period ?? "monthly" };
 }
 
 /** Server row wins over local state (admin changes propagate this way).
     Server plan 'trial'/'expired' means "no paid plan — run on the trial clock". */
-export function applyServerSub(plan: string, trialStart: string): void {
+export function applyServerSub(
+  plan: string,
+  trialStart: string,
+  period?: string | null,
+): void {
   const paid: PaidPlanId | null =
     plan === "budget" || plan === "pro" || plan === "max" ? plan : null;
-  write(K_SUB, { plan: paid, trialStart: trialStart || todayKey() });
+  write(K_SUB, {
+    plan: paid,
+    trialStart: trialStart || todayKey(),
+    period: period === "yearly" ? "yearly" : "monthly",
+  });
 }
 
 export function entitlements(): Entitlements {

@@ -6,12 +6,16 @@ import { useTranslations } from "next-intl";
 import {
   ENTITLEMENTS,
   PRICES,
+  priceFor,
+  perMonthOnYearly,
+  yearlySavingPct,
   priceLabel,
+  type BillingPeriod,
   type Entitlements,
   type PaidPlanId,
   type PlanId,
 } from "@/lib/subscription";
-import { activePlan, setPlan, trialDaysLeft } from "@/lib/tracking";
+import { activePlan, setPlan, trialDaysLeft, billingPeriod } from "@/lib/tracking";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -92,14 +96,16 @@ export function PlansClient() {
   const [current, setCurrent] = useState<PlanId>("trial");
   const [left, setLeft] = useState(7);
   const [justPicked, setJustPicked] = useState<PaidPlanId | null>(null);
+  const [period, setPeriod] = useState<BillingPeriod>("monthly");
 
   useEffect(() => {
     setCurrent(activePlan());
     setLeft(trialDaysLeft());
+    setPeriod(billingPeriod());
   }, []);
 
   const choose = (id: PaidPlanId) => {
-    setPlan(id);
+    setPlan(id, period);
     setCurrent(id);
     setJustPicked(id);
   };
@@ -167,6 +173,36 @@ export function PlansClient() {
           </span>
         </div>
 
+        {/* billing period */}
+        <div className="mt-6 flex justify-center">
+          <div className="inline-flex overflow-hidden rounded-full border border-line">
+            {(["monthly", "yearly"] as const).map((p) => (
+              <button
+                key={p}
+                type="button"
+                aria-pressed={period === p}
+                onClick={() => setPeriod(p)}
+                className={cx(
+                  "px-4 py-2 font-condensed text-xs uppercase tracking-widest transition-colors",
+                  period === p ? "bg-blood text-white" : "text-ash hover:text-bone",
+                )}
+              >
+                {t(p === "monthly" ? "billMonthly" : "billYearly")}
+                {p === "yearly" && (
+                  <span
+                    className={cx(
+                      "ml-2 rounded-full px-1.5 py-0.5 text-[0.6rem]",
+                      period === p ? "bg-white/20" : "bg-blood/15 text-blood",
+                    )}
+                  >
+                    −{yearlySavingPct("pro")}%
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* tier cards */}
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
           {TIERS.map(({ id, popular }) => {
@@ -190,10 +226,27 @@ export function PlansClient() {
                 </h2>
                 <div className="mt-3 flex items-end gap-1">
                   <span className="font-display text-4xl leading-none">
-                    {priceLabel(PRICES[id])}
+                    {priceLabel(priceFor(id, period))}
                   </span>
-                  <span className="mb-1 text-xs text-ash-dim">{t("perMonth")}</span>
+                  <span className="mb-1 text-xs text-ash-dim">
+                    {period === "yearly" ? t("perYear") : t("perMonth")}
+                  </span>
                 </div>
+                {period === "yearly" ? (
+                  <p className="mt-1 text-xs text-ash-dim">
+                    {t("yearlyEquiv", { price: priceLabel(perMonthOnYearly(id)) })} ·{" "}
+                    <span className="text-blood">
+                      {t("yearlySave", {
+                        n: yearlySavingPct(id),
+                        amount: priceLabel(PRICES[id] * 12 - priceFor(id, "yearly")),
+                      })}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="mt-1 text-xs text-ash-dim">
+                    {t("yearlyHint", { price: priceLabel(priceFor(id, "yearly")) })}
+                  </p>
+                )}
                 <p className="mt-2 text-sm text-ash">{t(`tagline_${id}`)}</p>
 
                 <ul className="mt-5 flex-1 space-y-2.5">
