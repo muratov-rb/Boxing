@@ -91,12 +91,11 @@ export default function RenderBench() {
 
       const mixer = new THREE.AnimationMixer(model);
 
-      /* Which way is the coach's LEFT? Read it off the rig rather than
-         assuming, then film from that side: the lead shoulder faces camera, so
-         the rear hand at the jaw and the footwork are both readable. */
+      /* Which way is the coach's RIGHT? Read it off the rig rather than
+         assuming, then film from that side. */
       let sideSign = 1;
       model.traverse((o: import("three").Object3D) => {
-        if (o.name === "mixamorigLeftArm") {
+        if (o.name === "mixamorigRightArm") {
           const v = new THREE.Vector3();
           o.getWorldPosition(v);
           sideSign = Math.sign(v.x) || 1;
@@ -104,7 +103,7 @@ export default function RenderBench() {
       });
       // mostly side-on, a little in front, a touch above the waist
       const viewDir = new THREE.Vector3(sideSign * 0.82, 0.16, 0.55).normalize();
-      say(`filming from the coach's LEFT (x ${sideSign > 0 ? "+" : "-"})`);
+      say(`filming from the coach's RIGHT (x ${sideSign > 0 ? "+" : "-"})`);
 
       /* Frame to the animation's FULL range of motion, not the rest pose —
          otherwise a stepping foot or a thrown punch leaves the frame. */
