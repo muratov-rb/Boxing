@@ -11,9 +11,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const W = 900;
-const H = 600;
+const W = 1100;
+const H = 800;
 const FPS = 30;
+/** how far outside the animation's own bounding box to leave — nothing clipped */
+const MARGIN = 1.1;
 
 export default function RenderBench() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -87,11 +89,85 @@ export default function RenderBench() {
       model.position.y -= b1.min.y;
       scene.add(model);
 
-      // 3/4 view, figure filling most of the frame height
-      camera.position.set(1.85, 1.15, 2.75);
-      camera.lookAt(0, 0.95, 0);
-
       const mixer = new THREE.AnimationMixer(model);
+
+      /* Which way is the coach's LEFT? Read it off the rig rather than
+         assuming, then film from that side: the lead shoulder faces camera, so
+         the rear hand at the jaw and the footwork are both readable. */
+      let sideSign = 1;
+      model.traverse((o: import("three").Object3D) => {
+        if (o.name === "mixamorigLeftArm") {
+          const v = new THREE.Vector3();
+          o.getWorldPosition(v);
+          sideSign = Math.sign(v.x) || 1;
+        }
+      });
+      // mostly side-on, a little in front, a touch above the waist
+      const viewDir = new THREE.Vector3(sideSign * 0.82, 0.16, 0.55).normalize();
+      say(`filming from the coach's LEFT (x ${sideSign > 0 ? "+" : "-"})`);
+
+      /* Frame to the animation's FULL range of motion, not the rest pose —
+         otherwise a stepping foot or a thrown punch leaves the frame. */
+      // Box3.expandByObject reads a skinned mesh's BIND bounds and ignores the
+      // deformation, so it returns the same box for every clip. Sample real
+      // skinned vertices instead — that is what actually leaves the frame.
+      let skinnedMesh: import("three").SkinnedMesh | null = null;
+      model.traverse((o: import("three").Object3D) => {
+        const m = o as import("three").SkinnedMesh;
+        if (m.isSkinnedMesh) skinnedMesh = m;
+      });
+      const sm = skinnedMesh as import("three").SkinnedMesh | null;
+      const samples: number[] = [];
+      if (sm) {
+        const total = sm.geometry.attributes.position.count;
+        const step = Math.max(1, Math.floor(total / 500));
+        for (let i = 0; i < total; i += step) samples.push(i);
+      }
+
+      const fitToClip = (clip: import("three").AnimationClip, frames: number) => {
+        const box = new THREE.Box3();
+        const action = mixer.clipAction(clip);
+        mixer.stopAllAction();
+        action.reset().play();
+        const tmp = new THREE.Vector3();
+        for (let i = 0; i < frames; i++) {
+          mixer.setTime((i / frames) * clip.duration);
+          model.updateMatrixWorld(true);
+          if (sm) {
+            sm.skeleton.update();
+            const pos = sm.geometry.attributes.position;
+            for (const v of samples) {
+              sm.applyBoneTransform(v, tmp.fromBufferAttribute(pos, v));
+              box.expandByPoint(tmp.applyMatrix4(sm.matrixWorld));
+            }
+          } else {
+            box.expandByObject(model);
+          }
+        }
+        const center = box.getCenter(new THREE.Vector3());
+        const corners: import("three").Vector3[] = [];
+        for (const x of [box.min.x, box.max.x])
+          for (const y of [box.min.y, box.max.y])
+            for (const z of [box.min.z, box.max.z])
+              corners.push(new THREE.Vector3(x, y, z));
+        // walk the distance in until every corner sits inside the frustum
+        let dist = 4;
+        for (let it = 0; it < 12; it++) {
+          camera.position.copy(center).addScaledVector(viewDir, dist);
+          camera.lookAt(center);
+          camera.updateMatrixWorld(true);
+          camera.updateProjectionMatrix();
+          let worst = 0;
+          for (const c of corners) {
+            const p = c.clone().project(camera);
+            worst = Math.max(worst, Math.abs(p.x), Math.abs(p.y));
+          }
+          const scale = worst * MARGIN;
+          if (Math.abs(scale - 1) < 0.005) break;
+          dist *= scale;
+        }
+        return { center, dist, size: box.getSize(new THREE.Vector3()) };
+      };
       const clips = gltf.animations;
       say(`loaded ${clips.length} clips: ${clips.map((c: import("three").AnimationClip) => c.name).join(", ")}`);
 
@@ -101,11 +177,14 @@ export default function RenderBench() {
         );
 
       const renderClip = async (clip: import("three").AnimationClip) => {
+        const frames = Math.max(2, Math.round(clip.duration * FPS));
+        const fit = fitToClip(clip, frames);
         const action = mixer.clipAction(clip);
         mixer.stopAllAction();
         action.reset().play();
-        const frames = Math.max(2, Math.round(clip.duration * FPS));
-        say(`${clip.name}: ${frames} frames @ ${FPS}fps…`);
+        say(
+          `${clip.name}: ${frames} frames @ ${FPS}fps, motion ${fit.size.x.toFixed(2)}×${fit.size.y.toFixed(2)}×${fit.size.z.toFixed(2)} m, cam ${fit.dist.toFixed(2)} m`,
+        );
         for (let i = 0; i < frames; i++) {
           // exclusive of the end point so frame N wraps cleanly onto frame 0
           mixer.setTime((i / frames) * clip.duration);

@@ -12,13 +12,23 @@ import { Coach3D } from "./Coach3D";
    still falls back to the interactive 3D coach.
    =========================================================================== */
 
-/** preset → file in public/lessons. Add a row as each clip is rendered. */
+/** preset → file in public/lessons. Add a row as each clip is rendered.
+    Only mapped where the capture genuinely shows that lesson — a stand-in
+    that teaches the wrong movement defeats the point of the library. */
 const CLIPS: Partial<Record<DemoPreset, string>> = {
-  shadowbox: "boxing",
-  heavybag: "boxing",
-  combo123: "boxing2",
-  footwork: "idle",
-  stepdrag: "idle",
+  jab: "jabcross", // the "Jab – Cross" lesson is the one-two
+  cross: "jabcross2",
+  hook: "hook",
+  doublejab: "jabcross2",
+  combo123: "punchcombo",
+  slip: "dodging",
+  roll: "dodging",
+  parry: "dodging",
+  shadowbox: "boxing2",
+  heavybag: "boxing2",
+  speedbag: "speedbag",
+  footwork: "warmup",
+  stepdrag: "warmup",
 };
 
 export function lessonClipFor(preset: DemoPreset): string | undefined {

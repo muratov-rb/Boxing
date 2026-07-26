@@ -20,16 +20,25 @@ export interface ClipSource {
   loop?: boolean;
 }
 
+/* Every Mixamo download carries the mesh AND its clip, so the first one is the
+   base (mesh + skeleton) and the rest are harvested for their clips only. */
+const CLIP_IDS = [
+  "jabcross", "jabcross2", "hook", "hook2", "punchcombo", "dodging",
+  "speedbag", "bodyjabcross", "warmup",
+  "boxing2", "boxing3", "boxing4", "boxing5", "boxing6", "boxing7",
+  "boxing8", "boxing9",
+] as const;
+
 /** base = mesh + skeleton (+ its own clip, registered under `id`) */
 export const BASE_CLIP: ClipSource = {
-  id: "idle",
-  url: "/models/coach-rigged.fbx",
+  id: CLIP_IDS[0],
+  url: `/models/anim-${CLIP_IDS[0]}.fbx`,
   loop: true,
 };
-export const EXTRA_CLIPS: ClipSource[] = [
-  { id: "boxing", url: "/models/anim-boxing.fbx" },
-  { id: "boxing2", url: "/models/anim-boxing2.fbx" },
-];
+export const EXTRA_CLIPS: ClipSource[] = CLIP_IDS.slice(1).map((id) => ({
+  id,
+  url: `/models/anim-${id}.fbx`,
+}));
 
 const FADE = 0.25; // seconds — crossfade length between clips
 
