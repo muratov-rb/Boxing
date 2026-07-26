@@ -47,3 +47,6 @@ next-env.d.ts
 # Mixamo conversion intermediates (see scripts/prepare-mocap-model.mjs)
 public/models/*.fbx
 public/models/coach-anim.glb
+
+# pre-rendered animation frames (intermediate)
+.tmp-frames/

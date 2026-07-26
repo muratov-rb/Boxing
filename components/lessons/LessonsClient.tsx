@@ -17,7 +17,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "./BodyMap";
-import { Coach3D } from "./Coach3D";
+import { LessonAnimation } from "./LessonAnimation";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
 
@@ -82,10 +82,11 @@ function LessonDetail({
         <div className="mt-6 grid gap-4 sm:grid-cols-5">
           <div className="min-w-0 sm:col-span-3">
             <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
-              <Coach3D
+              <LessonAnimation
                 preset={ex.demo}
                 className="h-64 w-full sm:h-80"
                 unavailableText={t("demo3dError")}
+                alt={ex.name[locale]}
               />
             </div>
             <p className="mt-2 flex items-center gap-1.5 text-xs text-ash-dim">
