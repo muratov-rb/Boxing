@@ -47,6 +47,16 @@ function read<T>(key: string, fallback: T): T {
   }
 }
 
+/* Anything that changes local state notifies listeners, so the Supabase sync
+   layer can push it without every call site having to know about the server. */
+type ChangeListener = (key: string) => void;
+const listeners = new Set<ChangeListener>();
+
+export function onTrackingChange(fn: ChangeListener): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
 function write(key: string, value: unknown) {
   if (!isBrowser()) return;
   try {
@@ -54,6 +64,45 @@ function write(key: string, value: unknown) {
   } catch {
     /* storage full/blocked — tracking is best-effort */
   }
+  for (const fn of listeners) {
+    try {
+      fn(key);
+    } catch {
+      /* a broken listener must never break tracking */
+    }
+  }
+}
+
+/** Replace local state wholesale — used by the sync layer after a server pull.
+    Deliberately silent: it must not echo back as a change and cause a push. */
+export function hydrateLocal(entries: Record<string, unknown>): void {
+  if (!isBrowser()) return;
+  for (const [key, value] of Object.entries(entries)) {
+    try {
+      if (value === undefined) continue;
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+/** Storage keys, exported so the sync layer maps slices without guessing. */
+export const KEYS = {
+  profile: K_PROFILE,
+  streak: K_STREAK,
+  meals: K_MEALS,
+  visits: K_VISITS,
+  xp: K_XP,
+  rankSeen: K_RANK_SEEN,
+  sub: K_SUB,
+  usage: K_USAGE,
+  burn: K_BURN,
+} as const;
+
+/** Raw slice reads for the sync layer (typed accessors live further down). */
+export function readSlice<T>(key: string, fallback: T): T {
+  return read<T>(key, fallback);
 }
 
 export function todayKey(d = new Date()): string {

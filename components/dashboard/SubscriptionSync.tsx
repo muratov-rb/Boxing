@@ -4,17 +4,33 @@ import { useEffect } from "react";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
 import { applyServerSub, exportSubState, activePlan } from "@/lib/tracking";
+import { pullUserData, pushAll, startSync } from "@/lib/sync";
 
-/* Keeps the subscription state in step with Supabase for signed-in users:
-   - if the server has a row for this user, it wins (this is how admin-panel
-     changes reach the app);
-   - otherwise the current local state is pushed up so the user appears in
-     the admin panel.
+/* Keeps a signed-in user's data in step with Supabase:
+   - subscription: the server row wins (this is how admin-panel changes reach
+     the app), or local state is pushed up so the user appears in the panel;
+   - tracking data (profile, streak, XP, meals, usage): pulled and merged on
+     load, then mirrored on every change so progress follows the account
+     instead of the browser.
    Renders nothing; safe when Supabase isn't configured. */
 
 export function SubscriptionSync() {
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
+
+    /* pull first so a fresh device adopts existing progress, then push the
+       merged result and keep mirroring changes */
+    let stopSync: (() => void) | undefined;
+    (async () => {
+      try {
+        await pullUserData();
+        await pushAll();
+      } catch {
+        /* offline — local state still works */
+      }
+      stopSync = startSync();
+    })();
+
     const run = async () => {
       try {
         const supabase = createClient();
@@ -45,6 +61,8 @@ export function SubscriptionSync() {
       }
     };
     run();
+
+    return () => stopSync?.();
   }, []);
 
   return null;
