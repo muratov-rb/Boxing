@@ -9,7 +9,7 @@ import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
-import { Coach3D } from "@/components/lessons/Coach3D";
+import { LessonAnimation } from "@/components/lessons/LessonAnimation";
 import { TechniqueAnalyzer } from "./TechniqueAnalyzer";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
@@ -93,7 +93,13 @@ export function TechniqueClient() {
           {/* 3D reference */}
           <div className="min-w-0 lg:col-span-2">
             <div className="overflow-hidden rounded-[20px] border border-line/70 bg-void/40">
-              <Coach3D key={tech.demo} preset={tech.demo} className="h-64 w-full sm:h-72" />
+              <LessonAnimation
+                key={tech.demo}
+                preset={tech.demo}
+                className="h-64 w-full sm:h-72"
+                soonText={t("demoSoon")}
+                alt={tech.name[locale]}
+              />
             </div>
             <p className="mt-2 flex items-center gap-1.5 text-xs text-ash-dim">
               <Icon name="target" size={12} /> {t("dragHint")}

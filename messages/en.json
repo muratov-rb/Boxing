@@ -381,7 +381,6 @@
     "backDash": "Dashboard",
     "close": "Close",
     "rotateHint": "The coach performs the exercise — drag to rotate, scroll or pinch to zoom.",
-    "demo3dError": "The 3D model could not be loaded.",
     "musclesHint": "Red = the muscles this lesson targets.",
     "technique": "The right technique",
     "markDone": "I did this today",
@@ -398,7 +397,8 @@
     "bp_shoulders": "Shoulders",
     "bp_back": "Back",
     "bp_core": "Core",
-    "bp_legs": "Legs"
+    "bp_legs": "Legs",
+    "demoSoon": "Video demo coming soon — follow the steps below."
   },
   "track": {
     "streakTitle": "Streak",
@@ -529,7 +529,8 @@
     "restTip1": "Sleep 7–9 hours — the real growth window",
     "restTip2": "Light walk or gentle mobility, nothing taxing",
     "restTip3": "Hydrate and eat enough protein to rebuild",
-    "trainAnyway": "Train anyway"
+    "trainAnyway": "Train anyway",
+    "demoSoon": "Video demo coming soon — follow the steps below."
   },
   "recovery": {
     "title": "Rest & Recovery",
@@ -585,7 +586,8 @@
     "cameraDenied": "Camera access was denied. You can upload a video instead.",
     "videoFailed": "Couldn't read that video. Try a shorter clip or record instead.",
     "noAi": "AI review isn't connected yet (no API key). Use the checklist above for now.",
-    "analyzeFailed": "Couldn't analyze that. Try again with a clearer, well-lit clip."
+    "analyzeFailed": "Couldn't analyze that. Try again with a clearer, well-lit clip.",
+    "demoSoon": "Video demo coming soon — follow the steps below."
   },
   "plans": {
     "backDash": "Dashboard",

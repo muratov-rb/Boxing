@@ -14,8 +14,8 @@ import { useEffect, useRef, useState } from "react";
 const W = 1100;
 const H = 800;
 const FPS = 60;
-/** how far outside the animation's own bounding box to leave — nothing clipped */
-const MARGIN = 1.1;
+/** safety padding around the fitted motion — small, because the fit is exact */
+const MARGIN = 1.03;
 
 export default function RenderBench() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -129,40 +129,51 @@ export default function RenderBench() {
         mixer.stopAllAction();
         action.reset().play();
         const tmp = new THREE.Vector3();
+        /* Keep the actual points, not just their bounding box. Fitting to box
+           CORNERS wastes a lot of frame: the corners of an axis-aligned box are
+           empty air, so the coach ends up smaller than he needs to be. Fitting
+           the real silhouette lets the camera come much closer with no risk of
+           clipping, because these are exactly the points that exist. */
+        const pts: number[] = [];
+        const stride = Math.max(1, Math.floor(frames / 60)); // ≤60 sampled frames
         for (let i = 0; i < frames; i++) {
           mixer.setTime((i / frames) * clip.duration);
           model.updateMatrixWorld(true);
-          if (sm) {
-            sm.skeleton.update();
-            const pos = sm.geometry.attributes.position;
-            for (const v of samples) {
-              sm.applyBoneTransform(v, tmp.fromBufferAttribute(pos, v));
-              box.expandByPoint(tmp.applyMatrix4(sm.matrixWorld));
-            }
-          } else {
+          if (!sm) {
             box.expandByObject(model);
+            continue;
+          }
+          sm.skeleton.update();
+          const pos = sm.geometry.attributes.position;
+          const keep = i % stride === 0;
+          for (const v of samples) {
+            sm.applyBoneTransform(v, tmp.fromBufferAttribute(pos, v));
+            tmp.applyMatrix4(sm.matrixWorld);
+            box.expandByPoint(tmp);
+            if (keep) pts.push(tmp.x, tmp.y, tmp.z);
           }
         }
         const center = box.getCenter(new THREE.Vector3());
-        const corners: import("three").Vector3[] = [];
-        for (const x of [box.min.x, box.max.x])
-          for (const y of [box.min.y, box.max.y])
-            for (const z of [box.min.z, box.max.z])
-              corners.push(new THREE.Vector3(x, y, z));
-        // walk the distance in until every corner sits inside the frustum
+        if (!pts.length) {
+          for (const x of [box.min.x, box.max.x])
+            for (const y of [box.min.y, box.max.y])
+              for (const z of [box.min.z, box.max.z]) pts.push(x, y, z);
+        }
+        // walk the camera in until the furthest-out point just fits
+        const p = new THREE.Vector3();
         let dist = 4;
-        for (let it = 0; it < 12; it++) {
+        for (let it = 0; it < 14; it++) {
           camera.position.copy(center).addScaledVector(viewDir, dist);
           camera.lookAt(center);
           camera.updateMatrixWorld(true);
           camera.updateProjectionMatrix();
           let worst = 0;
-          for (const c of corners) {
-            const p = c.clone().project(camera);
+          for (let k = 0; k < pts.length; k += 3) {
+            p.set(pts[k], pts[k + 1], pts[k + 2]).project(camera);
             worst = Math.max(worst, Math.abs(p.x), Math.abs(p.y));
           }
           const scale = worst * MARGIN;
-          if (Math.abs(scale - 1) < 0.005) break;
+          if (Math.abs(scale - 1) < 0.004) break;
           dist *= scale;
         }
         return { center, dist, size: box.getSize(new THREE.Vector3()) };
@@ -176,7 +187,10 @@ export default function RenderBench() {
         );
 
       const renderClip = async (clip: import("three").AnimationClip) => {
-        const frames = Math.max(2, Math.round(clip.duration * FPS));
+        /* The encoder trims long clips to a 4 s loop, so rendering past that is
+           wasted work — cap here too and match it. */
+        const MAX_FRAMES = 240;
+        const frames = Math.min(MAX_FRAMES, Math.max(2, Math.round(clip.duration * FPS)));
         const fit = fitToClip(clip, frames);
         const action = mixer.clipAction(clip);
         mixer.stopAllAction();
@@ -190,10 +204,23 @@ export default function RenderBench() {
           model.updateMatrixWorld(true);
           renderer.render(scene, camera);
           const blob = await capture();
-          await fetch(`/api/dev-frames?clip=${clip.name}&frame=${i}`, {
-            method: "POST",
-            body: blob,
-          });
+          /* One hung POST used to stall the whole render forever, so each
+             frame gets a deadline and a retry. */
+          const url = `/api/dev-frames?clip=${clip.name}&frame=${i}`;
+          let sent = false;
+          for (let attempt = 0; attempt < 3 && !sent; attempt++) {
+            const ctl = new AbortController();
+            const timer = setTimeout(() => ctl.abort(), 15000);
+            try {
+              await fetch(url, { method: "POST", body: blob, signal: ctl.signal });
+              sent = true;
+            } catch {
+              say(`${clip.name}: frame ${i} retry ${attempt + 1}`);
+            } finally {
+              clearTimeout(timer);
+            }
+          }
+          if (!sent) throw new Error(`frame ${i} failed after 3 tries`);
         }
         say(`${clip.name}: done`);
       };

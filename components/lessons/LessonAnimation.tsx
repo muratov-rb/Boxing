@@ -1,15 +1,17 @@
 "use client";
 
 import type { DemoPreset } from "@/lib/exercises";
-import { Coach3D } from "./Coach3D";
 
 /* ===========================================================================
-   LessonAnimation — pre-rendered coach animation, with the live 3D as fallback.
+   LessonAnimation — the coach demo.
 
-   Lessons that have a rendered clip show an animated WebP instead of running a
-   WebGL scene: identical on every device, no skinning artifacts, no GPU cost,
-   and it plays in a plain <img> with no JavaScript. Anything without a clip
-   still falls back to the interactive 3D coach.
+   Pre-rendered only: no WebGL, no live 3D. Every clip was rendered once from
+   the Mixamo rig, so what one person sees is what everyone sees, on every
+   device, with no skinning artefacts and no GPU cost. It plays in a plain
+   <img>, so there is no JavaScript in the playback path at all.
+
+   A movement with no clip yet shows a quiet placeholder rather than an empty
+   box — the lesson still carries its muscle map and written cues.
    =========================================================================== */
 
 /** preset → file in public/lessons. Add a row as each clip is rendered.
@@ -38,18 +40,25 @@ export function lessonClipFor(preset: DemoPreset): string | undefined {
 export function LessonAnimation({
   preset,
   className = "",
-  unavailableText = "",
+  soonText = "",
   alt = "",
 }: {
   preset: DemoPreset;
   className?: string;
-  unavailableText?: string;
+  /** shown when this movement has no rendered clip yet */
+  soonText?: string;
   alt?: string;
 }) {
   const clip = CLIPS[preset];
   if (!clip) {
     return (
-      <Coach3D preset={preset} className={className} unavailableText={unavailableText} />
+      <div
+        className={`flex items-center justify-center bg-void/30 ${className}`}
+        role="img"
+        aria-label={soonText || alt}
+      >
+        <p className="px-6 text-center text-xs text-ash-dim">{soonText}</p>
+      </div>
     );
   }
   return (

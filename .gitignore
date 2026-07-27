@@ -50,3 +50,7 @@ public/models/coach-anim.glb
 
 # pre-rendered animation frames (intermediate)
 .tmp-frames/
+
+# Mixamo rigging intermediate (regenerate with scripts/prepare-coach-model.mjs)
+public/models/coach.glb
+public/models/coach-mixamo.obj

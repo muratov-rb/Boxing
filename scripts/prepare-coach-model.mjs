@@ -6,7 +6,9 @@
  * Scan exports are "vertex soup" (no shared vertices), so the pipeline is:
  * strip normals/UVs → weld positions into real topology → simplify to ~5%
  * of the triangles → recompute smooth normals → meshopt-compress →
- * public/models/coach.glb. The site auto-detects the file and shows the
+ * public/models/coach.glb — an intermediate for Mixamo rigging, not shipped.
+ * (Historically the site rendered this directly; it now plays pre-rendered
+ * clips instead.) The site auto-detects the file and shows the
  * "3D model" tab in lessons.
  */
 import fs from "node:fs";

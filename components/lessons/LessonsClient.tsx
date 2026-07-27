@@ -85,7 +85,7 @@ function LessonDetail({
               <LessonAnimation
                 preset={ex.demo}
                 className="h-64 w-full sm:h-80"
-                unavailableText={t("demo3dError")}
+                soonText={t("demoSoon")}
                 alt={ex.name[locale]}
               />
             </div>

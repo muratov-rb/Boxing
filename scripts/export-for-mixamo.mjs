@@ -4,9 +4,9 @@
  *   node scripts/export-for-mixamo.mjs --inspect        # structure report only
  *   node scripts/export-for-mixamo.mjs                  # inspect + write OBJ
  *
- * Source is public/models/coach.glb — the STATIC A-pose scan. (The fighting
- * poses are generated at runtime by Coach3D; they are never baked into the
- * file, so the export is already a clean neutral pose.)
+ * Source is public/models/coach.glb — the STATIC A-pose scan, an intermediate
+ * that is no longer shipped (regenerate it with prepare-coach-model.mjs from
+ * the raw scan). Only ever holds a neutral pose, which is what Mixamo wants.
  *
  * Output: public/models/coach-mixamo.obj — Y-up, facing +Z, 1.75 units tall,
  * feet on y=0, centred on X/Z. Upload that straight to mixamo.com.
