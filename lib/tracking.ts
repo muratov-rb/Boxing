@@ -105,6 +105,20 @@ export function readSlice<T>(key: string, fallback: T): T {
   return read<T>(key, fallback);
 }
 
+/** Erase every local slice. Used when the account has been banned and its
+    server data wiped — leaving the copy here would only push it back up.
+    Silent for the same reason hydrateLocal is. */
+export function wipeLocal(): void {
+  if (!isBrowser()) return;
+  for (const key of Object.values(KEYS)) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 export function todayKey(d = new Date()): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");

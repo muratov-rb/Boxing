@@ -10,5 +10,12 @@ export default async function LoginPage({
 }) {
   const sp = await searchParams;
   const next = typeof sp.next === "string" ? sp.next : "/dashboard";
-  return <AuthCard mode="login" next={next} hadError={!!sp.error} />;
+  return (
+    <AuthCard
+      mode="login"
+      next={next}
+      hadError={!!sp.error}
+      banned={sp.banned === "1"}
+    />
+  );
 }

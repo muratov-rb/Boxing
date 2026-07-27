@@ -38,10 +38,12 @@ export function AuthCard({
   mode,
   next = "/dashboard",
   hadError = false,
+  banned = false,
 }: {
   mode: "login" | "register";
   next?: string;
   hadError?: boolean;
+  banned?: boolean;
 }) {
   const t = useTranslations("auth");
   /* Whether Supabase keys are present is only knowable in the real browser
@@ -60,7 +62,7 @@ export function AuthCard({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(
-    hadError ? t("errLink") : null,
+    banned ? t("errBanned") : hadError ? t("errLink") : null,
   );
   const [loading, setLoading] = useState<null | "email" | "google">(null);
 

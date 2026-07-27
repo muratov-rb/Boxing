@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { adminToken, verifyAdminPassword, ADMIN_COOKIE } from "@/lib/admin-auth";
+import { adminToken, verifyAdminCredentials, ADMIN_COOKIE } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
-/* Password → httpOnly admin cookie. Brute force is blunted by a small delay;
-   the real secret never reaches the client. */
+/* Login name + password → httpOnly admin cookie. Brute force is blunted by a
+   small delay; the real secrets never reach the client. */
 export async function POST(req: Request) {
-  let body: { password?: string };
+  let body: { username?: string; password?: string };
   try {
     body = await req.json();
   } catch {
@@ -20,7 +20,8 @@ export async function POST(req: Request) {
 
   await new Promise((r) => setTimeout(r, 400)); // slow down guessing
 
-  if (!body.password || !verifyAdminPassword(body.password)) {
+  if (!body.password || !verifyAdminCredentials(body.username ?? "", body.password)) {
+    // one message for both fields — never reveal which half was wrong
     return NextResponse.json({ error: "wrong_password" }, { status: 401 });
   }
 

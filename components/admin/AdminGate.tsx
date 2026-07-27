@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 
-/* Password wall in front of the admin panel. The password is checked
-   server-side (/api/admin-login) and success sets an httpOnly cookie. */
+/* Login wall in front of the admin panel: one fixed name and password, both
+   checked server-side (/api/admin-login). Success sets an httpOnly cookie.
+   No user account is involved. */
 
 export function AdminGate({ configured }: { configured: boolean }) {
   const t = useTranslations("admin");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -21,7 +23,7 @@ export function AdminGate({ configured }: { configured: boolean }) {
       const res = await fetch("/api/admin-login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       if (res.ok) {
         window.location.reload();
@@ -49,11 +51,20 @@ export function AdminGate({ configured }: { configured: boolean }) {
         {configured && (
           <form onSubmit={submit} className="mt-6 space-y-3">
             <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={t("gateUser")}
+              autoComplete="username"
+              autoFocus
+              className="w-full rounded-xl border border-line bg-void px-4 py-3 text-center font-condensed text-lg text-bone placeholder:text-ash-dim transition-colors focus:border-blood focus:outline-none"
+            />
+            <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t("gatePlaceholder")}
-              autoFocus
+              autoComplete="current-password"
               className="w-full rounded-xl border border-line bg-void px-4 py-3 text-center font-condensed text-lg text-bone placeholder:text-ash-dim transition-colors focus:border-blood focus:outline-none"
             />
             {error && (
@@ -63,7 +74,7 @@ export function AdminGate({ configured }: { configured: boolean }) {
             )}
             <button
               type="submit"
-              disabled={busy || password.length === 0}
+              disabled={busy || password.length === 0 || username.length === 0}
               className="btn btn-primary w-full"
             >
               {busy ? "…" : t("gateEnter")}
