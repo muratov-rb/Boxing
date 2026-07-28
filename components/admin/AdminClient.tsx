@@ -76,12 +76,12 @@ function BarChart({
 
 export function AdminClient({
   users: rows,
-  serviceKeyMissing = false,
-  loadFailed = false,
+  problem = "none",
+  detail,
 }: {
   users: UserRow[];
-  serviceKeyMissing?: boolean;
-  loadFailed?: boolean;
+  problem?: "none" | "no_key" | "no_url" | "wrong_key" | "query_failed";
+  detail?: string;
 }) {
   const t = useTranslations("admin");
   const router = useRouter();
@@ -195,22 +195,31 @@ export function AdminClient({
           )}
         </h1>
 
-        {serviceKeyMissing && (
+        {problem !== "none" && (
           <div className="panel mt-8 p-7">
-            <p className="text-ash">{t("noServiceKey")}</p>
-          </div>
-        )}
-
-        {loadFailed && (
-          <div className="panel mt-8 p-7 text-center">
-            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-blood/40 text-blood">
-              <Icon name="lock" size={26} />
+            <div className="flex gap-4">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-blood/40 text-blood">
+                <Icon name="lock" size={22} />
+              </div>
+              <div className="min-w-0">
+                <p className="font-condensed text-sm font-bold uppercase tracking-widest text-blood">
+                  {t(`problem_${problem}_title`)}
+                </p>
+                <p className="mt-2 leading-relaxed text-ash">
+                  {t(`problem_${problem}`)}
+                </p>
+                {detail && (
+                  <p className="mt-3 break-words rounded-lg border border-line bg-void/70 p-3 font-mono text-xs text-ash-dim">
+                    {detail}
+                  </p>
+                )}
+                <p className="mt-4 text-xs text-ash-dim">{t("problemRedeploy")}</p>
+              </div>
             </div>
-            <p className="mt-4 text-ash">{t("loadFailed")}</p>
           </div>
         )}
 
-        {!serviceKeyMissing && !loadFailed && (
+        {problem === "none" && (
           <>
             {/* headline numbers */}
             <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">

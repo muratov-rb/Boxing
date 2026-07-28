@@ -1,5 +1,9 @@
 import "server-only";
-import { createAdminClient, serviceRoleConfigured } from "./supabase/admin";
+import {
+  createAdminClient,
+  serviceRoleProblem,
+  type ConfigProblem,
+} from "./supabase/admin";
 import type { UserRow } from "./admin-stats";
 
 /* Reading the user list for the admin panel. The admin signs in with a fixed
@@ -9,11 +13,15 @@ import type { UserRow } from "./admin-stats";
 
 export interface UserList {
   users: UserRow[];
-  serviceKeyMissing: boolean;
+  /** What is wrong with the setup, if anything — "none" means it loaded. */
+  problem: ConfigProblem | "query_failed";
+  /** Supabase's own words when a query fails. Shown only behind the gate. */
+  detail?: string;
 }
 
 export async function listUsers(): Promise<UserList> {
-  if (!serviceRoleConfigured()) return { users: [], serviceKeyMissing: true };
+  const problem = serviceRoleProblem();
+  if (problem !== "none") return { users: [], problem };
 
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -21,7 +29,10 @@ export async function listUsers(): Promise<UserList> {
     .select("user_id, email, plan, period, trial_start, banned, banned_at, updated_at")
     .order("updated_at", { ascending: false })
     .limit(1000);
-  if (error) throw error;
+
+  /* Don't throw — a wrong key or a missing table should explain itself in the
+     panel, not render a generic error page. */
+  if (error) return { users: [], problem: "query_failed", detail: error.message };
 
   // last training day per user, so the panel can see who is actually showing up
   const { data: activity } = await supabase
@@ -40,7 +51,6 @@ export async function listUsers(): Promise<UserList> {
       ...u,
       last_active: lastSeen.get(u.user_id) ?? null,
     })) as UserRow[],
-    serviceKeyMissing: false,
+    problem: "none",
   };
 }
-

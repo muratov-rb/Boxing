@@ -684,7 +684,6 @@
     "saveFailed": "No se pudo guardar — inténtalo de nuevo.",
     "note": "Los cambios de plan llegan al usuario la próxima vez que abra el panel. El baneo borra sus datos al instante y no se puede revertir. El cobro real con tarjeta (Stripe) actualizará esta lista automáticamente una vez conectado.",
     "gateUser": "Usuario administrador",
-    "noServiceKey": "Añade la variable de entorno SUPABASE_SERVICE_ROLE_KEY (Supabase → Project Settings → API) para que el panel pueda leer y editar cuentas.",
     "signOut": "Cerrar sesión",
     "statPaying": "De pago",
     "statBanned": "Baneados",
@@ -702,6 +701,29 @@
     "periodLabel": "Periodo de facturación",
     "period_monthly": "Mensual",
     "period_yearly": "Anual",
-    "loadFailed": "No se pudo leer la lista de usuarios. Comprueba la clave service-role de Supabase y recarga."
+    "problem_no_key_title": "Falta la clave service-role",
+    "problem_no_key": "Este despliegue no tiene SUPABASE_SERVICE_ROLE_KEY. Añádela en Vercel → Settings → Environment Variables para el entorno Production.",
+    "problem_no_url_title": "Falta la URL de Supabase",
+    "problem_no_url": "NEXT_PUBLIC_SUPABASE_URL no está definida en el servidor, así que no hay proyecto al que conectarse.",
+    "problem_wrong_key_title": "Clave incorrecta",
+    "problem_wrong_key": "El valor guardado es una clave publishable o anon, no la clave secreta service-role. En Supabase: Project Settings → API → Secret keys, copia la que empieza por sb_secret_.",
+    "problem_query_failed_title": "Supabase rechazó la consulta",
+    "problem_query_failed": "La clave fue aceptada, pero la base de datos devolvió un error:",
+    "problemRedeploy": "Las variables de entorno solo llegan a un despliegue NUEVO. Tras cambiar una, vuelve a desplegar antes de probar.",
+    "gateLocked": "Demasiados intentos fallidos. Inténtalo de nuevo en unos {minutes} min."
+  },
+  "account": {
+    "dangerTitle": "Cuenta",
+    "deleteAccount": "Eliminar mi cuenta",
+    "deleteWhat": "Eliminar tu cuenta borra de nuestros servidores todo lo asociado a ella:",
+    "deleteItem1": "Tu perfil: datos corporales, objetivos, plazos, equipo y notas.",
+    "deleteItem2": "Tu historial: días entrenados, rachas, XP, rango y comidas registradas.",
+    "deleteItem3": "Tu registro de suscripción y tu acceso.",
+    "deleteFinal": "Esto no se puede deshacer. No hay copia que podamos restaurar.",
+    "deleteTypePrompt": "Escribe {word} para confirmar",
+    "deleteConfirmBtn": "Eliminar para siempre",
+    "cancel": "Cancelar",
+    "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo o escríbenos.",
+    "deleteUnavailable": "La eliminación de cuentas aún no está configurada aquí. Escríbenos y la eliminaremos."
   }
 }

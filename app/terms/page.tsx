@@ -56,7 +56,16 @@ const SECTIONS: Section[] = [
         priceRow("max", "Max"),
       ],
       "Yearly plans are billed once for the year and give the same features as the monthly plan at a lower effective rate.",
-      "Card payments are not yet enabled. Until they are, no money is taken and plan changes are recorded without a charge. When payment goes live, it will be handled by a third-party payment processor — we will not hold your card details ourselves — and we will publish the renewal, cancellation and refund rules before charging anyone.",
+      "Card payments are not yet enabled. Until they are, no money is taken and plan changes are recorded without a charge.",
+      "When payment goes live, these rules will apply:",
+      [
+        "Payments are handled by a third-party payment processor. We never hold your card details ourselves.",
+        "Subscriptions renew automatically at the end of each period until you cancel.",
+        "You can cancel at any time. Cancelling stops the next renewal; it does not refund the period you are already in, and you keep access until that period ends.",
+        "Where your local law gives you a statutory right to withdraw from a purchase — such as the 14-day right in the EU and UK — that right applies and overrides the line above.",
+        "If you buy through a mobile app store, that store's own refund rules apply instead.",
+      ],
+      "Prices are shown in US dollars. Your bank may convert the amount and add its own fees, which are outside our control. Taxes may be added depending on where you are.",
       "Prices may change. If they do, we will tell you before the change affects you, and you may cancel rather than accept it.",
     ],
   },
@@ -87,7 +96,7 @@ const SECTIONS: Section[] = [
     blocks: [
       "We may suspend or close an account that breaks these terms or abuses the service.",
       "Be aware that closing an account for abuse also permanently deletes its training history, progress and profile. That deletion cannot be reversed, and restoring access later does not restore the data.",
-      "You can stop using the service at any time, and you can ask us to delete your account and its data.",
+      "You can stop using the service at any time. You can delete your own account, and everything attached to it, from your dashboard under Account — you do not need to ask our permission or wait for us.",
     ],
   },
   {
@@ -113,7 +122,9 @@ const SECTIONS: Section[] = [
   {
     heading: "Governing law and contact",
     blocks: [
-      `These terms are governed by the laws of ${GOVERNING_LAW}, and disputes will be handled by the courts there, except where the law where you live gives you the right to bring a claim locally.`,
+      `These terms are governed by the laws of ${GOVERNING_LAW}, and disputes will be handled by the courts there.`,
+      "If you are a consumer, this does not take away the protection of the mandatory consumer laws of the country you live in, and you may bring a claim in your local courts where that law allows it.",
+      "If any part of these terms turns out to be unenforceable, the rest stays in force. If we do not enforce a term straight away, we have not given up the right to enforce it later.",
       contactLine(),
     ],
   },

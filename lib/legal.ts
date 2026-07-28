@@ -20,6 +20,10 @@ export const SITE = "boxing-murex.vercel.app";
    call, not mine. While it is blank the pages point people at Telegram. */
 export const CONTACT_EMAIL = "";
 
+/** Deadline we commit to for access/deletion requests. 30 days is the GDPR
+    limit and the figure most services quote, so it travels well. */
+export const REQUEST_DAYS = 30;
+
 export const CONTACT_TELEGRAM = "https://t.me/ringbornn";
 
 /* TODO(owner): the country whose law governs the terms and whose courts hear

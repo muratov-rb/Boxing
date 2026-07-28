@@ -695,7 +695,6 @@
     "period_monthly": "Помесячно",
     "period_yearly": "На год",
     "gateUser": "Логин администратора",
-    "noServiceKey": "Добавь переменную окружения SUPABASE_SERVICE_ROLE_KEY (Supabase → Project Settings → API), чтобы панель могла читать и менять аккаунты.",
     "signOut": "Выйти",
     "statPaying": "Платящие",
     "statBanned": "Забанены",
@@ -710,6 +709,29 @@
     "ban": "Забанить",
     "unban": "Разбанить",
     "banConfirm": "Забанить {email}?\n\nЭто закроет доступ И безвозвратно удалит историю тренировок, прогресс и профиль. Отменить нельзя.",
-    "loadFailed": "Не удалось прочитать список пользователей. Проверь service-role ключ Supabase и обнови страницу."
+    "problem_no_key_title": "Service-role ключ не найден",
+    "problem_no_key": "В этом деплое нет SUPABASE_SERVICE_ROLE_KEY. Добавь его в Vercel → Settings → Environment Variables для окружения Production.",
+    "problem_no_url_title": "Нет URL Supabase",
+    "problem_no_url": "NEXT_PUBLIC_SUPABASE_URL не задан на сервере — подключаться некуда.",
+    "problem_wrong_key_title": "Вставлен не тот ключ",
+    "problem_wrong_key": "Сохранён публичный (publishable/anon) ключ, а не секретный service-role. В Supabase: Project Settings → API → Secret keys, скопируй ключ, начинающийся с sb_secret_ (или легаси service_role).",
+    "problem_query_failed_title": "Supabase отклонил запрос",
+    "problem_query_failed": "Ключ принят, но база вернула ошибку:",
+    "problemRedeploy": "Переменные окружения попадают только в НОВЫЙ деплой. После изменения сделай редеплой и проверь снова.",
+    "gateLocked": "Слишком много неудачных попыток. Попробуй примерно через {minutes} мин."
+  },
+  "account": {
+    "dangerTitle": "Аккаунт",
+    "deleteAccount": "Удалить аккаунт",
+    "deleteWhat": "Удаление аккаунта стирает его и всё связанное с ним с наших серверов:",
+    "deleteItem1": "Твой профиль — параметры тела, цели, сроки, инвентарь и заметки.",
+    "deleteItem2": "Историю тренировок — дни, streak, XP, ранг и записанные приёмы пищи.",
+    "deleteItem3": "Запись о подписке и сам вход.",
+    "deleteFinal": "Отменить это нельзя. Резервной копии, которую можно вернуть, нет.",
+    "deleteTypePrompt": "Введи {word} для подтверждения",
+    "deleteConfirmBtn": "Удалить навсегда",
+    "cancel": "Отмена",
+    "deleteFailed": "Не удалось удалить аккаунт. Попробуй ещё раз или напиши нам.",
+    "deleteUnavailable": "Удаление аккаунта пока не настроено на этом деплое. Напиши нам — удалим вручную."
   }
 }

@@ -6,6 +6,8 @@
    persistence and the Claude analysis route plug in.
    =========================================================================== */
 
+import { MIN_AGE } from "./legal";
+
 export type PathId = "beginner" | "experienced";
 
 export type GoalId =
@@ -343,10 +345,14 @@ export function nutritionAccessLabel(id: NutritionAccessId | null): string {
    stat sanity — bounds no human falls outside of. Anything beyond these is
    a typo or a joke entry, and both the form and the analysis engine refuse it.
    -------------------------------------------------------------------------- */
+/* The age floor is MIN_AGE from lib/legal.ts, not a fitness judgement: the
+   privacy policy and terms say you must be that old to hold an account, so the
+   form has to agree. Changing one without the other leaves the app collecting
+   data from children it has promised not to. */
 export const STAT_BOUNDS = {
   weightKg: { min: 25, max: 350 },
   heightCm: { min: 90, max: 250 },
-  age: { min: 8, max: 100 },
+  age: { min: MIN_AGE, max: 100 },
 } as const;
 
 export function kgFrom(value: number, unit: WeightUnit): number {

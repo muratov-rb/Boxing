@@ -16,13 +16,19 @@ export default async function AdminPage() {
     return <AdminGate configured={adminPasswordConfigured()} />;
   }
 
-  let list: UserList | null = null;
+  let list: UserList;
   try {
     list = await listUsers();
-  } catch {
-    /* bad key, table missing, Supabase down — say so instead of crashing */
+  } catch (e) {
+    // never a blank error page — the panel explains itself instead
+    list = {
+      users: [],
+      problem: "query_failed",
+      detail: e instanceof Error ? e.message : String(e),
+    };
   }
 
-  if (!list) return <AdminClient users={[]} loadFailed />;
-  return <AdminClient users={list.users} serviceKeyMissing={list.serviceKeyMissing} />;
+  return (
+    <AdminClient users={list.users} problem={list.problem} detail={list.detail} />
+  );
 }

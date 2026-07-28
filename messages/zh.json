@@ -684,7 +684,6 @@
     "saveFailed": "保存失败——请重试。",
     "note": "套餐变更会在用户下次打开面板时生效。封禁会立即清除该用户的数据，且不可恢复。接入 Stripe 真实扣款后，此列表将自动更新。",
     "gateUser": "管理员账号",
-    "noServiceKey": "请添加环境变量 SUPABASE_SERVICE_ROLE_KEY（Supabase → Project Settings → API），面板才能读取和修改账户。",
     "signOut": "退出登录",
     "statPaying": "付费用户",
     "statBanned": "已封禁",
@@ -702,6 +701,29 @@
     "periodLabel": "计费周期",
     "period_monthly": "按月",
     "period_yearly": "按年",
-    "loadFailed": "无法读取用户列表。请检查 Supabase service-role 密钥后重新加载。"
+    "problem_no_key_title": "未找到 service-role 密钥",
+    "problem_no_key": "此部署没有 SUPABASE_SERVICE_ROLE_KEY。请在 Vercel → Settings → Environment Variables 中为 Production 环境添加。",
+    "problem_no_url_title": "缺少 Supabase URL",
+    "problem_no_url": "服务器上未设置 NEXT_PUBLIC_SUPABASE_URL，没有可连接的项目。",
+    "problem_wrong_key_title": "粘贴了错误的密钥",
+    "problem_wrong_key": "保存的是 publishable 或 anon 公开密钥，而不是 service-role 密钥。请在 Supabase → Project Settings → API → Secret keys 中复制以 sb_secret_ 开头的密钥。",
+    "problem_query_failed_title": "Supabase 拒绝了查询",
+    "problem_query_failed": "密钥已被接受，但数据库返回错误：",
+    "problemRedeploy": "环境变量只对新部署生效。修改后请先重新部署再测试。",
+    "gateLocked": "失败次数过多。请约 {minutes} 分钟后再试。"
+  },
+  "account": {
+    "dangerTitle": "账号",
+    "deleteAccount": "删除我的账号",
+    "deleteWhat": "删除账号会从我们的服务器上移除与之相关的一切：",
+    "deleteItem1": "你的资料——身体数据、目标、时间安排、器材和备注。",
+    "deleteItem2": "你的训练记录——训练天数、连续天数、XP、段位和饮食记录。",
+    "deleteItem3": "你的订阅记录和登录凭据。",
+    "deleteFinal": "此操作无法撤销，我们没有可恢复的备份。",
+    "deleteTypePrompt": "输入 {word} 以确认",
+    "deleteConfirmBtn": "永久删除",
+    "cancel": "取消",
+    "deleteFailed": "删除失败，请重试或联系我们。",
+    "deleteUnavailable": "此部署尚未配置账号删除功能。请联系我们，我们会为你删除。"
   }
 }

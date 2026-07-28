@@ -12,6 +12,7 @@ import { CalorieCard } from "@/components/dashboard/CalorieCard";
 import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
 import { SubscriptionSync } from "@/components/dashboard/SubscriptionSync";
+import { DangerZone } from "@/components/dashboard/DangerZone";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
 
@@ -172,6 +173,8 @@ export default async function DashboardPage() {
           {/* live tracking */}
           <CalorieCard />
         </div>
+
+        <DangerZone />
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-line/70 pt-5 sm:flex-row">
           <p className="flex items-center gap-2 text-xs text-ash-dim">

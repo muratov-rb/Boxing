@@ -684,7 +684,6 @@
     "saveFailed": "Échec de l'enregistrement — réessaie.",
     "note": "Les changements de formule arrivent chez l'utilisateur à sa prochaine ouverture du tableau de bord. Le bannissement efface ses données immédiatement et ne peut pas être annulé. Le paiement par carte (Stripe) mettra cette liste à jour automatiquement une fois connecté.",
     "gateUser": "Identifiant admin",
-    "noServiceKey": "Ajoute la variable d'environnement SUPABASE_SERVICE_ROLE_KEY (Supabase → Project Settings → API) pour que le panneau puisse lire et modifier les comptes.",
     "signOut": "Déconnexion",
     "statPaying": "Payants",
     "statBanned": "Bannis",
@@ -702,6 +701,29 @@
     "periodLabel": "Période de facturation",
     "period_monthly": "Mensuel",
     "period_yearly": "Annuel",
-    "loadFailed": "Impossible de lire la liste des utilisateurs. Vérifie la clé service-role Supabase puis recharge."
+    "problem_no_key_title": "Clé service-role introuvable",
+    "problem_no_key": "Ce déploiement n a pas de SUPABASE_SERVICE_ROLE_KEY. Ajoute-la dans Vercel → Settings → Environment Variables pour l environnement Production.",
+    "problem_no_url_title": "URL Supabase manquante",
+    "problem_no_url": "NEXT_PUBLIC_SUPABASE_URL n est pas définie côté serveur : aucun projet auquel se connecter.",
+    "problem_wrong_key_title": "Mauvaise clé collée",
+    "problem_wrong_key": "La valeur enregistrée est une clé publishable ou anon, pas la clé secrète service-role. Dans Supabase : Project Settings → API → Secret keys, copie celle qui commence par sb_secret_.",
+    "problem_query_failed_title": "Supabase a refusé la requête",
+    "problem_query_failed": "La clé a été acceptée mais la base a renvoyé une erreur :",
+    "problemRedeploy": "Les variables d environnement ne parviennent qu à un NOUVEAU déploiement. Après modification, redéploie avant de retester.",
+    "gateLocked": "Trop de tentatives échouées. Réessaie dans environ {minutes} min."
+  },
+  "account": {
+    "dangerTitle": "Compte",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteWhat": "Supprimer ton compte efface de nos serveurs tout ce qui y est rattaché :",
+    "deleteItem1": "Ton profil : mensurations, objectifs, échéance, matériel et notes.",
+    "deleteItem2": "Ton historique : jours entraînés, séries, XP, rang et repas enregistrés.",
+    "deleteItem3": "Ton abonnement et ton accès.",
+    "deleteFinal": "Cette action est irréversible. Aucune sauvegarde ne pourra être restaurée.",
+    "deleteTypePrompt": "Tape {word} pour confirmer",
+    "deleteConfirmBtn": "Supprimer définitivement",
+    "cancel": "Annuler",
+    "deleteFailed": "Impossible de supprimer le compte. Réessaie ou contacte-nous.",
+    "deleteUnavailable": "La suppression de compte n est pas encore configurée ici. Contacte-nous, nous le ferons."
   }
 }

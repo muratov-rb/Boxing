@@ -695,7 +695,6 @@
     "period_monthly": "Monthly",
     "period_yearly": "Yearly",
     "gateUser": "Admin login",
-    "noServiceKey": "Add the SUPABASE_SERVICE_ROLE_KEY environment variable (Supabase → Project Settings → API) so the panel can read and edit accounts.",
     "signOut": "Sign out",
     "statPaying": "Paying",
     "statBanned": "Banned",
@@ -710,6 +709,29 @@
     "ban": "Ban",
     "unban": "Unban",
     "banConfirm": "Ban {email}?\n\nThis blocks their access AND permanently deletes their training history, progress and profile. It cannot be undone.",
-    "loadFailed": "Could not read the user list. Check that the Supabase service-role key is valid, then reload."
+    "problem_no_key_title": "Service-role key not found",
+    "problem_no_key": "This deployment has no SUPABASE_SERVICE_ROLE_KEY. Add it in Vercel → Settings → Environment Variables for the Production environment.",
+    "problem_no_url_title": "Supabase URL missing",
+    "problem_no_url": "NEXT_PUBLIC_SUPABASE_URL is not set on the server, so there is no project to connect to.",
+    "problem_wrong_key_title": "Wrong key pasted",
+    "problem_wrong_key": "The value stored is a publishable or anon key, not the secret service-role key. In Supabase go to Project Settings → API → Secret keys and copy the key that starts with sb_secret_ (or the legacy service_role key).",
+    "problem_query_failed_title": "Supabase refused the query",
+    "problem_query_failed": "The key was accepted but the database returned an error:",
+    "problemRedeploy": "Environment variables only reach a NEW deployment. After changing one, redeploy before testing again.",
+    "gateLocked": "Too many failed attempts. Try again in about {minutes} min."
+  },
+  "account": {
+    "dangerTitle": "Account",
+    "deleteAccount": "Delete my account",
+    "deleteWhat": "Deleting your account removes it and everything attached to it from our servers:",
+    "deleteItem1": "Your profile — body stats, goals, timeframe, equipment and notes.",
+    "deleteItem2": "Your training history — trained days, streaks, XP, rank and logged meals.",
+    "deleteItem3": "Your subscription record and your sign-in.",
+    "deleteFinal": "This cannot be undone. There is no backup we can restore for you.",
+    "deleteTypePrompt": "Type {word} to confirm",
+    "deleteConfirmBtn": "Delete forever",
+    "cancel": "Cancel",
+    "deleteFailed": "Could not delete the account. Try again, or contact us.",
+    "deleteUnavailable": "Account deletion is not configured on this deployment yet. Please contact us and we will delete it for you."
   }
 }

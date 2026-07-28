@@ -29,6 +29,11 @@ export function AdminGate({ configured }: { configured: boolean }) {
         window.location.reload();
         return;
       }
+      if (res.status === 429) {
+        const { retryAfter } = (await res.json()) as { retryAfter?: number };
+        setError(t("gateLocked", { minutes: Math.ceil((retryAfter ?? 900) / 60) }));
+        return;
+      }
       setError(res.status === 503 ? t("gateUnconfigured") : t("gateWrong"));
     } catch {
       setError(t("gateWrong"));

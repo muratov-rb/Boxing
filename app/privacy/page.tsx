@@ -6,8 +6,8 @@ import {
   SITE,
   DATA_REGION,
   MIN_AGE,
+  REQUEST_DAYS,
   contactLine,
-  GOVERNING_LAW,
 } from "@/lib/legal";
 
 export const metadata: Metadata = {
@@ -91,10 +91,11 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    heading: "Where your data is stored",
+    heading: "International transfers",
     blocks: [
-      `Your account and training data are stored in our database in ${DATA_REGION}. The application is served from a global hosting network, which means requests may be handled close to you wherever you are.`,
-      "If you use the app from outside that region, your data will be transferred there. By using the service you understand that this transfer takes place.",
+      `${SERVICE} is available worldwide. Your account and training data are stored in our database in ${DATA_REGION}, and the application itself is served from a global network so pages load close to you wherever you are.`,
+      "That means your data will usually be transferred out of the country you are in, including to countries whose data protection laws differ from your own. Where such a transfer is restricted by your local law — for example from the EEA or the UK — we rely on the standard contractual clauses and equivalent safeguards offered by our providers.",
+      "By using the service you understand that these transfers take place. If you are not comfortable with that, please do not create an account.",
     ],
   },
   {
@@ -113,29 +114,34 @@ const SECTIONS: Section[] = [
   {
     heading: "How long we keep it",
     blocks: [
-      "We keep your data for as long as your account exists. If you ask us to delete your account, we remove your profile, training history and progress.",
-      "If an account is closed for abuse of the service, its training history, progress and profile are deleted at the same time. That deletion is permanent and cannot be undone.",
+      "We keep your data for as long as your account exists, because the whole point of it is to show you progress over time.",
+      "You can delete your account yourself at any time, from your dashboard under Account. Doing so removes your profile, training history, progress, subscription record and sign-in from our database. It is immediate and it cannot be undone — we do not keep a backup copy to restore for you.",
+      "If an account is closed by us for abuse of the service, the same data is deleted at the same time, and that deletion is equally permanent.",
+      "Photos and video you submit for scanning or technique review are processed to generate your result and are not kept in your account afterwards. Our AI provider may retain them briefly for abuse monitoring under their own policy.",
     ],
   },
   {
     heading: "Your rights",
     blocks: [
-      "You can ask us to:",
+      "Wherever you live, you can ask us to:",
       [
-        "Give you a copy of the data we hold about you.",
+        "Give you a copy of the data we hold about you, in a portable format.",
         "Correct anything that is wrong — most of it you can edit yourself in the app.",
-        "Delete your account and the data attached to it.",
+        "Delete your account and the data attached to it. You can do this yourself from your dashboard, under Account, without asking us.",
         "Stop using your data for a particular purpose, or withdraw consent you previously gave.",
+        "Object to a particular use of your data, or ask us to restrict it while a dispute is resolved.",
       ],
-      contactLine() + " We will respond within 30 days.",
-      `Depending on where you live, you may also have the right to complain to your national data protection authority. If you are in ${GOVERNING_LAW}, or in the EU, UK, or another region with its own data protection law, those rights apply to you regardless of where we are based.`,
+      `${contactLine()} We will respond within ${REQUEST_DAYS} days, and we will not charge you for it or treat you differently for asking.`,
+      "We honour these rights for everyone, not only for people in countries that require it. If your local law gives you more than the list above, that law applies to you too.",
+      "Some regions add specific rights. If you are in the European Economic Area or the United Kingdom, our legal basis for processing your account and training data is the performance of our contract with you, and for optional AI features it is your consent, which you can withdraw at any time; you may also lodge a complaint with your national supervisory authority. If you are in California, we do not sell or share personal information as those terms are defined by the CCPA, and we do not offer financial incentives in exchange for it. If you are in Brazil, Canada, Australia, or another country with its own data protection statute, the equivalent rights under that statute apply.",
     ],
   },
   {
     heading: "Children",
     blocks: [
-      `${SERVICE} is not intended for children under ${MIN_AGE}. Do not create an account if you are younger than that. If you are under 18, you should have your parent or guardian read these terms with you before you start training.`,
-      "If we learn that we are holding data from a child below the minimum age, we will delete it.",
+      `${SERVICE} is not intended for anyone under ${MIN_AGE}, and the sign-up form will not accept an age below that. If you are under 18, please have a parent or guardian read this with you before you start training.`,
+      "Where local law sets a higher age for consenting to this kind of processing, that higher age applies to you.",
+      "We do not knowingly collect data from children below the minimum age. If you believe a child has given us their information, contact us and we will delete it.",
     ],
   },
   {

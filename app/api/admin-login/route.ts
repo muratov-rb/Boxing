@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
 import { adminToken, verifyAdminCredentials, ADMIN_COOKIE } from "@/lib/admin-auth";
+import { checkRate, recordFailure, recordSuccess, clientKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-/* Login name + password → httpOnly admin cookie. Brute force is blunted by a
-   small delay; the real secrets never reach the client. */
+/* Login name + password → httpOnly admin cookie. The panel behind this can
+   delete every user's data, so guessing is throttled per source as well as
+   slowed by a fixed delay; the real secrets never reach the client. */
 export async function POST(req: Request) {
+  const who = clientKey(req);
+  const rate = checkRate(who);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "too_many_attempts", retryAfter: rate.retryAfter },
+      { status: 429, headers: { "retry-after": String(rate.retryAfter) } },
+    );
+  }
+
   let body: { username?: string; password?: string };
   try {
     body = await req.json();
@@ -21,10 +32,12 @@ export async function POST(req: Request) {
   await new Promise((r) => setTimeout(r, 400)); // slow down guessing
 
   if (!body.password || !verifyAdminCredentials(body.username ?? "", body.password)) {
+    recordFailure(who);
     // one message for both fields — never reveal which half was wrong
     return NextResponse.json({ error: "wrong_password" }, { status: 401 });
   }
 
+  recordSuccess(who);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(ADMIN_COOKIE, token, {
     httpOnly: true,
