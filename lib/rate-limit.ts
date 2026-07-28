@@ -1,79 +1,70 @@
 import "server-only";
+import { createAdminClient, serviceRoleConfigured } from "./supabase/admin";
 
 /* ===========================================================================
-   A small in-memory throttle for the admin login.
+   Brute-force throttle for the admin login.
 
-   The admin password is the only thing standing between the internet and a
-   panel that can delete every user's training history, so an unlimited guess
-   rate is not acceptable — even against a long random password.
+   The admin password is the only thing between the internet and a panel that
+   can delete every user's training history, so an unlimited guess rate is not
+   acceptable even against a long random password.
 
-   Deliberately in-memory: it needs no extra infrastructure and it fails safe.
-   The honest limitation is that serverless instances don't share state, so an
-   attacker spread across many cold instances gets more attempts than the
-   numbers below suggest. It still turns "guess forever" into "guess slowly",
-   which is the difference that matters. Move this to the database or a KV
-   store if the panel ever becomes a real target.
+   State lives in Postgres, not in memory. An in-process Map looks like it
+   works in development and then does nothing in production: Vercel spreads
+   requests across serverless instances that share no memory, so each guess can
+   land on a fresh counter. That was measured, not assumed — nine consecutive
+   failures against the deployed site never tripped a memory-backed limit.
+
+   The in-memory path below is kept only as a fallback for when the service-role
+   key is absent (the panel cannot work at all in that state, so the login is
+   moot) and for local development.
    =========================================================================== */
 
 const WINDOW_MS = 15 * 60 * 1000; // failures are forgotten after 15 minutes
 const MAX_FAILURES = 8; // then the source is locked out
 const LOCKOUT_MS = 15 * 60 * 1000;
+const TABLE = "admin_login_attempts";
+
+export interface RateVerdict {
+  allowed: boolean;
+  /** Seconds until the caller may try again, when blocked. */
+  retryAfter: number;
+}
+
+const ALLOW: RateVerdict = { allowed: true, retryAfter: 0 };
+
+/** Best-effort client identity. Spoofable, which is why the lockout is short
+    and the password still has to be strong — this raises cost, not a wall. */
+export function clientKey(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  const ip = (fwd?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "unknown").trim();
+  return ip.slice(0, 100) || "unknown";
+}
+
+/* ------------------------------ memory fallback -------------------------- */
 
 interface Attempts {
   failures: number;
   first: number;
   lockedUntil: number;
 }
-
 const buckets = new Map<string, Attempts>();
 
-/** Keep the map from growing without bound on a long-lived instance. */
-function sweep(now: number) {
-  if (buckets.size < 500) return;
-  for (const [key, a] of buckets) {
-    if (now > a.lockedUntil && now - a.first > WINDOW_MS) buckets.delete(key);
-  }
-}
-
-/** Best-effort client identity. Spoofable, which is why the lockout is short
-    and the password still has to be strong — this raises cost, not a wall. */
-export function clientKey(req: Request): string {
-  const fwd = req.headers.get("x-forwarded-for");
-  return (fwd?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "unknown").trim();
-}
-
-export interface RateVerdict {
-  allowed: boolean;
-  /** Seconds until the caller may try again, when blocked. */
-  retryAfter: number;
-  /** Guesses left before a lockout, for the caller's own logging. */
-  remaining: number;
-}
-
-export function checkRate(key: string, now = Date.now()): RateVerdict {
-  sweep(now);
+function memCheck(key: string, now: number): RateVerdict {
   const a = buckets.get(key);
-  if (!a) return { allowed: true, retryAfter: 0, remaining: MAX_FAILURES };
-
+  if (!a) return ALLOW;
   if (now < a.lockedUntil) {
-    return {
-      allowed: false,
-      retryAfter: Math.ceil((a.lockedUntil - now) / 1000),
-      remaining: 0,
-    };
+    return { allowed: false, retryAfter: Math.ceil((a.lockedUntil - now) / 1000) };
   }
-  if (now - a.first > WINDOW_MS) {
-    buckets.delete(key); // window expired, clean slate
-    return { allowed: true, retryAfter: 0, remaining: MAX_FAILURES };
-  }
-  return {
-    allowed: true,
-    retryAfter: 0,
-    remaining: Math.max(0, MAX_FAILURES - a.failures),
-  };
+  if (now - a.first > WINDOW_MS) buckets.delete(key);
+  return ALLOW;
 }
 
-export function recordFailure(key: string, now = Date.now()): void {
+function memFail(key: string, now: number): void {
+  if (buckets.size > 500) {
+    for (const [k, a] of buckets) {
+      if (now > a.lockedUntil && now - a.first > WINDOW_MS) buckets.delete(k);
+    }
+  }
   const a = buckets.get(key);
   if (!a || now - a.first > WINDOW_MS) {
     buckets.set(key, { failures: 1, first: now, lockedUntil: 0 });
@@ -83,8 +74,74 @@ export function recordFailure(key: string, now = Date.now()): void {
   if (a.failures >= MAX_FAILURES) a.lockedUntil = now + LOCKOUT_MS;
 }
 
-/** A correct password clears the record — a legitimate admin who fat-fingers
-    their password a few times shouldn't stay one mistake from a lockout. */
-export function recordSuccess(key: string): void {
+/* -------------------------------- database ------------------------------- */
+
+interface AttemptRow {
+  failures: number;
+  first_at: string;
+  locked_until: string | null;
+}
+
+/** Blocked callers are told to wait; any database trouble fails OPEN, so a
+    Supabase outage locks nobody out of their own admin panel. */
+export async function checkRate(key: string, now = Date.now()): Promise<RateVerdict> {
+  if (!serviceRoleConfigured()) return memCheck(key, now);
+
+  try {
+    const { data, error } = await createAdminClient()
+      .from(TABLE)
+      .select("failures, first_at, locked_until")
+      .eq("client_key", key)
+      .maybeSingle<AttemptRow>();
+    if (error || !data) return ALLOW;
+
+    const lockedUntil = data.locked_until ? Date.parse(data.locked_until) : 0;
+    if (lockedUntil > now) {
+      return { allowed: false, retryAfter: Math.ceil((lockedUntil - now) / 1000) };
+    }
+    return ALLOW;
+  } catch {
+    return ALLOW;
+  }
+}
+
+export async function recordFailure(key: string, now = Date.now()): Promise<void> {
+  if (!serviceRoleConfigured()) return memFail(key, now);
+
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from(TABLE)
+      .select("failures, first_at, locked_until")
+      .eq("client_key", key)
+      .maybeSingle<AttemptRow>();
+
+    const stale = !data || now - Date.parse(data.first_at) > WINDOW_MS;
+    const failures = stale ? 1 : data.failures + 1;
+
+    await supabase.from(TABLE).upsert(
+      {
+        client_key: key,
+        failures,
+        first_at: new Date(stale ? now : Date.parse(data.first_at)).toISOString(),
+        locked_until:
+          failures >= MAX_FAILURES ? new Date(now + LOCKOUT_MS).toISOString() : null,
+      },
+      { onConflict: "client_key" },
+    );
+  } catch {
+    /* throttling must never break a legitimate login */
+  }
+}
+
+/** A correct password clears the record — an admin who fat-fingers their
+    password a few times shouldn't stay one mistake away from a lockout. */
+export async function recordSuccess(key: string): Promise<void> {
   buckets.delete(key);
+  if (!serviceRoleConfigured()) return;
+  try {
+    await createAdminClient().from(TABLE).delete().eq("client_key", key);
+  } catch {
+    /* best effort */
+  }
 }

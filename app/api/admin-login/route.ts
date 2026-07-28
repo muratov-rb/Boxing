@@ -9,7 +9,7 @@ export const runtime = "nodejs";
    slowed by a fixed delay; the real secrets never reach the client. */
 export async function POST(req: Request) {
   const who = clientKey(req);
-  const rate = checkRate(who);
+  const rate = await checkRate(who);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "too_many_attempts", retryAfter: rate.retryAfter },
@@ -32,12 +32,12 @@ export async function POST(req: Request) {
   await new Promise((r) => setTimeout(r, 400)); // slow down guessing
 
   if (!body.password || !verifyAdminCredentials(body.username ?? "", body.password)) {
-    recordFailure(who);
+    await recordFailure(who);
     // one message for both fields — never reveal which half was wrong
     return NextResponse.json({ error: "wrong_password" }, { status: 401 });
   }
 
-  recordSuccess(who);
+  await recordSuccess(who);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(ADMIN_COOKIE, token, {
     httpOnly: true,
