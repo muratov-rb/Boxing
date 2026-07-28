@@ -73,7 +73,9 @@
     "tagline": "免费、网页优先的拳击训练，新手与职业皆宜。像拳手一样训练。拥有运动员身材。",
     "whoFor": "适合谁",
     "whatsComing": "即将推出",
-    "rights": "© {year} RingBornn · 由 Nexara 打造"
+    "rights": "© {year} RingBornn · 由 Nexara 打造",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
   },
   "auth": {
     "welcomeBack": "欢迎回来",

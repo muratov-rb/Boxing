@@ -73,7 +73,9 @@
     "tagline": "Free, web-first boxing training for beginners and pros alike. Train like a fighter. Look like an athlete.",
     "whoFor": "Who it's for",
     "whatsComing": "What's coming",
-    "rights": "© {year} RingBornn · built by Nexara"
+    "rights": "© {year} RingBornn · built by Nexara",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "auth": {
     "welcomeBack": "Welcome back",

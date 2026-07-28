@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/ui/Logo";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -52,6 +53,14 @@ export function SiteFooter() {
               {t("whatsComing")}
             </a>
             <LocaleSwitcher />
+          </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-condensed uppercase tracking-widest">
+            <Link href="/privacy" className="transition-colors hover:text-bone">
+              {t("privacy")}
+            </Link>
+            <Link href="/terms" className="transition-colors hover:text-bone">
+              {t("terms")}
+            </Link>
           </div>
           <p className="text-xs">{t("rights", { year: new Date().getFullYear() })}</p>
         </div>

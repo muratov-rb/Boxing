@@ -73,7 +73,9 @@
     "tagline": "Entraînement de boxe gratuit et web-first, pour débutants comme pour pros. Entraîne-toi comme un boxeur. Aie l'allure d'un athlète.",
     "whoFor": "Pour qui",
     "whatsComing": "À venir",
-    "rights": "© {year} RingBornn · créé par Nexara"
+    "rights": "© {year} RingBornn · créé par Nexara",
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
   },
   "auth": {
     "welcomeBack": "Content de te revoir",
