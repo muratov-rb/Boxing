@@ -38,3 +38,19 @@ export function rankFromXp(xp: number): number {
   for (let i = 0; i < RANK_XP.length; i++) if (xp >= RANK_XP[i]) idx = i;
   return idx;
 }
+
+/* --------------------------- starting position ---------------------------- */
+
+/** Rank index a path opens at. Someone who already boxes should not be told
+    they are a Novice — but they still have to earn the top of the ladder, so
+    this is a modest head start, not a shortcut. */
+export const STARTING_RANK: Record<"beginner" | "experienced", number> = {
+  beginner: 0,
+  experienced: 2,
+};
+
+/** The XP that head start is worth. Granted once, server-side, and never
+    lowers a total the user has already passed. */
+export function startingXp(path: "beginner" | "experienced"): number {
+  return RANK_XP[STARTING_RANK[path]] ?? 0;
+}

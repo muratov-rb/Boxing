@@ -3,7 +3,13 @@
 import { useEffect } from "react";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
-import { applyServerSub, exportSubState, activePlan, wipeLocal } from "@/lib/tracking";
+import {
+  applyServerSub,
+  exportSubState,
+  activePlan,
+  wipeLocal,
+  applyServerXp,
+} from "@/lib/tracking";
 import { pullUserData, pushAll, startSync } from "@/lib/sync";
 
 /* Keeps a signed-in user's data in step with Supabase:
@@ -74,6 +80,23 @@ export function SubscriptionSync() {
       } catch {
         /* offline — local state still works */
       }
+
+      /* Claim the experienced head start. Deliberately after pushAll: the
+         server reads the path from the stored profile, so the profile has to
+         be up there first. Idempotent, so running it on every load is fine. */
+      try {
+        const res = await fetch("/api/progress/start", { method: "POST" });
+        if (res.ok) {
+          const { granted, xp } = (await res.json()) as {
+            granted?: boolean;
+            xp?: number;
+          };
+          if (granted && typeof xp === "number") applyServerXp(xp);
+        }
+      } catch {
+        /* offline — it will be claimed on a later load */
+      }
+
       if (!cancelled) stopSync = startSync();
     })();
 
