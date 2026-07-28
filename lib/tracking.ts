@@ -6,6 +6,17 @@
 
 import { RANKS, type Profile } from "./onboarding";
 import {
+  XP_AWARDS,
+  XP_DECAY_PER_DAY,
+  XP_GRACE_DAYS,
+  DAILY_XP_CAP,
+  RANK_XP,
+  rankFromXp,
+} from "./xp";
+
+/* Re-exported so existing call sites keep working; lib/xp.ts is the source. */
+export { RANK_XP, rankFromXp };
+import {
   entitlementsFor,
   TRIAL_DAYS,
   type Entitlements,
@@ -247,23 +258,14 @@ interface XpState {
   dayXp?: number; // XP already earned that day
 }
 
-/** XP thresholds, one per RANKS tier (index-aligned).
-    Mastery is measured in years, not sessions: at the daily cap (25 XP) the
-    top rank needs ~2.5 years of PERFECT daily training — real boxers train
-    for years and most never reach elite level, and the ladder reflects that. */
-export const RANK_XP = [0, 150, 400, 850, 1600, 2800, 4600, 7200, 11000, 16500, 24000];
-
-const XP = {
-  visit: 2, // opening the app (once/day)
-  lesson: 6, // marking a lesson done
-  workout: 15, // finishing a guided session
-} as const;
-
-/** Hard daily ceiling — grinding ten lessons in one evening is not mastery. */
-const DAILY_XP_CAP = 25;
-
-const DECAY_PER_DAY = 12; // XP lost per idle day past the grace window
-const GRACE_DAYS = 1; // one day off doesn't cost you anything
+/* The XP economy now lives in lib/xp.ts and is applied by the server. What
+   follows is the local mirror: it keeps the dashboard responsive and keeps
+   working offline, but /api/progress/award has the final say and its answer
+   overwrites whatever is here. Mastery is measured in years — at the daily cap
+   the top rank is ~2.5 years of perfect attendance. */
+const XP = XP_AWARDS;
+const DECAY_PER_DAY = XP_DECAY_PER_DAY;
+const GRACE_DAYS = XP_GRACE_DAYS;
 
 function dayGap(a: string, b: string): number {
   const da = new Date(`${a}T00:00:00`).getTime();
@@ -286,7 +288,16 @@ function settleXp(state: XpState, today: string): XpState {
   return { ...state, xp: decayed, lastActive: today };
 }
 
-/** Add XP for an action (banks any pending decay first, honours the daily cap). */
+/**
+ * Award XP for an action.
+ *
+ * Updates the local mirror immediately so the rank bar moves the instant you
+ * finish something, then asks the server for the real number and corrects to
+ * it. The optimistic figure is only ever a guess at what the server will say —
+ * if the two disagree, the server wins, which is the entire point.
+ *
+ * Signed-out or offline, the local value stands and syncs later.
+ */
 export function awardXp(kind: keyof typeof XP): number {
   const today = todayKey();
   const settled = settleXp(readXp(), today);
@@ -294,17 +305,37 @@ export function awardXp(kind: keyof typeof XP): number {
   const grant = Math.max(0, Math.min(XP[kind], DAILY_XP_CAP - dayXp));
   const xp = settled.xp + grant;
   writeXp({ xp, lastActive: today, day: today, dayXp: dayXp + grant });
+
+  void confirmWithServer(kind);
   return xp;
+}
+
+async function confirmWithServer(kind: keyof typeof XP): Promise<void> {
+  if (!isBrowser()) return;
+  try {
+    const res = await fetch("/api/progress/award", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ kind }),
+    });
+    if (!res.ok) return; // signed out, offline, or not configured — keep local
+    const { xp } = (await res.json()) as { xp?: number };
+    if (typeof xp === "number") applyServerXp(xp);
+  } catch {
+    /* offline — the local mirror is what the user sees until sync catches up */
+  }
 }
 
 export function currentXp(): number {
   return settleXp(readXp(), todayKey()).xp;
 }
 
-export function rankFromXp(xp: number): number {
-  let idx = 0;
-  for (let i = 0; i < RANK_XP.length; i++) if (xp >= RANK_XP[i]) idx = i;
-  return idx;
+/** Overwrite the local mirror with the server's authoritative total. */
+export function applyServerXp(xp: number): void {
+  const today = todayKey();
+  const prev = readXp();
+  const dayXp = prev.day === today ? (prev.dayXp ?? 0) : 0;
+  writeXp({ xp, lastActive: today, day: today, dayXp });
 }
 
 export interface RankProgress {

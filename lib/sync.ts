@@ -156,16 +156,18 @@ async function pushProfile(userId: string) {
     .upsert({ user_id: userId, profile, updated_at: new Date().toISOString() });
 }
 
+/* XP itself is never pushed. The server owns it — /api/progress/award decides
+   what an action is worth and writes the total — so uploading the browser's
+   copy would just hand the number back to the client. The database refuses
+   these columns to signed-in users anyway; this keeps the request honest.
+
+   rank_seen is the exception: it only records which rank-up celebration the
+   user has already watched, so it is theirs to set. */
 async function pushProgress(userId: string) {
-  const xp = readSlice<XpState>(KEYS.xp, { xp: 0, lastActive: "" });
   await createClient()
     .from("user_progress")
     .upsert({
       user_id: userId,
-      xp: xp.xp ?? 0,
-      xp_last_active: xp.lastActive || null,
-      xp_day: xp.day || null,
-      xp_day_amount: xp.dayXp ?? 0,
       rank_seen: readSlice<number>(KEYS.rankSeen, 0),
       updated_at: new Date().toISOString(),
     });
@@ -178,7 +180,9 @@ async function pushActivity(userId: string, days: string[]) {
   const visited = new Set(readSlice<string[]>(KEYS.visits, []));
   const meals = readSlice<MealMap>(KEYS.meals, {});
   const burn = readSlice<BurnMap>(KEYS.burn, {});
-  const usage = readSlice<UsageMap>(KEYS.usage, {});
+  /* `usage` is deliberately absent: it is the quota the paid features are
+     metered against, so it is written only by consume_usage on the server.
+     Pushing the local copy would let anyone reset their own limits. */
   const rows = days.map((day) => ({
     user_id: userId,
     day,
@@ -186,7 +190,6 @@ async function pushActivity(userId: string, days: string[]) {
     visited: visited.has(day),
     burned: burn[day] ?? 0,
     meals: meals[day] ?? [],
-    usage: usage[day] ?? {},
     updated_at: new Date().toISOString(),
   }));
   await createClient().from("user_activity").upsert(rows);

@@ -1,3 +1,4 @@
+import { guardAiRoute, isDenied } from "@/lib/api-guard";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
@@ -30,6 +31,11 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp"] as const;
 type Media = (typeof ALLOWED)[number];
 
 export async function POST(req: Request) {
+  /* Video frames are the most expensive call in the app — establish who is
+     asking, and that their plan allows it, before reading the body. */
+  const guard = await guardAiRoute("techniqueVideo");
+  if (isDenied(guard)) return guard.response;
+
   let body: { frames?: string[]; techniqueId?: string };
   try {
     body = await req.json();

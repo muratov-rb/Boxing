@@ -1,3 +1,4 @@
+import { guardAiRoute, isDenied } from "@/lib/api-guard";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
@@ -70,6 +71,14 @@ function buildPrompt(p: Profile): string {
 }
 
 export async function POST(req: Request) {
+  /* AI nutrition is a paid feature with no per-day counter, so the check is
+     the entitlement itself rather than a quota. Callers whose plan doesn't
+     include it still get the local engine below rather than an error page —
+     they simply don't get Claude. */
+  const guard = await guardAiRoute(null);
+  if (isDenied(guard)) return guard.response;
+  const aiAllowed = guard.entitlements.aiNutrition;
+
   let profile: Profile;
   try {
     profile = (await req.json()) as Profile;
@@ -80,9 +89,10 @@ export async function POST(req: Request) {
   const store = await cookies();
   const locale = store.get("locale")?.value === "ru" ? "ru" : "en";
 
-  // impossible stats → don't waste an API call, just return the local plan
+  // impossible stats, no key, or a plan without AI nutrition → local plan,
+  // which costs nothing and still gives the user something usable
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || statIssues(profile).length > 0) {
+  if (!apiKey || !aiAllowed || statIssues(profile).length > 0) {
     return NextResponse.json(localNutrition(profile, locale));
   }
 

@@ -1,3 +1,4 @@
+import { guardAiRoute, isDenied } from "@/lib/api-guard";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
@@ -47,6 +48,11 @@ const ALLOWED_MEDIA = [
 type MediaType = (typeof ALLOWED_MEDIA)[number];
 
 export async function POST(req: Request) {
+  /* Sign-in, plan and quota are settled before we look at the image — this
+     call costs money, so the cheapest possible rejection comes first. */
+  const guard = await guardAiRoute("calorieScan");
+  if (isDenied(guard)) return guard.response;
+
   let body: { image?: string; mediaType?: string };
   try {
     body = await req.json();
