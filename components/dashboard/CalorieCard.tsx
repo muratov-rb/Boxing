@@ -11,12 +11,11 @@ import {
   mealsToday,
   removeMeal,
   burnedToday,
-  dailyLimit,
-  bumpUsage,
   MEAL_KCAL_MAX,
   type Meal,
   type LimitState,
 } from "@/lib/tracking";
+import { fetchLimit } from "@/lib/quota-client";
 import { FoodScanner } from "./FoodScanner";
 import { LockedFeature } from "./LockedFeature";
 
@@ -39,7 +38,14 @@ export function CalorieCard() {
     setMeals(mealsToday());
     setTarget(calorieTarget(loadProfile()));
     setBurned(burnedToday());
-    setLimit(dailyLimit("calorieScan"));
+    // the server owns the quota; the local count is only the offline fallback
+    let alive = true;
+    fetchLimit("calorieScan").then((l) => {
+      if (alive) setLimit(l);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // budget/expired plans don't include the calorie counter at all
@@ -206,8 +212,8 @@ export function CalorieCard() {
         <FoodScanner
           onAdd={(n, k, macros) => {
             setMeals(addMeal(n, k, "scan", macros));
-            bumpUsage("calorieScan"); // a completed scan spends one of today's quota
-            setLimit(dailyLimit("calorieScan"));
+            // the scan already spent it server-side; re-read what is left
+            fetchLimit("calorieScan").then(setLimit);
           }}
           onClose={() => setScannerOpen(false)}
         />

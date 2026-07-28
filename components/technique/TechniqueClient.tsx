@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { TECHNIQUES } from "@/lib/technique";
-import { dailyLimit, bumpUsage, type LimitState } from "@/lib/tracking";
+import { type LimitState } from "@/lib/tracking";
+import { fetchLimit } from "@/lib/quota-client";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -25,7 +26,14 @@ export function TechniqueClient() {
   const [limit, setLimit] = useState<LimitState | null>(null);
 
   useEffect(() => {
-    setLimit(dailyLimit("techniqueVideo"));
+    // the server owns the quota; the local count is only the offline fallback
+    let alive = true;
+    fetchLimit("techniqueVideo").then((l) => {
+      if (alive) setLimit(l);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const metered = !!limit && Number.isFinite(limit.limit);
@@ -182,8 +190,8 @@ export function TechniqueClient() {
           techniqueId={tech.id}
           techniqueName={tech.name[locale]}
           onAnalyzed={() => {
-            bumpUsage("techniqueVideo"); // a completed review spends one of today's quota
-            setLimit(dailyLimit("techniqueVideo"));
+            // the review already spent it server-side; re-read what is left
+            fetchLimit("techniqueVideo").then(setLimit);
           }}
           onClose={() => setAnalyzing(false)}
         />

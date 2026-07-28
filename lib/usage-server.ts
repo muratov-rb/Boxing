@@ -26,6 +26,42 @@ function limitFor(caller: Caller, key: QuotaKey): number {
     : caller.entitlements.techniqueVideosPerDay;
 }
 
+/** Read today's counters without spending anything — for showing "2 of 3 left"
+    honestly, including on a second device where localStorage knows nothing. */
+export async function readQuotas(
+  caller: Caller,
+  today = new Date().toISOString().slice(0, 10),
+): Promise<Record<QuotaKey, QuotaVerdict>> {
+  const keys: QuotaKey[] = ["calorieScan", "techniqueVideo"];
+  const blank = (key: QuotaKey): QuotaVerdict => {
+    const limit = limitFor(caller, key);
+    return { allowed: limit > 0, used: 0, limit, locked: limit <= 0 };
+  };
+
+  if (!serviceRoleConfigured()) {
+    return { calorieScan: blank("calorieScan"), techniqueVideo: blank("techniqueVideo") };
+  }
+
+  try {
+    const { data } = await createAdminClient()
+      .from("user_activity")
+      .select("usage")
+      .eq("user_id", caller.userId)
+      .eq("day", today)
+      .maybeSingle<{ usage: Record<string, number> }>();
+
+    const out = {} as Record<QuotaKey, QuotaVerdict>;
+    for (const key of keys) {
+      const limit = limitFor(caller, key);
+      const used = data?.usage?.[key] ?? 0;
+      out[key] = { allowed: used < limit, used, limit, locked: limit <= 0 };
+    }
+    return out;
+  } catch {
+    return { calorieScan: blank("calorieScan"), techniqueVideo: blank("techniqueVideo") };
+  }
+}
+
 /**
  * Try to spend one unit of today's quota.
  *
