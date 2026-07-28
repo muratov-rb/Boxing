@@ -92,7 +92,7 @@
     "password": "Пароль",
     "emailPlaceholder": "you@email.com",
     "pwLoginPlaceholder": "Твой пароль",
-    "pwRegisterPlaceholder": "Минимум 6 символов",
+    "pwRegisterPlaceholder": "Минимум {n} символов",
     "working": "Секунду…",
     "logIn": "Войти",
     "createAccount": "Создать аккаунт",
@@ -102,7 +102,7 @@
     "loginLink": "Войти",
     "errGeneric": "Что-то пошло не так.",
     "errLink": "Ссылка для входа не сработала. Попробуй ещё раз.",
-    "errShortPw": "Пароль должен быть не короче 6 символов.",
+    "errShortPw": "Минимум {n} символов — длина пароля и защищает аккаунт.",
     "errBanned": "Этот аккаунт закрыт администратором."
   },
   "verify": {

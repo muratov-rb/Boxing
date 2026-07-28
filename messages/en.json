@@ -92,7 +92,7 @@
     "password": "Password",
     "emailPlaceholder": "you@email.com",
     "pwLoginPlaceholder": "Your password",
-    "pwRegisterPlaceholder": "At least 6 characters",
+    "pwRegisterPlaceholder": "At least {n} characters",
     "working": "Working…",
     "logIn": "Log In",
     "createAccount": "Create Account",
@@ -102,7 +102,7 @@
     "loginLink": "Log in",
     "errGeneric": "Something went wrong.",
     "errLink": "That sign-in link didn't work. Try again.",
-    "errShortPw": "Password must be at least 6 characters.",
+    "errShortPw": "Use at least {n} characters — long passwords are what keep an account safe.",
     "errBanned": "This account has been closed by an administrator."
   },
   "verify": {

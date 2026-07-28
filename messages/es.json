@@ -92,7 +92,7 @@
     "password": "Contraseña",
     "emailPlaceholder": "tu@correo.com",
     "pwLoginPlaceholder": "Tu contraseña",
-    "pwRegisterPlaceholder": "Al menos 6 caracteres",
+    "pwRegisterPlaceholder": "Al menos {n} caracteres",
     "working": "Procesando…",
     "logIn": "Iniciar sesión",
     "createAccount": "Crear cuenta",
@@ -102,7 +102,7 @@
     "loginLink": "Iniciar sesión",
     "errGeneric": "Algo salió mal.",
     "errLink": "Ese enlace de acceso no funcionó. Inténtalo de nuevo.",
-    "errShortPw": "La contraseña debe tener al menos 6 caracteres.",
+    "errShortPw": "Usa al menos {n} caracteres: la longitud es lo que protege la cuenta.",
     "errBanned": "Un administrador ha cerrado esta cuenta."
   },
   "verify": {

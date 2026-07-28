@@ -92,7 +92,7 @@
     "password": "密码",
     "emailPlaceholder": "you@email.com",
     "pwLoginPlaceholder": "你的密码",
-    "pwRegisterPlaceholder": "至少 6 个字符",
+    "pwRegisterPlaceholder": "至少 {n} 个字符",
     "working": "处理中……",
     "logIn": "登录",
     "createAccount": "创建账户",
@@ -102,7 +102,7 @@
     "loginLink": "登录",
     "errGeneric": "出了点问题。",
     "errLink": "该登录链接无效。请重试。",
-    "errShortPw": "密码至少需要 6 个字符。",
+    "errShortPw": "请使用至少 {n} 个字符——密码长度才是账号安全的关键。",
     "errBanned": "该账号已被管理员关闭。"
   },
   "verify": {

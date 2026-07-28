@@ -92,7 +92,7 @@
     "password": "Mot de passe",
     "emailPlaceholder": "toi@email.com",
     "pwLoginPlaceholder": "Ton mot de passe",
-    "pwRegisterPlaceholder": "Au moins 6 caractères",
+    "pwRegisterPlaceholder": "Au moins {n} caractères",
     "working": "En cours…",
     "logIn": "Se connecter",
     "createAccount": "Créer un compte",
@@ -102,7 +102,7 @@
     "loginLink": "Se connecter",
     "errGeneric": "Une erreur est survenue.",
     "errLink": "Ce lien de connexion n'a pas fonctionné. Réessaie.",
-    "errShortPw": "Le mot de passe doit comporter au moins 6 caractères.",
+    "errShortPw": "Utilise au moins {n} caractères — c est la longueur qui protège le compte.",
     "errBanned": "Ce compte a été fermé par un administrateur."
   },
   "verify": {

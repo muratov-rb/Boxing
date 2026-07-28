@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
 import { Icon } from "@/components/ui/Icons";
+import { MIN_PASSWORD_LENGTH, passwordLongEnough } from "@/lib/auth-rules";
 
 function GoogleG() {
   return (
@@ -70,7 +71,11 @@ export function AuthCard({
     e.preventDefault();
     setError(null);
     if (!configured) return setError(t("notConnected"));
-    if (password.length < 6) return setError(t("errShortPw"));
+    /* Only when creating an account — an existing user whose password predates
+       this rule must still be able to log in with it. */
+    if (!isLogin && !passwordLongEnough(password)) {
+      return setError(t("errShortPw", { n: MIN_PASSWORD_LENGTH }));
+    }
 
     setLoading("email");
     const supabase = createClient();
@@ -198,9 +203,13 @@ export function AuthCard({
               id="password"
               type="password"
               required
-              minLength={6}
+              minLength={isLogin ? undefined : MIN_PASSWORD_LENGTH}
               autoComplete={isLogin ? "current-password" : "new-password"}
-              placeholder={isLogin ? t("pwLoginPlaceholder") : t("pwRegisterPlaceholder")}
+              placeholder={
+                isLogin
+                  ? t("pwLoginPlaceholder")
+                  : t("pwRegisterPlaceholder", { n: MIN_PASSWORD_LENGTH })
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={inputCls}
