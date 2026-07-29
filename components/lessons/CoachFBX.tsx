@@ -27,6 +27,9 @@ const CLIP_IDS = [
   "speedbag", "bodyjabcross", "warmup",
   "boxing2", "boxing3", "boxing4", "boxing5", "boxing6", "boxing7",
   "boxing8", "boxing9",
+  /* 2026-07-28 batch — pivot and jumprope close two lessons that had no demo
+     at all; the rest are alternates for clips currently shared across lessons */
+  "pivot", "jumprope", "punching", "boxing10", "bodyjabcross2",
 ] as const;
 
 /** base = mesh + skeleton (+ its own clip, registered under `id`) */

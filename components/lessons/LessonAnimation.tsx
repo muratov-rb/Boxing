@@ -27,11 +27,19 @@ const CLIPS: Partial<Record<DemoPreset, string>> = {
   roll: "dodging",
   parry: "dodging",
   shadowbox: "boxing2",
-  heavybag: "boxing2",
+  heavybag: "boxing10", // was boxing2, identical to shadowbox — now its own clip
   speedbag: "speedbag",
   footwork: "warmup",
   stepdrag: "warmup",
+  pivot: "pivot",
+  jumprope: "jumprope",
 };
+
+/* Rendered but not mapped to a lesson yet: "punching" and "bodyjabcross2".
+   Both are generic punch motions, and the lessons that would fit them — the
+   body jab and body cross — do not exist in the library yet. Pointing them at
+   an unrelated lesson would repeat the mistake the slip/roll/parry sharing
+   already makes: showing a movement that is not the one being taught. */
 
 export function lessonClipFor(preset: DemoPreset): string | undefined {
   return CLIPS[preset];
