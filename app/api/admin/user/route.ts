@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminAuthed } from "@/lib/admin-auth";
+import { currentAdmin, auditAdmin } from "@/lib/admin-auth";
 import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -12,11 +12,9 @@ const PERIODS = ["monthly", "yearly"];
 /* Admin actions on a single user. Guarded by the admin cookie and run with the
    service-role key server-side; the key never reaches the browser. */
 export async function POST(req: Request) {
-  if (!(await isAdminAuthed())) {
+  const actor = await currentAdmin();
+  if (!actor) {
     return NextResponse.json({ error: "unauthorised" }, { status: 401 });
-  }
-  if (!serviceRoleConfigured()) {
-    return NextResponse.json({ error: "no_service_key" }, { status: 503 });
   }
 
   let body: { userId?: string; action?: Action; plan?: string; period?: string };
@@ -28,6 +26,22 @@ export async function POST(req: Request) {
   const { userId, action } = body;
   if (!userId || !action) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
+  }
+
+  /* Banning destroys a person's training history for good. Support staff look
+     accounts up and fix subscriptions; they do not get to do this. Enforced
+     here rather than by hiding the button, because a hidden button is not a
+     permission — anyone can POST to this route directly.
+
+     Deliberately ahead of the service-key check: whether someone is ALLOWED to
+     do a thing shouldn't depend on whether we happen to be configured to do
+     it, and "not permitted" is a more honest answer than "misconfigured". */
+  if ((action === "ban" || action === "unban") && actor.role !== "owner") {
+    return NextResponse.json({ error: "owner_only" }, { status: 403 });
+  }
+
+  if (!serviceRoleConfigured()) {
+    return NextResponse.json({ error: "no_service_key" }, { status: 503 });
   }
 
   const supabase = createAdminClient();
@@ -46,6 +60,7 @@ export async function POST(req: Request) {
           .update({ plan, period, updated_at: now })
           .eq("user_id", userId);
         if (error) throw error;
+        await auditAdmin(actor, "setPlan", userId, { plan, period });
         return NextResponse.json({ ok: true, plan, period });
       }
 
@@ -56,6 +71,7 @@ export async function POST(req: Request) {
           .update({ plan: "trial", trial_start: today, updated_at: now })
           .eq("user_id", userId);
         if (error) throw error;
+        await auditAdmin(actor, "restartTrial", userId, { trial_start: today });
         return NextResponse.json({ ok: true, trial_start: today });
       }
 
@@ -79,6 +95,7 @@ export async function POST(req: Request) {
           supabase.from("user_progress").delete().eq("user_id", userId),
           supabase.from("user_profiles").delete().eq("user_id", userId),
         ]);
+        await auditAdmin(actor, "ban", userId, { dataWiped: true });
         return NextResponse.json({ ok: true, banned: true, dataWiped: true });
       }
 
@@ -89,6 +106,7 @@ export async function POST(req: Request) {
           .eq("user_id", userId);
         if (error) throw error;
         await supabase.auth.admin.updateUserById(userId, { ban_duration: "none" });
+        await auditAdmin(actor, "unban", userId, {});
         return NextResponse.json({ ok: true, banned: false });
       }
 

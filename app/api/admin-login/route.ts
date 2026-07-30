@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
-import { adminToken, verifyAdminCredentials, ADMIN_COOKIE } from "@/lib/admin-auth";
+import {
+  verifyAdminLogin,
+  sessionToken,
+  adminPasswordConfigured,
+  ADMIN_COOKIE,
+} from "@/lib/admin-auth";
 import { checkRate, recordFailure, recordSuccess, clientKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-/* Login name + password → httpOnly admin cookie. The panel behind this can
-   delete every user's data, so guessing is throttled per source as well as
-   slowed by a fixed delay; the real secrets never reach the client. */
+/* Login name + password → httpOnly admin cookie carrying who you are and what
+   you may do. The panel behind this can delete every user's training history,
+   so guessing is throttled per source as well as slowed by a fixed delay. */
 export async function POST(req: Request) {
   const who = clientKey(req);
   const rate = await checkRate(who);
@@ -24,21 +29,29 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  const token = adminToken();
-  if (!token) {
+  if (!adminPasswordConfigured()) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
   await new Promise((r) => setTimeout(r, 400)); // slow down guessing
 
-  if (!body.password || !verifyAdminCredentials(body.username ?? "", body.password)) {
+  const identity = body.password
+    ? await verifyAdminLogin(body.username ?? "", body.password)
+    : null;
+
+  if (!identity) {
     await recordFailure(who);
-    // one message for both fields — never reveal which half was wrong
+    // one message for every failure — never reveal which half was wrong
     return NextResponse.json({ error: "wrong_password" }, { status: 401 });
   }
 
+  const token = sessionToken(identity);
+  if (!token) {
+    return NextResponse.json({ error: "not_configured" }, { status: 503 });
+  }
+
   await recordSuccess(who);
-  const res = NextResponse.json({ ok: true });
+  const res = NextResponse.json({ ok: true, role: identity.role });
   res.cookies.set(ADMIN_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
