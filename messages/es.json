@@ -653,7 +653,16 @@
     "mealsLimited": "Tu plan muestra parte del día — mejora a Max para todas las comidas",
     "lessonsLimited": "Mostrando {shown} de {total} — mejora para la biblioteca completa",
     "plansThisWeek": "Límite de planes semanales alcanzado — mejora",
-    "plansLeftWeek": "quedan {n} de {limit} sesiones guiadas esta semana"
+    "plansLeftWeek": "quedan {n} de {limit} sesiones guiadas esta semana",
+    "checkoutOpening": "Abriendo el pago…",
+    "checkoutFailed": "No se pudo iniciar el pago. Inténtalo de nuevo.",
+    "manageBilling": "Gestionar suscripción",
+    "perYear": "/ año",
+    "billMonthly": "Mensual",
+    "billYearly": "Anual",
+    "yearlyEquiv": "{price} / mes, facturado al año",
+    "yearlySave": "ahorra {amount} al año ({n}%)",
+    "yearlyHint": "o {price} / año — 2 meses gratis"
   },
   "admin": {
     "gateTitle": "Acceso de administrador",

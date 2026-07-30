@@ -661,7 +661,10 @@
     "billYearly": "Yearly",
     "yearlyEquiv": "{price} / month, billed yearly",
     "yearlySave": "save {amount} a year ({n}%)",
-    "yearlyHint": "or {price} / year — 2 months free"
+    "yearlyHint": "or {price} / year — 2 months free",
+    "checkoutOpening": "Opening checkout…",
+    "checkoutFailed": "Could not start checkout. Try again in a moment.",
+    "manageBilling": "Manage billing"
   },
   "admin": {
     "gateTitle": "Admin access",

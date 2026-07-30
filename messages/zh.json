@@ -653,7 +653,16 @@
     "mealsLimited": "你的方案只显示一天的一部分——升级到 Max 查看每一餐",
     "lessonsLimited": "显示 {shown} / 共 {total}——升级以查看完整课程库",
     "plansThisWeek": "已达每周计划上限——升级",
-    "plansLeftWeek": "本周还剩 {n} / {limit} 次引导训练"
+    "plansLeftWeek": "本周还剩 {n} / {limit} 次引导训练",
+    "checkoutOpening": "正在打开结账…",
+    "checkoutFailed": "无法开始结账，请稍后重试。",
+    "manageBilling": "管理订阅",
+    "perYear": "/ 年",
+    "billMonthly": "按月",
+    "billYearly": "按年",
+    "yearlyEquiv": "{price} / 月，按年结算",
+    "yearlySave": "每年省 {amount}（{n}%）",
+    "yearlyHint": "或 {price} / 年 — 免费 2 个月"
   },
   "admin": {
     "gateTitle": "管理员访问",

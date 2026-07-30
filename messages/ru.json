@@ -661,7 +661,10 @@
     "billYearly": "На год",
     "yearlyEquiv": "{price} в месяц при оплате за год",
     "yearlySave": "экономия {amount} в год ({n}%)",
-    "yearlyHint": "или {price} в год — 2 месяца бесплатно"
+    "yearlyHint": "или {price} в год — 2 месяца бесплатно",
+    "checkoutOpening": "Открываю оплату…",
+    "checkoutFailed": "Не удалось начать оплату. Попробуй ещё раз.",
+    "manageBilling": "Управление подпиской"
   },
   "admin": {
     "gateTitle": "Доступ администратора",

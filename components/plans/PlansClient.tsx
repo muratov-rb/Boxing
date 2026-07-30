@@ -97,6 +97,8 @@ export function PlansClient() {
   const [left, setLeft] = useState(7);
   const [justPicked, setJustPicked] = useState<PaidPlanId | null>(null);
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
+  const [busy, setBusy] = useState<PaidPlanId | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setCurrent(activePlan());
@@ -104,10 +106,48 @@ export function PlansClient() {
     setPeriod(billingPeriod());
   }, []);
 
-  const choose = (id: PaidPlanId) => {
-    setPlan(id, period);
-    setCurrent(id);
-    setJustPicked(id);
+  /* With billing live this hands off to Stripe and the plan only changes once
+     their webhook confirms payment — the browser never grants itself a tier.
+     Until the keys are set the old local behaviour stands, so the page keeps
+     working (and stays demoable) exactly as before. */
+  const choose = async (id: PaidPlanId) => {
+    setBusy(id);
+    setError(null);
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plan: id, period }),
+      });
+
+      /* Read the body exactly once — a Response can only be consumed a single
+         time, and a second .json() throws rather than returning the payload. */
+      const data = (await res.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+      };
+
+      if (res.ok && data.url) {
+        window.location.assign(data.url); // Stripe's hosted checkout
+        return;
+      }
+      if (res.status === 401) {
+        window.location.assign("/login?next=/plans");
+        return;
+      }
+      if (data.error === "billing_off" || data.error === "price_not_configured") {
+        // billing not switched on yet — keep the pre-Stripe behaviour
+        setPlan(id, period);
+        setCurrent(id);
+        setJustPicked(id);
+        return;
+      }
+      setError(t("checkoutFailed"));
+    } catch {
+      setError(t("checkoutFailed"));
+    } finally {
+      setBusy(null);
+    }
   };
 
   return (
@@ -271,14 +311,21 @@ export function PlansClient() {
                 <button
                   type="button"
                   onClick={() => choose(id)}
-                  disabled={isCurrent}
+                  disabled={isCurrent || busy !== null}
                   className={cx(
-                    "mt-6 w-full",
+                    "mt-6 w-full disabled:opacity-60",
                     isCurrent ? "btn btn-ghost" : popular ? "btn btn-primary shine" : "btn btn-primary",
                   )}
                 >
-                  {isCurrent ? t("yourPlan") : t("choose")}
+                  {isCurrent
+                    ? t("yourPlan")
+                    : busy === id
+                      ? t("checkoutOpening")
+                      : t("choose")}
                 </button>
+                {error && busy === null && (
+                  <p className="mt-2 text-center text-xs text-blood-bright">{error}</p>
+                )}
               </section>
             );
           })}
