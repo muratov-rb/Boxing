@@ -75,7 +75,8 @@
     "whatsComing": "What's coming",
     "rights": "© {year} RingBornn · built by Nexara",
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "refunds": "Refunds"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -756,6 +757,9 @@
     "deleteConfirmBtn": "Delete forever",
     "cancel": "Cancel",
     "deleteFailed": "Could not delete the account. Try again, or contact us.",
-    "deleteUnavailable": "Account deletion is not configured on this deployment yet. Please contact us and we will delete it for you."
+    "deleteUnavailable": "Account deletion is not configured on this deployment yet. Please contact us and we will delete it for you.",
+    "manageBilling": "Manage billing",
+    "noSubscription": "You have no paid subscription — nothing to manage yet.",
+    "billingFailed": "Could not open the billing portal. Try again shortly."
   }
 }

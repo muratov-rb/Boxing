@@ -1,46 +1,46 @@
 import { NextResponse } from "next/server";
-import type Stripe from "stripe";
+import { EventName } from "@paddle/paddle-node-sdk";
+import type { Subscription } from "@paddle/paddle-node-sdk";
 import {
-  stripeClient,
-  stripeConfigured,
+  paddle,
+  billingConfigured,
   webhookSecret,
   planFromPriceId,
   ACTIVE_STATUSES,
-} from "@/lib/stripe";
+} from "@/lib/billing";
 import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
 /* ===========================================================================
-   Stripe's word on who has paid.
+   Paddle's word on who has paid.
 
    This is the only place a paid plan is granted. Not the client, not the
    success page — a browser redirected to /dashboard?checkout=success proves
-   nothing, since anyone can visit that URL. Only a signature-verified event
-   from Stripe counts.
+   nothing, since anyone can type that URL. Only a signature-verified event
+   from Paddle counts.
 
    The signature check is therefore load-bearing, not ceremony: without it this
    endpoint would hand out Max subscriptions to anyone who could POST JSON.
    =========================================================================== */
 
-async function applySubscription(sub: Stripe.Subscription): Promise<void> {
+async function applySubscription(sub: Subscription): Promise<void> {
   const db = createAdminClient();
 
-  const priceId = sub.items.data[0]?.price?.id ?? "";
+  const priceId = sub.items?.[0]?.price?.id ?? "";
   const mapped = planFromPriceId(priceId);
   const active = ACTIVE_STATUSES.has(sub.status);
 
   /* Prefer the id we stamped at checkout; fall back to the customer, which
-     covers subscriptions created or changed from the Stripe dashboard. */
-  const userId = sub.metadata?.user_id;
-  const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id;
+     covers subscriptions created or changed inside Paddle's dashboard. */
+  const custom = sub.customData as { user_id?: string } | null | undefined;
+  const userId = custom?.user_id;
 
-  const periodEnd = sub.items.data[0]?.current_period_end;
   const patch: Record<string, unknown> = {
-    stripe_subscription_id: sub.id,
-    stripe_status: sub.status,
-    current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
-    cancel_at_period_end: sub.cancel_at_period_end ?? false,
+    billing_subscription_id: sub.id,
+    billing_status: sub.status,
+    current_period_end: sub.currentBillingPeriod?.endsAt ?? null,
+    cancel_at_period_end: sub.scheduledChange?.action === "cancel",
     updated_at: new Date().toISOString(),
   };
 
@@ -56,17 +56,17 @@ async function applySubscription(sub: Stripe.Subscription): Promise<void> {
   const q = db.from("subscriptions").update(patch);
   const { error } = userId
     ? await q.eq("user_id", userId)
-    : await q.eq("stripe_customer_id", customerId ?? "");
+    : await q.eq("billing_customer_id", sub.customerId);
   if (error) throw error;
 }
 
 export async function POST(req: Request) {
   const secret = webhookSecret();
-  if (!stripeConfigured() || !secret || !serviceRoleConfigured()) {
+  if (!billingConfigured() || !secret || !serviceRoleConfigured()) {
     return NextResponse.json({ error: "billing_off" }, { status: 503 });
   }
 
-  const signature = req.headers.get("stripe-signature");
+  const signature = req.headers.get("paddle-signature");
   if (!signature) {
     return NextResponse.json({ error: "no_signature" }, { status: 400 });
   }
@@ -75,38 +75,33 @@ export async function POST(req: Request) {
      signature was computed over and every event would fail verification. */
   const raw = await req.text();
 
-  let event: Stripe.Event;
+  let event;
   try {
-    event = stripeClient().webhooks.constructEvent(raw, signature, secret);
+    event = await paddle().webhooks.unmarshal(raw, secret, signature);
   } catch {
+    return NextResponse.json({ error: "bad_signature" }, { status: 400 });
+  }
+  if (!event) {
     return NextResponse.json({ error: "bad_signature" }, { status: 400 });
   }
 
   try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        if (session.subscription) {
-          const id =
-            typeof session.subscription === "string"
-              ? session.subscription
-              : session.subscription.id;
-          await applySubscription(await stripeClient().subscriptions.retrieve(id));
-        }
-        break;
-      }
-
-      case "customer.subscription.created":
-      case "customer.subscription.updated":
-      case "customer.subscription.deleted":
-        await applySubscription(event.data.object);
+    switch (event.eventType) {
+      case EventName.SubscriptionCreated:
+      case EventName.SubscriptionActivated:
+      case EventName.SubscriptionUpdated:
+      case EventName.SubscriptionCanceled:
+      case EventName.SubscriptionPastDue:
+      case EventName.SubscriptionPaused:
+      case EventName.SubscriptionResumed:
+        await applySubscription(event.data as Subscription);
         break;
 
       default:
         break; // everything else is noise for our purposes
     }
   } catch (e) {
-    /* 500 asks Stripe to retry. Better a duplicate update — they are
+    /* 500 asks Paddle to retry. Better a duplicate update — they are
        idempotent — than silently losing someone's upgrade. */
     return NextResponse.json(
       { error: "handler_failed", detail: e instanceof Error ? e.message : String(e) },

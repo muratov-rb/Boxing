@@ -75,7 +75,8 @@
     "whatsComing": "Qué se viene",
     "rights": "© {year} RingBornn · creado por Nexara",
     "privacy": "Privacidad",
-    "terms": "Términos"
+    "terms": "Términos",
+    "refunds": "Reembolsos"
   },
   "auth": {
     "welcomeBack": "Bienvenido de nuevo",
@@ -754,6 +755,9 @@
     "deleteConfirmBtn": "Eliminar para siempre",
     "cancel": "Cancelar",
     "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo o escríbenos.",
-    "deleteUnavailable": "La eliminación de cuentas aún no está configurada aquí. Escríbenos y la eliminaremos."
+    "deleteUnavailable": "La eliminación de cuentas aún no está configurada aquí. Escríbenos y la eliminaremos.",
+    "manageBilling": "Gestionar pagos",
+    "noSubscription": "No tienes suscripción de pago; nada que gestionar todavía.",
+    "billingFailed": "No se pudo abrir el portal de pagos. Inténtalo en un momento."
   }
 }

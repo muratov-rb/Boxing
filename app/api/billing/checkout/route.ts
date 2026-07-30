@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveCaller } from "@/lib/entitlements-server";
 import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
-import { stripeClient, stripeConfigured, priceIdFor } from "@/lib/stripe";
+import { paddle, billingConfigured, priceIdFor } from "@/lib/billing";
 import type { PaidPlanId, BillingPeriod } from "@/lib/subscription";
 
 export const runtime = "nodejs";
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   if (caller.banned) {
     return NextResponse.json({ error: "account_closed" }, { status: 403 });
   }
-  if (!stripeConfigured() || !serviceRoleConfigured()) {
+  if (!billingConfigured() || !serviceRoleConfigured()) {
     return NextResponse.json({ error: "billing_off" }, { status: 503 });
   }
 
@@ -39,53 +39,54 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_plan" }, { status: 400 });
   }
 
-  const price = priceIdFor(plan, period);
-  if (!price) {
+  const priceId = priceIdFor(plan, period);
+  if (!priceId) {
     return NextResponse.json({ error: "price_not_configured" }, { status: 503 });
   }
 
-  const stripe = stripeClient();
+  const api = paddle();
   const db = createAdminClient();
 
   try {
-    /* Reuse this account's Stripe customer if it has one. Creating a second
-       customer for the same person splits their billing history and makes the
-       portal show only half of it. */
+    /* Reuse this account's Paddle customer if it has one. A second customer
+       for the same person splits their billing history and leaves the portal
+       showing only half of it. */
     const { data: row } = await db
       .from("subscriptions")
-      .select("stripe_customer_id")
+      .select("billing_customer_id")
       .eq("user_id", caller.userId)
-      .maybeSingle<{ stripe_customer_id: string | null }>();
+      .maybeSingle<{ billing_customer_id: string | null }>();
 
-    let customerId = row?.stripe_customer_id ?? null;
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: caller.email ?? undefined,
-        metadata: { user_id: caller.userId },
+    let customerId = row?.billing_customer_id ?? null;
+    if (!customerId && caller.email) {
+      const customer = await api.customers.create({
+        email: caller.email,
+        customData: { user_id: caller.userId },
       });
       customerId = customer.id;
       await db
         .from("subscriptions")
-        .update({ stripe_customer_id: customerId, updated_at: new Date().toISOString() })
+        .update({ billing_customer_id: customerId, updated_at: new Date().toISOString() })
         .eq("user_id", caller.userId);
     }
 
     const origin = new URL(req.url).origin;
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer: customerId,
-      line_items: [{ price, quantity: 1 }],
-      success_url: `${origin}/dashboard?checkout=success`,
-      cancel_url: `${origin}/plans?checkout=cancelled`,
-      allow_promotion_codes: true,
-      /* Stamped on the subscription so the webhook can identify the account
-         even if the session object is long gone by the time it arrives. */
-      subscription_data: { metadata: { user_id: caller.userId, plan, period } },
-      metadata: { user_id: caller.userId, plan, period },
+    const txn = await api.transactions.create({
+      items: [{ priceId, quantity: 1 }],
+      ...(customerId ? { customerId } : {}),
+      /* Stamped on the transaction so the webhook can identify the account
+         from the event alone, without a lookup that might not resolve. */
+      customData: { user_id: caller.userId, plan, period },
+      checkout: { url: `${origin}/dashboard?checkout=success` },
     });
 
-    if (!session.url) throw new Error("no checkout url");
-    return NextResponse.json({ url: session.url });
+    const url = txn.checkout?.url;
+    if (!url) {
+      /* Almost always the same cause: no default payment link is set under
+         Paddle → Checkout settings, so Paddle has no page to send them to. */
+      return NextResponse.json({ error: "no_checkout_url" }, { status: 503 });
+    }
+    return NextResponse.json({ url });
   } catch (e) {
     return NextResponse.json(
       { error: "checkout_failed", detail: e instanceof Error ? e.message : String(e) },

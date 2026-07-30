@@ -24,6 +24,12 @@ export const CONTACT_EMAIL = "";
     limit and the figure most services quote, so it travels well. */
 export const REQUEST_DAYS = 30;
 
+/** Who legally sells the subscription. Paddle is the merchant of record, not
+    just a processor: it is the seller on the invoice, it charges the card, and
+    it remits the sales tax. Users see this name on their statement, so the
+    pages have to say it out loud. */
+export const MERCHANT = "Paddle";
+
 export const CONTACT_TELEGRAM = "https://t.me/ringbornn";
 
 /* TODO(owner): the country whose law governs the terms and whose courts hear

@@ -7,6 +7,7 @@ import {
   DATA_REGION,
   MIN_AGE,
   REQUEST_DAYS,
+  MERCHANT,
   contactLine,
 } from "@/lib/legal";
 
@@ -84,6 +85,7 @@ const SECTIONS: Section[] = [
       [
         "Supabase — stores your account, profile, activity and subscription in a Postgres database, and handles sign-in.",
         "Vercel — hosts and serves the application.",
+        `${MERCHANT} — takes payment as the merchant of record. If you subscribe, they receive your email and billing details in order to charge you and to work out the tax due where you live. We never see or store your card number.`,
         "Anthropic — provides the AI behind the goal analysis, nutrition plans, food photo scanning and technique review. When you use one of those features, the relevant information is sent to Anthropic to generate the response. For the scanner and technique check, that includes the image or video frames you submitted.",
         "Google — only if you choose to sign in with Google.",
       ],

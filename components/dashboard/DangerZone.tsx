@@ -20,6 +20,36 @@ export function DangerZone() {
   const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [billingBusy, setBillingBusy] = useState(false);
+  const [billingNote, setBillingNote] = useState<string | null>(null);
+
+  /* Sends them to the payment provider's own portal — cancelling, card
+     changes and invoices all live there rather than in screens we would have
+     to build and keep correct. */
+  const openBilling = async () => {
+    setBillingBusy(true);
+    setBillingNote(null);
+    try {
+      const res = await fetch("/api/billing/portal", { method: "POST" });
+      const data = (await res.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+      };
+      if (res.ok && data.url) {
+        window.location.assign(data.url);
+        return;
+      }
+      setBillingNote(
+        data.error === "no_customer" || data.error === "billing_off"
+          ? t("noSubscription")
+          : t("billingFailed"),
+      );
+    } catch {
+      setBillingNote(t("billingFailed"));
+    } finally {
+      setBillingBusy(false);
+    }
+  };
 
   const remove = async () => {
     setBusy(true);
@@ -57,16 +87,29 @@ export function DangerZone() {
             {t("dangerTitle")}
           </h2>
         </div>
-        {!open && (
+        <div className="flex flex-wrap items-center gap-4">
+          {/* The refund policy promises cancelling takes no email and no
+              waiting. This is the link that has to make that true. */}
           <button
             type="button"
-            onClick={() => setOpen(true)}
-            className="font-condensed text-xs uppercase tracking-widest text-ash-dim underline-offset-4 transition-colors hover:text-blood hover:underline"
+            onClick={openBilling}
+            disabled={billingBusy}
+            className="font-condensed text-xs uppercase tracking-widest text-ash-dim underline-offset-4 transition-colors hover:text-bone hover:underline disabled:opacity-50"
           >
-            {t("deleteAccount")}
+            {billingBusy ? "…" : t("manageBilling")}
           </button>
-        )}
+          {!open && (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="font-condensed text-xs uppercase tracking-widest text-ash-dim underline-offset-4 transition-colors hover:text-blood hover:underline"
+            >
+              {t("deleteAccount")}
+            </button>
+          )}
+        </div>
       </div>
+      {billingNote && <p className="mt-3 text-xs text-ash-dim">{billingNote}</p>}
 
       {open && (
         <div className="mt-4 border-t border-line/70 pt-4">

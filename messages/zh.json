@@ -75,7 +75,8 @@
     "whatsComing": "即将推出",
     "rights": "© {year} RingBornn · 由 Nexara 打造",
     "privacy": "隐私政策",
-    "terms": "服务条款"
+    "terms": "服务条款",
+    "refunds": "退款"
   },
   "auth": {
     "welcomeBack": "欢迎回来",
@@ -754,6 +755,9 @@
     "deleteConfirmBtn": "永久删除",
     "cancel": "取消",
     "deleteFailed": "删除失败，请重试或联系我们。",
-    "deleteUnavailable": "此部署尚未配置账号删除功能。请联系我们，我们会为你删除。"
+    "deleteUnavailable": "此部署尚未配置账号删除功能。请联系我们，我们会为你删除。",
+    "manageBilling": "管理付款",
+    "noSubscription": "你还没有付费订阅，暂无可管理内容。",
+    "billingFailed": "无法打开付款门户，请稍后再试。"
   }
 }

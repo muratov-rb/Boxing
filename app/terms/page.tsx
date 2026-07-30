@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import { LegalPage, type Section } from "@/components/legal/LegalPage";
-import { OPERATOR, SERVICE, SITE, GOVERNING_LAW, MIN_AGE, contactLine } from "@/lib/legal";
+import {
+  OPERATOR,
+  SERVICE,
+  SITE,
+  GOVERNING_LAW,
+  MIN_AGE,
+  MERCHANT,
+  contactLine,
+} from "@/lib/legal";
 import { PRICES, PRICES_YEARLY, priceLabel } from "@/lib/subscription";
 
 export const metadata: Metadata = {
@@ -56,16 +64,16 @@ const SECTIONS: Section[] = [
         priceRow("max", "Max"),
       ],
       "Yearly plans are billed once for the year and give the same features as the monthly plan at a lower effective rate.",
-      "Card payments are not yet enabled. Until they are, no money is taken and plan changes are recorded without a charge.",
-      "When payment goes live, these rules will apply:",
+      `Payments are handled by ${MERCHANT}, which acts as the merchant of record for ${SERVICE}. ${MERCHANT} is the seller on your invoice, charges your card and remits any sales tax or VAT due. ${MERCHANT} is the name that appears on your bank statement, and we never see or hold your card details.`,
+      "How billing works:",
       [
-        "Payments are handled by a third-party payment processor. We never hold your card details ourselves.",
         "Subscriptions renew automatically at the end of each period until you cancel.",
-        "You can cancel at any time. Cancelling stops the next renewal; it does not refund the period you are already in, and you keep access until that period ends.",
-        "Where your local law gives you a statutory right to withdraw from a purchase — such as the 14-day right in the EU and UK — that right applies and overrides the line above.",
-        "If you buy through a mobile app store, that store's own refund rules apply instead.",
+        "You can cancel at any time from your dashboard — no email, no notice period, no fee.",
+        "Cancelling stops the next payment. You keep the plan you paid for until that period ends, then the account drops to the free level.",
+        "Ask within 14 days of any payment and we refund it in full, for any reason. The full rules are on our Refunds & Cancellation page.",
+        "If you ever buy through a mobile app store, that store's own refund rules apply instead.",
       ],
-      "Prices are shown in US dollars. Your bank may convert the amount and add its own fees, which are outside our control. Taxes may be added depending on where you are.",
+      "Prices are shown in US dollars. Depending on where you are, tax may be added at checkout, and your bank may convert the amount and add its own fees, which are outside our control.",
       "Prices may change. If they do, we will tell you before the change affects you, and you may cancel rather than accept it.",
     ],
   },
