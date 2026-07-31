@@ -168,7 +168,8 @@
     "supSub": "Whey, creatine, etc. Off? We build the plan on whole food only.",
     "dietLabel": "Anything we should know? (optional)",
     "dietPlaceholder": "Allergies, vegetarian/halal, foods you hate, meals per day…",
-    "analyze": "Analyze My Chances"
+    "analyze": "Analyze My Chances",
+    "goToDashboard": "Go to my dashboard"
   },
   "analysis": {
     "round": "Round 05 — The verdict",

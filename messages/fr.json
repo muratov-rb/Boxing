@@ -168,7 +168,8 @@
     "supSub": "Whey, créatine, etc. Désactivé ? On bâtit le plan uniquement sur de la vraie nourriture.",
     "dietLabel": "Quelque chose à savoir ? (facultatif)",
     "dietPlaceholder": "Allergies, végétarien/halal, aliments que tu détestes, repas par jour…",
-    "analyze": "Analyse mes chances"
+    "analyze": "Analyse mes chances",
+    "goToDashboard": "Aller à mon tableau de bord"
   },
   "analysis": {
     "round": "Round 05 — Le verdict",

@@ -168,7 +168,8 @@
     "supSub": "乳清、肌酸等。关闭？我们只用天然食物来搭建计划。",
     "dietLabel": "有什么需要我们知道的吗？（可选）",
     "dietPlaceholder": "过敏、素食／清真、讨厌的食物、每天几餐……",
-    "analyze": "分析我的成功几率"
+    "analyze": "分析我的成功几率",
+    "goToDashboard": "进入我的面板"
   },
   "analysis": {
     "round": "第 05 回合 — 裁决",

@@ -102,16 +102,10 @@ export function DashboardPreview({
 
   return (
     <div className="mx-auto w-full max-w-5xl">
-      {/* not-live banner */}
-      <div className="mb-6 flex items-center gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3">
-        <span className="text-blood">
-          <Icon name="lock" size={18} />
-        </span>
-        <p className="text-sm text-ash">
-          <span className="font-semibold text-bone">{t("previewBold")}</span>{" "}
-          {t("previewRest")}
-        </p>
-      </div>
+      {/* No "create an account" banner here any more. /onboarding requires a
+          session, so everyone who reaches this screen has already signed up —
+          telling them to do it again was the first thing they saw after doing
+          exactly that. */}
 
       {/* greeting */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -280,8 +274,10 @@ export function DashboardPreview({
           <button type="button" onClick={onRestart} className="btn btn-ghost">
             {t("startOver")}
           </button>
-          <Link href="/register" className="btn btn-primary">
-            {t("createAccount")}
+          {/* They are signed in and their plan is built — send them to the
+              real dashboard, not back to a sign-up form. */}
+          <Link href="/dashboard" className="btn btn-primary shine">
+            {t("goToDashboard")}
           </Link>
         </div>
       </div>
