@@ -4,8 +4,21 @@
     "whatsComing": "即将推出",
     "login": "登录",
     "start": "开始训练",
-    "dashboard": "面板",
-    "home": "首页"
+    "dashboard": "首页",
+    "home": "首页",
+    "primary": "主要",
+    "account": "账号",
+    "menu": "菜单",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "signOut": "退出登录",
+    "train": "训练",
+    "lessons": "课程",
+    "calories": "卡路里",
+    "profile": "个人资料",
+    "nutrition": "营养",
+    "technique": "技术",
+    "plans": "套餐"
   },
   "hero": {
     "kicker": "免费 · 网页版拳击训练",
@@ -254,7 +267,11 @@
     "techCta": "检查我的动作",
     "plansLink": "会员",
     "adminLink": "管理",
-    "soonNote": "你的计划会自动内建休息日——好好恢复，回来更强。"
+    "soonNote": "你的计划会自动内建休息日——好好恢复，回来更强。",
+    "caloriesBadge": "能量",
+    "caloriesTitle": "卡路里计数器",
+    "caloriesCopy": "记录餐食、扫描餐盘，跟踪摄入与消耗。",
+    "caloriesCta": "打开计数器"
   },
   "paths": {
     "beginnerLabel": "我是新手",
@@ -760,5 +777,36 @@
     "manageBilling": "管理付款",
     "noSubscription": "你还没有付费订阅，暂无可管理内容。",
     "billingFailed": "无法打开付款门户，请稍后再试。"
+  },
+  "profile": {
+    "kicker": "账号",
+    "titlePre": "你的",
+    "titleAccent": "拳角。",
+    "noEmail": "未登录",
+    "noPath": "尚未选择路径",
+    "statsTitle": "你的数据",
+    "statStreak": "连续天数",
+    "statBest": "最佳连续",
+    "statTrained": "完成训练",
+    "statDays": "活跃天数",
+    "rankLabel": "当前段位",
+    "rankMaxed": "已达顶端。",
+    "rankToNext": "距下一段位还差 {xp} XP",
+    "xpTotal": "共 {xp} XP",
+    "billingTitle": "套餐与付款",
+    "currentPlan": "当前套餐",
+    "trialLeft": "免费试用——还剩 {n} 天",
+    "noPlan": "暂无付费套餐。",
+    "billedAs": "{price}，{period}计费",
+    "changePlan": "更换套餐",
+    "seePlans": "查看套餐"
+  },
+  "calories": {
+    "kicker": "能量",
+    "titlePre": "卡路里",
+    "titleAccent": "计数器。",
+    "sub": "记录饮食、扫描餐盘，并与今天训练消耗的热量对比。",
+    "nutritionLinkTitle": "AI 营养",
+    "nutritionLinkSub": "根据训练强度定制的宏量目标与餐食建议。"
   }
 }

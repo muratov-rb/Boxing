@@ -19,9 +19,46 @@ export type IconName =
   | "check"
   | "telegram"
   | "instagram"
-  | "globe";
+  | "globe"
+  | "menu"
+  | "close"
+  | "user"
+  | "home"
+  | "card";
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  menu: (
+    <>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </>
+  ),
+  close: (
+    <>
+      <path d="m6 6 12 12" />
+      <path d="m18 6-12 12" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="3.6" />
+      <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+    </>
+  ),
+  home: (
+    <>
+      <path d="m3.5 11 8.5-7 8.5 7" />
+      <path d="M6 9.6V20h12V9.6" />
+    </>
+  ),
+  card: (
+    <>
+      <rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
+      <path d="M2.5 10h19" />
+      <path d="M6.5 14.5h4" />
+    </>
+  ),
   globe: (
     <>
       <circle cx="12" cy="12" r="9" />

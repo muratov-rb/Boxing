@@ -2,28 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Logo } from "@/components/ui/Logo";
 import { Icon } from "@/components/ui/Icons";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { StreakCard } from "@/components/dashboard/StreakCard";
 import { RankCard } from "@/components/dashboard/RankCard";
-import { CalorieCard } from "@/components/dashboard/CalorieCard";
 import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
 import { SubscriptionSync } from "@/components/dashboard/SubscriptionSync";
-import { DangerZone } from "@/components/dashboard/DangerZone";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
+import { AppNav } from "@/components/nav/AppNav";
 
-/* emails allowed into /admin — env-extendable, owner by default */
-function isAdminEmail(email: string | undefined): boolean {
-  const list = (process.env.ADMIN_EMAILS || "smithsonses7@gmail.com")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return !!email && list.includes(email.toLowerCase());
-}
+/* The old ADMIN_EMAILS check lived here to decide whether to show an /admin
+   link. It is gone with the header: admins now sign in with their own fixed
+   name and password rather than a user account, so an admin may not have a
+   user session at all and the link was never the real gate. */
 
 export const metadata: Metadata = { title: "Dashboard — RingBornn" };
 
@@ -35,42 +27,10 @@ export default async function DashboardPage() {
 
   const t = await getTranslations("dashPage");
   const tt = await getTranslations("train");
-  const email = user?.email ?? "fighter@preview";
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Logo />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <LocaleSwitcher />
-            <Link
-              href="/plans"
-              className="hidden font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone sm:inline"
-            >
-              {t("plansLink")}
-            </Link>
-            {isAdminEmail(user?.email) && (
-              <Link
-                href="/admin"
-                className="hidden font-condensed text-sm uppercase tracking-widest text-blood transition-colors hover:text-blood-bright sm:inline"
-              >
-                {t("adminLink")}
-              </Link>
-            )}
-            <span className="hidden text-sm text-ash md:block">{email}</span>
-            <form action="/auth/signout" method="post">
-              <button
-                type="submit"
-                className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
-              >
-                {t("signOut")}
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
+      <AppNav />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         <SubscriptionSync />
@@ -167,14 +127,26 @@ export default async function DashboardPage() {
             </Link>
           </section>
 
+          {/* calories — the counter itself now has its own page */}
+          <section className="panel flex flex-col justify-between p-7">
+            <div>
+              <span className="badge border-blood/40 text-blood">
+                <Icon name="calorie" size={13} /> {t("caloriesBadge")}
+              </span>
+              <h2 className="mt-5 font-condensed text-2xl font-bold uppercase tracking-wide">
+                {t("caloriesTitle")}
+              </h2>
+              <p className="mt-2 text-sm text-ash">{t("caloriesCopy")}</p>
+            </div>
+            <Link href="/calories" className="btn btn-ghost mt-6">
+              {t("caloriesCta")}
+              <Icon name="arrow" size={18} />
+            </Link>
+          </section>
+
           {/* rest & recovery */}
           <RecoveryCard />
-
-          {/* live tracking */}
-          <CalorieCard />
         </div>
-
-        <DangerZone />
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-line/70 pt-5 sm:flex-row">
           <p className="flex items-center gap-2 text-xs text-ash-dim">

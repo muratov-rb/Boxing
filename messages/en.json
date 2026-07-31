@@ -4,8 +4,21 @@
     "whatsComing": "What's coming",
     "login": "Log in",
     "start": "Start Training",
-    "dashboard": "Dashboard",
-    "home": "Home"
+    "dashboard": "Home",
+    "home": "Home",
+    "primary": "Main",
+    "account": "Account",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "signOut": "Sign out",
+    "train": "Train",
+    "lessons": "Lessons",
+    "calories": "Calories",
+    "profile": "Profile",
+    "nutrition": "Nutrition",
+    "technique": "Technique",
+    "plans": "Plans"
   },
   "hero": {
     "kicker": "Free · Web-first boxing training",
@@ -254,7 +267,11 @@
     "techCta": "Check my form",
     "plansLink": "Plans",
     "adminLink": "Admin",
-    "soonNote": "Your plan builds rest days in automatically — recover hard, come back stronger."
+    "soonNote": "Your plan builds rest days in automatically — recover hard, come back stronger.",
+    "caloriesBadge": "Fuel",
+    "caloriesTitle": "Calorie counter",
+    "caloriesCopy": "Log meals, scan a plate, and track intake against what you burned.",
+    "caloriesCta": "Open counter"
   },
   "paths": {
     "beginnerLabel": "I'm a Beginner",
@@ -762,5 +779,36 @@
     "manageBilling": "Manage billing",
     "noSubscription": "You have no paid subscription — nothing to manage yet.",
     "billingFailed": "Could not open the billing portal. Try again shortly."
+  },
+  "profile": {
+    "kicker": "Account",
+    "titlePre": "Your ",
+    "titleAccent": "corner.",
+    "noEmail": "Not signed in",
+    "noPath": "No path chosen yet",
+    "statsTitle": "Your numbers",
+    "statStreak": "Day streak",
+    "statBest": "Best streak",
+    "statTrained": "Sessions done",
+    "statDays": "Days active",
+    "rankLabel": "Current rank",
+    "rankMaxed": "Top of the ladder.",
+    "rankToNext": "{xp} XP to the next rank",
+    "xpTotal": "{xp} XP total",
+    "billingTitle": "Plan & billing",
+    "currentPlan": "Current plan",
+    "trialLeft": "Free trial — {n} days left",
+    "noPlan": "No paid plan.",
+    "billedAs": "{price} billed {period}",
+    "changePlan": "Change plan",
+    "seePlans": "See plans"
+  },
+  "calories": {
+    "kicker": "Fuel",
+    "titlePre": "Calorie ",
+    "titleAccent": "counter.",
+    "sub": "Log what you eat, scan a plate, and see it against what today's training burned.",
+    "nutritionLinkTitle": "AI nutrition",
+    "nutritionLinkSub": "Macro targets and meal ideas built around your training load."
   }
 }

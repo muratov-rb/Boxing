@@ -4,8 +4,21 @@
     "whatsComing": "À venir",
     "login": "Se connecter",
     "start": "Commencer l'entraînement",
-    "dashboard": "Tableau de bord",
-    "home": "Accueil"
+    "dashboard": "Accueil",
+    "home": "Accueil",
+    "primary": "Principal",
+    "account": "Compte",
+    "menu": "Menu",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "signOut": "Déconnexion",
+    "train": "S'entraîner",
+    "lessons": "Leçons",
+    "calories": "Calories",
+    "profile": "Profil",
+    "nutrition": "Nutrition",
+    "technique": "Technique",
+    "plans": "Formules"
   },
   "hero": {
     "kicker": "Gratuit · Boxe depuis le web",
@@ -254,7 +267,11 @@
     "techCta": "Vérifier ma forme",
     "plansLink": "Abonnements",
     "adminLink": "Admin",
-    "soonNote": "Ton plan intègre automatiquement des jours de repos — récupère à fond et reviens plus fort."
+    "soonNote": "Ton plan intègre automatiquement des jours de repos — récupère à fond et reviens plus fort.",
+    "caloriesBadge": "Carburant",
+    "caloriesTitle": "Compteur de calories",
+    "caloriesCopy": "Note tes repas, scanne une assiette, suis l'équilibre.",
+    "caloriesCta": "Ouvrir le compteur"
   },
   "paths": {
     "beginnerLabel": "Je suis débutant",
@@ -760,5 +777,36 @@
     "manageBilling": "Gérer le paiement",
     "noSubscription": "Aucun abonnement payant — rien à gérer pour le moment.",
     "billingFailed": "Impossible d ouvrir le portail de paiement. Réessaie bientôt."
+  },
+  "profile": {
+    "kicker": "Compte",
+    "titlePre": "Ton ",
+    "titleAccent": "coin.",
+    "noEmail": "Non connecté",
+    "noPath": "Aucun parcours choisi",
+    "statsTitle": "Tes chiffres",
+    "statStreak": "Jours d'affilée",
+    "statBest": "Meilleure série",
+    "statTrained": "Séances faites",
+    "statDays": "Jours actifs",
+    "rankLabel": "Rang actuel",
+    "rankMaxed": "Sommet de l'échelle.",
+    "rankToNext": "{xp} XP avant le rang suivant",
+    "xpTotal": "{xp} XP au total",
+    "billingTitle": "Formule et paiement",
+    "currentPlan": "Formule actuelle",
+    "trialLeft": "Essai gratuit — {n} jours restants",
+    "noPlan": "Aucune formule payante.",
+    "billedAs": "{price} facturé {period}",
+    "changePlan": "Changer de formule",
+    "seePlans": "Voir les formules"
+  },
+  "calories": {
+    "kicker": "Carburant",
+    "titlePre": "Compteur de ",
+    "titleAccent": "calories.",
+    "sub": "Note ce que tu manges, scanne ton assiette et compare à ce que l'entraînement a brûlé.",
+    "nutritionLinkTitle": "Nutrition IA",
+    "nutritionLinkSub": "Objectifs de macros et idées de repas selon ta charge."
   }
 }

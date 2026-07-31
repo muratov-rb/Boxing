@@ -4,8 +4,21 @@
     "whatsComing": "Qué se viene",
     "login": "Iniciar sesión",
     "start": "Empezar a entrenar",
-    "dashboard": "Panel",
-    "home": "Inicio"
+    "dashboard": "Inicio",
+    "home": "Inicio",
+    "primary": "Principal",
+    "account": "Cuenta",
+    "menu": "Menú",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "signOut": "Cerrar sesión",
+    "train": "Entrenar",
+    "lessons": "Lecciones",
+    "calories": "Calorías",
+    "profile": "Perfil",
+    "nutrition": "Nutrición",
+    "technique": "Técnica",
+    "plans": "Planes"
   },
   "hero": {
     "kicker": "Gratis · Boxeo desde la web",
@@ -254,7 +267,11 @@
     "techCta": "Revisar mi forma",
     "plansLink": "Planes",
     "adminLink": "Admin",
-    "soonNote": "Tu plan integra días de descanso automáticamente — recupérate a fondo y vuelve más fuerte."
+    "soonNote": "Tu plan integra días de descanso automáticamente — recupérate a fondo y vuelve más fuerte.",
+    "caloriesBadge": "Combustible",
+    "caloriesTitle": "Contador de calorías",
+    "caloriesCopy": "Registra comidas, escanea un plato y controla el balance.",
+    "caloriesCta": "Abrir contador"
   },
   "paths": {
     "beginnerLabel": "Soy principiante",
@@ -760,5 +777,36 @@
     "manageBilling": "Gestionar pagos",
     "noSubscription": "No tienes suscripción de pago; nada que gestionar todavía.",
     "billingFailed": "No se pudo abrir el portal de pagos. Inténtalo en un momento."
+  },
+  "profile": {
+    "kicker": "Cuenta",
+    "titlePre": "Tu ",
+    "titleAccent": "esquina.",
+    "noEmail": "Sin sesión",
+    "noPath": "Aún sin ruta elegida",
+    "statsTitle": "Tus números",
+    "statStreak": "Días seguidos",
+    "statBest": "Mejor racha",
+    "statTrained": "Sesiones hechas",
+    "statDays": "Días activo",
+    "rankLabel": "Rango actual",
+    "rankMaxed": "Cima de la escalera.",
+    "rankToNext": "{xp} XP para el siguiente rango",
+    "xpTotal": "{xp} XP en total",
+    "billingTitle": "Plan y pagos",
+    "currentPlan": "Plan actual",
+    "trialLeft": "Prueba gratis — quedan {n} días",
+    "noPlan": "Sin plan de pago.",
+    "billedAs": "{price} facturado {period}",
+    "changePlan": "Cambiar plan",
+    "seePlans": "Ver planes"
+  },
+  "calories": {
+    "kicker": "Combustible",
+    "titlePre": "Contador de ",
+    "titleAccent": "calorías.",
+    "sub": "Registra lo que comes, escanea el plato y compáralo con lo que quemaste hoy.",
+    "nutritionLinkTitle": "Nutrición con IA",
+    "nutritionLinkSub": "Objetivos de macros e ideas de comidas según tu carga."
   }
 }

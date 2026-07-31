@@ -1,0 +1,54 @@
+"use client";
+
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { AppNav } from "@/components/nav/AppNav";
+import { CalorieCard } from "@/components/dashboard/CalorieCard";
+import { Icon } from "@/components/ui/Icons";
+
+/* Page shell around the existing counter. The card keeps all its behaviour —
+   meal log, scanner, quotas — it just gets room to breathe and a link across
+   to the AI nutrition side, which is the question people ask next. */
+
+export function CaloriesClient() {
+  const t = useTranslations("calories");
+
+  return (
+    <div className="flex min-h-dvh flex-col">
+      <AppNav />
+
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+        <p className="kicker">{t("kicker")}</p>
+        <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
+          {t("titlePre")}
+          <span className="text-blood">{t("titleAccent")}</span>
+        </h1>
+        <p className="mt-3 max-w-xl text-ash">{t("sub")}</p>
+
+        <div className="mt-8">
+          <CalorieCard />
+        </div>
+
+        <Link
+          href="/nutrition"
+          className="panel mt-4 flex items-center justify-between gap-4 p-5 transition-colors hover:border-blood/40"
+        >
+          <span className="flex items-center gap-3">
+            <span className="text-blood">
+              <Icon name="nutrition" size={20} />
+            </span>
+            <span>
+              <span className="block font-condensed text-sm font-bold uppercase tracking-widest">
+                {t("nutritionLinkTitle")}
+              </span>
+              <span className="mt-0.5 block text-sm text-ash">{t("nutritionLinkSub")}</span>
+            </span>
+          </span>
+          <span className="shrink-0 text-ash-dim">
+            <Icon name="arrow" size={18} />
+          </span>
+        </Link>
+      </main>
+    </div>
+  );
+}

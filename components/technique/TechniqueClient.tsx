@@ -12,6 +12,7 @@ import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { LessonAnimation } from "@/components/lessons/LessonAnimation";
 import { TechniqueAnalyzer } from "./TechniqueAnalyzer";
+import { AppNav } from "@/components/nav/AppNav";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
 
@@ -55,21 +56,7 @@ export function TechniqueClient() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Logo />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <LocaleSwitcher />
-            <Link
-              href="/dashboard"
-              className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
-            >
-              {t("backDash")}
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AppNav />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <p className="kicker">{t("kicker")}</p>
