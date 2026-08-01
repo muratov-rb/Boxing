@@ -186,7 +186,10 @@
     "dietLabel": "¿Algo que debamos saber? (opcional)",
     "dietPlaceholder": "Alergias, vegetariano/halal, comidas que odias, comidas al día…",
     "analyze": "Analiza mis posibilidades",
-    "goToDashboard": "Ir a mi panel"
+    "goToDashboard": "Ir a mi panel",
+    "customTimeframeHint": "Indica cuánto tiempo — por ejemplo «6 meses», «12 semanas» o «2 años».",
+    "customTimeframeReads": "Se interpreta como {weeks} semanas.",
+    "customTimeframeUnreadable": "Añade la unidad — «6 meses», «12 semanas», «2 años»."
   },
   "analysis": {
     "round": "Asalto 05 — El veredicto",

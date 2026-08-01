@@ -186,7 +186,10 @@
     "dietLabel": "Quelque chose à savoir ? (facultatif)",
     "dietPlaceholder": "Allergies, végétarien/halal, aliments que tu détestes, repas par jour…",
     "analyze": "Analyse mes chances",
-    "goToDashboard": "Aller à mon tableau de bord"
+    "goToDashboard": "Aller à mon tableau de bord",
+    "customTimeframeHint": "Indique la durée — par exemple « 6 mois », « 12 semaines » ou « 2 ans ».",
+    "customTimeframeReads": "Interprété comme {weeks} semaines.",
+    "customTimeframeUnreadable": "Ajoute une unité — « 6 mois », « 12 semaines », « 2 ans »."
   },
   "analysis": {
     "round": "Round 05 — Le verdict",

@@ -7,6 +7,8 @@ import {
   toggle,
   goalNeedsTargetWeight,
   statIssues,
+  parseTimeframeWeeks,
+  timeframeUnreadable,
   type Profile,
   type ProfileAction,
   type GoalId,
@@ -102,9 +104,14 @@ export function ProfileForm({
 
   const needsTarget = goalNeedsTargetWeight(profile.goals);
   const hasGoal = profile.goals.length > 0 || profile.customGoal.trim() !== "";
+  const weeksHint =
+    profile.timeframe === "custom" ? parseTimeframeWeeks(profile.customTimeframe) : null;
+  /* An unreadable deadline must block Continue: the feasibility score is
+     computed from it, so letting it through produces a confident verdict
+     about a timeframe the user never actually gave. */
   const timeframeOk =
     profile.timeframe !== null &&
-    (profile.timeframe !== "custom" || profile.customTimeframe.trim() !== "");
+    (profile.timeframe !== "custom" || weeksHint !== null);
 
   /* filled-in numbers no human can have (typos, joke entries) */
   const issues = statIssues(profile);
@@ -342,13 +349,31 @@ export function ProfileForm({
             })}
           </div>
           {profile.timeframe === "custom" && (
-            <input
-              type="text"
-              placeholder={t("customTimeframePlaceholder")}
-              value={profile.customTimeframe}
-              onChange={(e) => set({ customTimeframe: e.target.value })}
-              className={`${inputCls} mt-3 animate-rise text-base`}
-            />
+            <>
+              <input
+                type="text"
+                placeholder={t("customTimeframePlaceholder")}
+                value={profile.customTimeframe}
+                onChange={(e) => set({ customTimeframe: e.target.value })}
+                aria-invalid={timeframeUnreadable(profile) || undefined}
+                className={`${inputCls} mt-3 animate-rise text-base ${
+                  timeframeUnreadable(profile) ? "!border-blood-bright" : ""
+                }`}
+              />
+              {/* Say so rather than quietly assuming 13 weeks and then judging
+                  the plan against a deadline the user never gave. */}
+              <p
+                className={`mt-2 text-xs ${
+                  timeframeUnreadable(profile) ? "text-blood-bright" : "text-ash-dim"
+                }`}
+              >
+                {timeframeUnreadable(profile)
+                  ? t("customTimeframeUnreadable")
+                  : weeksHint !== null
+                    ? t("customTimeframeReads", { weeks: weeksHint })
+                    : t("customTimeframeHint")}
+              </p>
+            </>
           )}
         </Field>
 

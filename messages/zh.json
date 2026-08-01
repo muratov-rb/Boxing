@@ -186,7 +186,10 @@
     "dietLabel": "有什么需要我们知道的吗？（可选）",
     "dietPlaceholder": "过敏、素食／清真、讨厌的食物、每天几餐……",
     "analyze": "分析我的成功几率",
-    "goToDashboard": "进入我的面板"
+    "goToDashboard": "进入我的面板",
+    "customTimeframeHint": "请写明时长，例如「6个月」「12周」或「2年」。",
+    "customTimeframeReads": "已理解为 {weeks} 周。",
+    "customTimeframeUnreadable": "请加上时间单位，例如「6个月」「12周」「2年」。"
   },
   "analysis": {
     "round": "第 05 回合 — 裁决",

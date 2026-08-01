@@ -312,17 +312,61 @@ export function timeframeText(profile: Profile): string {
   return TIMEFRAMES.find((t) => t.id === profile.timeframe)?.label ?? "";
 }
 
+/* --------------------------------------------------------------------------
+   Reading a timeframe someone typed.
+
+   This used to accept only English weeks/months/days. It had no unit for
+   YEARS at all, so "4 years" matched nothing and silently became 13 weeks —
+   and the app then told a four-year plan it was 4% feasible and impossible.
+   The app ships in five languages, so every non-English answer hit the same
+   silent fallback.
+
+   Returns null when there is nothing understandable, so callers can say so
+   instead of inventing a number and reasoning confidently from it.
+   -------------------------------------------------------------------------- */
+
+const YEAR = /year|yrs?\b|год|года|годa|лет|году|año|anos|ann[ée]e|\bans?\b|年/;
+const MONTH = /month|\bmos?\b|мес|\bmes\b|meses|mois|月/;
+const WEEK = /week|\bwks?\b|нед|semanas?|semaines?|周|星期/;
+const DAY = /\bdays?\b|\bdn?\b|дн|день|дня|дней|d[íi]as?|jours?|天|日/;
+
+/** Longest sensible plan. Someone typing "50 years" means "no deadline", and
+    an unbounded number would make every goal trivially achievable. */
+const MAX_WEEKS = 520; // ten years
+
+export function parseTimeframeWeeks(raw: string): number | null {
+  const s = raw.toLowerCase().trim();
+  if (!s) return null;
+
+  // "1.5 years" and the comma decimal used across most of Europe
+  const num = s.match(/(\d+(?:[.,]\d+)?)/);
+  if (!num) return null;
+  const n = parseFloat(num[1].replace(",", "."));
+  if (!Number.isFinite(n) || n <= 0) return null;
+
+  let weeks: number;
+  if (YEAR.test(s)) weeks = n * 52;
+  else if (MONTH.test(s)) weeks = n * 4.345; // a month is not four weeks
+  else if (WEEK.test(s)) weeks = n;
+  else if (DAY.test(s)) weeks = n / 7;
+  else return null; // a bare number tells us nothing about the unit
+
+  return Math.min(MAX_WEEKS, Math.max(1, Math.round(weeks)));
+}
+
+/** True when the custom text is present but means nothing to us — the form
+    uses this to ask for a clearer answer rather than guessing. */
+export function timeframeUnreadable(profile: Profile): boolean {
+  return (
+    profile.timeframe === "custom" &&
+    profile.customTimeframe.trim() !== "" &&
+    parseTimeframeWeeks(profile.customTimeframe) === null
+  );
+}
+
 export function timeframeWeeks(profile: Profile): number {
   if (profile.timeframe === "custom") {
-    const m = profile.customTimeframe.match(/(\d+)\s*(week|wk|month|mo|day)/i);
-    if (m) {
-      const n = Number(m[1]);
-      const unit = m[2].toLowerCase();
-      if (unit.startsWith("day")) return Math.max(1, Math.round(n / 7));
-      if (unit.startsWith("mo")) return n * 4;
-      return n; // weeks
-    }
-    return 13; // sensible default
+    return parseTimeframeWeeks(profile.customTimeframe) ?? 13;
   }
   return TIMEFRAMES.find((t) => t.id === profile.timeframe)?.weeks ?? 13;
 }
