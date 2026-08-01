@@ -47,11 +47,29 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
   const store = await cookies();
-  const isDark = store.get("theme")?.value === "dark";
+  /* A saved choice wins; with no cookie we let the device decide, which the
+     inline script below does before first paint. The server can't read
+     prefers-color-scheme, so it renders neutral and the script corrects it —
+     without that, a phone in dark mode got a white flash then a light site it
+     never asked for. */
+  const themeCookie = store.get("theme")?.value;
+  const isDark = themeCookie === "dark";
+  const themeChosen = themeCookie === "dark" || themeCookie === "light";
 
   /* Public Supabase pair, read at request time and handed to the client —
      keeps auth working even when a cached build inlined stale empty values. */
   const envScript = `window.__PRESSURE_ENV=${JSON.stringify(publicSupabaseEnv()).replace(/</g, "\\u003c")}`;
+
+  /* Runs before the rest of the body paints, so there is no flash of the wrong
+     theme. Only needed when the visitor has never chosen: once the cookie
+     exists the server has already put the class on <html>.
+
+     It goes first inside <body>, NOT in a hand-written <head> — App Router
+     owns the head, and adding one produces whitespace text nodes that break
+     hydration for the whole page. */
+  const themeScript = themeChosen
+    ? ""
+    : `try{if(matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark')}catch(e){}`;
 
   return (
     <html
@@ -60,6 +78,7 @@ export default async function RootLayout({
       className={`${spaceGrotesk.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full">
+        {themeScript ? <script dangerouslySetInnerHTML={{ __html: themeScript }} /> : null}
         <script dangerouslySetInnerHTML={{ __html: envScript }} />
         <div className="brush" aria-hidden="true" />
         <div className="grain" aria-hidden="true" />

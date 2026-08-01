@@ -13,7 +13,12 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
+  /* The switcher sits in the drawer footer on mobile, where a menu that drops
+     downwards lands past the bottom of the screen and can't be read or
+     reached. Measure the button and open upwards when there isn't room. */
+  const [dropUp, setDropUp] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -41,8 +46,14 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
   return (
     <div ref={ref} className={`relative ${className}`}>
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          const rect = btnRef.current?.getBoundingClientRect();
+          // 288px ≈ the menu's max height; below that, flip it above the button
+          if (rect) setDropUp(window.innerHeight - rect.bottom < 288);
+          setOpen((o) => !o);
+        }}
         disabled={pending}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -58,7 +69,9 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
       {open && (
         <ul
           role="listbox"
-          className="absolute right-0 z-[200] mt-2 max-h-72 w-44 overflow-y-auto rounded-xl border border-line bg-void/95 p-1 shadow-xl backdrop-blur-md"
+          className={`absolute right-0 z-[200] max-h-72 w-44 overflow-y-auto rounded-xl border border-line bg-void p-1 shadow-xl ${
+            dropUp ? "bottom-full mb-2" : "mt-2"
+          }`}
         >
           {LOCALES.map((l) => (
             <li key={l.code}>
