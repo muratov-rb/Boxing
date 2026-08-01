@@ -18,7 +18,11 @@
     "profile": "Perfil",
     "nutrition": "Nutrición",
     "technique": "Técnica",
-    "plans": "Planes"
+    "plans": "Planes",
+    "theme": "Tema",
+    "theme_system": "Sistema",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro"
   },
   "hero": {
     "kicker": "Gratis · Boxeo desde la web",

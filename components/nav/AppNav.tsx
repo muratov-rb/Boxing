@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { ThemeChoice } from "@/components/ui/ThemeChoice";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { PRIMARY_NAV, ACCOUNT_NAV, isActive, type NavItem } from "@/lib/navigation";
@@ -251,8 +252,10 @@ export function AppNav() {
           </nav>
 
           <div className="border-t border-line/70 px-5 py-4">
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
+            {/* Explicit three-way choice rather than the icon toggle: on a
+                phone there is room to say which theme is actually active. */}
+            <ThemeChoice />
+            <div className="mt-4 flex items-center gap-3">
               <LocaleSwitcher />
             </div>
             <form action="/auth/signout" method="post" className="mt-3">

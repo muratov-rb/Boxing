@@ -18,7 +18,11 @@
     "profile": "Профиль",
     "nutrition": "Питание",
     "technique": "Техника",
-    "plans": "Тарифы"
+    "plans": "Тарифы",
+    "theme": "Тема",
+    "theme_system": "Как в системе",
+    "theme_light": "Светлая",
+    "theme_dark": "Тёмная"
   },
   "hero": {
     "kicker": "Бесплатно · Бокс прямо в браузере",

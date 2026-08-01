@@ -18,7 +18,11 @@
     "profile": "Profil",
     "nutrition": "Nutrition",
     "technique": "Technique",
-    "plans": "Formules"
+    "plans": "Formules",
+    "theme": "Thème",
+    "theme_system": "Système",
+    "theme_light": "Clair",
+    "theme_dark": "Sombre"
   },
   "hero": {
     "kicker": "Gratuit · Boxe depuis le web",
