@@ -143,6 +143,40 @@ body {
   background: radial-gradient(46% 52% at 90% 85%, rgba(47, 107, 255, 0.5), transparent 62%);
   opacity: 1;
 }
+/* ---------------------------------------------------------------------------
+   Narrow screens.
+
+   brush-bg.svg is a 1440x900 composition carrying `preserveAspectRatio =
+   xMidYMid slice`, so on a tall phone it scales to ~1299x812 and crops to the
+   dense middle of the artwork. The whole screen ends up covered in paint —
+   which is why the light theme read as dark on a phone while looking right on
+   a laptop, where the full composition shows and white breathes between the
+   strokes.
+
+   Fitting by width restores that: the same diagonal band people see on desktop,
+   with the light ground either side of it. Anchored slightly above centre so
+   the band sits behind the header rather than the middle of the content.
+   --------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .brush {
+    background-size: 100% auto;
+    background-position: center 22%;
+    /* the strokes are ~3.5x bigger here than on desktop, so the same alpha
+       reads far heavier — pull it back to match the laptop's lightness */
+    opacity: 0.2;
+    /* the drift zoom re-crops into the dense area; hold it still instead */
+    animation: none;
+  }
+  .dark .brush {
+    /* dark already looked right, so keep its weight */
+    opacity: 0.32;
+  }
+  .brush::after {
+    /* half-strength blue: at this scale it was tinting the whole page */
+    opacity: 0.45;
+  }
+}
+
 @keyframes brushDrift {
   from {
     transform: scale(1.04) translate3d(0, 0, 0);
