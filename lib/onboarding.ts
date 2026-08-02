@@ -170,7 +170,10 @@ export interface GoalOption {
 }
 
 export const GOALS: GoalOption[] = [
-  { id: "lose_fat", label: "Cut Weight", hint: "Burn fat, get lean" },
+  /* The id stays `lose_fat` — it is written into every saved profile and
+     renaming it would orphan them. Only the wording changes: these labels are
+     what the AI prompt sees, so they set the tone of everything it writes. */
+  { id: "lose_fat", label: "Fight Weight", hint: "Reach and hold your weight class" },
   { id: "get_fit", label: "Get Fit", hint: "Overall conditioning" },
   { id: "build", label: "Build Power", hint: "Strength & muscle" },
   { id: "technique", label: "Sharpen Technique", hint: "Cleaner, faster hands" },
@@ -196,9 +199,9 @@ export interface TimeframeOption {
 }
 
 export const TIMEFRAMES: TimeframeOption[] = [
-  { id: "6w", label: "6 Weeks", sub: "Quick shred", weeks: 6 },
+  { id: "6w", label: "6 Weeks", sub: "Sharp block", weeks: 6 },
   { id: "3m", label: "3 Months", sub: "Real change", weeks: 13 },
-  { id: "6m", label: "6 Months", sub: "Full transformation", weeks: 26 },
+  { id: "6m", label: "6 Months", sub: "Long build", weeks: 26 },
   { id: "custom", label: "Custom", sub: "Set your own deadline", weeks: 13 },
 ];
 

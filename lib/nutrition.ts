@@ -393,8 +393,8 @@ const MEALS: Record<Slot, SlotTable> = {
 
 const HEADLINES: Record<Diet, Text> = {
   cut: {
-    en: "Fuel the work, strip the fat.",
-    ru: "Питай работу, сгоняй жир.",
+    en: "Fuel the work, make the weight.",
+    ru: "Питай работу, выходи в вес.",
   },
   build: {
     en: "Eat to build — protein and honest carbs.",
@@ -412,8 +412,8 @@ function tipsFor(diet: Diet, budget: Budget, L: Locale): string[] {
   out.push(
     diet === "cut"
       ? en
-        ? "Keep a modest deficit — aim to lose fat slowly so your training doesn't suffer."
-        : "Держи умеренный дефицит — теряй жир медленно, чтобы не проседала тренировка."
+        ? "Eat a little under maintenance — move slowly, so training quality holds up."
+        : "Ешь чуть ниже поддержки — двигайся медленно, чтобы качество тренировок не падало."
       : diet === "build"
         ? en
           ? "Small surplus on training days; most of it around your session."

@@ -17,8 +17,10 @@ export const runtime = "nodejs";
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
 
-const SYSTEM = `You are the nutrition coach at RingBornn, a no-nonsense boxing gym.
-Build a practical one-day meal plan for a fighter from their stats, goal and food budget.
+const SYSTEM = `You are the fuelling guide at RingBornn, a no-nonsense boxing gym.
+Suggest a practical day of meals for a fighter, built around their training load,
+stats and food budget. These are example meals to fuel training, not a prescribed
+diet and not medical or dietary advice — never frame them as either.
 
 Rules:
 - Respect the given calorie and macro targets — the day's meals should roughly add up to them.
@@ -67,7 +69,7 @@ function buildPrompt(p: Profile): string {
     ``,
     `Daily targets: ${m.kcal} kcal, ${m.protein}g protein, ${m.carbs}g carbs, ${m.fat}g fat.`,
   ].filter(Boolean);
-  return `Fighter profile:\n\n${lines.join("\n")}\n\nBuild the day's meal plan.`;
+  return `Fighter profile:\n\n${lines.join("\n")}\n\nSuggest the day's meals.`;
 }
 
 export async function POST(req: Request) {

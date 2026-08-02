@@ -505,7 +505,7 @@ function buildNutrition(profile: Profile, L: Locale): string[] {
   }
 
   if (cutting)
-    out.push("Slight calorie deficit — fuel the work, strip the fat gradually.");
+    out.push("Eat slightly under maintenance — fuel the work first, let the rest follow.");
   else if (building)
     out.push("Small calorie surplus on training days to build and recover.");
   else out.push("Eat around maintenance — enough to train hard and recover.");
