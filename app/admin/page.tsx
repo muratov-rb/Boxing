@@ -7,11 +7,10 @@ import { listUsers, type UserList } from "@/lib/admin-data";
 export const metadata: Metadata = { title: "Admin — RingBornn" };
 export const dynamic = "force-dynamic";
 
-/* Admins are not Supabase accounts — an owner from the environment plus named
-   staff in admin_users. The list is read here on the server with the
-   service-role key, so nothing privileged is handed to the browser and the
-   panel has its data on first paint. The role travels with it so the UI can
-   match what the routes will actually allow. */
+/* The admin is not a Supabase account — the login comes from the environment.
+   The list is read here on the server with the service-role key, so nothing
+   privileged is handed to the browser and the panel has its data on first
+   paint. */
 export default async function AdminPage() {
   const actor = await currentAdmin();
   if (!actor) {

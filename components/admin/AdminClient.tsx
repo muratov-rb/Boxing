@@ -17,8 +17,7 @@ import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
-import { AdminStaff } from "./AdminStaff";
-import { AdminTotp } from "./AdminTotp";
+import { AdminActivity } from "./AdminActivity";
 
 /* ===========================================================================
    Admin panel. The admin signs in with a fixed name/password rather than an
@@ -55,7 +54,7 @@ function BarChart({
       <div className="mt-4 space-y-2.5">
         {data.map((d) => (
           <div key={d.label} className="flex items-center gap-3">
-            <span className="w-20 shrink-0 font-condensed text-[0.7rem] uppercase tracking-wider text-ash-dim">
+            <span className="w-16 shrink-0 font-condensed text-[0.7rem] uppercase tracking-wider text-ash-dim sm:w-20">
               {d.label}
             </span>
             <div className="h-2.5 flex-1 overflow-hidden rounded-full border border-line/60 bg-void">
@@ -64,7 +63,7 @@ function BarChart({
                 style={{ width: `${(d.value / max) * 100}%` }}
               />
             </div>
-            <span className="w-16 shrink-0 text-right font-condensed text-xs text-bone">
+            <span className="w-14 shrink-0 text-right font-condensed text-xs text-bone sm:w-16">
               {format ? format(d.value) : d.value}
             </span>
           </div>
@@ -183,9 +182,14 @@ export function AdminClient({
             </button>
             <Link
               href="/dashboard"
-              className="font-condensed text-xs uppercase tracking-widest text-ash transition-colors hover:text-bone sm:text-sm"
+              aria-label={t("backDash")}
+              className="flex items-center font-condensed text-xs uppercase tracking-widest text-ash transition-colors hover:text-bone sm:text-sm"
             >
-              {t("backDash")}
+              {/* the words don't fit next to everything else on a phone */}
+              <span className="hidden sm:inline">{t("backDash")}</span>
+              <span className="sm:hidden">
+                <Icon name="home" size={18} />
+              </span>
             </Link>
           </div>
         </div>
@@ -293,7 +297,7 @@ export function AdminClient({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("search")}
-                className="min-w-0 flex-1 rounded-xl border border-line bg-void/70 px-4 py-2.5 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none sm:text-sm"
+                className="w-full min-w-0 rounded-xl border border-line bg-void/70 px-4 py-2.5 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none sm:w-auto sm:flex-1 sm:text-sm"
               />
               <select
                 value={planFilter}
@@ -323,11 +327,11 @@ export function AdminClient({
               {filtered.map((r) => (
                 <div
                   key={r.user_id}
-                  className={`panel flex flex-wrap items-center gap-3 p-4 ${
+                  className={`panel flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:gap-4 ${
                     r.banned ? "border-blood/50 opacity-70" : ""
                   }`}
                 >
-                  <div className="min-w-[12rem] flex-1">
+                  <div className="min-w-0 lg:flex-1">
                     <p className="truncate text-sm text-bone">
                       {r.email ?? r.user_id.slice(0, 8)}
                       {r.banned && (
@@ -344,7 +348,9 @@ export function AdminClient({
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
+                  {/* Two per row on a phone, one line on a laptop. Wrapping five
+                      controls freely produced an unreadable pile at 375px. */}
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                     <select
                       value={r.plan}
                       disabled={savingId === r.user_id || r.banned}
@@ -355,7 +361,7 @@ export function AdminClient({
                           period: r.period ?? "monthly",
                         })
                       }
-                      className="rounded-lg border border-line bg-void px-3 py-2 font-condensed text-xs uppercase tracking-wider text-bone focus:border-blood focus:outline-none disabled:opacity-40"
+                      className="w-full rounded-lg border border-line bg-void px-3 py-3 font-condensed text-xs uppercase tracking-wider text-bone focus:border-blood focus:outline-none disabled:opacity-40 sm:w-auto sm:py-2"
                     >
                       {PLAN_OPTIONS.map((p) => (
                         <option key={p} value={p}>
@@ -375,7 +381,7 @@ export function AdminClient({
                         })
                       }
                       title={t("periodLabel")}
-                      className="rounded-lg border border-line bg-void px-3 py-2 font-condensed text-xs uppercase tracking-wider text-bone focus:border-blood focus:outline-none disabled:opacity-40"
+                      className="w-full rounded-lg border border-line bg-void px-3 py-3 font-condensed text-xs uppercase tracking-wider text-bone focus:border-blood focus:outline-none disabled:opacity-40 sm:w-auto sm:py-2"
                     >
                       {PERIOD_OPTIONS.map((p) => (
                         <option key={p} value={p}>
@@ -388,7 +394,7 @@ export function AdminClient({
                       type="button"
                       disabled={savingId === r.user_id || r.banned}
                       onClick={() => act(r.user_id, { action: "restartTrial" })}
-                      className="btn btn-ghost !px-3 !py-2 text-xs"
+                      className="btn btn-ghost w-full !px-3 !py-3 text-xs sm:w-auto sm:!py-2"
                     >
                       {t("restartTrial")}
                     </button>
@@ -398,7 +404,7 @@ export function AdminClient({
                         type="button"
                         disabled={savingId === r.user_id}
                         onClick={() => act(r.user_id, { action: "unban" })}
-                        className="btn btn-ghost !px-3 !py-2 text-xs"
+                        className="btn btn-ghost w-full !px-3 !py-3 text-xs sm:w-auto sm:!py-2"
                       >
                         {t("unban")}
                       </button>
@@ -407,7 +413,7 @@ export function AdminClient({
                         type="button"
                         disabled={savingId === r.user_id}
                         onClick={() => banUser(r)}
-                        className="rounded-xl border border-blood/50 px-3 py-2 font-condensed text-xs uppercase tracking-wider text-blood transition-colors hover:bg-blood hover:text-white"
+                        className="w-full rounded-xl border border-blood/50 px-3 py-3 font-condensed text-xs uppercase tracking-wider text-blood transition-colors hover:bg-blood hover:text-white sm:w-auto sm:py-2"
                       >
                         {t("ban")}
                       </button>
@@ -419,8 +425,7 @@ export function AdminClient({
 
             <p className="mt-6 text-xs text-ash-dim">{t("note")}</p>
 
-            <AdminTotp />
-            <AdminStaff />
+            <AdminActivity />
           </>
         )}
       </main>

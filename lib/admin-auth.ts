@@ -1,26 +1,20 @@
 import "server-only";
-import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "crypto";
+import { createHash, createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { createAdminClient, serviceRoleConfigured } from "./supabase/admin";
 
 /* ===========================================================================
    Admin identity.
 
-   Two kinds of account:
-
-   - The bootstrap account, from ADMIN_USER / ADMIN_PASSWORD in the
-     environment. It always works and cannot be deleted, which is what stops a
-     mistake in the admins table from locking everyone out of the panel.
-   - Named accounts in public.admin_users, each with its own password. Created
-     from inside the panel by an existing admin.
-
-   The cookie now carries WHO you are, not just that you got in. That is the
-   whole point of the change: ban permanently deletes a user's training
-   history, and with one shared login there was no way to tell who had done
-   it. Named accounts are what make that record meaningful.
+   One account, from ADMIN_USER / ADMIN_PASSWORD in the environment. There is
+   no table of admins and no way to create one from inside the panel: an
+   account that can move subscriptions can hand out free plans, so the only
+   safe number of people who can mint those accounts is zero. Adding a second
+   admin means adding a second deployment secret, deliberately.
 
    The panel is never a Supabase account, so everything behind it runs through
-   server routes holding the service-role key.
+   server routes holding the service-role key. Actions are still recorded in
+   admin_audit so there is a history of what was done and when.
    =========================================================================== */
 
 export const ADMIN_COOKIE = "rb_admin";
@@ -30,6 +24,7 @@ const SESSION_DAYS = 7;
    that can move subscriptions can hand out free plans, so "limited" access was
    never really limited. The type stays so the audit log keeps recording it. */
 export type AdminRole = "owner";
+
 
 export interface AdminIdentity {
   username: string;
@@ -68,18 +63,6 @@ function signingKey(): string | null {
   return pw ? createHash("sha256").update(`ringbornn-admin-sign:${pw}`).digest("hex") : null;
 }
 
-export function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
-  /* scrypt rather than a bare sha256: these are human-chosen passwords sitting
-     in a table, so the hash has to be slow enough to make a stolen dump
-     expensive to crack. No new dependency — it ships with Node. */
-  return { salt, hash: scryptSync(password, salt, 64).toString("hex") };
-}
-
-function passwordMatches(password: string, salt: string, expected: string): boolean {
-  const actual = scryptSync(password, salt, 64).toString("hex");
-  return actual.length === expected.length && sameSecret(actual, expected);
-}
-
 /* -------------------------------- session --------------------------------- */
 
 /** `base64(username:role:issuedAt).hmac` — readable by us, unforgeable by them. */
@@ -112,45 +95,15 @@ function readToken(token: string): AdminIdentity | null {
 
 /* ------------------------------ verification ------------------------------ */
 
-/** Check a login against the env owner first, then the admin_users table. */
-export async function verifyAdminLogin(
-  username: string,
-  password: string,
-): Promise<AdminIdentity | null> {
-  const name = username.trim();
+/** Check a login against the credentials in the environment. */
+export function verifyAdminLogin(username: string, password: string): AdminIdentity | null {
   const pw = ownerPassword();
   if (!pw) return null;
 
   /* Both comparisons always run so timing cannot reveal which half was wrong. */
-  const ownerName = sameSecret(name, adminUser());
-  const ownerPass = sameSecret(password, pw);
-  if (ownerName && ownerPass) return { username: adminUser(), role: "owner" };
-
-  if (!serviceRoleConfigured()) return null;
-
-  try {
-    const { data } = await createAdminClient()
-      .from("admin_users")
-      .select("username, password_hash, salt, role")
-      .eq("username", name)
-      .maybeSingle<{
-        username: string;
-        password_hash: string;
-        salt: string;
-        role: AdminRole;
-      }>();
-
-    if (!data || !passwordMatches(password, data.salt, data.password_hash)) return null;
-
-    await createAdminClient()
-      .from("admin_users")
-      .update({ last_login: new Date().toISOString() })
-      .eq("username", data.username);
-
-    return { username: data.username, role: data.role };
-  } catch {
-    return null;
-  }
+  const nameOk = sameSecret(username.trim(), adminUser());
+  const passOk = sameSecret(password, pw);
+  return nameOk && passOk ? { username: adminUser(), role: "owner" } : null;
 }
 
 /** The signed cookie value for a verified identity. */

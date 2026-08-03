@@ -24,9 +24,19 @@ export type IconName =
   | "close"
   | "user"
   | "home"
-  | "card";
+  | "card"
+  | "clock"
+  | "chevron";
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 1.8" />
+    </>
+  ),
+  /* Points down at rest; rotate it for the other three directions. */
+  chevron: <path d="m6.5 9.5 5.5 5.5 5.5-5.5" />,
   menu: (
     <>
       <path d="M4 7h16" />
