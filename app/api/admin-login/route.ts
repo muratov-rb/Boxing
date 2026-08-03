@@ -6,6 +6,7 @@ import {
   ADMIN_COOKIE,
 } from "@/lib/admin-auth";
 import { checkRate, recordFailure, recordSuccess, clientKey } from "@/lib/rate-limit";
+import { totpRequired, checkLoginCode } from "@/lib/admin-totp";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { username?: string; password?: string };
+  let body: { username?: string; password?: string; code?: string };
   try {
     body = await req.json();
   } catch {
@@ -43,6 +44,28 @@ export async function POST(req: Request) {
     await recordFailure(who);
     // one message for every failure — never reveal which half was wrong
     return NextResponse.json({ error: "wrong_password" }, { status: 401 });
+  }
+
+  /* Second factor, if this admin has one. Asked for only after the password
+     is right: prompting everyone would tell a stranger which usernames exist.
+     A wrong code counts as a failed attempt, so the same lockout applies. */
+  let needsCode: boolean;
+  try {
+    needsCode = await totpRequired(identity.username);
+  } catch {
+    /* We could not find out whether this account has a second factor, so we
+       cannot know that skipping it is safe. Refuse rather than guess. */
+    return NextResponse.json({ error: "totp_unavailable" }, { status: 503 });
+  }
+
+  if (needsCode) {
+    if (!body.code) {
+      return NextResponse.json({ error: "totp_required" }, { status: 401 });
+    }
+    if (!(await checkLoginCode(identity.username, body.code))) {
+      await recordFailure(who);
+      return NextResponse.json({ error: "totp_invalid" }, { status: 401 });
+    }
   }
 
   const token = sessionToken(identity);

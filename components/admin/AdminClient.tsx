@@ -18,6 +18,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { AdminStaff } from "./AdminStaff";
+import { AdminTotp } from "./AdminTotp";
 
 /* ===========================================================================
    Admin panel. The admin signs in with a fixed name/password rather than an
@@ -418,6 +419,7 @@ export function AdminClient({
 
             <p className="mt-6 text-xs text-ash-dim">{t("note")}</p>
 
+            <AdminTotp />
             <AdminStaff />
           </>
         )}

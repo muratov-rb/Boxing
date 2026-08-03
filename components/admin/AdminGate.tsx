@@ -12,6 +12,8 @@ export function AdminGate({ configured }: { configured: boolean }) {
   const t = useTranslations("admin");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [needsCode, setNeedsCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -23,7 +25,7 @@ export function AdminGate({ configured }: { configured: boolean }) {
       const res = await fetch("/api/admin-login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, code: code || undefined }),
       });
       if (res.ok) {
         window.location.reload();
@@ -32,6 +34,20 @@ export function AdminGate({ configured }: { configured: boolean }) {
       if (res.status === 429) {
         const { retryAfter } = (await res.json()) as { retryAfter?: number };
         setError(t("gateLocked", { minutes: Math.ceil((retryAfter ?? 900) / 60) }));
+        return;
+      }
+
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      /* The password was right — this account just has a second factor. Show
+         the field rather than the generic wrong-credentials message. */
+      if (data.error === "totp_required") {
+        setNeedsCode(true);
+        setError(null);
+        return;
+      }
+      if (data.error === "totp_invalid") {
+        setNeedsCode(true);
+        setError(t("gateCodeWrong"));
         return;
       }
       setError(res.status === 503 ? t("gateUnconfigured") : t("gateWrong"));
@@ -72,6 +88,22 @@ export function AdminGate({ configured }: { configured: boolean }) {
               autoComplete="current-password"
               className="w-full rounded-xl border border-line bg-void px-4 py-3 text-center font-condensed text-lg text-bone placeholder:text-ash-dim transition-colors focus:border-blood focus:outline-none"
             />
+            {needsCode && (
+              <div className="animate-rise">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder={t("gateCode")}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  maxLength={6}
+                  className="w-full rounded-xl border border-line bg-void px-4 py-3 text-center font-condensed text-2xl tracking-[0.5em] text-bone placeholder:text-base placeholder:tracking-widest placeholder:text-ash-dim transition-colors focus:border-blood focus:outline-none"
+                />
+                <p className="mt-2 text-xs text-ash-dim">{t("gateCodeHint")}</p>
+              </div>
+            )}
             {error && (
               <p className="text-xs text-blood-bright" role="alert">
                 {error}
@@ -79,7 +111,12 @@ export function AdminGate({ configured }: { configured: boolean }) {
             )}
             <button
               type="submit"
-              disabled={busy || password.length === 0 || username.length === 0}
+              disabled={
+                busy ||
+                password.length === 0 ||
+                username.length === 0 ||
+                (needsCode && code.length !== 6)
+              }
               className="btn btn-primary w-full"
             >
               {busy ? "…" : t("gateEnter")}
