@@ -8,16 +8,16 @@ import { createAdminClient, serviceRoleConfigured } from "./supabase/admin";
 
    Two kinds of account:
 
-   - The OWNER, from ADMIN_USER / ADMIN_PASSWORD in the environment. It always
-     works and cannot be deleted, which is what stops a mistake in the admins
-     table from locking everyone out of the panel.
-   - Named accounts in public.admin_users, each with its own password and a
-     role. Created from inside the panel by an owner.
+   - The bootstrap account, from ADMIN_USER / ADMIN_PASSWORD in the
+     environment. It always works and cannot be deleted, which is what stops a
+     mistake in the admins table from locking everyone out of the panel.
+   - Named accounts in public.admin_users, each with its own password. Created
+     from inside the panel by an existing admin.
 
    The cookie now carries WHO you are, not just that you got in. That is the
    whole point of the change: ban permanently deletes a user's training
    history, and with one shared login there was no way to tell who had done
-   it — and support staff should not be able to do it at all.
+   it. Named accounts are what make that record meaningful.
 
    The panel is never a Supabase account, so everything behind it runs through
    server routes holding the service-role key.
@@ -26,7 +26,10 @@ import { createAdminClient, serviceRoleConfigured } from "./supabase/admin";
 export const ADMIN_COOKIE = "rb_admin";
 const SESSION_DAYS = 7;
 
-export type AdminRole = "owner" | "support";
+/* Every admin is an owner. A reduced tier was removed deliberately: an account
+   that can move subscriptions can hand out free plans, so "limited" access was
+   never really limited. The type stays so the audit log keeps recording it. */
+export type AdminRole = "owner";
 
 export interface AdminIdentity {
   username: string;
@@ -99,7 +102,7 @@ function readToken(token: string): AdminIdentity | null {
   if (mac.length !== expected.length || !sameSecret(mac, expected)) return null;
 
   const [username, role, issued] = Buffer.from(payload, "base64url").toString().split(":");
-  if (!username || (role !== "owner" && role !== "support")) return null;
+  if (!username || role !== "owner") return null;
 
   const age = Date.now() - Number(issued);
   if (!Number.isFinite(age) || age < 0 || age > SESSION_DAYS * 86_400_000) return null;

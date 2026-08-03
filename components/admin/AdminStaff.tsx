@@ -10,7 +10,7 @@ import { MIN_PASSWORD_LENGTH } from "@/lib/auth-rules";
 
 interface Staff {
   username: string;
-  role: "owner" | "support";
+  role: "owner";
   created_at: string;
   created_by: string | null;
   last_login: string | null;
@@ -58,7 +58,7 @@ export function AdminStaff() {
       const res = await fetch("/api/admin/staff", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ username: name, password: pw, role: "support" }),
+        body: JSON.stringify({ username: name, password: pw }),
       });
       const d = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
@@ -139,7 +139,7 @@ export function AdminStaff() {
             <span className="text-sm text-bone">
               {s.username}
               <span className="ml-2 font-condensed text-[0.6rem] uppercase tracking-wider text-ash-dim">
-                {t(s.role === "owner" ? "roleOwner" : "roleSupport")}
+                {t("roleOwner")}
               </span>
             </span>
             <span className="flex items-center gap-3">

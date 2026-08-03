@@ -5,15 +5,13 @@ import { MIN_PASSWORD_LENGTH, passwordLongEnough } from "@/lib/auth-rules";
 
 export const runtime = "nodejs";
 
-/* Managing who else can get into the panel. Owner only — support staff must
-   not be able to promote themselves or add an accomplice. */
+/* Managing who else can get into the panel. Every admin is an owner, so any
+   of them can add another — there are only ever meant to be two people here,
+   and both run the business. */
 
 async function requireOwner() {
   const actor = await currentAdmin();
   if (!actor) return { error: NextResponse.json({ error: "unauthorised" }, { status: 401 }) };
-  if (actor.role !== "owner") {
-    return { error: NextResponse.json({ error: "owner_only" }, { status: 403 }) };
-  }
   if (!serviceRoleConfigured()) {
     return { error: NextResponse.json({ error: "no_service_key" }, { status: 503 }) };
   }
@@ -48,7 +46,7 @@ export async function POST(req: Request) {
   const gate = await requireOwner();
   if (gate.error) return gate.error;
 
-  let body: { username?: string; password?: string; role?: string };
+  let body: { username?: string; password?: string };
   try {
     body = await req.json();
   } catch {
@@ -56,7 +54,7 @@ export async function POST(req: Request) {
   }
 
   const username = (body.username ?? "").trim().toLowerCase();
-  const role = body.role === "owner" ? "owner" : "support";
+  const role = "owner";
   const password = body.password ?? "";
 
   if (!/^[a-z0-9._-]{3,32}$/.test(username)) {

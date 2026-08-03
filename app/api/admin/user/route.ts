@@ -28,17 +28,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  /* Banning destroys a person's training history for good. Support staff look
-     accounts up and fix subscriptions; they do not get to do this. Enforced
-     here rather than by hiding the button, because a hidden button is not a
-     permission — anyone can POST to this route directly.
-
-     Deliberately ahead of the service-key check: whether someone is ALLOWED to
-     do a thing shouldn't depend on whether we happen to be configured to do
-     it, and "not permitted" is a more honest answer than "misconfigured". */
-  if ((action === "ban" || action === "unban") && actor.role !== "owner") {
-    return NextResponse.json({ error: "owner_only" }, { status: 403 });
-  }
+  /* No role check here any more. There is no reduced tier to guard against:
+     every admin is an owner, because an account that can move subscriptions
+     can hand out free plans anyway. What protects a ban is that it is behind
+     the login at all, plus the audit line naming who did it. */
 
   if (!serviceRoleConfigured()) {
     return NextResponse.json({ error: "no_service_key" }, { status: 503 });

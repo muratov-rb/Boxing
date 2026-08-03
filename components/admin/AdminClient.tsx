@@ -84,9 +84,8 @@ export function AdminClient({
   users: UserRow[];
   problem?: "none" | "no_key" | "no_url" | "wrong_key" | "query_failed";
   detail?: string;
-  me: { username: string; role: "owner" | "support" };
+  me: { username: string; role: "owner" };
 }) {
-  const isOwner = me.role === "owner";
   const t = useTranslations("admin");
   const router = useRouter();
   const [refreshing, startRefresh] = useTransition();
@@ -172,9 +171,7 @@ export function AdminClient({
             <LocaleSwitcher />
             <span className="hidden font-condensed text-xs uppercase tracking-widest text-ash-dim sm:inline">
               {me.username}
-              <span className={isOwner ? "ml-1.5 text-blood" : "ml-1.5 text-ash-dim"}>
-                {t(isOwner ? "roleOwner" : "roleSupport")}
-              </span>
+              <span className="ml-1.5 text-blood">{t("roleOwner")}</span>
             </span>
             <button
               type="button"
@@ -395,28 +392,25 @@ export function AdminClient({
                       {t("restartTrial")}
                     </button>
 
-                    {/* Support never sees this; the route refuses them too, so
-                        hiding it is politeness rather than the actual guard. */}
-                    {isOwner &&
-                      (r.banned ? (
-                        <button
-                          type="button"
-                          disabled={savingId === r.user_id}
-                          onClick={() => act(r.user_id, { action: "unban" })}
-                          className="btn btn-ghost !px-3 !py-2 text-xs"
-                        >
-                          {t("unban")}
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled={savingId === r.user_id}
-                          onClick={() => banUser(r)}
-                          className="rounded-xl border border-blood/50 px-3 py-2 font-condensed text-xs uppercase tracking-wider text-blood transition-colors hover:bg-blood hover:text-white"
-                        >
-                          {t("ban")}
-                        </button>
-                      ))}
+                    {r.banned ? (
+                      <button
+                        type="button"
+                        disabled={savingId === r.user_id}
+                        onClick={() => act(r.user_id, { action: "unban" })}
+                        className="btn btn-ghost !px-3 !py-2 text-xs"
+                      >
+                        {t("unban")}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={savingId === r.user_id}
+                        onClick={() => banUser(r)}
+                        className="rounded-xl border border-blood/50 px-3 py-2 font-condensed text-xs uppercase tracking-wider text-blood transition-colors hover:bg-blood hover:text-white"
+                      >
+                        {t("ban")}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -424,7 +418,7 @@ export function AdminClient({
 
             <p className="mt-6 text-xs text-ash-dim">{t("note")}</p>
 
-            {isOwner && <AdminStaff />}
+            <AdminStaff />
           </>
         )}
       </main>
