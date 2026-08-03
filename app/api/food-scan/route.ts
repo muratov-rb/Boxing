@@ -5,7 +5,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 export const runtime = "nodejs";
 
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 
 /* Claude-vision meal scan: photo in → items + calorie estimate out.
    Returns { error: "no_ai" } (503) when no key is set, so the client can

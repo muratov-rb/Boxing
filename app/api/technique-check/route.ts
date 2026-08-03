@@ -6,7 +6,7 @@ import { techniqueById } from "@/lib/technique";
 
 export const runtime = "nodejs";
 
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 
 /* Technique review: a handful of frames sampled from the user's video, plus
    the chosen technique's checklist as the rubric → Claude vision → structured

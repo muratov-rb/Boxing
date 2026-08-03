@@ -15,7 +15,7 @@ import {
 
 export const runtime = "nodejs";
 
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 
 const SYSTEM = `You are the fuelling guide at RingBornn, a no-nonsense boxing gym.
 Suggest a practical day of meals for a fighter, built around their training load,

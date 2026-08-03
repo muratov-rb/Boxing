@@ -15,8 +15,10 @@ import {
 
 export const runtime = "nodejs";
 
-// Default to the current flagship; override with ANTHROPIC_MODEL (e.g. claude-sonnet-5).
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-4-8";
+/* Sonnet is the default: it handles coaching, nutrition and form feedback well
+   at roughly a fifth of Opus's price, and these routes run on every user's
+   daily allowance. Override with ANTHROPIC_MODEL to try something else. */
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 
 const SYSTEM = `You are the head coach at RingBornn, a gritty, no-nonsense boxing gym.
 A new fighter has filled out their profile. Give them an honest, motivating read on their goal.
