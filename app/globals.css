@@ -549,6 +549,68 @@ textarea:focus {
 }
 
 /* ===========================================================================
+   Phones and tablets: trade decoration for frame rate.
+
+   backdrop-filter is the expensive one. Every .panel, .badge, .btn-ghost,
+   sticky header and modal scrim samples the pixels behind it and blurs them —
+   and repeats that on every frame while the page moves. The .brush layer sits
+   behind all of them, so each blurred surface also composites over a
+   full-screen layer. A page with a dozen panels is a dozen blurs per frame,
+   which is the difference between a swipe that glides and one that stutters.
+
+   Desktop keeps the glass. Here the same surfaces get a solid background
+   instead. The border and shadow already do the work of separating a card from
+   the page, so almost nothing is lost visually — and on light mode it reads
+   cleaner, since panels no longer let the red brush bleed through.
+
+   Kept as one block rather than `sm:` variants across forty components: the
+   reason these belong together is that they all cost frames, and that is not
+   something a utility class on one button can express.
+   =========================================================================== */
+@media (max-width: 1023px) {
+  .panel,
+  .glass,
+  .badge,
+  .btn-ghost,
+  [class*="backdrop-blur"] {
+    /* unprefixed only — the build prefixes for us, and writing both here made
+       it keep the -webkit- one and drop this, leaving the blur switched on */
+    backdrop-filter: none;
+  }
+
+  .panel,
+  .glass {
+    background: var(--color-surface);
+  }
+  /* controls sit ON panels, so they need the next surface up or they vanish */
+  .badge,
+  .btn-ghost {
+    background: var(--color-surface-2);
+  }
+  /* the sticky header was 70% opaque and relied on the blur to stay readable */
+  header[class*="sticky"] {
+    background-color: var(--color-void);
+  }
+
+  /* The drift is already off up here, but will-change kept a full-screen
+     compositor layer alive for an animation that never runs. */
+  .brush {
+    will-change: auto;
+  }
+
+  /* Decorative infinite loops. The sweep repaints a gradient forever, and
+     pulseGlow animates box-shadow — which cannot be composited, so it repaints
+     its element on every frame for as long as the page is open. */
+  .shine::after {
+    animation: none;
+    opacity: 0;
+  }
+  .animate-glow {
+    animation: none;
+  }
+}
+
+/* ===========================================================================
    reduced motion
    =========================================================================== */
 @media (prefers-reduced-motion: reduce) {
