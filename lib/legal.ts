@@ -6,19 +6,17 @@
    =========================================================================== */
 
 /** Bump this whenever the wording of either page changes materially. */
-export const LEGAL_UPDATED = "28 July 2026";
+export const LEGAL_UPDATED = "4 August 2026";
 
 /** Who operates the service, as it should appear to a user. */
 export const OPERATOR = "Nexara";
 export const SERVICE = "RingBornn";
 export const SITE = "boxing-murex.vercel.app";
 
-/* TODO(owner): put a real inbox here before you take payments or sign up
-   users outside your own circle. A privacy policy with no way to reach a
-   human is not worth much — deletion and access requests have to land
-   somewhere. Left blank deliberately: publishing a personal address is your
-   call, not mine. While it is blank the pages point people at Telegram. */
-export const CONTACT_EMAIL = "";
+/** Where access and deletion requests land, and the address Paddle's review
+    looks for. A dedicated inbox rather than a personal one, so it can be
+    handed over or shared without giving away anything else. */
+export const CONTACT_EMAIL = "ringbornn@gmail.com";
 
 /** Deadline we commit to for access/deletion requests. 30 days is the GDPR
     limit and the figure most services quote, so it travels well. */
