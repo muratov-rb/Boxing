@@ -112,12 +112,12 @@ export async function POST(req: Request) {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
       model: MODEL,
-      max_tokens: 4096,
+      max_tokens: 8192,
       thinking: { type: "adaptive" },
       system: SYSTEM,
       messages: [{ role: "user", content: buildPrompt(profile) + langLine }],
       output_config: {
-        effort: "low",
+        effort: "medium",
         format: { type: "json_schema", schema: SCHEMA },
       },
     });

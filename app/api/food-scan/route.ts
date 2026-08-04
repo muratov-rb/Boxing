@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
       model: MODEL,
-      max_tokens: 1024,
+      max_tokens: 2048,
       thinking: { type: "adaptive" },
       system:
         "You estimate nutrition from a photo of food for a boxing training app. " +
@@ -112,7 +112,7 @@ export async function POST(req: Request) {
         },
       ],
       output_config: {
-        effort: "low",
+        effort: "medium",
         format: { type: "json_schema", schema: SCHEMA },
       },
     });
