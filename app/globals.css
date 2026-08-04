@@ -144,36 +144,31 @@ body {
   opacity: 1;
 }
 /* ---------------------------------------------------------------------------
-   Narrow screens.
+   Narrow screens: no brush at all.
 
-   brush-bg.svg is a 1440x900 composition carrying `preserveAspectRatio =
-   xMidYMid slice`, so on a tall phone it scales to ~1299x812 and crops to the
-   dense middle of the artwork. The whole screen ends up covered in paint —
-   which is why the light theme read as dark on a phone while looking right on
-   a laptop, where the full composition shows and white breathes between the
-   strokes.
+   brush-bg.svg is a 1440x900 composition. Cropping it (`slice`) covered a
+   phone in paint; fitting it by width instead shrank the whole busy artwork
+   into a ~430x270 band floating on an otherwise empty screen, which reads as
+   clutter rather than texture. There is no scale at which a wide, detailed
+   composition looks right on a tall narrow screen.
 
-   Fitting by width restores that: the same diagonal band people see on desktop,
-   with the light ground either side of it. Anchored slightly above centre so
-   the band sits behind the header rather than the middle of the content.
+   So phones get the brand's two corners as a plain gradient — the same red
+   and blue the artwork is built from, without the mess. It also costs
+   nothing: no image decode, no extra layer, no repaint.
    --------------------------------------------------------------------------- */
 @media (max-width: 1023px) {
-  .brush {
-    background-size: 100% auto;
-    background-position: center 22%;
-    /* the strokes are ~3.5x bigger here than on desktop, so the same alpha
-       reads far heavier — pull it back to match the laptop's lightness */
-    opacity: 0.2;
-    /* the drift zoom re-crops into the dense area; hold it still instead */
+  .brush,
+  /* .dark .brush dims the artwork to 0.34 and outranks a bare .brush, so it
+     has to be named here or the gradient arrives pre-faded in dark mode */
+  .dark .brush {
+    background:
+      radial-gradient(72% 48% at 6% 0%, var(--glow-red), transparent 70%),
+      radial-gradient(72% 48% at 94% 100%, var(--glow-blue), transparent 70%);
+    opacity: 1;
     animation: none;
   }
-  .dark .brush {
-    /* dark already looked right, so keep its weight */
-    opacity: 0.32;
-  }
   .brush::after {
-    /* half-strength blue: at this scale it was tinting the whole page */
-    opacity: 0.45;
+    display: none;
   }
 }
 
@@ -598,15 +593,30 @@ textarea:focus {
     will-change: auto;
   }
 
-  /* Decorative infinite loops. The sweep repaints a gradient forever, and
-     pulseGlow animates box-shadow — which cannot be composited, so it repaints
-     its element on every frame for as long as the page is open. */
-  .shine::after {
-    animation: none;
-    opacity: 0;
-  }
+  /* pulseGlow animates box-shadow, which cannot be composited — it repaints
+     its element on every frame for as long as the page is open. That one goes.
+     .shine stays: it animates transform only, so it runs on the compositor and
+     costs no paint. Cutting it too was an over-correction that left the phone
+     feeling dead without buying any frames back. */
   .animate-glow {
     animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Touch feedback.
+
+   A tap on a phone has no hover to acknowledge it, so between the finger
+   landing and the next screen arriving there is nothing at all — which reads
+   as a freeze even when the wait is short. This costs one composited
+   transform and answers instantly, before any navigation starts.
+   --------------------------------------------------------------------------- */
+@media (hover: none) {
+  .btn:active,
+  button:active,
+  a:active {
+    transform: scale(0.97);
+    transition: transform 0.06s ease-out;
   }
 }
 
