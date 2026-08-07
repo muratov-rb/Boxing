@@ -252,7 +252,7 @@
     "sub": "Tu es connecté et prêt. Construis ton plan pour lancer l'ascension.",
     "rankBadge": "{rank} — Rang 1 / {total}",
     "noPlan": "Pas encore de plan",
-    "noPlanCopy": "Réponds à quelques questions et ton coach IA construit une feuille de route, évalue tes chances et fixe ton plan nutrition.",
+    "noPlanCopy": "Vous avez un compte, mais aucun plan d'entraînement derrière. Cela prend une minute : vos données, votre objectif, votre planning.",
     "buildPlan": "Construire mon plan",
     "comingSoon": "Bientôt",
     "f1": "Séances IA quotidiennes",
@@ -278,7 +278,10 @@
     "caloriesBadge": "Carburant",
     "caloriesTitle": "Compteur de calories",
     "caloriesCopy": "Note tes repas, scanne une assiette, suis l'équilibre.",
-    "caloriesCta": "Ouvrir le compteur"
+    "caloriesCta": "Ouvrir le compteur",
+    "noPlanBadge": "Pas encore de plan",
+    "noPlanTitle": "Terminez la configuration de votre plan",
+    "noPlanCta": "Créer mon plan"
   },
   "paths": {
     "beginnerLabel": "Je suis débutant",

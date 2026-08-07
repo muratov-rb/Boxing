@@ -35,6 +35,25 @@ function GoogleG() {
 const inputCls =
   "w-full border border-line bg-void px-4 py-3 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none";
 
+/**
+ * Leave for `next` with a full page load rather than a client navigation.
+ *
+ * Signing up sent people straight back to the login screen, and they had to
+ * authenticate a second time before they could reach their plan. A
+ * client-side push after auth can be answered with a redirect in two
+ * different ways, and both were live here: Next may replay a cached entry for
+ * the destination — /onboarding is guarded, so a signed-out visit to it
+ * stores a 307 to /login — or the RSC request may simply go out before the
+ * server can see the session cookie the browser has only just written.
+ *
+ * A full page load removes both at once: no client cache to consult, and the
+ * cookie is on the request by definition. It costs one page load, once, at
+ * the only point in the app where being wrong is this expensive.
+ */
+function go(next: string) {
+  window.location.assign(next);
+}
+
 export function AuthCard({
   mode,
   next = "/dashboard",
@@ -86,8 +105,7 @@ export function AuthCard({
           password,
         });
         if (error) throw error;
-        router.push(next);
-        router.refresh();
+        go(next);
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -98,8 +116,7 @@ export function AuthCard({
         });
         if (error) throw error;
         if (data.session) {
-          router.push(next);
-          router.refresh();
+          go(next);
         } else {
           router.push(`/verify-email?email=${encodeURIComponent(email)}`);
         }

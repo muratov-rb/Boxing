@@ -252,7 +252,7 @@
     "sub": "你已登录，准备就绪。搭建你的计划，开始攀登。",
     "rankBadge": "{rank} — 第 1 段 / 共 {total} 段",
     "noPlan": "还没有计划",
-    "noPlanCopy": "回答几个问题，你的 AI 教练就会搭建路线图、评估你的几率并制定饮食计划。",
+    "noPlanCopy": "你已有账户，但还没有对应的训练计划。大约一分钟即可完成——你的身体数据、目标和时间安排。",
     "buildPlan": "搭建我的计划",
     "comingSoon": "即将推出",
     "f1": "每日 AI 训练",
@@ -278,7 +278,10 @@
     "caloriesBadge": "能量",
     "caloriesTitle": "卡路里计数器",
     "caloriesCopy": "记录餐食、扫描餐盘，跟踪摄入与消耗。",
-    "caloriesCta": "打开计数器"
+    "caloriesCta": "打开计数器",
+    "noPlanBadge": "尚无计划",
+    "noPlanTitle": "完成你的训练计划设置",
+    "noPlanCta": "创建我的计划"
   },
   "paths": {
     "beginnerLabel": "我是新手",

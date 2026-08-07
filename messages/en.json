@@ -252,7 +252,7 @@
     "sub": "You're signed in and ready. Build your plan to start the climb.",
     "rankBadge": "{rank} — Rank 1 / {total}",
     "noPlan": "No plan yet",
-    "noPlanCopy": "Answer a few questions and your AI coach builds a roadmap, rates your chances and sets your fuel plan.",
+    "noPlanCopy": "You have an account, but no training plan behind it yet. It takes about a minute — your stats, your goal, your schedule.",
     "buildPlan": "Build My Plan",
     "comingSoon": "Coming soon",
     "f1": "Daily AI sessions",
@@ -278,7 +278,10 @@
     "caloriesBadge": "Fuel",
     "caloriesTitle": "Calorie counter",
     "caloriesCopy": "Log meals, scan a plate, and track intake against what you burned.",
-    "caloriesCta": "Open counter"
+    "caloriesCta": "Open counter",
+    "noPlanBadge": "No plan yet",
+    "noPlanTitle": "Finish setting up your plan",
+    "noPlanCta": "Build my plan"
   },
   "paths": {
     "beginnerLabel": "I'm a Beginner",

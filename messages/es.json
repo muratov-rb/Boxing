@@ -252,7 +252,7 @@
     "sub": "Ya iniciaste sesión y estás listo. Crea tu plan para empezar la escalada.",
     "rankBadge": "{rank} — Rango 1 / {total}",
     "noPlan": "Aún sin plan",
-    "noPlanCopy": "Responde unas preguntas y tu entrenador de IA construye una hoja de ruta, evalúa tus posibilidades y define tu plan de comida.",
+    "noPlanCopy": "Tienes una cuenta, pero todavía no hay un plan de entrenamiento detrás. Tarda un minuto: tus datos, tu objetivo y tu horario.",
     "buildPlan": "Crear mi plan",
     "comingSoon": "Próximamente",
     "f1": "Sesiones diarias con IA",
@@ -278,7 +278,10 @@
     "caloriesBadge": "Combustible",
     "caloriesTitle": "Contador de calorías",
     "caloriesCopy": "Registra comidas, escanea un plato y controla el balance.",
-    "caloriesCta": "Abrir contador"
+    "caloriesCta": "Abrir contador",
+    "noPlanBadge": "Aún sin plan",
+    "noPlanTitle": "Termina de configurar tu plan",
+    "noPlanCta": "Crear mi plan"
   },
   "paths": {
     "beginnerLabel": "Soy principiante",
