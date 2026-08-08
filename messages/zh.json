@@ -801,5 +801,12 @@
     "sub": "记录饮食、扫描餐盘，并与今天训练消耗的热量对比。",
     "nutritionLinkTitle": "AI 营养",
     "nutritionLinkSub": "根据训练强度定制的宏量目标与餐食建议。"
+  },
+  "corner": {
+    "title": "今天的教练角",
+    "kind_motivation": "激励",
+    "kind_advice": "训练建议",
+    "kind_tactic": "擂台上",
+    "note": "每天更新，依你的段位挑选。"
   }
 }

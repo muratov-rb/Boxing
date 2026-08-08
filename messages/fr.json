@@ -801,5 +801,12 @@
     "sub": "Note ce que tu manges, scanne ton assiette et compare à ce que l'entraînement a brûlé.",
     "nutritionLinkTitle": "Nutrition IA",
     "nutritionLinkSub": "Objectifs de macros et idées de repas selon ta charge."
+  },
+  "corner": {
+    "title": "Ton coin aujourd'hui",
+    "kind_motivation": "Motivation",
+    "kind_advice": "Conseil d'entraînement",
+    "kind_tactic": "Sur le ring",
+    "note": "De nouvelles lignes chaque jour, choisies pour ton rang."
   }
 }

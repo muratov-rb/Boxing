@@ -24,6 +24,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "@/components/lessons/BodyMap";
+import { DailyCorner } from "@/components/train/DailyCorner";
 import { LessonAnimation } from "@/components/lessons/LessonAnimation";
 import { AppNav } from "@/components/nav/AppNav";
 
@@ -201,6 +202,7 @@ export function TrainClient() {
                 {t("trainAnyway")}
               </button>
             </div>
+            <DailyCorner className="mt-8 text-left" />
           </div>
         )}
 
@@ -275,6 +277,7 @@ export function TrainClient() {
                 </p>
               )}
             </div>
+            <DailyCorner className="mt-4" />
           </div>
         )}
 

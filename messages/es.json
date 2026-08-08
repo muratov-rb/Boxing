@@ -801,5 +801,12 @@
     "sub": "Registra lo que comes, escanea el plato y compáralo con lo que quemaste hoy.",
     "nutritionLinkTitle": "Nutrición con IA",
     "nutritionLinkSub": "Objetivos de macros e ideas de comidas según tu carga."
+  },
+  "corner": {
+    "title": "Tu esquina hoy",
+    "kind_motivation": "Motivación",
+    "kind_advice": "Consejo de entrenamiento",
+    "kind_tactic": "En el ring",
+    "note": "Nuevas frases cada día, elegidas para tu rango."
   }
 }

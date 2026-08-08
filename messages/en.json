@@ -803,5 +803,12 @@
     "sub": "Log what you eat, scan a plate, and see it against what today's training burned.",
     "nutritionLinkTitle": "AI nutrition",
     "nutritionLinkSub": "Macro targets and meal ideas built around your training load."
+  },
+  "corner": {
+    "title": "Your corner today",
+    "kind_motivation": "Motivation",
+    "kind_advice": "Training advice",
+    "kind_tactic": "In the ring",
+    "note": "New lines every day, chosen for your rank."
   }
 }
