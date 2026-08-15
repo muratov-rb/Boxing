@@ -1,64 +1,39 @@
-"use client";
-
-import type { DemoPreset } from "@/lib/exercises";
-
 /* ===========================================================================
-   LessonAnimation — the coach demo.
+   LessonAnimation — the demo picture for a movement.
 
-   Pre-rendered only: no WebGL, no live 3D. Every clip was rendered once from
-   the Mixamo rig, so what one person sees is what everyone sees, on every
-   device, with no skinning artefacts and no GPU cost. It plays in a plain
-   <img>, so there is no JavaScript in the playback path at all.
+   One still image per exercise, named for the exercise's own id, showing the
+   movement as numbered panels. It replaced a set of rendered 3D clips: those
+   were 19 MB of animation backed by 123 MB of source models, covered 16 of 89
+   movements, and several lessons had to share a clip that showed a different
+   movement from the one being taught. A panel strip costs ~67 KB, covers
+   nearly everything, and can be checked by eye.
 
-   A movement with no clip yet shows a quiet placeholder rather than an empty
-   box — the lesson still carries its muscle map and written cues.
+   A movement with no picture yet shows a quiet placeholder rather than an
+   empty box — the lesson still carries its muscle map and written cues.
    =========================================================================== */
 
-/** preset → file in public/lessons. Add a row as each clip is rendered.
-    Only mapped where the capture genuinely shows that lesson — a stand-in
-    that teaches the wrong movement defeats the point of the library. */
-const CLIPS: Partial<Record<DemoPreset, string>> = {
-  jab: "jabcross", // the "Jab – Cross" lesson is the one-two
-  cross: "jabcross2",
-  hook: "hook",
-  doublejab: "jabcross2",
-  combo123: "punchcombo",
-  slip: "dodging",
-  roll: "dodging",
-  parry: "dodging",
-  shadowbox: "boxing2",
-  heavybag: "boxing10", // was boxing2, identical to shadowbox — now its own clip
-  speedbag: "speedbag",
-  footwork: "warmup",
-  stepdrag: "warmup",
-  pivot: "pivot",
-  jumprope: "jumprope",
-};
+/** Exercises that have no picture. Everything else resolves by id, so this
+    list is the only thing to edit when the remaining art lands. */
+const MISSING = new Set(["wall-handstand", "skater-jumps"]);
 
-/* Rendered but not mapped to a lesson yet: "punching" and "bodyjabcross2".
-   Both are generic punch motions, and the lessons that would fit them — the
-   body jab and body cross — do not exist in the library yet. Pointing them at
-   an unrelated lesson would repeat the mistake the slip/roll/parry sharing
-   already makes: showing a movement that is not the one being taught. */
-
-export function lessonClipFor(preset: DemoPreset): string | undefined {
-  return CLIPS[preset];
+export function hasLessonImage(exerciseId: string): boolean {
+  return !MISSING.has(exerciseId);
 }
 
 export function LessonAnimation({
-  preset,
+  exerciseId,
   className = "",
   soonText = "",
   alt = "",
 }: {
-  preset: DemoPreset;
+  /** The exercise's id — the image is named for it. */
+  exerciseId: string;
   className?: string;
-  /** shown when this movement has no rendered clip yet */
+  /** shown when this movement has no picture yet */
   soonText?: string;
   alt?: string;
 }) {
-  const clip = CLIPS[preset];
-  if (!clip) {
+  if (!hasLessonImage(exerciseId)) {
     return (
       <div
         className={`flex items-center justify-center bg-void/30 ${className}`}
@@ -70,9 +45,11 @@ export function LessonAnimation({
     );
   }
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- animated WebP: next/image would re-encode and drop the animation
+    /* eslint-disable-next-line @next/next/no-img-element -- a wide panel strip
+       whose intrinsic size is already right; next/image would add a layout
+       wrapper and a resize step for no gain at ~67 KB. */
     <img
-      src={`/lessons/${clip}.webp`}
+      src={`/exercises/${exerciseId}.png`}
       alt={alt}
       className={`${className} object-contain`}
       loading="lazy"

@@ -18,6 +18,11 @@ export interface Technique {
   name: I18n;
   cue: I18n; // one-line "the point of it"
   demo: DemoPreset;
+  /** Which exercise's picture illustrates this technique. The technique list
+      is its own short ladder — "cross" here is one punch, while the lesson
+      library teaches it inside the jab-cross combination — so the ids don't
+      line up on their own and the pairing is stated rather than guessed. */
+  image: string;
   checklist: I18n[]; // honest form points to self-assess
 }
 
@@ -30,6 +35,7 @@ export const TECHNIQUES: Technique[] = [
       ru: "Измеритель дистанции — быстрый, прямой, назад в защиту.",
     },
     demo: "jab",
+    image: "jab-cross",
     checklist: [
       { en: "Chin tucked, rear hand glued to the cheek", ru: "Подбородок опущен, задняя рука у щеки" },
       { en: "Punch travels straight — no looping or dropping", ru: "Удар идёт прямо — без замаха и провисания" },
@@ -46,6 +52,7 @@ export const TECHNIQUES: Technique[] = [
       ru: "Сила задней руки — рождается от пола вверх.",
     },
     demo: "jab",
+    image: "cross",
     checklist: [
       { en: "Rear heel pivots, hip rotates through the shot", ru: "Задняя пятка проворачивается, бедро идёт в удар" },
       { en: "Rear shoulder finishes by the chin", ru: "Заднее плечо в конце у подбородка" },
@@ -62,6 +69,7 @@ export const TECHNIQUES: Technique[] = [
       ru: "Момент ближней дистанции — поворачивается всё тело.",
     },
     demo: "hook",
+    image: "hooks",
     checklist: [
       { en: "Elbow raised to roughly 90°, wrist locked", ru: "Локоть поднят примерно на 90°, запястье жёсткое" },
       { en: "Lead foot pivots, knee and hip turn in", ru: "Передняя стопа проворачивается, колено и бедро внутрь" },
@@ -78,6 +86,7 @@ export const TECHNIQUES: Technique[] = [
       ru: "Поднимается из ног, вверх по центру.",
     },
     demo: "uppercut",
+    image: "uppercuts",
     checklist: [
       { en: "Slight dip in the knees to load the shot", ru: "Лёгкий присед в коленях, чтобы зарядить удар" },
       { en: "Drive up with the legs, not just the arm", ru: "Толчок ногами, а не только рукой" },
@@ -94,6 +103,7 @@ export const TECHNIQUES: Technique[] = [
       ru: "Всё строится на базе — выстрой её правильно.",
     },
     demo: "footwork",
+    image: "shadow-footwork",
     checklist: [
       { en: "Feet shoulder-width, lead foot forward, angled", ru: "Стопы на ширине плеч, передняя нога вперёд, под углом" },
       { en: "Knees soft, weight on the balls of the feet", ru: "Колени мягкие, вес на носках" },
@@ -110,6 +120,7 @@ export const TECHNIQUES: Technique[] = [
       ru: "Шаг и подтяжка — не скрещивай, не прыгай на плоской стопе.",
     },
     demo: "footwork",
+    image: "shadow-footwork",
     checklist: [
       { en: "Push off the trailing foot, step with the lead", ru: "Толчок задней стопой, шаг передней" },
       { en: "Feet never cross or click together", ru: "Стопы не скрещиваются и не сходятся" },

@@ -89,8 +89,8 @@ export function TechniqueClient() {
           <div className="min-w-0 lg:col-span-2">
             <div className="overflow-hidden rounded-[20px] border border-line/70 bg-void/40">
               <LessonAnimation
-                key={tech.demo}
-                preset={tech.demo}
+                key={tech.image}
+                exerciseId={tech.image}
                 className="h-64 w-full sm:h-72"
                 soonText={t("demoSoon")}
                 alt={tech.name[locale]}
