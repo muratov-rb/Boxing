@@ -8,6 +8,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
 import { Icon } from "@/components/ui/Icons";
 import { MIN_PASSWORD_LENGTH, passwordLongEnough } from "@/lib/auth-rules";
+import { LEGAL_UPDATED } from "@/lib/legal";
 
 function GoogleG() {
   return (
@@ -85,6 +86,11 @@ export function AuthCard({
     banned ? t("errBanned") : hadError ? t("errLink") : null,
   );
   const [loading, setLoading] = useState<null | "email" | "google">(null);
+  /* Accepting the terms is required to create an account, and is deliberately
+     unticked to start with: a pre-ticked box is not agreement, and several
+     regimes treat it as no agreement at all. Existing users signing in have
+     already accepted, so the box only appears on the register form. */
+  const [agreed, setAgreed] = useState(false);
 
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -92,6 +98,7 @@ export function AuthCard({
     if (!configured) return setError(t("notConnected"));
     /* Only when creating an account — an existing user whose password predates
        this rule must still be able to log in with it. */
+    if (!isLogin && !agreed) return setError(t("agreeErr"));
     if (!isLogin && !passwordLongEnough(password)) {
       return setError(t("errShortPw", { n: MIN_PASSWORD_LENGTH }));
     }
@@ -112,6 +119,13 @@ export function AuthCard({
           password,
           options: {
             emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+            /* Stored on the account so the acceptance is provable later —
+               which version was agreed to, and when. A tick box nobody
+               recorded is worth very little if it is ever questioned. */
+            data: {
+              terms_accepted_at: new Date().toISOString(),
+              terms_version: LEGAL_UPDATED,
+            },
           },
         });
         if (error) throw error;
@@ -130,6 +144,9 @@ export function AuthCard({
   async function handleGoogle() {
     setError(null);
     if (!configured) return setError(t("notConnected"));
+    /* The same gate as the email form — signing up through Google must not be
+       a way around accepting the terms. */
+    if (!isLogin && !agreed) return setError(t("agreeErr"));
     setLoading("google");
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
@@ -233,11 +250,41 @@ export function AuthCard({
             />
           </div>
 
+          {!isLogin && (
+            <label className="flex cursor-pointer items-start gap-2.5 text-xs leading-relaxed text-ash">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-blood"
+              />
+              <span>
+                {t("agreePre")}{" "}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="font-semibold text-blood hover:underline"
+                >
+                  {t("agreeTerms")}
+                </Link>{" "}
+                {t("agreeMid")}{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="font-semibold text-blood hover:underline"
+                >
+                  {t("agreePrivacy")}
+                </Link>
+                .
+              </span>
+            </label>
+          )}
+
           {error && <p className="text-sm text-blood-bright">{error}</p>}
 
           <button
             type="submit"
-            disabled={loading !== null}
+            disabled={loading !== null || (!isLogin && !agreed)}
             className="btn btn-primary w-full disabled:opacity-50"
           >
             {loading === "email"

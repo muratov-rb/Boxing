@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · built by Nexara",
     "privacy": "Privacy",
     "terms": "Terms",
-    "refunds": "Refunds"
+    "refunds": "Refunds",
+    "cookies": "Cookies"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -121,7 +122,12 @@
     "errGeneric": "Something went wrong.",
     "errLink": "That sign-in link didn't work. Try again.",
     "errShortPw": "Use at least {n} characters — long passwords are what keep an account safe.",
-    "errBanned": "This account has been closed by an administrator."
+    "errBanned": "This account has been closed by an administrator.",
+    "agreePre": "I agree to the",
+    "agreeTerms": "Terms of Service",
+    "agreeMid": "and",
+    "agreePrivacy": "Privacy Policy",
+    "agreeErr": "Please accept the Terms of Service and Privacy Policy to create an account."
   },
   "verify": {
     "kicker": "One more round",

@@ -64,6 +64,9 @@ export function SiteFooter() {
             <Link href="/refunds" className="transition-colors hover:text-bone">
               {t("refunds")}
             </Link>
+            <Link href="/cookies" className="transition-colors hover:text-bone">
+              {t("cookies")}
+            </Link>
           </div>
           <p className="text-xs">{t("rights", { year: new Date().getFullYear() })}</p>
         </div>

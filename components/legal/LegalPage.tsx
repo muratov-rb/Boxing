@@ -120,6 +120,12 @@ export function LegalPage({
           <Link href="/terms" className="btn btn-ghost !px-4 !py-2 text-xs">
             Terms of Service
           </Link>
+          <Link href="/cookies" className="btn btn-ghost !px-4 !py-2 text-xs">
+            Cookie Policy
+          </Link>
+          <Link href="/refunds" className="btn btn-ghost !px-4 !py-2 text-xs">
+            Refunds
+          </Link>
         </div>
       </main>
     </div>

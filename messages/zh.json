@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · 由 Nexara 打造",
     "privacy": "隐私政策",
     "terms": "服务条款",
-    "refunds": "退款"
+    "refunds": "退款",
+    "cookies": "Cookie"
   },
   "auth": {
     "welcomeBack": "欢迎回来",
@@ -121,7 +122,12 @@
     "errGeneric": "出了点问题。",
     "errLink": "该登录链接无效。请重试。",
     "errShortPw": "请使用至少 {n} 个字符——密码长度才是账号安全的关键。",
-    "errBanned": "该账号已被管理员关闭。"
+    "errBanned": "该账号已被管理员关闭。",
+    "agreePre": "我同意",
+    "agreeTerms": "服务条款",
+    "agreeMid": "和",
+    "agreePrivacy": "隐私政策",
+    "agreeErr": "请接受服务条款和隐私政策以创建账户。"
   },
   "verify": {
     "kicker": "再来一回合",

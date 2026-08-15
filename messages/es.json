@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · creado por Nexara",
     "privacy": "Privacidad",
     "terms": "Términos",
-    "refunds": "Reembolsos"
+    "refunds": "Reembolsos",
+    "cookies": "Cookies"
   },
   "auth": {
     "welcomeBack": "Bienvenido de nuevo",
@@ -121,7 +122,12 @@
     "errGeneric": "Algo salió mal.",
     "errLink": "Ese enlace de acceso no funcionó. Inténtalo de nuevo.",
     "errShortPw": "Usa al menos {n} caracteres: la longitud es lo que protege la cuenta.",
-    "errBanned": "Un administrador ha cerrado esta cuenta."
+    "errBanned": "Un administrador ha cerrado esta cuenta.",
+    "agreePre": "Acepto los",
+    "agreeTerms": "Términos del Servicio",
+    "agreeMid": "y la",
+    "agreePrivacy": "Política de Privacidad",
+    "agreeErr": "Acepta los Términos del Servicio y la Política de Privacidad para crear una cuenta."
   },
   "verify": {
     "kicker": "Un asalto más",
