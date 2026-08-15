@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { publicSupabaseEnv } from "@/lib/supabase/config";
 import { isRtlLocale } from "@/i18n/locales";
+import { SITE_URL } from "@/lib/legal";
 import "./globals.css";
 
 /* Geometric display — modern, athletic headlines (Sport Modern direction).
@@ -34,9 +35,27 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  /* metadataBase resolves the relative OG image to an absolute URL. Without
+     it Next warns at build time and social platforms get a relative path they
+     cannot fetch, so the preview falls back to a blank card. */
+  metadataBase: new URL(SITE_URL),
   title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
   description:
-    "Free, web-first boxing training for everyone — from total beginners to seasoned pros. AI-built plans, progress ranks, nutrition and technique, no app and no gear required.",
+    "Web-first boxing training for everyone — from total beginners to seasoned pros. AI-built plans, progress ranks, nutrition and technique. Start free, no app and no gear required.",
+  openGraph: {
+    type: "website",
+    siteName: "RingBornn",
+    title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
+    description:
+      "Web-first boxing training for beginners and pros. AI-built plans, progress ranks, nutrition and technique. Start free — no card, no app, no gear.",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
+    description:
+      "Web-first boxing training for beginners and pros. Start free — no card, no app, no gear.",
+  },
 };
 
 export default async function RootLayout({

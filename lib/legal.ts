@@ -13,6 +13,12 @@ export const OPERATOR = "Nexara";
 export const SERVICE = "RingBornn";
 export const SITE = "boxing-murex.vercel.app";
 
+/** Absolute origin, for the places that need a real URL rather than a label —
+    the sitemap, robots.txt and the link previews shared on social. Derived
+    from SITE so buying a domain means changing one line, not hunting for
+    hard-coded addresses. */
+export const SITE_URL = `https://${SITE}`;
+
 /* Blank until a real inbox exists — an address printed in a privacy policy
    that nobody reads is worse than none, because access and deletion requests
    sent there vanish silently. While it is empty every page points at Telegram

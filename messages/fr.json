@@ -25,14 +25,14 @@
     "theme_dark": "Sombre"
   },
   "hero": {
-    "kicker": "Gratuit · Boxe depuis le web",
+    "kicker": "Commence gratuitement · Boxe dans le navigateur",
     "title1": "Entraîne-toi comme un boxeur.",
     "title2pre": "Aie l'allure d'un ",
     "title2accent": "athlète.",
     "sub": "Un seul endroit pour vraiment apprendre la boxe et atteindre la meilleure forme de ta vie. Des plans conçus par IA, une technique réelle et des progrès visibles — que tu n'aies jamais bandé tes mains ou que tu sois sur le ring depuis des années.",
     "ctaStart": "Commence ton entraînement",
     "ctaInside": "Voir ce qu'il y a dedans",
-    "trustFree": "100 % gratuit",
+    "trustFree": "Sans Carte",
     "trustNoApp": "Aucune app à installer",
     "trustNoGear": "Aucun matériel",
     "trustRange": "Débutant → Pro"
@@ -41,7 +41,7 @@
     "kicker": "Fait pour les deux coins",
     "titlePre": "Où que tu commences, ",
     "titleAccent": "monte sur le ring.",
-    "sub": "La plupart des apps choisissent un camp : cardio pour débutants ou coaching pointu pour pros. RingBornn fait les deux, au même endroit, gratuitement.",
+    "sub": "La plupart des applis choisissent un camp — cardio pour débutants ou coaching intensif pour pros. RingBornn fait les deux, au même endroit. Commence gratuitement, sans carte.",
     "redCorner": "Coin rouge",
     "blueCorner": "Coin bleu",
     "c1Title": "Nouveau sur le ring",
@@ -59,7 +59,7 @@
     "kicker": "L'arsenal complet",
     "titlePre": "Tout, ",
     "titleAccent": "une seule salle.",
-    "sub": "Ce que les concurrents éparpillent entre des produits payants, réservés aux apps et bloqués par du matériel — regroupé ici, gratuit et web-first. Voici ce qui arrive.",
+    "sub": "Ce que les concurrents éparpillent entre produits payants, applis dédiées et matériel — réuni dans une seule appli web. Voici ce qui arrive.",
     "previewBadge": "Aperçu · Pas encore actif",
     "comingSoon": "Bientôt",
     "plan_t": "Plans quotidiens par IA",
@@ -69,7 +69,7 @@
     "streak_t": "Séries",
     "streak_c": "Sois présent chaque jour et garde la flamme allumée. La régularité est suivie séparément de ton objectif.",
     "video_t": "Bibliothèque de leçons",
-    "video_c": "Tutoriels vidéo et décompositions techniques gratuits et sans restriction — ouverts à tous.",
+    "video_c": "Tutoriels vidéo et décomposition technique dans le navigateur — sans appli, sans matériel.",
     "nutrition_t": "Nutrition par IA",
     "nutrition_c": "Idées de repas adaptées à tes mensurations et à ta charge quotidienne.",
     "calorie_t": "Compteur de calories",
@@ -87,7 +87,7 @@
     "cta": "Obtiens ton plan"
   },
   "footer": {
-    "tagline": "Entraînement de boxe gratuit et web-first, pour débutants comme pour pros. Entraîne-toi comme un boxeur. Aie l'allure d'un athlète.",
+    "tagline": "Boxe dans le navigateur pour débutants et pros. Entraîne-toi comme un combattant. Aie l'allure d'un athlète.",
     "whoFor": "Pour qui",
     "whatsComing": "À venir",
     "rights": "© {year} RingBornn · créé par Nexara",

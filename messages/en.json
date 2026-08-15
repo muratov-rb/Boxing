@@ -25,14 +25,14 @@
     "theme_dark": "Dark"
   },
   "hero": {
-    "kicker": "Free · Web-first boxing training",
+    "kicker": "Start free · Web-first boxing training",
     "title1": "Train like a fighter.",
     "title2pre": "Look like an ",
     "title2accent": "athlete.",
     "sub": "One place to actually learn boxing and get in the best shape of your life. AI-built plans, real technique, progress you can see — whether you've never wrapped your hands or you've been in the ring for years.",
     "ctaStart": "Start Your Training",
     "ctaInside": "See What's Inside",
-    "trustFree": "100% Free",
+    "trustFree": "No Card to Start",
     "trustNoApp": "No App Download",
     "trustNoGear": "No Hardware",
     "trustRange": "Beginner → Pro"
@@ -41,7 +41,7 @@
     "kicker": "Built for both corners",
     "titlePre": "Wherever you're starting, ",
     "titleAccent": "step in.",
-    "sub": "Most apps pick a lane — cardio for beginners or hardcore coaching for pros. RingBornn runs both, in one place, for free.",
+    "sub": "Most apps pick a lane — cardio for beginners or hardcore coaching for pros. RingBornn runs both, in one place. Start free, no card required.",
     "redCorner": "Red Corner",
     "blueCorner": "Blue Corner",
     "c1Title": "New to the Ring",
@@ -59,7 +59,7 @@
     "kicker": "The full arsenal",
     "titlePre": "Everything, ",
     "titleAccent": "one gym.",
-    "sub": "What competitors split across paid, app-only, hardware-locked products — bundled free and web-first. Here's what's rolling out.",
+    "sub": "What competitors split across paid, app-only, hardware-locked products — bundled into one web-first app. Here's what's rolling out.",
     "previewBadge": "Preview · Not live yet",
     "comingSoon": "Coming soon",
     "plan_t": "AI Daily Plans",
@@ -69,7 +69,7 @@
     "streak_t": "Streaks",
     "streak_c": "Show up daily and keep the fire lit. Consistency tracked separately from your goal.",
     "video_t": "Lesson Library",
-    "video_c": "Free, ungated video tutorials and technique breakdowns — open to everyone.",
+    "video_c": "Video tutorials and technique breakdowns that run in the browser — no app, no gear.",
     "nutrition_t": "AI Nutrition",
     "nutrition_c": "Meal ideas tuned to your body stats and daily training load.",
     "calorie_t": "Calorie Counter",
@@ -87,7 +87,7 @@
     "cta": "Get Your Plan"
   },
   "footer": {
-    "tagline": "Free, web-first boxing training for beginners and pros alike. Train like a fighter. Look like an athlete.",
+    "tagline": "Web-first boxing training for beginners and pros alike. Train like a fighter. Look like an athlete.",
     "whoFor": "Who it's for",
     "whatsComing": "What's coming",
     "rights": "© {year} RingBornn · built by Nexara",
