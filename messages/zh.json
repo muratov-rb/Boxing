@@ -168,7 +168,7 @@
     "targetWeightPlaceholder": "目标体重（{unit}）",
     "errWeight": "请输入真实体重——25–350 公斤（55–770 磅）。",
     "errHeight": "请输入真实身高——90–250 厘米（3–8.2 英尺）。",
-    "errAge": "请输入真实年龄——8–100。",
+    "errAge": "使用 RingBornn 需年满 16 岁——请输入 16 到 100 之间的年龄。",
     "errTarget": "请输入可达成的目标——25–350 公斤（55–770 磅）。",
     "timeframeLabel": "目标期限",
     "customTimeframePlaceholder": "什么时候之前？（例如：十二月我生日前、10 周内）",
@@ -418,7 +418,6 @@
     "backDash": "面板",
     "close": "关闭",
     "rotateHint": "教练示范该动作——拖动旋转，滚轮或双指缩放。",
-    "demo3dError": "无法加载 3D 模型。",
     "musclesHint": "红色 = 这节课锻炼的肌肉。",
     "technique": "正确的技术",
     "markDone": "我今天做了",
@@ -435,7 +434,8 @@
     "bp_shoulders": "肩部",
     "bp_back": "背部",
     "bp_core": "核心",
-    "bp_legs": "腿部"
+    "bp_legs": "腿部",
+    "demoSoon": "示意图即将上线——请先按下面的步骤练习。"
   },
   "track": {
     "streakTitle": "连续打卡",
@@ -569,7 +569,8 @@
     "trainAnyway": "仍然训练",
     "alreadyDoneTitle": "今天的训练已完成",
     "alreadyDoneSub": "连续记录已保住。今天再练都是额外收获，不是负担。",
-    "startAgain": "再练一次"
+    "startAgain": "再练一次",
+    "demoSoon": "示意图即将上线——请先按下面的步骤练习。"
   },
   "recovery": {
     "title": "休息与恢复",
@@ -625,7 +626,8 @@
     "cameraDenied": "摄像头访问被拒绝。你可以改为上传视频。",
     "videoFailed": "无法读取该视频。请试试更短的片段或改为录制。",
     "noAi": "AI 回顾尚未接通（无 API 密钥）。暂时使用上方的清单。",
-    "analyzeFailed": "无法分析。请用更清晰、光线更好的片段重试。"
+    "analyzeFailed": "无法分析。请用更清晰、光线更好的片段重试。",
+    "demoSoon": "示意图即将上线——请先按下面的步骤练习。"
   },
   "plans": {
     "backDash": "面板",

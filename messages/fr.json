@@ -168,7 +168,7 @@
     "targetWeightPlaceholder": "Poids visé en {unit}",
     "errWeight": "Entre un poids réel — 25–350 kg (55–770 lb).",
     "errHeight": "Entre une taille réelle — 90–250 cm (3–8,2 ft).",
-    "errAge": "Entre un âge réel — 8–100.",
+    "errAge": "Tu dois avoir au moins 16 ans pour utiliser RingBornn — entre un âge de 16 à 100.",
     "errTarget": "Entre un objectif atteignable — 25–350 kg (55–770 lb).",
     "timeframeLabel": "Échéance visée",
     "customTimeframePlaceholder": "Pour quand ? (ex. pour mon anniversaire en décembre, dans 10 semaines)",
@@ -418,7 +418,6 @@
     "backDash": "Tableau de bord",
     "close": "Fermer",
     "rotateHint": "Le coach exécute l'exercice — fais glisser pour tourner, molette ou pincement pour zoomer.",
-    "demo3dError": "Impossible de charger le modèle 3D.",
     "musclesHint": "Rouge = les muscles ciblés par cette leçon.",
     "technique": "La bonne technique",
     "markDone": "Je l'ai fait aujourd'hui",
@@ -435,7 +434,8 @@
     "bp_shoulders": "Épaules",
     "bp_back": "Dos",
     "bp_core": "Gainage",
-    "bp_legs": "Jambes"
+    "bp_legs": "Jambes",
+    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous."
   },
   "track": {
     "streakTitle": "Série",
@@ -569,7 +569,8 @@
     "trainAnyway": "S'entraîner quand même",
     "alreadyDoneTitle": "La séance d'aujourd'hui est faite",
     "alreadyDoneSub": "Ta série est préservée. Tout le reste aujourd'hui est un bonus, pas une dette.",
-    "startAgain": "S'entraîner encore"
+    "startAgain": "S'entraîner encore",
+    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous."
   },
   "recovery": {
     "title": "Repos et récupération",
@@ -625,7 +626,8 @@
     "cameraDenied": "L'accès à la caméra a été refusé. Tu peux téléverser une vidéo à la place.",
     "videoFailed": "Impossible de lire cette vidéo. Essaie un clip plus court ou enregistre à la place.",
     "noAi": "L'analyse IA n'est pas encore branchée (pas de clé API). Utilise la liste ci-dessus pour l'instant.",
-    "analyzeFailed": "Impossible d'analyser. Réessaie avec un clip plus net et bien éclairé."
+    "analyzeFailed": "Impossible d'analyser. Réessaie avec un clip plus net et bien éclairé.",
+    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous."
   },
   "plans": {
     "backDash": "Tableau de bord",

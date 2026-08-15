@@ -1,3 +1,4 @@
+import { guardAiRoute, isDenied } from "@/lib/api-guard";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
@@ -81,6 +82,16 @@ const SCHEMA = {
 } as const;
 
 export async function POST(req: Request) {
+  /* Sign-in required, like every other route that can reach Anthropic. This
+     one was missed: it took a profile from anyone on the internet and spent a
+     model call on it, so the bill was open to whoever found the URL. No quota
+     key — the analysis runs once at the end of onboarding, and metering the
+     one call that produces a person's plan would be the wrong thing to ration.
+     Onboarding itself already requires an account, so nothing legitimate
+     reaches here signed out. */
+  const guard = await guardAiRoute(null);
+  if (isDenied(guard)) return guard.response;
+
   let profile: Profile;
   try {
     profile = (await req.json()) as Profile;

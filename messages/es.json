@@ -168,7 +168,7 @@
     "targetWeightPlaceholder": "Peso meta en {unit}",
     "errWeight": "Introduce un peso real — 25–350 kg (55–770 lb).",
     "errHeight": "Introduce una altura real — 90–250 cm (3–8,2 ft).",
-    "errAge": "Introduce una edad real — 8–100.",
+    "errAge": "Debes tener al menos 16 años para usar RingBornn — introduce una edad de 16 a 100.",
     "errTarget": "Introduce una meta alcanzable — 25–350 kg (55–770 lb).",
     "timeframeLabel": "Plazo objetivo",
     "customTimeframePlaceholder": "¿Para cuándo? (ej. para mi cumpleaños en diciembre, en 10 semanas)",
@@ -418,7 +418,6 @@
     "backDash": "Panel",
     "close": "Cerrar",
     "rotateHint": "El entrenador realiza el ejercicio — arrastra para rotar, usa la rueda o pellizca para acercar.",
-    "demo3dError": "No se pudo cargar el modelo 3D.",
     "musclesHint": "Rojo = los músculos que trabaja esta lección.",
     "technique": "La técnica correcta",
     "markDone": "Lo hice hoy",
@@ -435,7 +434,8 @@
     "bp_shoulders": "Hombros",
     "bp_back": "Espalda",
     "bp_core": "Core",
-    "bp_legs": "Piernas"
+    "bp_legs": "Piernas",
+    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo."
   },
   "track": {
     "streakTitle": "Racha",
@@ -569,7 +569,8 @@
     "trainAnyway": "Entrenar igualmente",
     "alreadyDoneTitle": "La sesión de hoy está hecha",
     "alreadyDoneSub": "Tu racha está a salvo. Todo lo demás hoy es un extra, no una deuda.",
-    "startAgain": "Entrenar otra vez"
+    "startAgain": "Entrenar otra vez",
+    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo."
   },
   "recovery": {
     "title": "Descanso y recuperación",
@@ -625,7 +626,8 @@
     "cameraDenied": "Se denegó el acceso a la cámara. Puedes subir un vídeo en su lugar.",
     "videoFailed": "No se pudo leer ese vídeo. Prueba un clip más corto o graba en su lugar.",
     "noAi": "La revisión con IA aún no está conectada (sin clave de API). Usa la lista de arriba por ahora.",
-    "analyzeFailed": "No se pudo analizar. Inténtalo de nuevo con un clip más claro y bien iluminado."
+    "analyzeFailed": "No se pudo analizar. Inténtalo de nuevo con un clip más claro y bien iluminado.",
+    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo."
   },
   "plans": {
     "backDash": "Panel",

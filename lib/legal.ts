@@ -13,10 +13,13 @@ export const OPERATOR = "Nexara";
 export const SERVICE = "RingBornn";
 export const SITE = "boxing-murex.vercel.app";
 
-/** Where access and deletion requests land, and the address Paddle's review
-    looks for. A dedicated inbox rather than a personal one, so it can be
-    handed over or shared without giving away anything else. */
-export const CONTACT_EMAIL = "ringbornn@gmail.com";
+/* Blank until a real inbox exists — an address printed in a privacy policy
+   that nobody reads is worse than none, because access and deletion requests
+   sent there vanish silently. While it is empty every page points at Telegram
+   instead, which is monitored. Fill it in before taking payments: a reachable
+   contact is on the payment provider's approval checklist, and a data-rights
+   request has to land somewhere a human sees. */
+export const CONTACT_EMAIL = "";
 
 /** Deadline we commit to for access/deletion requests. 30 days is the GDPR
     limit and the figure most services quote, so it travels well. */

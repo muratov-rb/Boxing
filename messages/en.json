@@ -168,7 +168,7 @@
     "targetWeightPlaceholder": "Goal weight in {unit}",
     "errWeight": "Enter a real weight — 25–350 kg (55–770 lb).",
     "errHeight": "Enter a real height — 90–250 cm (3–8.2 ft).",
-    "errAge": "Enter a real age — 8–100.",
+    "errAge": "You must be at least 16 to use RingBornn — enter an age from 16 to 100.",
     "errTarget": "Enter a reachable target — 25–350 kg (55–770 lb).",
     "timeframeLabel": "Target timeframe",
     "customTimeframePlaceholder": "By when? (e.g. by my birthday in December, in 10 weeks)",
@@ -435,7 +435,7 @@
     "bp_back": "Back",
     "bp_core": "Core",
     "bp_legs": "Legs",
-    "demoSoon": "Video demo coming soon — follow the steps below."
+    "demoSoon": "Illustration coming soon — follow the steps below."
   },
   "track": {
     "streakTitle": "Streak",
@@ -567,7 +567,7 @@
     "restTip2": "Light walk or gentle mobility, nothing taxing",
     "restTip3": "Hydrate and eat enough protein to rebuild",
     "trainAnyway": "Train anyway",
-    "demoSoon": "Video demo coming soon — follow the steps below.",
+    "demoSoon": "Illustration coming soon — follow the steps below.",
     "alreadyDoneTitle": "Today's session is done",
     "alreadyDoneSub": "Your streak is safe. Anything more today is a bonus, not a debt.",
     "startAgain": "Train again"
@@ -627,7 +627,7 @@
     "videoFailed": "Couldn't read that video. Try a shorter clip or record instead.",
     "noAi": "AI review isn't connected yet (no API key). Use the checklist above for now.",
     "analyzeFailed": "Couldn't analyze that. Try again with a clearer, well-lit clip.",
-    "demoSoon": "Video demo coming soon — follow the steps below."
+    "demoSoon": "Illustration coming soon — follow the steps below."
   },
   "plans": {
     "backDash": "Dashboard",
