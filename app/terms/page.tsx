@@ -44,7 +44,7 @@ const SECTIONS: Section[] = [
       `These terms are a binding agreement between you and ${OPERATOR}, who operates ${SERVICE} at ${SITE}. By ticking the box at sign-up, creating an account, or otherwise using the Service, you accept them. If you do not accept them, do not use the Service.`,
       `You must be at least ${MIN_AGE} years old to hold an account. If the age of digital consent where you live is higher than ${MIN_AGE}, that higher age applies to you instead.`,
       "By accepting, you confirm that the information you give us is accurate, that you are using the Service for your own personal training, and that you are legally able to enter into this agreement.",
-      "These terms should be read together with our Privacy Policy, Cookie Policy and Refunds & Cancellation policy, each of which forms part of this agreement.",
+      "These terms should be read together with our Privacy Policy and Refunds & Cancellation policy, each of which forms part of this agreement.",
     ],
   },
   {
@@ -195,7 +195,7 @@ const SECTIONS: Section[] = [
     heading: "14. Data protection and cookies",
     blocks: [
       "How we handle personal data is set out in our Privacy Policy, which forms part of these terms.",
-      "The Service uses only cookies that are strictly necessary or that remember a preference you set. It does not use advertising cookies, and does not run third-party analytics or tracking. Our Cookie Policy lists every cookie we set and what it does.",
+      "The Service uses only cookies that are strictly necessary or that remember a preference you set. It does not use advertising cookies, and does not run third-party analytics or tracking. Our Privacy Policy lists every cookie we set, what it does and how long it lasts.",
       `You have rights over your personal data, including access, correction and deletion, and we respond to requests within ${REQUEST_DAYS} days. The Privacy Policy explains how to exercise them.`,
     ],
   },
@@ -240,7 +240,7 @@ const SECTIONS: Section[] = [
   {
     heading: "20. General",
     blocks: [
-      "These terms, together with the Privacy Policy, Cookie Policy and Refunds & Cancellation policy, are the entire agreement between us about the Service, and replace any earlier understanding.",
+      "These terms, together with the Privacy Policy and Refunds & Cancellation policy, are the entire agreement between us about the Service, and replace any earlier understanding.",
       "If any part of these terms turns out to be unenforceable, it is severed and the rest stays in force. If we do not enforce a term straight away, we have not given up the right to enforce it later.",
       "You may not transfer your rights or obligations under these terms to anyone else. We may transfer ours — for example if the business is sold — provided your rights are not reduced.",
       "There are no third-party beneficiaries to this agreement.",

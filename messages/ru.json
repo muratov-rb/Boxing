@@ -93,8 +93,7 @@
     "rights": "© {year} RingBornn · создано компанией Nexara",
     "privacy": "Конфиденциальность",
     "terms": "Условия",
-    "refunds": "Возвраты",
-    "cookies": "Cookie"
+    "refunds": "Возвраты"
   },
   "auth": {
     "welcomeBack": "С возвращением",
@@ -808,7 +807,6 @@
     "legalIntro": "Соглашение, которое вы приняли при регистрации, и то, как мы обращаемся с вашими данными.",
     "legalTerms": "Условия использования",
     "legalPrivacy": "Политика конфиденциальности",
-    "legalCookies": "Политика cookie",
     "legalRefunds": "Возвраты и отмена"
   },
   "calories": {

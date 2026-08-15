@@ -196,7 +196,6 @@ export function ProfileClient({ email }: { email: string | null }) {
               [
                 ["/terms", "legalTerms", "card"],
                 ["/privacy", "legalPrivacy", "lock"],
-                ["/cookies", "legalCookies", "check"],
                 ["/refunds", "legalRefunds", "arrow"],
               ] as const
             ).map(([href, key, icon]) => (

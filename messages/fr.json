@@ -93,8 +93,7 @@
     "rights": "© {year} RingBornn · créé par Nexara",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "refunds": "Remboursements",
-    "cookies": "Cookies"
+    "refunds": "Remboursements"
   },
   "auth": {
     "welcomeBack": "Content de te revoir",
@@ -806,7 +805,6 @@
     "legalIntro": "Le contrat accepté à la création de ton compte, et la façon dont tes données sont traitées.",
     "legalTerms": "Conditions d'utilisation",
     "legalPrivacy": "Politique de confidentialité",
-    "legalCookies": "Politique de cookies",
     "legalRefunds": "Remboursements et annulation"
   },
   "calories": {

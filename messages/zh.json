@@ -93,8 +93,7 @@
     "rights": "© {year} RingBornn · 由 Nexara 打造",
     "privacy": "隐私政策",
     "terms": "服务条款",
-    "refunds": "退款",
-    "cookies": "Cookie"
+    "refunds": "退款"
   },
   "auth": {
     "welcomeBack": "欢迎回来",
@@ -806,7 +805,6 @@
     "legalIntro": "你注册时接受的协议，以及我们如何处理你的数据。",
     "legalTerms": "服务条款",
     "legalPrivacy": "隐私政策",
-    "legalCookies": "Cookie 政策",
     "legalRefunds": "退款与取消"
   },
   "calories": {

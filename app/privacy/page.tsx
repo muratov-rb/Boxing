@@ -104,13 +104,18 @@ const SECTIONS: Section[] = [
     heading: "Data stored on your own device",
     blocks: [
       "The app keeps a copy of your training data in your browser so it loads instantly and keeps working when you are offline. That copy is synchronised with your account when you are signed in.",
-      "We set a small number of cookies, all of them necessary:",
+      "We set four cookies. Every one is either required for the site to work or remembers a setting you chose:",
       [
-        "A sign-in session cookie, so you stay logged in.",
-        "A theme cookie, remembering light or dark mode.",
-        "A language cookie, remembering the language you picked.",
+        "Supabase sign-in cookies (names begin with sb-) — keep you signed in as you move between pages and prove to our server that a request is really from you. Without them you would be signed out on every page load. They last for your session and refresh while you stay signed in.",
+        "rb_admin — set only on an administrator's own device after signing in to the private admin area, never on a normal user's device. It is signed, readable only by our server, and expires after 7 days.",
+        "theme — remembers whether you chose light or dark mode, so the right one renders immediately instead of flashing the wrong one. Lasts one year.",
+        "NEXT_LOCALE — remembers the language you selected. Lasts one year.",
       ],
-      "There are no advertising or analytics cookies. Clearing your browser storage removes the local copy; your account data stays on the server.",
+      "That is the complete list. If we ever add a cookie, it will be described here before it is set.",
+      "To be explicit, because most sites do use these: there are no advertising or retargeting cookies, no third-party analytics (no Google Analytics, no Meta Pixel, no session recording), no social tracking pixels, no cross-site tracking, and no fingerprinting. We do not sell or share your browsing behaviour with anyone.",
+      "Because these cookies are either strictly necessary to deliver a service you asked for, or simply remember a preference you set yourself, they do not require a consent banner under the ePrivacy rules. We do not set any other kind.",
+      "You can delete or block cookies in your browser settings. Blocking the sign-in cookies will stop you being able to log in — the Service cannot keep you authenticated without them. Blocking the preference cookies only means the site forgets your theme and language between visits.",
+      "Clearing your browser storage removes the local copy of your training data; your account data stays on the server and syncs back when you sign in.",
     ],
   },
   {
