@@ -63,6 +63,9 @@ const SECTIONS: Section[] = [
       ],
       "You acknowledge and voluntarily accept these risks. You take part at your own risk, and you are solely responsible for deciding whether any exercise, session or nutritional suggestion is appropriate for you.",
       "If you are under 18, do not use the Service without the involvement and agreement of a parent or guardian.",
+      "On results: we do not promise any particular outcome. Fitness results depend on genetics, age, starting point, sleep, stress, diet, injury history, consistency and much else that no app can see or control, and two people following the same plan will not get the same result.",
+      "When you give a goal and a deadline, the Service estimates how realistic that combination looks and shows a percentage. That figure is an illustration produced from your own numbers, not a forecast, not a promise, and not a professional assessment. A high score is not a guarantee you will succeed, and a low one is not a verdict that you cannot — it is there to help you set a sensible timeframe, and you should treat it that way.",
+      "Calorie, macronutrient and energy-burn figures throughout the Service are estimates from standard formulas and typical values. They are not measurements of your body, and real figures vary from person to person and from day to day.",
     ],
   },
   {

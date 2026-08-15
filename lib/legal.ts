@@ -6,7 +6,7 @@
    =========================================================================== */
 
 /** Bump this whenever the wording of either page changes materially. */
-export const LEGAL_UPDATED = "4 August 2026";
+export const LEGAL_UPDATED = "5 August 2026";
 
 /** Who operates the service, as it should appear to a user. */
 export const OPERATOR = "Nexara";
