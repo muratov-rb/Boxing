@@ -182,6 +182,43 @@ export function ProfileClient({ email }: { email: string | null }) {
           </div>
         </section>
 
+        {/* --------------------------- the paperwork -------------------------- */}
+        {/* Only the landing footer linked these, and a signed-in user never
+            sees the landing page — so the terms they agreed to were reachable
+            only by logging out or typing the URL. */}
+        <h2 className="mt-10 font-condensed text-sm font-bold uppercase tracking-widest text-ash">
+          {t("legalTitle")}
+        </h2>
+        <section className="panel mt-4 p-6">
+          <p className="text-sm text-ash">{t("legalIntro")}</p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {(
+              [
+                ["/terms", "legalTerms", "card"],
+                ["/privacy", "legalPrivacy", "lock"],
+                ["/cookies", "legalCookies", "check"],
+                ["/refunds", "legalRefunds", "arrow"],
+              ] as const
+            ).map(([href, key, icon]) => (
+              <Link
+                key={href}
+                href={href}
+                className="group flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3 transition-colors hover:border-blood/50"
+              >
+                <span className="flex items-center gap-2.5">
+                  <span className="text-ash-dim transition-colors group-hover:text-blood">
+                    <Icon name={icon} size={15} />
+                  </span>
+                  <span className="text-sm text-bone">{t(key)}</span>
+                </span>
+                <span className="text-ash-dim transition-transform group-hover:translate-x-0.5 group-hover:text-blood">
+                  <Icon name="arrow" size={14} />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {/* account + billing management live together, at the end */}
         <DangerZone />
       </main>

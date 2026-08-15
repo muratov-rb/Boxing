@@ -567,7 +567,10 @@
     "restTip1": "Duerme 7–9 horas — la verdadera ventana de crecimiento",
     "restTip2": "Caminata ligera o movilidad suave, nada exigente",
     "restTip3": "Hidrátate y come suficiente proteína para reconstruir",
-    "trainAnyway": "Entrenar igualmente"
+    "trainAnyway": "Entrenar igualmente",
+    "alreadyDoneTitle": "La sesión de hoy está hecha",
+    "alreadyDoneSub": "Tu racha está a salvo. Todo lo demás hoy es un extra, no una deuda.",
+    "startAgain": "Entrenar otra vez"
   },
   "recovery": {
     "title": "Descanso y recuperación",
@@ -798,7 +801,13 @@
     "noPlan": "Sin plan de pago.",
     "billedAs": "{price} facturado {period}",
     "changePlan": "Cambiar plan",
-    "seePlans": "Ver planes"
+    "seePlans": "Ver planes",
+    "legalTitle": "Términos y políticas",
+    "legalIntro": "El acuerdo que aceptaste al crear tu cuenta y cómo tratamos tus datos.",
+    "legalTerms": "Términos del Servicio",
+    "legalPrivacy": "Política de Privacidad",
+    "legalCookies": "Política de Cookies",
+    "legalRefunds": "Reembolsos y cancelación"
   },
   "calories": {
     "kicker": "Combustible",

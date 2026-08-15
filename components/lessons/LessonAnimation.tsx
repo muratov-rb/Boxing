@@ -49,9 +49,14 @@ export function LessonAnimation({
        whose intrinsic size is already right; next/image would add a layout
        wrapper and a resize step for no gain at ~67 KB. */
     <img
-      src={`/exercises/${exerciseId}.png`}
+      src={`/exercises/${exerciseId}.jpg`}
       alt={alt}
-      className={`${className} object-contain`}
+      /* Sized by its own aspect ratio rather than dropped into a fixed-height
+         box. The strips are all 1280 wide but vary from 605 to 853 tall, so a
+         single fixed height letterboxed the short ones and cropped the tall
+         ones — this way each fills the width exactly and takes the height it
+         actually needs. */
+      className={`${className} h-auto w-full`}
       loading="lazy"
       decoding="async"
       draggable={false}

@@ -568,7 +568,10 @@
     "restTip2": "Light walk or gentle mobility, nothing taxing",
     "restTip3": "Hydrate and eat enough protein to rebuild",
     "trainAnyway": "Train anyway",
-    "demoSoon": "Video demo coming soon — follow the steps below."
+    "demoSoon": "Video demo coming soon — follow the steps below.",
+    "alreadyDoneTitle": "Today's session is done",
+    "alreadyDoneSub": "Your streak is safe. Anything more today is a bonus, not a debt.",
+    "startAgain": "Train again"
   },
   "recovery": {
     "title": "Rest & Recovery",
@@ -800,7 +803,13 @@
     "noPlan": "No paid plan.",
     "billedAs": "{price} billed {period}",
     "changePlan": "Change plan",
-    "seePlans": "See plans"
+    "seePlans": "See plans",
+    "legalTitle": "Terms & policies",
+    "legalIntro": "The agreement you accepted when you created your account, and how your data is handled.",
+    "legalTerms": "Terms of Service",
+    "legalPrivacy": "Privacy Policy",
+    "legalCookies": "Cookie Policy",
+    "legalRefunds": "Refunds & Cancellation"
   },
   "calories": {
     "kicker": "Fuel",

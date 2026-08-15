@@ -13,6 +13,7 @@ import {
 import {
   loadProfile,
   markTrainedToday,
+  trainedToday,
   awardXp,
   addBurned,
   dailyPlanLimit,
@@ -54,6 +55,10 @@ export function TrainClient() {
   const [paused, setPaused] = useState(false);
   const [workedSec, setWorkedSec] = useState(0);
   const [planLimit, setPlanLimit] = useState<LimitState | null>(null);
+  /* Whether today is already logged. Coming back to this page after finishing
+     used to look identical to arriving fresh — same "Start Workout" button,
+     no acknowledgement that the day was done. */
+  const [doneToday, setDoneToday] = useState(false);
   const streakDone = useRef(false);
 
   /* build today's structured plan from the saved profile */
@@ -65,6 +70,7 @@ export function TrainClient() {
     setKind(plan.kind);
     setFocus(plan.focus);
     setPlanLimit(dailyPlanLimit());
+    setDoneToday(trainedToday());
     // on a full rest day, keep a real session ready in case they train anyway
     setSession(
       plan.kind === "rest"
@@ -114,6 +120,7 @@ export function TrainClient() {
   useEffect(() => {
     if (phase === "done" && !streakDone.current) {
       streakDone.current = true;
+      setDoneToday(true);
       markTrainedToday();
       awardXp("workout"); // completing a full session moves the rank
       addBurned(estKcal); // credit the burn back to the calorie budget
@@ -223,6 +230,22 @@ export function TrainClient() {
               <p className="mt-2 text-xs text-ash-dim">{t("noExercises")}</p>
             )}
 
+            {/* Today is already logged. Say so plainly — the streak is safe
+                and anything more is a bonus, not a second obligation. */}
+            {doneToday && (
+              <div className="animate-rise panel mt-6 flex flex-wrap items-center gap-3 border-azure/40 p-4">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-azure/50 text-azure">
+                  <Icon name="check" size={18} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-condensed text-sm font-bold uppercase tracking-wide text-bone">
+                    {t("alreadyDoneTitle")}
+                  </p>
+                  <p className="mt-0.5 text-sm text-ash">{t("alreadyDoneSub")}</p>
+                </div>
+              </div>
+            )}
+
             <div className="panel mt-8 p-6">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <span
@@ -264,7 +287,7 @@ export function TrainClient() {
                   disabled={session.length === 0}
                   className="btn btn-primary shine mt-6 w-full"
                 >
-                  {t("start")}
+                  {doneToday ? t("startAgain") : t("start")}
                   <Icon name="bolt" size={18} />
                 </button>
               )}
@@ -328,7 +351,7 @@ export function TrainClient() {
                 <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
                   <LessonAnimation
                     exerciseId={shown.id}
-                    className="h-64 w-full sm:h-80"
+                    className=""
                     soonText={t("demoSoon")}
                     alt={shown.name[locale]}
                   />

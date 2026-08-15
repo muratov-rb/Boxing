@@ -567,7 +567,10 @@
     "restTip1": "Dors 7 à 9 heures — la vraie fenêtre de croissance",
     "restTip2": "Marche légère ou mobilité douce, rien d'exigeant",
     "restTip3": "Hydrate-toi et mange assez de protéines pour reconstruire",
-    "trainAnyway": "S'entraîner quand même"
+    "trainAnyway": "S'entraîner quand même",
+    "alreadyDoneTitle": "La séance d'aujourd'hui est faite",
+    "alreadyDoneSub": "Ta série est préservée. Tout le reste aujourd'hui est un bonus, pas une dette.",
+    "startAgain": "S'entraîner encore"
   },
   "recovery": {
     "title": "Repos et récupération",
@@ -798,7 +801,13 @@
     "noPlan": "Aucune formule payante.",
     "billedAs": "{price} facturé {period}",
     "changePlan": "Changer de formule",
-    "seePlans": "Voir les formules"
+    "seePlans": "Voir les formules",
+    "legalTitle": "Conditions et politiques",
+    "legalIntro": "Le contrat accepté à la création de ton compte, et la façon dont tes données sont traitées.",
+    "legalTerms": "Conditions d'utilisation",
+    "legalPrivacy": "Politique de confidentialité",
+    "legalCookies": "Politique de cookies",
+    "legalRefunds": "Remboursements et annulation"
   },
   "calories": {
     "kicker": "Carburant",

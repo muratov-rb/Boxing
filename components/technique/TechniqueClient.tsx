@@ -91,7 +91,7 @@ export function TechniqueClient() {
               <LessonAnimation
                 key={tech.image}
                 exerciseId={tech.image}
-                className="h-64 w-full sm:h-72"
+                className=""
                 soonText={t("demoSoon")}
                 alt={tech.name[locale]}
               />

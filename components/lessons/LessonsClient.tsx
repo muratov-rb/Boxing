@@ -85,7 +85,7 @@ function LessonDetail({
             <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">
               <LessonAnimation
                 exerciseId={ex.id}
-                className="h-64 w-full sm:h-80"
+                className=""
                 soonText={t("demoSoon")}
                 alt={ex.name[locale]}
               />

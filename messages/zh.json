@@ -567,7 +567,10 @@
     "restTip1": "睡 7–9 小时——真正的生长窗口",
     "restTip2": "轻散步或温和的灵活性练习，不要吃力",
     "restTip3": "补水并摄入足够蛋白质来重建",
-    "trainAnyway": "仍然训练"
+    "trainAnyway": "仍然训练",
+    "alreadyDoneTitle": "今天的训练已完成",
+    "alreadyDoneSub": "连续记录已保住。今天再练都是额外收获，不是负担。",
+    "startAgain": "再练一次"
   },
   "recovery": {
     "title": "休息与恢复",
@@ -798,7 +801,13 @@
     "noPlan": "暂无付费套餐。",
     "billedAs": "{price}，{period}计费",
     "changePlan": "更换套餐",
-    "seePlans": "查看套餐"
+    "seePlans": "查看套餐",
+    "legalTitle": "条款与政策",
+    "legalIntro": "你注册时接受的协议，以及我们如何处理你的数据。",
+    "legalTerms": "服务条款",
+    "legalPrivacy": "隐私政策",
+    "legalCookies": "Cookie 政策",
+    "legalRefunds": "退款与取消"
   },
   "calories": {
     "kicker": "能量",
