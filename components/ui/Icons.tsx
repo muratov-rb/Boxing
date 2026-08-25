@@ -27,9 +27,12 @@ export type IconName =
   | "card"
   | "clock"
   | "mail"
+  | "water"
   | "chevron";
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  /* A droplet: point at the top, round belly below. */
+  water: <path d="M12 3.2s5.5 6.1 5.5 9.6a5.5 5.5 0 0 1-11 0C6.5 9.3 12 3.2 12 3.2Z" />,
   mail: (
     <>
       <rect x="3" y="5.5" width="18" height="13" rx="2" />

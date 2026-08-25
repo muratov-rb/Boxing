@@ -11,10 +11,23 @@ const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
    Returns { error: "no_ai" } (503) when no key is set, so the client can
    fall back to manual entry without breaking. */
 
+/* Micronutrients are asked for at the TOTAL level only, never per item.
+   Estimating five minerals for every component of a plate multiplies the
+   model's uncertainty without telling the user anything they act on, and the
+   UI only ever shows a daily total anyway. */
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["items", "total_kcal", "total_protein", "total_carbs", "total_fat", "note"],
+  required: [
+    "items",
+    "total_kcal",
+    "total_protein",
+    "total_carbs",
+    "total_fat",
+    "total_fiber",
+    "micros",
+    "note",
+  ],
   properties: {
     items: {
       type: "array",
@@ -35,6 +48,19 @@ const SCHEMA = {
     total_protein: { type: "integer" },
     total_carbs: { type: "integer" },
     total_fat: { type: "integer" },
+    total_fiber: { type: "integer" },
+    micros: {
+      type: "object",
+      additionalProperties: false,
+      required: ["iron", "calcium", "potassium", "sodium", "vitaminC"],
+      properties: {
+        iron: { type: "integer", description: "milligrams" },
+        calcium: { type: "integer", description: "milligrams" },
+        potassium: { type: "integer", description: "milligrams" },
+        sodium: { type: "integer", description: "milligrams" },
+        vitaminC: { type: "integer", description: "milligrams" },
+      },
+    },
     note: { type: "string" },
   },
 } as const;
@@ -92,8 +118,12 @@ export async function POST(req: Request) {
         "For each distinct food item you can identify, give a realistic estimate for the VISIBLE PORTION: " +
         "kcal, plus protein, carbs and fat in whole grams. Judge the portion size from the plate/hand/utensils for realism — " +
         "don't over- or under-shoot. Sum the items into total_kcal, total_protein, total_carbs and total_fat, " +
-        "and add one short practical note (a portion caveat or a coach tip). " +
-        "If the photo clearly contains no food, return an empty items array with all totals 0 and say so in the note." +
+        "and estimate total_fiber in whole grams. " +
+        "Then estimate the meal's iron, calcium, potassium, sodium and vitamin C in whole MILLIGRAMS, as a total for the whole meal. " +
+        "Base these on standard composition values for the foods you identified at the portion size you judged. " +
+        "Use 0 for a nutrient the meal genuinely has almost none of — do not invent a spread of plausible-looking numbers. " +
+        "add one short practical note (a portion caveat or a coach tip). " +
+        "If the photo clearly contains no food, return an empty items array with all totals and micros 0 and say so in the note." +
         (locale === "ru" ? " Write item names and the note in Russian." : ""),
       messages: [
         {

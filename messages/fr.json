@@ -873,5 +873,35 @@
     "otherTitle": "Autres moyens de nous joindre",
     "otherBody": "Le formulaire est le plus rapide : il arrive directement dans notre file. Telegram fonctionne aussi, mais nous le consultons moins souvent.",
     "otherTelegram": "Telegram"
+  },
+  "macro": {
+    "title": "Macros du jour",
+    "sub": "Protéines, glucides et lipides face à la répartition calculée sur votre profil.",
+    "protein": "Protéines",
+    "carbs": "Glucides",
+    "fat": "Lipides",
+    "fiber": "Fibres",
+    "empty": "Enregistrez un repas. Les scans remplissent ces valeurs automatiquement."
+  },
+  "water": {
+    "title": "Eau",
+    "glass": "Verre",
+    "bottle": "Bouteille",
+    "undo": "Annuler",
+    "reset": "Remettre à zéro",
+    "done": "Objectif atteint",
+    "hint": "Environ 35 ml par kg de poids. Un verre fait 250 ml, une bouteille 500 ml.",
+    "hintTrained": "Vous avez entraîné aujourd'hui : l'objectif inclut 500 ml de plus pour compenser la transpiration."
+  },
+  "micro": {
+    "title": "Minéraux et vitamine C",
+    "estimateNote": "Estimations issues des tables de composition des aliments — une indication, pas une mesure.",
+    "empty": "Scannez un repas pour l'afficher. Les scans estiment les minéraux ; la saisie manuelle ne retient que les calories.",
+    "coverage": "Basé sur les {pct}% des repas du jour porteurs de données nutritionnelles.",
+    "iron": "Fer",
+    "calcium": "Calcium",
+    "potassium": "Potassium",
+    "sodium": "Sodium",
+    "vitaminC": "Vitamine C"
   }
 }

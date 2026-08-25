@@ -4,14 +4,22 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AppNav } from "@/components/nav/AppNav";
 import { CalorieCard } from "@/components/dashboard/CalorieCard";
+import { MacroPanel } from "@/components/nutrition/MacroPanel";
+import { MicroPanel } from "@/components/nutrition/MicroPanel";
+import { WaterCard } from "@/components/nutrition/WaterCard";
+import { useTodayNutrition } from "@/components/nutrition/useTodayNutrition";
 import { Icon } from "@/components/ui/Icons";
 
-/* Page shell around the existing counter. The card keeps all its behaviour —
-   meal log, scanner, quotas — it just gets room to breathe and a link across
-   to the AI nutrition side, which is the question people ask next. */
+/* The day's intake in one place: calories in the counter, then the breakdown
+   that tells you whether those calories were any good — macros, water, and the
+   minerals a fighter's diet tends to miss.
+
+   The panels read today's meals through a subscription rather than props from
+   the counter, so logging a meal updates all of them at once. */
 
 export function CaloriesClient() {
   const t = useTranslations("calories");
+  const { meals, profile, ready } = useTodayNutrition();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -25,8 +33,17 @@ export function CaloriesClient() {
         </h1>
         <p className="mt-3 max-w-xl text-ash">{t("sub")}</p>
 
-        <div className="mt-8">
+        <div className="mt-8 space-y-4">
           <CalorieCard />
+          {/* Hidden until localStorage has been read: rendering zeros first and
+              correcting them a frame later reads as the numbers being wrong. */}
+          {ready && (
+            <>
+              <MacroPanel meals={meals} profile={profile} />
+              <WaterCard />
+              <MicroPanel meals={meals} profile={profile} />
+            </>
+          )}
         </div>
 
         <Link

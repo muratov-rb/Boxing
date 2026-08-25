@@ -41,6 +41,7 @@ export default function SyncBench() {
       meals: localStorage.getItem(KEYS.meals),
       xp: localStorage.getItem(KEYS.xp),
       burn: localStorage.getItem(KEYS.burn),
+      water: localStorage.getItem(KEYS.water),
       usage: localStorage.getItem(KEYS.usage),
     };
     localStorage.setItem(KEYS.streak, JSON.stringify(["2026-01-05"]));
@@ -51,6 +52,7 @@ export default function SyncBench() {
     );
     localStorage.setItem(KEYS.xp, JSON.stringify({ xp: 40, lastActive: "2026-01-05" }));
     localStorage.setItem(KEYS.burn, JSON.stringify({ "2026-01-05": 100 }));
+    localStorage.setItem(KEYS.water, JSON.stringify({ "2026-01-05": 1500 }));
     localStorage.setItem(KEYS.usage, JSON.stringify({ "2026-01-05": { calorieScan: 1 } }));
 
     const patch = computeMergePatch({
@@ -63,6 +65,7 @@ export default function SyncBench() {
           trained: true,
           visited: true,
           burned: 250,
+          water: 2000,
           meals: [{ id: "srv1", name: "rice", kcal: 300, at: "T2", source: "manual" }],
           usage: { calorieScan: 2 },
         },
@@ -72,6 +75,9 @@ export default function SyncBench() {
           trained: false,
           visited: true,
           burned: 60,
+          // deliberately BEHIND the local figure: a phone that logged fewer
+          // glasses must not wipe out drinks logged on another device
+          water: 750,
           meals: [{ id: "srv2", name: "milk", kcal: 90, at: "T3", source: "manual" }],
           usage: { techniqueVideo: 1 },
         },
@@ -81,6 +87,7 @@ export default function SyncBench() {
     const streak = patch[KEYS.streak] as string[];
     const meals = patch[KEYS.meals] as Record<string, { id: string }[]>;
     const burn = patch[KEYS.burn] as Record<string, number>;
+    const water = patch[KEYS.water] as Record<string, number>;
     const usage = patch[KEYS.usage] as Record<string, Record<string, number>>;
     const xp = patch[KEYS.xp] as { xp: number };
 
@@ -91,6 +98,8 @@ export default function SyncBench() {
       gainedServerMeal: meals["2026-01-05"].some((m) => m.id === "srv2"),
       noDuplicateMeals: meals["2026-01-05"].length === 2,
       burnTakesHigher: burn["2026-01-05"] === 100, // local 100 vs server 60
+      waterKeepsLocalHigher: water["2026-01-05"] === 1500, // local 1500 vs server 750
+      waterGainsServerDay: water["2026-01-06"] === 2000, // day only the server had
       usageUnioned:
         usage["2026-01-05"].calorieScan === 1 && usage["2026-01-05"].techniqueVideo === 1,
       xpTakesHigher: xp?.xp === 90, // server ahead

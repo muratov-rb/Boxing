@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
+import type { Micros } from "@/lib/nutrients";
 
 /* ===========================================================================
    FoodScanner — photo → Claude vision → calories.
@@ -23,6 +24,8 @@ export interface ScanResult {
   total_protein?: number;
   total_carbs?: number;
   total_fat?: number;
+  total_fiber?: number;
+  micros?: Micros;
   note: string;
 }
 
@@ -30,6 +33,8 @@ export interface ScanMacros {
   protein?: number;
   carbs?: number;
   fat?: number;
+  fiber?: number;
+  micros?: Micros;
 }
 
 type Stage = "consent" | "camera" | "preview" | "scanning" | "result" | "error";
@@ -133,6 +138,8 @@ export function FoodScanner({
       protein: result.total_protein,
       carbs: result.total_carbs,
       fat: result.total_fat,
+      fiber: result.total_fiber,
+      micros: result.micros,
     });
     onClose();
   }

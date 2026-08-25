@@ -30,6 +30,7 @@ interface ActivityRow {
   trained: boolean;
   visited: boolean;
   burned: number;
+  water: number;
   meals: Meal[];
   usage: Record<string, number>;
 }
@@ -96,10 +97,14 @@ export function computeMergePatch(server: ServerState): Record<string, unknown> 
 
     const meals = { ...readSlice<MealMap>(KEYS.meals, {}) };
     const burn = { ...readSlice<BurnMap>(KEYS.burn, {}) };
+    const water = { ...readSlice<BurnMap>(KEYS.water, {}) };
     const usage = { ...readSlice<UsageMap>(KEYS.usage, {}) };
     for (const r of rows) {
       meals[r.day] = mergeMeals(meals[r.day] ?? [], (r.meals ?? []) as Meal[]);
       burn[r.day] = Math.max(burn[r.day] ?? 0, r.burned ?? 0);
+      /* Max, like burn: two devices each holding part of the day would
+         otherwise let the smaller one erase drinks logged on the other. */
+      water[r.day] = Math.max(water[r.day] ?? 0, r.water ?? 0);
       const localDay = usage[r.day] ?? {};
       const srvDay = r.usage ?? {};
       const merged: Record<string, number> = { ...localDay };
@@ -110,6 +115,7 @@ export function computeMergePatch(server: ServerState): Record<string, unknown> 
     }
     patch[KEYS.meals] = meals;
     patch[KEYS.burn] = burn;
+    patch[KEYS.water] = water;
     patch[KEYS.usage] = usage;
   }
 
@@ -132,7 +138,7 @@ export async function pullUserData(): Promise<boolean> {
       .maybeSingle(),
     supabase
       .from("user_activity")
-      .select("day, trained, visited, burned, meals, usage")
+      .select("day, trained, visited, burned, water, meals, usage")
       .eq("user_id", user.id),
   ]);
 
@@ -180,6 +186,7 @@ async function pushActivity(userId: string, days: string[]) {
   const visited = new Set(readSlice<string[]>(KEYS.visits, []));
   const meals = readSlice<MealMap>(KEYS.meals, {});
   const burn = readSlice<BurnMap>(KEYS.burn, {});
+  const water = readSlice<BurnMap>(KEYS.water, {});
   /* `usage` is deliberately absent: it is the quota the paid features are
      metered against, so it is written only by consume_usage on the server.
      Pushing the local copy would let anyone reset their own limits. */
@@ -189,6 +196,7 @@ async function pushActivity(userId: string, days: string[]) {
     trained: trained.has(day),
     visited: visited.has(day),
     burned: burn[day] ?? 0,
+    water: water[day] ?? 0,
     meals: meals[day] ?? [],
     updated_at: new Date().toISOString(),
   }));
@@ -197,7 +205,14 @@ async function pushActivity(userId: string, days: string[]) {
 
 /* ------------------------------ change plumbing --------------------------- */
 
-const ACTIVITY_KEYS: string[] = [KEYS.streak, KEYS.visits, KEYS.meals, KEYS.burn, KEYS.usage];
+const ACTIVITY_KEYS: string[] = [
+  KEYS.streak,
+  KEYS.visits,
+  KEYS.meals,
+  KEYS.burn,
+  KEYS.water,
+  KEYS.usage,
+];
 
 /** Days we hold local data for, newest first and bounded — a long-standing
     account must not re-upload years of history on every load. */

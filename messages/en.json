@@ -873,5 +873,35 @@
     "otherTitle": "Other ways to reach us",
     "otherBody": "The form is the fastest route — it lands straight in our queue. Telegram works too, but we check it less often.",
     "otherTelegram": "Telegram"
+  },
+  "macro": {
+    "title": "Macros today",
+    "sub": "Protein, carbs and fat against the split built from your profile.",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fibre",
+    "empty": "Log a meal to fill these in. Scanned meals fill them automatically."
+  },
+  "water": {
+    "title": "Water",
+    "glass": "Glass",
+    "bottle": "Bottle",
+    "undo": "Undo",
+    "reset": "Reset",
+    "done": "Target hit",
+    "hint": "Roughly 35 ml per kg of bodyweight. One glass is 250 ml, a bottle is 500 ml.",
+    "hintTrained": "You trained today, so the target includes an extra 500 ml to replace what you sweated out."
+  },
+  "micro": {
+    "title": "Minerals & vitamin C",
+    "estimateNote": "Estimates from standard food composition values — useful as a direction, not a measurement.",
+    "empty": "Scan a meal to see this. Photo scans estimate minerals; meals typed in by hand only record calories.",
+    "coverage": "Based on the {pct}% of today's meals that carry nutrient data.",
+    "iron": "Iron",
+    "calcium": "Calcium",
+    "potassium": "Potassium",
+    "sodium": "Sodium",
+    "vitaminC": "Vitamin C"
   }
 }

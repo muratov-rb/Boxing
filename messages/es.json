@@ -873,5 +873,35 @@
     "otherTitle": "Otras formas de contactarnos",
     "otherBody": "El formulario es lo más rápido: entra directo en nuestra cola. Telegram también sirve, pero lo miramos menos.",
     "otherTelegram": "Telegram"
+  },
+  "macro": {
+    "title": "Macros de hoy",
+    "sub": "Proteínas, carbohidratos y grasas frente al reparto de tu perfil.",
+    "protein": "Proteína",
+    "carbs": "Carbos",
+    "fat": "Grasa",
+    "fiber": "Fibra",
+    "empty": "Registra una comida. Los escaneos rellenan estos datos automáticamente."
+  },
+  "water": {
+    "title": "Agua",
+    "glass": "Vaso",
+    "bottle": "Botella",
+    "undo": "Deshacer",
+    "reset": "Reiniciar",
+    "done": "Objetivo logrado",
+    "hint": "Unos 35 ml por kg de peso. Un vaso son 250 ml; una botella, 500 ml.",
+    "hintTrained": "Hoy has entrenado, así que el objetivo incluye 500 ml extra para reponer el sudor."
+  },
+  "micro": {
+    "title": "Minerales y vitamina C",
+    "estimateNote": "Estimaciones a partir de tablas de composición de alimentos: una orientación, no una medición.",
+    "empty": "Escanea una comida para verlo. Los escaneos estiman minerales; lo escrito a mano solo guarda calorías.",
+    "coverage": "Basado en el {pct}% de las comidas de hoy con datos de nutrientes.",
+    "iron": "Hierro",
+    "calcium": "Calcio",
+    "potassium": "Potasio",
+    "sodium": "Sodio",
+    "vitaminC": "Vitamina C"
   }
 }

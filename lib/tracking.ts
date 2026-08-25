@@ -16,6 +16,7 @@ import {
 
 /* Re-exported so existing call sites keep working; lib/xp.ts is the source. */
 export { RANK_XP, rankFromXp };
+import { GLASS_ML, WATER_MAX_ML, type Micros } from "./nutrients";
 import {
   entitlementsFor,
   TRIAL_DAYS,
@@ -34,6 +35,7 @@ const K_RANK_SEEN = "pressure.rankSeen"; // last rank index the user celebrated
 const K_SUB = "pressure.sub"; // SubState
 const K_USAGE = "pressure.usage"; // Record<date, Record<UsageKey, number>>
 const K_BURN = "pressure.burn"; // Record<date, number> — kcal burned training
+const K_WATER = "pressure.water"; // Record<date, number> — millilitres drunk
 
 export interface Meal {
   id: string;
@@ -42,6 +44,11 @@ export interface Meal {
   protein?: number;
   carbs?: number;
   fat?: number;
+  fiber?: number;
+  /* Only ever present on scanned meals, and even then only when the model was
+     willing to estimate. Optional all the way down so a hand-typed meal is not
+     silently counted as containing zero of everything. */
+  micros?: Micros;
   at: string; // ISO time
   source: "manual" | "scan";
 }
@@ -109,6 +116,7 @@ export const KEYS = {
   sub: K_SUB,
   usage: K_USAGE,
   burn: K_BURN,
+  water: K_WATER,
 } as const;
 
 /** Raw slice reads for the sync layer (typed accessors live further down). */
@@ -400,11 +408,24 @@ export function addMeal(
   name: string,
   kcal: number,
   source: Meal["source"],
-  macros?: { protein?: number; carbs?: number; fat?: number },
+  macros?: { protein?: number; carbs?: number; fat?: number; fiber?: number; micros?: Micros },
 ): Meal[] {
   const all = read<Record<string, Meal[]>>(K_MEALS, {});
   const key = todayKey();
   const g = (v?: number) => (typeof v === "number" && v >= 0 ? Math.round(v) : undefined);
+
+  /* Drop anything non-numeric or absurd rather than storing it: these figures
+     come back from a vision model, and one bad parse should not poison a day's
+     totals. An omitted nutrient stays omitted — it is not the same as zero. */
+  const cleanMicros = (m?: Micros): Micros | undefined => {
+    if (!m) return undefined;
+    const out: Micros = {};
+    for (const [k, v] of Object.entries(m)) {
+      if (typeof v === "number" && v > 0 && v < 100000) out[k as keyof Micros] = Math.round(v);
+    }
+    return Object.keys(out).length > 0 ? out : undefined;
+  };
+
   const meal: Meal = {
     id: Math.random().toString(36).slice(2, 10),
     name: name.trim().slice(0, 60) || "—",
@@ -412,6 +433,8 @@ export function addMeal(
     protein: g(macros?.protein),
     carbs: g(macros?.carbs),
     fat: g(macros?.fat),
+    fiber: g(macros?.fiber),
+    micros: cleanMicros(macros?.micros),
     at: new Date().toISOString(),
     source,
   };
@@ -444,6 +467,33 @@ export function addBurned(kcal: number): number {
 
 export function burnedToday(): number {
   return read<Record<string, number>>(K_BURN, {})[todayKey()] ?? 0;
+}
+
+/* ---------------------------------- water -------------------------------- */
+/* Stored in millilitres so the display unit stays a presentation choice —
+   litres for most of the world, and a later ounces switch needs no migration
+   of anyone's saved history. */
+
+/** Add (or, with a negative amount, undo) a drink. Clamped at zero so a
+    mis-tap on undo cannot drive the day negative. */
+export function addWater(ml = GLASS_ML): number {
+  const all = read<Record<string, number>>(K_WATER, {});
+  const key = todayKey();
+  const next = Math.max(0, Math.min(WATER_MAX_ML * 2, (all[key] ?? 0) + Math.round(ml)));
+  all[key] = next;
+  write(K_WATER, all);
+  return next;
+}
+
+export function waterToday(): number {
+  return read<Record<string, number>>(K_WATER, {})[todayKey()] ?? 0;
+}
+
+export function resetWaterToday(): number {
+  const all = read<Record<string, number>>(K_WATER, {});
+  all[todayKey()] = 0;
+  write(K_WATER, all);
+  return 0;
 }
 
 /* ---------------------------- calorie target ----------------------------- */
