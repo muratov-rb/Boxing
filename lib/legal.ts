@@ -11,7 +11,7 @@ export const LEGAL_UPDATED = "5 August 2026";
 /** Who operates the service, as it should appear to a user. */
 export const OPERATOR = "Nexara";
 export const SERVICE = "RingBornn";
-export const SITE = "boxing-murex.vercel.app";
+export const SITE = "ringbornn.com";
 
 /** Absolute origin, for the places that need a real URL rather than a label —
     the sitemap, robots.txt and the link previews shared on social. Derived
