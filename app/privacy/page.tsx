@@ -55,6 +55,12 @@ const SECTIONS: Section[] = [
       ],
       "Subscription state: your plan, billing period, and when your trial started.",
       "Photos and video you choose to submit: a food photo for the calorie scanner, or a short video or burst of frames for the technique check. We do not access your camera without asking, and each of those features shows a consent prompt before the camera is opened.",
+      "Support messages, if you write to us:",
+      [
+        "The reply address you give us, and what you write in the message.",
+        "The page you came from and your browser's user-agent string, so a bug report can be reproduced. Nothing is read from the page itself.",
+        "You can write to us without an account, in which case we hold only the above and have nothing to link it to.",
+      ],
     ],
   },
   {
@@ -125,6 +131,7 @@ const SECTIONS: Section[] = [
       "You can delete your account yourself at any time, from your dashboard under Account. Doing so removes your profile, training history, progress, subscription record and sign-in from our database. It is immediate and it cannot be undone — we do not keep a backup copy to restore for you.",
       "If an account is closed by us for abuse of the service, the same data is deleted at the same time, and that deletion is equally permanent.",
       "Photos and video you submit for scanning or technique review are processed to generate your result and are not kept in your account afterwards. Our AI provider may retain them briefly for abuse monitoring under their own policy.",
+      "Support messages are kept while we are dealing with the matter and are deleted along with your account. Deleting your account also removes messages you sent us before signing in, matched on the address you wrote from.",
     ],
   },
   {

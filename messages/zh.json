@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · 由 Nexara 打造",
     "privacy": "隐私政策",
     "terms": "服务条款",
-    "refunds": "退款"
+    "refunds": "退款",
+    "support": "支持"
   },
   "auth": {
     "welcomeBack": "欢迎回来",
@@ -762,7 +763,19 @@
     "roleOwner": "所有者",
     "activityTitle": "最近操作",
     "activityEmpty": "暂无记录 — 操作发生后会显示在这里。",
-    "activityFailed": "无法加载操作记录。"
+    "activityFailed": "无法加载操作记录。",
+    "ticketsTitle": "支持收件箱",
+    "ticketsEmpty": "暂无消息。",
+    "ticketsFailed": "无法加载消息。",
+    "ticketNoAccount": "无账户",
+    "ticketTopic_bug": "故障",
+    "ticketTopic_billing": "付款",
+    "ticketTopic_account": "账户",
+    "ticketTopic_data": "数据",
+    "ticketTopic_other": "其他",
+    "ticketAction_new": "开始处理",
+    "ticketAction_open": "标记完成",
+    "ticketAction_done": "重新打开"
   },
   "account": {
     "dangerTitle": "账号",
@@ -807,7 +820,8 @@
     "legalIntro": "你注册时接受的协议，以及我们如何处理你的数据。",
     "legalTerms": "服务条款",
     "legalPrivacy": "隐私政策",
-    "legalRefunds": "退款与取消"
+    "legalRefunds": "退款与取消",
+    "legalSupport": "获取帮助"
   },
   "calories": {
     "kicker": "能量",
@@ -823,5 +837,45 @@
     "kind_advice": "训练建议",
     "kind_tactic": "擂台上",
     "note": "每天更新，依你的段位挑选。"
+  },
+  "support": {
+    "home": "首页",
+    "kicker": "支持",
+    "titlePre": "需要",
+    "titleAccent": "帮助？",
+    "intro": "告诉我们发生了什么，我们会通过邮件回复。每条消息都由真人阅读，中间没有机器人。",
+    "selfPlan": "更改或取消订阅",
+    "selfRefund": "退款政策",
+    "selfData": "获取或删除您的数据",
+    "topicLabel": "关于什么？",
+    "topic_bug": "故障",
+    "topic_billing": "付款",
+    "topic_account": "账户",
+    "topic_data": "我的数据",
+    "topic_other": "其他",
+    "topicHint_bug": "有东西坏了、显示异常或无法加载。请说明是哪个页面以及您当时在做什么。",
+    "topicHint_billing": "不认识的扣款、退款，或更改订阅时遇到问题。",
+    "topicHint_account": "无法登录、账户邮箱有误，或想要注销账户。",
+    "topicHint_data": "索取数据副本或请求删除。我们会在 30 天内答复。",
+    "topicHint_other": "其他任何事情——问题、建议，或对训练的反馈。",
+    "emailLabel": "回复到哪里？",
+    "emailPlaceholder": "you@example.com",
+    "emailHint": "仅用于回复您。",
+    "emailBad": "这看起来不像邮箱地址。",
+    "messageLabel": "发生了什么？",
+    "messagePlaceholder": "细节越多，修复越快。哪个页面、点了什么、期待什么结果、实际发生了什么。",
+    "send": "发送消息",
+    "sending": "发送中…",
+    "privacyNote": "我们保存您的消息和邮箱以便回复，问题解决后即删除。绝不出售或分享。",
+    "errTooMany": "您在过去一小时内发送了多条消息。请稍候，或直接回复我们的邮件。",
+    "errOffline": "暂时无法发送。请通过 Telegram 联系我们。",
+    "errFailed": "发送失败。请检查网络后重试。",
+    "sentTitle": "已收到消息",
+    "sentBody": "我们会回复到 {email}。多数问题会在两天内得到答复——如果没有收到，请查看垃圾邮件。",
+    "sentRef": "编号 #{id}",
+    "sendAnother": "再发一条",
+    "otherTitle": "其他联系方式",
+    "otherBody": "表单最快，会直接进入我们的处理队列。Telegram 也可以，但我们查看得较少。",
+    "otherTelegram": "Telegram"
   }
 }

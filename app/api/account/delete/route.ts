@@ -47,6 +47,15 @@ export async function POST(req: Request) {
       admin.from("subscriptions").delete().eq("user_id", id),
     ]);
 
+    /* Support history goes too, or "delete everything" would quietly leave
+       their address and whatever they told us sitting in the inbox. Matched by
+       email as well as id, because a ticket filed before signing in — or while
+       locked out — carries no user_id to match on. */
+    await admin.from("support_tickets").delete().eq("user_id", id);
+    if (user.email) {
+      await admin.from("support_tickets").delete().eq("email", user.email);
+    }
+
     const { error } = await admin.auth.admin.deleteUser(id);
     if (error) throw error;
   } catch (e) {

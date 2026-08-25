@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · built by Nexara",
     "privacy": "Privacy",
     "terms": "Terms",
-    "refunds": "Refunds"
+    "refunds": "Refunds",
+    "support": "Support"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -762,7 +763,19 @@
     "roleOwner": "Owner",
     "activityTitle": "Recent activity",
     "activityEmpty": "Nothing yet — actions appear here as they happen.",
-    "activityFailed": "Could not load the activity log."
+    "activityFailed": "Could not load the activity log.",
+    "ticketsTitle": "Support inbox",
+    "ticketsEmpty": "No messages yet.",
+    "ticketsFailed": "Could not load messages.",
+    "ticketNoAccount": "no account",
+    "ticketTopic_bug": "Bug",
+    "ticketTopic_billing": "Billing",
+    "ticketTopic_account": "Account",
+    "ticketTopic_data": "Data",
+    "ticketTopic_other": "Other",
+    "ticketAction_new": "Start",
+    "ticketAction_open": "Mark done",
+    "ticketAction_done": "Reopen"
   },
   "account": {
     "dangerTitle": "Account",
@@ -807,7 +820,8 @@
     "legalIntro": "The agreement you accepted when you created your account, and how your data is handled.",
     "legalTerms": "Terms of Service",
     "legalPrivacy": "Privacy Policy",
-    "legalRefunds": "Refunds & Cancellation"
+    "legalRefunds": "Refunds & Cancellation",
+    "legalSupport": "Get help"
   },
   "calories": {
     "kicker": "Fuel",
@@ -823,5 +837,45 @@
     "kind_advice": "Training advice",
     "kind_tactic": "In the ring",
     "note": "New lines every day, chosen for your rank."
+  },
+  "support": {
+    "home": "Home",
+    "kicker": "Support",
+    "titlePre": "Get ",
+    "titleAccent": "help",
+    "intro": "Tell us what happened and we'll get back to you by email. Every message reaches a person — there is no bot in between.",
+    "selfPlan": "Change or cancel your plan",
+    "selfRefund": "Refund policy",
+    "selfData": "Get or delete your data",
+    "topicLabel": "What is this about?",
+    "topic_bug": "Bug",
+    "topic_billing": "Billing",
+    "topic_account": "Account",
+    "topic_data": "My data",
+    "topic_other": "Other",
+    "topicHint_bug": "Something broke, looks wrong, or will not load. Tell us which page and what you were doing.",
+    "topicHint_billing": "A charge you do not recognise, a refund, or trouble changing plan.",
+    "topicHint_account": "You cannot log in, the email on the account is wrong, or you want it closed.",
+    "topicHint_data": "Ask for a copy of your data, or ask us to delete it. We answer within 30 days.",
+    "topicHint_other": "Anything else — a question, an idea, or feedback on the training.",
+    "emailLabel": "Where should we reply?",
+    "emailPlaceholder": "you@example.com",
+    "emailHint": "We only use this to answer you.",
+    "emailBad": "That does not look like an email address.",
+    "messageLabel": "What happened?",
+    "messagePlaceholder": "The more detail, the faster we can fix it. Which page, what you pressed, what you expected, and what happened instead.",
+    "send": "Send message",
+    "sending": "Sending…",
+    "privacyNote": "Your message and email are stored so we can answer you, and deleted once the matter is closed. We never sell or share them.",
+    "errTooMany": "You have sent several messages in the last hour. Give it a little time, or reply to our email instead.",
+    "errOffline": "Messaging is temporarily unavailable. Please reach us on Telegram.",
+    "errFailed": "That did not send. Check your connection and try again.",
+    "sentTitle": "Message received",
+    "sentBody": "We will reply to {email}. Most things get an answer within a couple of days — check your spam folder if it seems quiet.",
+    "sentRef": "Reference #{id}",
+    "sendAnother": "Send another",
+    "otherTitle": "Other ways to reach us",
+    "otherBody": "The form is the fastest route — it lands straight in our queue. Telegram works too, but we check it less often.",
+    "otherTelegram": "Telegram"
   }
 }

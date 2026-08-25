@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · creado por Nexara",
     "privacy": "Privacidad",
     "terms": "Términos",
-    "refunds": "Reembolsos"
+    "refunds": "Reembolsos",
+    "support": "Soporte"
   },
   "auth": {
     "welcomeBack": "Bienvenido de nuevo",
@@ -762,7 +763,19 @@
     "roleOwner": "Propietario",
     "activityTitle": "Actividad reciente",
     "activityEmpty": "Todavía nada: las acciones aparecerán aquí en cuanto ocurran.",
-    "activityFailed": "No se pudo cargar el registro de actividad."
+    "activityFailed": "No se pudo cargar el registro de actividad.",
+    "ticketsTitle": "Bandeja de soporte",
+    "ticketsEmpty": "Aún no hay mensajes.",
+    "ticketsFailed": "No se pudieron cargar los mensajes.",
+    "ticketNoAccount": "sin cuenta",
+    "ticketTopic_bug": "Error",
+    "ticketTopic_billing": "Pagos",
+    "ticketTopic_account": "Cuenta",
+    "ticketTopic_data": "Datos",
+    "ticketTopic_other": "Otro",
+    "ticketAction_new": "Empezar",
+    "ticketAction_open": "Marcar hecho",
+    "ticketAction_done": "Reabrir"
   },
   "account": {
     "dangerTitle": "Cuenta",
@@ -807,7 +820,8 @@
     "legalIntro": "El acuerdo que aceptaste al crear tu cuenta y cómo tratamos tus datos.",
     "legalTerms": "Términos del Servicio",
     "legalPrivacy": "Política de Privacidad",
-    "legalRefunds": "Reembolsos y cancelación"
+    "legalRefunds": "Reembolsos y cancelación",
+    "legalSupport": "Obtener ayuda"
   },
   "calories": {
     "kicker": "Combustible",
@@ -823,5 +837,45 @@
     "kind_advice": "Consejo de entrenamiento",
     "kind_tactic": "En el ring",
     "note": "Nuevas frases cada día, elegidas para tu rango."
+  },
+  "support": {
+    "home": "Inicio",
+    "kicker": "Soporte",
+    "titlePre": "¿Necesitas ",
+    "titleAccent": "ayuda?",
+    "intro": "Cuéntanos qué ha pasado y te responderemos por correo. Cada mensaje lo lee una persona, no un bot.",
+    "selfPlan": "Cambiar o cancelar tu plan",
+    "selfRefund": "Política de reembolsos",
+    "selfData": "Obtener o borrar tus datos",
+    "topicLabel": "¿De qué se trata?",
+    "topic_bug": "Error",
+    "topic_billing": "Pagos",
+    "topic_account": "Cuenta",
+    "topic_data": "Mis datos",
+    "topic_other": "Otro",
+    "topicHint_bug": "Algo se ha roto, se ve mal o no carga. Dinos en qué página y qué estabas haciendo.",
+    "topicHint_billing": "Un cargo que no reconoces, un reembolso o problemas al cambiar de plan.",
+    "topicHint_account": "No puedes entrar, el correo de la cuenta es incorrecto o quieres cerrarla.",
+    "topicHint_data": "Pide una copia de tus datos o su eliminación. Respondemos en 30 días.",
+    "topicHint_other": "Cualquier otra cosa: una duda, una idea o tu opinión sobre el entrenamiento.",
+    "emailLabel": "¿Dónde te respondemos?",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "emailHint": "Solo lo usamos para contestarte.",
+    "emailBad": "Eso no parece una dirección de correo.",
+    "messageLabel": "¿Qué ha pasado?",
+    "messagePlaceholder": "Cuanto más detalle, antes lo arreglamos. Qué página, qué pulsaste, qué esperabas y qué ocurrió en su lugar.",
+    "send": "Enviar mensaje",
+    "sending": "Enviando…",
+    "privacyNote": "Guardamos tu mensaje y tu correo para poder responderte, y los borramos al cerrar el caso. Nunca los vendemos ni los compartimos.",
+    "errTooMany": "Has enviado varios mensajes en la última hora. Espera un poco o responde a nuestro correo.",
+    "errOffline": "El envío no está disponible ahora mismo. Escríbenos por Telegram.",
+    "errFailed": "No se ha enviado. Revisa tu conexión e inténtalo de nuevo.",
+    "sentTitle": "Mensaje recibido",
+    "sentBody": "Te responderemos a {email}. Casi todo se contesta en un par de días; revisa el spam si no ves nada.",
+    "sentRef": "Referencia n.º {id}",
+    "sendAnother": "Enviar otro",
+    "otherTitle": "Otras formas de contactarnos",
+    "otherBody": "El formulario es lo más rápido: entra directo en nuestra cola. Telegram también sirve, pero lo miramos menos.",
+    "otherTelegram": "Telegram"
   }
 }

@@ -93,7 +93,8 @@
     "rights": "© {year} RingBornn · créé par Nexara",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "refunds": "Remboursements"
+    "refunds": "Remboursements",
+    "support": "Assistance"
   },
   "auth": {
     "welcomeBack": "Content de te revoir",
@@ -762,7 +763,19 @@
     "roleOwner": "Propriétaire",
     "activityTitle": "Activité récente",
     "activityEmpty": "Rien pour l'instant — les actions apparaîtront ici dès qu'elles auront lieu.",
-    "activityFailed": "Impossible de charger le journal d'activité."
+    "activityFailed": "Impossible de charger le journal d'activité.",
+    "ticketsTitle": "Boîte d'assistance",
+    "ticketsEmpty": "Aucun message pour l'instant.",
+    "ticketsFailed": "Impossible de charger les messages.",
+    "ticketNoAccount": "sans compte",
+    "ticketTopic_bug": "Bug",
+    "ticketTopic_billing": "Paiement",
+    "ticketTopic_account": "Compte",
+    "ticketTopic_data": "Données",
+    "ticketTopic_other": "Autre",
+    "ticketAction_new": "Prendre en charge",
+    "ticketAction_open": "Marquer traité",
+    "ticketAction_done": "Rouvrir"
   },
   "account": {
     "dangerTitle": "Compte",
@@ -807,7 +820,8 @@
     "legalIntro": "Le contrat accepté à la création de ton compte, et la façon dont tes données sont traitées.",
     "legalTerms": "Conditions d'utilisation",
     "legalPrivacy": "Politique de confidentialité",
-    "legalRefunds": "Remboursements et annulation"
+    "legalRefunds": "Remboursements et annulation",
+    "legalSupport": "Obtenir de l'aide"
   },
   "calories": {
     "kicker": "Carburant",
@@ -823,5 +837,45 @@
     "kind_advice": "Conseil d'entraînement",
     "kind_tactic": "Sur le ring",
     "note": "De nouvelles lignes chaque jour, choisies pour ton rang."
+  },
+  "support": {
+    "home": "Accueil",
+    "kicker": "Assistance",
+    "titlePre": "Besoin d'",
+    "titleAccent": "aide ?",
+    "intro": "Dites-nous ce qui s'est passé et nous répondrons par e-mail. Chaque message est lu par une personne, pas par un bot.",
+    "selfPlan": "Changer ou annuler votre formule",
+    "selfRefund": "Politique de remboursement",
+    "selfData": "Obtenir ou supprimer vos données",
+    "topicLabel": "De quoi s'agit-il ?",
+    "topic_bug": "Bug",
+    "topic_billing": "Paiement",
+    "topic_account": "Compte",
+    "topic_data": "Mes données",
+    "topic_other": "Autre",
+    "topicHint_bug": "Quelque chose est cassé, s'affiche mal ou ne charge pas. Précisez la page et ce que vous faisiez.",
+    "topicHint_billing": "Un prélèvement inconnu, un remboursement ou un souci lors du changement de formule.",
+    "topicHint_account": "Connexion impossible, mauvaise adresse sur le compte, ou vous voulez le fermer.",
+    "topicHint_data": "Demandez une copie de vos données ou leur suppression. Nous répondons sous 30 jours.",
+    "topicHint_other": "Tout le reste — une question, une idée ou un retour sur l'entraînement.",
+    "emailLabel": "Où devons-nous répondre ?",
+    "emailPlaceholder": "vous@exemple.com",
+    "emailHint": "Utilisé uniquement pour vous répondre.",
+    "emailBad": "Cela ne ressemble pas à une adresse e-mail.",
+    "messageLabel": "Que s'est-il passé ?",
+    "messagePlaceholder": "Plus il y a de détails, plus vite on corrige. Quelle page, ce que vous avez cliqué, ce que vous attendiez et ce qui s'est produit.",
+    "send": "Envoyer le message",
+    "sending": "Envoi…",
+    "privacyNote": "Votre message et votre e-mail sont conservés pour vous répondre, puis supprimés une fois l'affaire close. Nous ne les vendons ni ne les partageons.",
+    "errTooMany": "Vous avez envoyé plusieurs messages dans la dernière heure. Patientez un peu ou répondez à notre e-mail.",
+    "errOffline": "L'envoi est momentanément indisponible. Écrivez-nous sur Telegram.",
+    "errFailed": "L'envoi a échoué. Vérifiez votre connexion et réessayez.",
+    "sentTitle": "Message bien reçu",
+    "sentBody": "Nous répondrons à {email}. La plupart des demandes obtiennent une réponse sous deux jours — pensez aux spams si rien n'arrive.",
+    "sentRef": "Référence n° {id}",
+    "sendAnother": "Envoyer un autre message",
+    "otherTitle": "Autres moyens de nous joindre",
+    "otherBody": "Le formulaire est le plus rapide : il arrive directement dans notre file. Telegram fonctionne aussi, mais nous le consultons moins souvent.",
+    "otherTelegram": "Telegram"
   }
 }

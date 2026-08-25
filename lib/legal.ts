@@ -21,10 +21,13 @@ export const SITE_URL = `https://${SITE}`;
 
 /* Blank until a real inbox exists — an address printed in a privacy policy
    that nobody reads is worse than none, because access and deletion requests
-   sent there vanish silently. While it is empty every page points at Telegram
-   instead, which is monitored. Fill it in before taking payments: a reachable
-   contact is on the payment provider's approval checklist, and a data-rights
-   request has to land somewhere a human sees. */
+   sent there vanish silently.
+
+   The support form at /support is the channel that always works: it writes to
+   our own database and surfaces in the admin panel, so nothing depends on an
+   inbox being watched. Fill this in anyway once a mailbox exists — some people
+   will only ever write an email, and the payment provider's approval checklist
+   asks for a contact address. */
 export const CONTACT_EMAIL = "";
 
 /** Deadline we commit to for access/deletion requests. 30 days is the GDPR
@@ -50,8 +53,12 @@ export const DATA_REGION = "Singapore (ap-southeast-1)";
     lib/onboarding.ts — today that validator accepts ages from 8. */
 export const MIN_AGE = 16;
 
+/* The form leads because it is the only route with a delivery guarantee — it
+   writes to our database rather than to somebody's inbox, and every request
+   filed through it appears in the admin panel with a reference number. */
 export function contactLine(): string {
+  const form = `Use the support form at ${SITE}/support`;
   return CONTACT_EMAIL
-    ? `Email ${CONTACT_EMAIL}, or message us on Telegram at t.me/ringbornn.`
-    : "Message us on Telegram at t.me/ringbornn.";
+    ? `${form}, email ${CONTACT_EMAIL}, or message us on Telegram at t.me/ringbornn.`
+    : `${form}, or message us on Telegram at t.me/ringbornn.`;
 }

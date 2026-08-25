@@ -194,6 +194,7 @@ export function ProfileClient({ email }: { email: string | null }) {
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {(
               [
+                ["/support", "legalSupport", "mail"],
                 ["/terms", "legalTerms", "card"],
                 ["/privacy", "legalPrivacy", "lock"],
                 ["/refunds", "legalRefunds", "arrow"],
