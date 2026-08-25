@@ -1,7 +1,7 @@
 {
   "nav": {
     "whoFor": "适合谁",
-    "whatsComing": "即将推出",
+    "whatsComing": "功能",
     "login": "登录",
     "start": "开始训练",
     "dashboard": "首页",
@@ -59,9 +59,8 @@
     "kicker": "完整武器库",
     "titlePre": "一切，",
     "titleAccent": "一间拳馆。",
-    "sub": "竞品拆分到付费、仅限应用、依赖硬件产品里的功能——全部整合进一个网页应用。以下是即将推出的内容。",
-    "previewBadge": "预览 · 尚未上线",
-    "comingSoon": "即将推出",
+    "sub": "竞品拆分到付费、仅限应用、依赖硬件产品里的功能——全部整合进一个网页应用。以下是你能获得的一切。",
+    "previewBadge": "现已全部上线",
     "plan_t": "AI 每日计划",
     "plan_c": "个性化、分步骤的训练，每天根据你的资料和进度重新生成。",
     "belt_t": "段位与进度",
@@ -89,7 +88,7 @@
   "footer": {
     "tagline": "面向新手与高手的网页拳击训练。像拳手一样训练，像运动员一样自信。",
     "whoFor": "适合谁",
-    "whatsComing": "即将推出",
+    "whatsComing": "功能",
     "rights": "© {year} RingBornn · 由 Nexara 打造",
     "privacy": "隐私政策",
     "terms": "服务条款",
@@ -104,9 +103,6 @@
     "registerTitlePre": "创建你的 ",
     "registerTitleAccent": "账户。",
     "notConnected": "登录尚未接通——请添加你的 Supabase 密钥（见 SETUP.md），然后重启。",
-    "google": "使用 Google 继续",
-    "redirecting": "跳转中……",
-    "or": "或",
     "email": "邮箱",
     "password": "密码",
     "emailPlaceholder": "you@email.com",
@@ -212,8 +208,8 @@
     "fuelPlan": "饮食计划",
     "straightTalk": "直话直说",
     "enterGym": "进入拳馆",
-    "coachEstimate": "RingBornn 教练估算",
-    "claudeAnalysis": "Claude 分析",
+    "coachEstimate": "内置教练引擎 · 未使用 AI",
+    "claudeAnalysis": "由 Claude AI 分析",
     "recapGoals": "目标",
     "recapBy": "期限",
     "recapSetup": "器材",
@@ -496,8 +492,8 @@
     "slot_dinner": "晚餐",
     "slot_snack": "加餐",
     "tipsTitle": "教练贴士",
-    "aiNote": "由 RingBornn AI 教练个性化定制。",
-    "localNote": "由 RingBornn 教练引擎生成——添加 AI 密钥可获得更深入的个性化。"
+    "aiNote": "由 Claude AI 为你个性化定制。",
+    "localNote": "由内置教练引擎生成——本计划未使用 AI。"
   },
   "scan": {
     "title": "餐食扫描",

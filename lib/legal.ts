@@ -28,7 +28,7 @@ export const SITE_URL = `https://${SITE}`;
    inbox being watched. Fill this in anyway once a mailbox exists — some people
    will only ever write an email, and the payment provider's approval checklist
    asks for a contact address. */
-export const CONTACT_EMAIL = "";
+export const CONTACT_EMAIL = "ringbornn.help@gmail.com";
 
 /** Deadline we commit to for access/deletion requests. 30 days is the GDPR
     limit and the figure most services quote, so it travels well. */

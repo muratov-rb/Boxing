@@ -1,7 +1,7 @@
 {
   "nav": {
     "whoFor": "Para quién es",
-    "whatsComing": "Qué se viene",
+    "whatsComing": "Funciones",
     "login": "Iniciar sesión",
     "start": "Empezar a entrenar",
     "dashboard": "Inicio",
@@ -59,9 +59,8 @@
     "kicker": "El arsenal completo",
     "titlePre": "Todo, ",
     "titleAccent": "un gimnasio.",
-    "sub": "Lo que la competencia reparte entre productos de pago, solo-app y con hardware — reunido en una sola app web. Esto es lo que llega.",
-    "previewBadge": "Vista previa · Aún no activo",
-    "comingSoon": "Próximamente",
+    "sub": "Lo que la competencia reparte entre productos de pago, solo-app y con hardware — reunido en una sola app web. Esto es lo que obtienes.",
+    "previewBadge": "Ya disponible",
     "plan_t": "Planes diarios con IA",
     "plan_c": "Sesiones personalizadas, paso a paso, rehechas cada día según tu perfil y tu progreso.",
     "belt_t": "Rangos y progreso",
@@ -89,7 +88,7 @@
   "footer": {
     "tagline": "Boxeo desde el navegador para principiantes y profesionales. Entrena como un luchador. Luce como un atleta.",
     "whoFor": "Para quién es",
-    "whatsComing": "Qué se viene",
+    "whatsComing": "Funciones",
     "rights": "© {year} RingBornn · creado por Nexara",
     "privacy": "Privacidad",
     "terms": "Términos",
@@ -104,9 +103,6 @@
     "registerTitlePre": "Crea tu ",
     "registerTitleAccent": "cuenta.",
     "notConnected": "El inicio de sesión aún no está conectado — añade tus claves de Supabase (ver SETUP.md) y reinicia.",
-    "google": "Continuar con Google",
-    "redirecting": "Redirigiendo…",
-    "or": "o",
     "email": "Correo",
     "password": "Contraseña",
     "emailPlaceholder": "tu@correo.com",
@@ -212,8 +208,8 @@
     "fuelPlan": "Plan de comida",
     "straightTalk": "Sin rodeos",
     "enterGym": "Entra al gimnasio",
-    "coachEstimate": "Estimación del entrenador RingBornn",
-    "claudeAnalysis": "Análisis de Claude",
+    "coachEstimate": "Motor de entrenamiento integrado · sin IA",
+    "claudeAnalysis": "Analizado por Claude IA",
     "recapGoals": "Objetivos",
     "recapBy": "Para",
     "recapSetup": "Equipo",
@@ -496,8 +492,8 @@
     "slot_dinner": "Cena",
     "slot_snack": "Snack",
     "tipsTitle": "Consejos del entrenador",
-    "aiNote": "Personalizado por el entrenador de IA de RingBornn.",
-    "localNote": "Creado por el motor del entrenador RingBornn — añade una clave de IA para una personalización más profunda."
+    "aiNote": "Personalizado para ti por Claude IA.",
+    "localNote": "Creado por el motor integrado — no se usó IA para este plan."
   },
   "scan": {
     "title": "Escáner de comidas",

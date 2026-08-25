@@ -1,7 +1,7 @@
 {
   "nav": {
     "whoFor": "Who it's for",
-    "whatsComing": "What's coming",
+    "whatsComing": "Features",
     "login": "Log in",
     "start": "Start Training",
     "dashboard": "Home",
@@ -59,9 +59,8 @@
     "kicker": "The full arsenal",
     "titlePre": "Everything, ",
     "titleAccent": "one gym.",
-    "sub": "What competitors split across paid, app-only, hardware-locked products — bundled into one web-first app. Here's what's rolling out.",
-    "previewBadge": "Preview · Not live yet",
-    "comingSoon": "Coming soon",
+    "sub": "What competitors split across paid, app-only, hardware-locked products — bundled into one web-first app. Here's what you get.",
+    "previewBadge": "All live now",
     "plan_t": "AI Daily Plans",
     "plan_c": "Personalized, step-by-step sessions rebuilt every day around your profile and progress.",
     "belt_t": "Ranks & Progress",
@@ -89,7 +88,7 @@
   "footer": {
     "tagline": "Web-first boxing training for beginners and pros alike. Train like a fighter. Look like an athlete.",
     "whoFor": "Who it's for",
-    "whatsComing": "What's coming",
+    "whatsComing": "Features",
     "rights": "© {year} RingBornn · built by Nexara",
     "privacy": "Privacy",
     "terms": "Terms",
@@ -104,9 +103,6 @@
     "registerTitlePre": "Create your ",
     "registerTitleAccent": "account.",
     "notConnected": "Sign-in isn't connected yet — add your Supabase keys (see SETUP.md), then restart.",
-    "google": "Continue with Google",
-    "redirecting": "Redirecting…",
-    "or": "or",
     "email": "Email",
     "password": "Password",
     "emailPlaceholder": "you@email.com",
@@ -212,8 +208,8 @@
     "fuelPlan": "Fuel plan",
     "straightTalk": "Straight talk",
     "enterGym": "Enter the Gym",
-    "coachEstimate": "RingBornn coach estimate",
-    "claudeAnalysis": "Claude analysis",
+    "coachEstimate": "Built-in coach engine · AI not used",
+    "claudeAnalysis": "Analysed by Claude AI",
     "recapGoals": "Goals",
     "recapBy": "By",
     "recapSetup": "Setup",
@@ -496,8 +492,8 @@
     "slot_dinner": "Dinner",
     "slot_snack": "Snack",
     "tipsTitle": "Coach's tips",
-    "aiNote": "Personalised by the RingBornn AI coach.",
-    "localNote": "Built by the RingBornn coach engine — add an AI key for deeper personalisation."
+    "aiNote": "Personalised for you by Claude AI.",
+    "localNote": "Built by the built-in coach engine — AI was not used for this plan."
   },
   "scan": {
     "title": "Meal scanner",

@@ -1,13 +1,32 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { adminPath, adminPathIsSecret, DEFAULT_ADMIN_PATH } from "@/lib/admin-path";
+import { SITE } from "@/lib/legal";
+
+/* The address Vercel generated before the real domain was bought. It still
+   serves the identical site, which splits search ranking between two hosts
+   and lets the old name circulate. Anything arriving there is moved to the
+   real domain, path and query intact. */
+const LEGACY_HOST = "boxing-murex.vercel.app";
 
 // Next.js 16 renamed the "middleware" convention to "proxy" (same behavior).
 export async function proxy(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  /* 308 rather than 302: permanent is what tells a search engine to transfer
+     the ranking to the new host instead of indexing both, and it preserves the
+     method so a POST is not silently turned into a GET. */
+  if (request.headers.get("host") === LEGACY_HOST) {
+    const url = request.nextUrl.clone();
+    url.host = SITE;
+    url.port = "";
+    url.protocol = "https";
+    return NextResponse.redirect(url, 308);
+  }
+
   /* /dev/* are internal build tools (model baking, frame rendering). They are
      harmless — the routes they post to already 404 in production — but there
      is no reason to serve them to the public, so hide them entirely. */
-  const path = request.nextUrl.pathname;
   if (process.env.NODE_ENV === "production" && path.startsWith("/dev")) {
     return new NextResponse(null, { status: 404 });
   }

@@ -37,7 +37,7 @@ const SECTIONS: Section[] = [
       [
         "Your email address.",
         "A password, which is hashed by our authentication provider. We never see or store the password itself.",
-        "If you sign in with Google instead, the basic account identifier Google returns to us.",
+        "There is no sign-in with Google, Facebook or any other social account. An email address and a password is the only way in, so no social network is told that you use this service.",
       ],
       "Training profile, which you enter during onboarding:",
       [
@@ -93,8 +93,8 @@ const SECTIONS: Section[] = [
         "Vercel — hosts and serves the application.",
         `${MERCHANT} — takes payment as the merchant of record. If you subscribe, they receive your email and billing details in order to charge you and to work out the tax due where you live. We never see or store your card number.`,
         "Anthropic — provides the AI behind the goal analysis, nutrition plans, food photo scanning and technique review. When you use one of those features, the relevant information is sent to Anthropic to generate the response. For the scanner and technique check, that includes the image or video frames you submitted.",
-        "Google — only if you choose to sign in with Google.",
       ],
+      "That is the whole list. There is no advertising network, no analytics provider and no social login in it.",
       "We may also disclose information if we are legally required to, or where it is necessary to investigate abuse of the service.",
     ],
   },

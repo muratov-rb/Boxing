@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
-/* Handles both Google OAuth and email-confirmation redirects: exchanges the
+/* Handles email-confirmation redirects: exchanges the
    `code` for a session cookie, then continues to `next`. */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);

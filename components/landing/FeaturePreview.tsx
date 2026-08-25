@@ -31,7 +31,7 @@ export function FeaturePreview() {
             <p className="mt-5 text-ash">{t("sub")}</p>
           </div>
           <span className="badge shrink-0 border-blood/40 text-blood">
-            <Icon name="lock" size={13} /> {t("previewBadge")}
+            <Icon name="check" size={13} /> {t("previewBadge")}
           </span>
         </div>
 
@@ -50,9 +50,6 @@ export function FeaturePreview() {
               <p className="mt-2 text-sm leading-relaxed text-ash">
                 {t(`${f.k}_c`)}
               </p>
-              <span className="mt-5 inline-flex items-center gap-1.5 font-condensed text-[0.65rem] uppercase tracking-[0.2em] text-ash-dim">
-                <Icon name="lock" size={11} /> {t("comingSoon")}
-              </span>
             </article>
           ))}
         </div>

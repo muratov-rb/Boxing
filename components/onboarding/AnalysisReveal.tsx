@@ -153,7 +153,15 @@ export function AnalysisReveal({
             {analysis.verdict}
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-ash">{analysis.summary}</p>
-          <span className="mt-3 inline-flex items-center gap-1.5 font-condensed text-[0.6rem] uppercase tracking-[0.2em] text-ash-dim">
+          {/* Which engine actually produced this. Kept legible rather than
+              whisper-grey: the fallback is silent by design, so this line is
+              the only thing standing between a user and the belief that an AI
+              read their numbers when none did. */}
+          <span
+            className={`mt-3 inline-flex items-center gap-1.5 font-condensed text-[0.6rem] uppercase tracking-[0.2em] ${
+              analysis.source === "ai" ? "text-ash-dim" : "text-ash"
+            }`}
+          >
             <Icon name="bolt" size={11} />
             {analysis.source === "ai" ? t("claudeAnalysis") : t("coachEstimate")}
           </span>
