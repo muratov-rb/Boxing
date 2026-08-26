@@ -15,7 +15,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/dashboard", "/profile", "/train", "/calories", "/nutrition", "/onboarding", "/auth/"],
+      disallow: [
+        "/api/",
+        "/dashboard",
+        "/profile",
+        "/train",
+        "/circuits",
+        "/calories",
+        "/nutrition",
+        "/onboarding",
+        "/auth/",
+      ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

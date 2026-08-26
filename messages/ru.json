@@ -22,7 +22,8 @@
     "theme": "Тема",
     "theme_system": "Как в системе",
     "theme_light": "Светлая",
-    "theme_dark": "Тёмная"
+    "theme_dark": "Тёмная",
+    "circuits": "Круги"
   },
   "hero": {
     "kicker": "Начни бесплатно · Бокс в браузере",
@@ -936,5 +937,38 @@
     "slotBreakfast": "Завтрак",
     "slotLunch": "Обед",
     "slotDinner": "Ужин"
+  },
+  "circuits": {
+    "kicker": "Кондиция",
+    "titlePre": "Круговые ",
+    "titleAccent": "тренировки",
+    "sub": "Известные форматы, по которым реально работают бойцы и атлеты, с честным таймером. Без картинок — движения предполагаются знакомыми.",
+    "back": "Все круги",
+    "howTo": "Как это работает",
+    "tooHard": "Сегодня тяжело?",
+    "lvl": "Уровень {n}",
+    "min": "мин",
+    "fmtAmrap": "AMRAP {n} мин",
+    "fmtForTime": "На время",
+    "fmtEmom": "EMOM · {n} кругов",
+    "fmtInterval": "{work}с работы / {rest}с отдыха · {n} кругов",
+    "start": "Начать",
+    "pause": "Пауза",
+    "paused": "Пауза",
+    "resume": "Продолжить",
+    "finish": "Завершить",
+    "again": "Ещё раз",
+    "work": "Работа",
+    "rest": "Отдых",
+    "finished": "Готово",
+    "timeLeft": "Осталось",
+    "elapsed": "Прошло",
+    "theRound": "Круг",
+    "roundOf": "Круг {n} из {total}",
+    "roundsDone": "Кругов сделано",
+    "yourScore": "Твой результат",
+    "scoreRounds": "{n} кругов",
+    "soundOn": "Включить звук",
+    "soundOff": "Выключить звук"
   }
 }

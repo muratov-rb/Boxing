@@ -22,7 +22,8 @@
     "theme": "Theme",
     "theme_system": "System",
     "theme_light": "Light",
-    "theme_dark": "Dark"
+    "theme_dark": "Dark",
+    "circuits": "Circuits"
   },
   "hero": {
     "kicker": "Start free · Web-first boxing training",
@@ -936,5 +937,38 @@
     "slotBreakfast": "Breakfast",
     "slotLunch": "Lunch",
     "slotDinner": "Dinner"
+  },
+  "circuits": {
+    "kicker": "Conditioning",
+    "titlePre": "The ",
+    "titleAccent": "circuits",
+    "sub": "Named formats fighters and athletes actually run, on a real clock. No pictures — these assume you know the movements.",
+    "back": "All circuits",
+    "howTo": "How it runs",
+    "tooHard": "Too hard today?",
+    "lvl": "Level {n}",
+    "min": "min",
+    "fmtAmrap": "AMRAP {n} min",
+    "fmtForTime": "For time",
+    "fmtEmom": "EMOM · {n} rounds",
+    "fmtInterval": "{work}s on / {rest}s off · {n} rounds",
+    "start": "Start",
+    "pause": "Pause",
+    "paused": "Paused",
+    "resume": "Resume",
+    "finish": "Finish",
+    "again": "Run it again",
+    "work": "Work",
+    "rest": "Rest",
+    "finished": "Done",
+    "timeLeft": "Time left",
+    "elapsed": "Elapsed",
+    "theRound": "The round",
+    "roundOf": "Round {n} of {total}",
+    "roundsDone": "Rounds done",
+    "yourScore": "Your score",
+    "scoreRounds": "{n} rounds",
+    "soundOn": "Turn sound on",
+    "soundOff": "Turn sound off"
   }
 }

@@ -22,7 +22,8 @@
     "theme": "Tema",
     "theme_system": "Sistema",
     "theme_light": "Claro",
-    "theme_dark": "Oscuro"
+    "theme_dark": "Oscuro",
+    "circuits": "Circuitos"
   },
   "hero": {
     "kicker": "Empieza gratis · Boxeo desde el navegador",
@@ -936,5 +937,38 @@
     "slotBreakfast": "Desayuno",
     "slotLunch": "Comida",
     "slotDinner": "Cena"
+  },
+  "circuits": {
+    "kicker": "Acondicionamiento",
+    "titlePre": "Los ",
+    "titleAccent": "circuitos",
+    "sub": "Formatos con nombre que boxeadores y atletas usan de verdad, con reloj real. Sin imágenes: dan por sabidos los movimientos.",
+    "back": "Todos los circuitos",
+    "howTo": "Cómo funciona",
+    "tooHard": "¿Hoy es demasiado?",
+    "lvl": "Nivel {n}",
+    "min": "min",
+    "fmtAmrap": "AMRAP {n} min",
+    "fmtForTime": "Por tiempo",
+    "fmtEmom": "EMOM · {n} rondas",
+    "fmtInterval": "{work}s activo / {rest}s descanso · {n} rondas",
+    "start": "Empezar",
+    "pause": "Pausa",
+    "paused": "En pausa",
+    "resume": "Continuar",
+    "finish": "Terminar",
+    "again": "Repetir",
+    "work": "Trabajo",
+    "rest": "Descanso",
+    "finished": "Hecho",
+    "timeLeft": "Tiempo restante",
+    "elapsed": "Transcurrido",
+    "theRound": "La ronda",
+    "roundOf": "Ronda {n} de {total}",
+    "roundsDone": "Rondas hechas",
+    "yourScore": "Tu marca",
+    "scoreRounds": "{n} rondas",
+    "soundOn": "Activar sonido",
+    "soundOff": "Silenciar"
   }
 }

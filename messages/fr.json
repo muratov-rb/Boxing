@@ -22,7 +22,8 @@
     "theme": "Thème",
     "theme_system": "Système",
     "theme_light": "Clair",
-    "theme_dark": "Sombre"
+    "theme_dark": "Sombre",
+    "circuits": "Circuits"
   },
   "hero": {
     "kicker": "Commence gratuitement · Boxe dans le navigateur",
@@ -936,5 +937,38 @@
     "slotBreakfast": "Petit-déjeuner",
     "slotLunch": "Déjeuner",
     "slotDinner": "Dîner"
+  },
+  "circuits": {
+    "kicker": "Condition physique",
+    "titlePre": "Les ",
+    "titleAccent": "circuits",
+    "sub": "Des formats reconnus que boxeurs et athlètes pratiquent vraiment, chronomètre à l'appui. Sans images : les mouvements sont supposés connus.",
+    "back": "Tous les circuits",
+    "howTo": "Comment ça marche",
+    "tooHard": "Trop dur aujourd'hui ?",
+    "lvl": "Niveau {n}",
+    "min": "min",
+    "fmtAmrap": "AMRAP {n} min",
+    "fmtForTime": "Contre la montre",
+    "fmtEmom": "EMOM · {n} rounds",
+    "fmtInterval": "{work}s d'effort / {rest}s de repos · {n} rounds",
+    "start": "Démarrer",
+    "pause": "Pause",
+    "paused": "En pause",
+    "resume": "Reprendre",
+    "finish": "Terminer",
+    "again": "Recommencer",
+    "work": "Effort",
+    "rest": "Repos",
+    "finished": "Terminé",
+    "timeLeft": "Temps restant",
+    "elapsed": "Écoulé",
+    "theRound": "Le round",
+    "roundOf": "Round {n} sur {total}",
+    "roundsDone": "Rounds faits",
+    "yourScore": "Votre score",
+    "scoreRounds": "{n} rounds",
+    "soundOn": "Activer le son",
+    "soundOff": "Couper le son"
   }
 }

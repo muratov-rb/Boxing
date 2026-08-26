@@ -22,7 +22,8 @@
     "theme": "主题",
     "theme_system": "跟随系统",
     "theme_light": "浅色",
-    "theme_dark": "深色"
+    "theme_dark": "深色",
+    "circuits": "循环训练"
   },
   "hero": {
     "kicker": "免费开始 · 浏览器里的拳击训练",
@@ -936,5 +937,38 @@
     "slotBreakfast": "早餐",
     "slotLunch": "午餐",
     "slotDinner": "晚餐"
+  },
+  "circuits": {
+    "kicker": "体能",
+    "titlePre": "循环",
+    "titleAccent": "训练",
+    "sub": "拳手和运动员真正在用的经典训练格式，配真实计时。没有图示——默认你已经会这些动作。",
+    "back": "全部循环",
+    "howTo": "怎么练",
+    "tooHard": "今天太难？",
+    "lvl": "等级 {n}",
+    "min": "分钟",
+    "fmtAmrap": "AMRAP {n} 分钟",
+    "fmtForTime": "计时完成",
+    "fmtEmom": "EMOM · {n} 轮",
+    "fmtInterval": "{work} 秒运动 / {rest} 秒休息 · {n} 轮",
+    "start": "开始",
+    "pause": "暂停",
+    "paused": "已暂停",
+    "resume": "继续",
+    "finish": "结束",
+    "again": "再来一次",
+    "work": "运动",
+    "rest": "休息",
+    "finished": "完成",
+    "timeLeft": "剩余时间",
+    "elapsed": "已用时",
+    "theRound": "本轮",
+    "roundOf": "第 {n} / {total} 轮",
+    "roundsDone": "已完成轮数",
+    "yourScore": "你的成绩",
+    "scoreRounds": "{n} 轮",
+    "soundOn": "开启声音",
+    "soundOff": "关闭声音"
   }
 }
