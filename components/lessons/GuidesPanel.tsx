@@ -56,6 +56,23 @@ export function GuidesPanel({ initialId }: { initialId?: string } = {}) {
           {t("readMins", { n: open.readMins })}
         </p>
 
+        {/* The answer, before the article. Most readers stop here, and the
+            guide has to be useful to them rather than only to whoever
+            scrolls — so this is the whole point, not a summary of it. */}
+        <section className="mt-6 rounded-xl border border-blood/40 bg-blood/5 p-5">
+          <h3 className="font-condensed text-xs uppercase tracking-widest text-blood">
+            {t("shortVersion")}
+          </h3>
+          <ul className="mt-3 space-y-2.5">
+            {open.keyPoints.map((p) => (
+              <li key={p[0]} className="flex gap-3 leading-relaxed text-bone">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blood" />
+                <span>{p[li]}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <div className="mt-8 space-y-8">
           {open.sections.map((s) => (
             <section key={s.heading[0]}>
@@ -83,6 +100,14 @@ export function GuidesPanel({ initialId }: { initialId?: string } = {}) {
             </section>
           ))}
         </div>
+
+        {/* Only on guides that quote a figure. A vague appeal to "studies" is
+            worse than none — if a number is given, its origin is given too. */}
+        {open.evidence && (
+          <p className="mt-8 border-t border-line/70 pt-5 text-xs leading-relaxed text-ash-dim">
+            {open.evidence[li]}
+          </p>
+        )}
       </article>
     );
   }

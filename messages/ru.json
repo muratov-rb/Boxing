@@ -988,6 +988,7 @@
     "cat_fuel": "Питание",
     "cat_recovery": "Восстановление",
     "cat_mind": "Психология",
-    "cat_safety": "Безопасность"
+    "cat_safety": "Безопасность",
+    "shortVersion": "Коротко"
   }
 }

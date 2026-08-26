@@ -25,7 +25,13 @@ export interface Guide {
   title: [en: string, ru: string];
   summary: [en: string, ru: string];
   readMins: number;
+  /* The whole answer in two or three lines, above everything else.
+     Most people will read this and nothing more, and that is fine — the guide
+     has to work for them, not only for whoever scrolls. */
+  keyPoints: [en: string, ru: string][];
   sections: GuideSection[];
+  /** Where a number in this guide comes from. Only on guides that cite one. */
+  evidence?: [en: string, ru: string];
 }
 
 const g = (x: Guide): Guide => x;
@@ -35,6 +41,11 @@ export const GUIDES: Guide[] = [
     id: "before-a-session",
     cat: "session",
     readMins: 3,
+    keyPoints: [
+      ["Five minutes: skip, arm circles, hip circles, slow shadowbox, half-speed shadowbox.", "Пять минут: скакалка, круги руками, круги тазом, медленный бой с тенью, полскорости."],
+      ["Move through range — don't hold long stretches. Those leave you weaker for the next hour.", "Двигайся в амплитуде, не тяни долгую статику. После неё ты слабее на следующий час."],
+      ["You're warm when your first hard punch doesn't surprise your shoulder.", "Ты разогрет, когда первый сильный удар не становится сюрпризом для плеча."],
+    ],
     title: ["Before you start: the warm-up that matters", "Перед началом: разминка, которая работает"],
     summary: [
       "Five minutes that decide whether the session is any good — and whether you finish it uninjured.",
@@ -97,6 +108,11 @@ export const GUIDES: Guide[] = [
     id: "how-to-breathe",
     cat: "session",
     readMins: 3,
+    keyPoints: [
+      ["Sharp exhale on every punch. One breath, one shot.", "Резкий выдох на каждый удар. Один выдох — один удар."],
+      ["Between exchanges: through the nose, out-breath longer than the in-breath.", "Между разменами: носом, выдох длиннее вдоха."],
+      ["If you gasp after a combination, you held your breath through it.", "Если после серии хватаешь воздух — значит, задержал дыхание."],
+    ],
     title: ["How to breathe when you fight", "Как дышать в бою"],
     summary: [
       "The single fastest improvement available to most beginners, and it costs nothing.",
@@ -145,6 +161,12 @@ export const GUIDES: Guide[] = [
     id: "fight-week",
     cat: "prep",
     readMins: 4,
+    keyPoints: [
+      ["Volume drops hard. Nothing you train this week makes you fitter — it only makes you tired.", "Объём резко вниз. Ничто на этой неделе не добавит формы — только усталости."],
+      ["Hard sparring stops. Short and sharp only.", "Жёсткий спарринг прекращается. Только коротко и остро."],
+      ["Nothing new: not food, not kit, not a warm-up you've never done.", "Ничего нового: ни еды, ни экипировки, ни незнакомой разминки."],
+      ["More than 2 kg out with a week left means the cut wasn't planned. See someone qualified.", "Если за неделю не хватает больше 2 кг — сгонка не спланирована. Нужен специалист."],
+    ],
     title: ["Fight week: what to do and what to stop doing", "Неделя боя: что делать и что прекратить"],
     summary: [
       "The week before a fight is not the week to get fit. It is the week to arrive fresh.",
@@ -216,6 +238,11 @@ export const GUIDES: Guide[] = [
     id: "nerves",
     cat: "mind",
     readMins: 3,
+    keyPoints: [
+      ["Nerves are readiness, not a fault. Fighters who feel nothing usually perform worse.", "Мандраж — это готовность, а не изъян. Кто ничего не чувствует, обычно выступает хуже."],
+      ["Four counts in, six to eight out. The fastest lever you have on your own heart rate.", "Четыре счёта вдох, шесть-восемь выдох. Самый быстрый рычаг к своему пульсу."],
+      ["Shrink the job: \"land the jab in the first ten seconds\", not \"win the fight\".", "Сузь задачу: «попасть джебом в первые десять секунд», а не «выиграть бой»."],
+    ],
     title: ["Nerves before you compete", "Мандраж перед выступлением"],
     summary: [
       "Everyone gets them, including the people who look like they don't. What to do about it.",
@@ -268,8 +295,14 @@ export const GUIDES: Guide[] = [
 
   g({
     id: "eating-around-training",
+    evidence: ["Protein figures follow the International Society of Sports Nutrition position stand.", "Нормы белка приведены по позиции International Society of Sports Nutrition."],
     cat: "fuel",
     readMins: 3,
+    keyPoints: [
+      ["2–3 hours before: a normal meal. Under an hour: something small and mostly carbohydrate.", "За 2–3 часа — обычная еда. Меньше часа — что-то маленькое и в основном углеводное."],
+      ["Aim for 1.5–2.0 g of protein per kg of bodyweight a day, spread across meals.", "Ориентир — 1,5–2,0 г белка на кг веса в день, распределённые по приёмам пищи."],
+      ["The one-hour \"anabolic window\" was oversold. The day's total is what counts.", "«Анаболическое окно» в час сильно преувеличено. Считается дневной итог."],
+    ],
     title: ["What to eat before and after training", "Что есть до и после тренировки"],
     summary: [
       "Timing matters less than most people think, and more than nothing.",
@@ -320,8 +353,14 @@ export const GUIDES: Guide[] = [
 
   g({
     id: "recovery",
+    evidence: ["Sleep and injury figures come from published sports-medicine reviews of athlete populations.", "Данные о сне и травмах — из опубликованных обзоров спортивной медицины по спортсменам."],
     cat: "recovery",
     readMins: 3,
+    keyPoints: [
+      ["Athletes sleeping under 7 hours carry roughly 1.7× the musculoskeletal injury risk.", "У спортсменов со сном менее 7 часов риск травм опорно-двигательного аппарата примерно в 1,7 раза выше."],
+      ["Sore means unfamiliar, not effective. Three days wrecked cost you two sessions.", "Крепатура значит «непривычно», а не «эффективно». Три дня разбитости — минус две тренировки."],
+      ["One full day off a week, minimum. The adaptation happens then, not during.", "Минимум один полный выходной в неделю. Адаптация идёт именно тогда, а не во время."],
+    ],
     title: ["Recovery: the part everyone skips", "Восстановление: то, что все пропускают"],
     summary: [
       "You do not get fitter during training. You get fitter recovering from it.",
@@ -366,6 +405,11 @@ export const GUIDES: Guide[] = [
     id: "wraps-and-hands",
     cat: "safety",
     readMins: 3,
+    keyPoints: [
+      ["Wraps hold the hand's small bones together and brace the wrist. The glove is the padding.", "Бинты держат мелкие кости кисти и фиксируют запястье. Амортизирует перчатка."],
+      ["Wrist first, three turns. That is the part that prevents sprains.", "Сначала запястье, три оборота. Именно это предотвращает растяжения."],
+      ["Land on the first two knuckles with a straight wrist.", "Попадай первыми двумя костяшками при прямом запястье."],
+    ],
     title: ["Your hands: wraps, and why they matter", "Твои руки: бинты и зачем они"],
     summary: [
       "Hand injuries end more amateur boxing than head shots do. Most are avoidable.",
@@ -426,8 +470,14 @@ export const GUIDES: Guide[] = [
 
   g({
     id: "when-not-to-train",
+    evidence: ["Return-to-play staging follows standard sports concussion protocols. It is not a substitute for seeing a doctor.", "Ступени возврата к нагрузке — по стандартным протоколам при сотрясении. Это не заменяет визит к врачу."],
     cat: "safety",
     readMins: 2,
+    keyPoints: [
+      ["After any head knock: stop for the day. Never return to sparring the same day.", "После любого удара в голову — на сегодня всё. Никогда не возвращайся к спаррингу в тот же день."],
+      ["Back only through graduated stages, at least 24 hours each, six days minimum, cleared by a doctor.", "Возврат только ступенями, минимум по 24 часа каждая, минимум шесть дней, и с разрешения врача."],
+      ["Fever, sharp pain, or joint pain still there the next morning: don't train.", "Температура, резкая боль или боль в суставе наутро — не тренируйся."],
+    ],
     title: ["When not to train", "Когда не тренироваться"],
     summary: [
       "Short, and the most important thing in this section.",
@@ -477,6 +527,11 @@ export const GUIDES: Guide[] = [
     id: "first-sparring",
     cat: "prep",
     readMins: 3,
+    keyPoints: [
+      ["It's practice, not a fight. Your partner's job is to make you better.", "Это отработка, а не бой. Задача партнёра — сделать тебя лучше."],
+      ["Breathe, jab, move. One clean shot beats a wild flurry.", "Дыши, джеб, движение. Один чистый удар лучше дикой серии."],
+      ["Watch the chest, not the hands. Punches come from there.", "Смотри на грудь, а не на руки. Удары идут оттуда."],
+    ],
     title: ["Your first spar", "Твой первый спарринг"],
     summary: [
       "What it is for, what it is not for, and how not to embarrass yourself.",
@@ -535,6 +590,11 @@ export const GUIDES: Guide[] = [
     id: "staying-consistent",
     cat: "mind",
     readMins: 3,
+    keyPoints: [
+      ["On a bad day, commit to the warm-up only. Most days you'll carry on once you're moving.", "В плохой день договорись только на разминку. Чаще всего продолжишь, когда уже двигаешься."],
+      ["Never miss twice. One miss is life; two in a row is a new pattern.", "Никогда не пропускай дважды. Один пропуск — жизнь, два подряд — новая привычка."],
+      ["Judge the month, not the day. Progress is invisible daily and obvious over eight weeks.", "Оценивай месяц, а не день. Прогресс незаметен за день и очевиден за восемь недель."],
+    ],
     title: ["Training when you don't feel like it", "Тренировки, когда не хочется"],
     summary: [
       "Motivation is not the thing that keeps people training. This is what does.",

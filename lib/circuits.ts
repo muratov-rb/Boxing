@@ -724,6 +724,220 @@ CIRCUITS.push(
   }),
 );
 
+/* ------------------------------ short formats ----------------------------- */
+/* Everything above needs 12 minutes at least. These exist for the days when
+   the honest choice is ten minutes or nothing — which is most days, for most
+   people, and is the difference between a streak and a gap. */
+
+CIRCUITS.push(
+  c({
+    id: "ten-minute-round",
+    name: ["Ten Minutes, No Excuses", "Десять минут без отговорок"],
+    origin: ["The minimum session", "Минимальная тренировка"],
+    blurb: [
+      "Two rounds of shadow, two of floor work. Short enough that skipping it is a choice, not a reason.",
+      "Два раунда с тенью, два на полу. Достаточно коротко, чтобы пропуск был выбором, а не причиной.",
+    ],
+    timer: { mode: "interval", workSec: 120, restSec: 30, rounds: 4 },
+    level: 1,
+    requires: [],
+    steps: [
+      { exerciseId: "shadowboxing", seconds: 120 },
+      { exerciseId: "pushup", seconds: 120 },
+      { exerciseId: "shadowboxing", seconds: 120 },
+      { exerciseId: "squat", seconds: 120 },
+    ],
+    howTo: [
+      ["Two minutes each, thirty seconds between. Four rounds and you are done.", "По две минуты, тридцать секунд между. Четыре раунда — и всё."],
+      [
+        "On a day you do not want to train, do this and nothing else. It still counts.",
+        "В день, когда не хочется, сделай только это. Оно всё равно засчитывается.",
+      ],
+      [
+        "Break the push-up and squat rounds into sets. Two minutes of continuous work is not the goal.",
+        "Дроби раунды отжиманий и приседаний на подходы. Две минуты без остановки — не цель.",
+      ],
+    ],
+    scaling: [
+      "Ninety seconds a round. The point is that it happens, not how long it lasts.",
+      "По полторы минуты на раунд. Смысл в том, что она состоялась, а не в длине.",
+    ],
+  }),
+
+  c({
+    id: "morning-five",
+    name: ["The Morning Five", "Утренние пять"],
+    origin: ["Wake-up circuit", "Круг для пробуждения"],
+    blurb: [
+      "Five minutes to get blood moving before the day starts. Not a workout — a switch.",
+      "Пять минут, чтобы разогнать кровь до начала дня. Не тренировка — переключатель.",
+    ],
+    timer: { mode: "interval", workSec: 45, restSec: 15, rounds: 5 },
+    level: 1,
+    requires: [],
+    steps: [
+      { exerciseId: "jumping-jacks", seconds: 45 },
+      { exerciseId: "inchworm", seconds: 45 },
+      { exerciseId: "squat", seconds: 45 },
+      { exerciseId: "shoulder-taps", seconds: 45 },
+      { exerciseId: "shadow-footwork", seconds: 45 },
+    ],
+    howTo: [
+      ["Forty-five seconds each, fifteen between. Five movements, five minutes.", "По сорок пять секунд, пятнадцать между. Пять движений, пять минут."],
+      [
+        "Easy pace throughout — this is for waking up, not for a score.",
+        "Лёгкий темп везде: это про пробуждение, а не про результат.",
+      ],
+      [
+        "Works as a warm-up before anything else in the library.",
+        "Годится как разминка перед чем угодно из библиотеки.",
+      ],
+    ],
+    scaling: [
+      "Thirty seconds each. Still does the job.",
+      "По тридцать секунд. Всё равно работает.",
+    ],
+  }),
+
+  c({
+    id: "legs-under-you",
+    name: ["Legs Under You", "Ноги под тобой"],
+    origin: ["Lower-body endurance block", "Блок выносливости ног"],
+    blurb: [
+      "Fighters lose rounds because their legs go, not their arms. This is the fix nobody wants.",
+      "Раунды проигрывают из-за ног, а не рук. Это то лекарство, которого никто не хочет.",
+    ],
+    timer: { mode: "interval", workSec: 40, restSec: 20, rounds: 12 },
+    level: 2,
+    requires: [],
+    steps: [
+      { exerciseId: "squat", seconds: 40 },
+      { exerciseId: "reverse-lunge", seconds: 40 },
+      { exerciseId: "wall-sit", seconds: 40 },
+      { exerciseId: "calf-raises", seconds: 40 },
+    ],
+    howTo: [
+      ["Forty on, twenty off, through four movements. Three full laps.", "Сорок работы, двадцать отдыха, четыре движения. Три полных круга."],
+      [
+        "The wall sit is where it is decided. Sit at ninety degrees and stay there.",
+        "Всё решается на приседе у стены. Угол девяносто градусов — и держись.",
+      ],
+      [
+        "Expect the last lap to be ugly. Finishing it badly beats stopping cleanly.",
+        "Последний круг будет некрасивым. Закончить плохо лучше, чем красиво бросить.",
+      ],
+    ],
+    scaling: [
+      "Two laps, and hold the wall sit above ninety degrees.",
+      "Два круга, и держи присед у стены выше девяноста градусов.",
+    ],
+  }),
+
+  c({
+    id: "punch-out",
+    name: ["Punch-Out", "На выброс"],
+    origin: ["Punch-output interval", "Интервал на выброс ударов"],
+    blurb: [
+      "Thirty seconds of everything you have, six times. Trains the flurry that ends rounds.",
+      "Тридцать секунд всего, что есть, шесть раз. Тренирует серию, которая заканчивает раунды.",
+    ],
+    timer: { mode: "interval", workSec: 30, restSec: 90, rounds: 6 },
+    level: 3,
+    requires: [],
+    steps: [{ exerciseId: "shadowboxing", seconds: 30 }],
+    howTo: [
+      [
+        "Thirty seconds at maximum punch output. Ninety seconds to recover. Six times.",
+        "Тридцать секунд максимального выброса ударов. Полторы минуты на восстановление. Шесть раз.",
+      ],
+      [
+        "The long rest is deliberate — this trains peak output, not endurance. Cutting it makes it a different, easier session.",
+        "Долгий отдых намеренный: тренируем пик, а не выносливость. Урезав его, получишь другую, более лёгкую работу.",
+      ],
+      [
+        "Count punches in round one. If round six is under 70% of it, the rest was too short or round one was a sprint you could not repeat.",
+        "Посчитай удары в первом раунде. Если в шестом меньше 70% — отдых был мал или первый раунд был непосильным спринтом.",
+      ],
+    ],
+    scaling: [
+      "Four rounds. Keep the ninety seconds — that part is the training, not a break from it.",
+      "Четыре раунда. Полторы минуты оставь: это часть тренировки, а не пауза в ней.",
+    ],
+  }),
+
+  c({
+    id: "chipper",
+    name: ["The Chipper", "Чиппер"],
+    origin: ["Classic chipper format — one pass, no repeats", "Классический чиппер — один проход без повторов"],
+    blurb: [
+      "One pass through a long list. No rounds to pace against, just work that ends when it ends.",
+      "Один проход по длинному списку. Кругов нет, работа заканчивается, когда закончится.",
+    ],
+    timer: { mode: "fortime", minutes: 25 },
+    level: 2,
+    requires: [],
+    steps: [
+      { exerciseId: "burpee", reps: 40 },
+      { exerciseId: "situp", reps: 50 },
+      { exerciseId: "squat-jumps", reps: 40 },
+      { exerciseId: "mountain-climber", reps: 60 },
+      { exerciseId: "pushup", reps: 50 },
+    ],
+    howTo: [
+      ["Work down the list once. Finish each movement before starting the next.", "Пройди список один раз. Заканчивай движение до перехода к следующему."],
+      [
+        "No rounds means no rhythm to hide in. Set your own: ten reps, breathe, ten more.",
+        "Раз нет кругов — нет и ритма, за которым спрячешься. Задай свой: десять повторов, вдох, ещё десять.",
+      ],
+      [
+        "The burpees at the front are the trap. Go slower than feels right for the first twenty.",
+        "Бёрпи в начале — ловушка. Первые двадцать делай медленнее, чем хочется.",
+      ],
+    ],
+    scaling: [
+      "Halve every number. The shape of the session is the same.",
+      "Урежь все числа вдвое. Форма тренировки та же.",
+    ],
+  }),
+
+  c({
+    id: "defense-drill",
+    name: ["Defense Rounds", "Раунды защиты"],
+    origin: ["Defensive movement drilling", "Отработка защитных движений"],
+    blurb: [
+      "Six rounds where you never throw a punch. Nobody trains this, and it is why nobody can slip.",
+      "Шесть раундов, где ты не бьёшь вообще. Это никто не тренирует — поэтому никто и не умеет уклоняться.",
+    ],
+    timer: { mode: "interval", workSec: 120, restSec: 45, rounds: 6 },
+    level: 2,
+    requires: [],
+    steps: [
+      { exerciseId: "slips", seconds: 120 },
+      { exerciseId: "roll-under", seconds: 120 },
+      { exerciseId: "parry-block", seconds: 120 },
+    ],
+    howTo: [
+      ["Two minutes each, forty-five seconds between. Two laps of the three.", "По две минуты, сорок пять секунд между. Два круга из трёх движений."],
+      [
+        "Move as if a punch is coming — the movement is meaningless without something to avoid. Picture the shot every time.",
+        "Двигайся так, будто удар идёт: без того, от чего уходишь, движение бессмысленно. Представляй удар каждый раз.",
+      ],
+      [
+        "Small movements. A slip that takes your head a foot off line takes you off balance too.",
+        "Движения короткие. Уклон, уводящий голову на треть метра, уводит и равновесие.",
+      ],
+      [
+        "Come back to the guard position after every single one. That is the whole drill.",
+        "После каждого возвращайся в стойку. В этом и вся суть.",
+      ],
+    ],
+    scaling: [
+      "One lap. Three rounds of defence is more than most people ever do.",
+      "Один круг. Три раунда защиты — больше, чем делает большинство.",
+    ],
+  }),
+);
+
 /* ------------------------------ helpers ---------------------------------- */
 
 export function circuitById(id: string): Circuit | undefined {

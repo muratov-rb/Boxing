@@ -988,6 +988,7 @@
     "cat_fuel": "Nutrition",
     "cat_recovery": "Récupération",
     "cat_mind": "Mental",
-    "cat_safety": "Sécurité"
+    "cat_safety": "Sécurité",
+    "shortVersion": "L essentiel"
   }
 }

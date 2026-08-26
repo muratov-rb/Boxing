@@ -988,6 +988,7 @@
     "cat_fuel": "Fuel",
     "cat_recovery": "Recovery",
     "cat_mind": "Mindset",
-    "cat_safety": "Safety"
+    "cat_safety": "Safety",
+    "shortVersion": "The short version"
   }
 }

@@ -988,6 +988,7 @@
     "cat_fuel": "饮食",
     "cat_recovery": "恢复",
     "cat_mind": "心理",
-    "cat_safety": "安全"
+    "cat_safety": "安全",
+    "shortVersion": "一句话版本"
   }
 }
