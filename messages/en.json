@@ -23,7 +23,8 @@
     "theme_system": "System",
     "theme_light": "Light",
     "theme_dark": "Dark",
-    "circuits": "Circuits"
+    "circuits": "Circuits",
+    "startShort": "Start"
   },
   "hero": {
     "kicker": "Start free · Web-first boxing training",

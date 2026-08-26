@@ -10,7 +10,10 @@ export function Logo({
   href?: string | null;
 }) {
   const content = (
-    <span className={`inline-flex items-center gap-2 sm:gap-2.5 ${className}`}>
+    /* min-w-0 lets the wordmark shrink instead of forcing the header wider
+       than the screen. Without it a long CTA label in French or Spanish pushes
+       the row past the viewport and the whole page scrolls sideways. */
+    <span className={`inline-flex min-w-0 items-center gap-2 sm:gap-2.5 ${className}`}>
       <span className="relative grid h-7 w-7 place-items-center rounded-lg bg-blood sm:h-8 sm:w-8">
         <svg
           width="18"
@@ -27,7 +30,13 @@ export function Logo({
           <path d="m13 5 6 7-6 7" />
         </svg>
       </span>
-      <span className="font-display text-xl leading-none tracking-wide sm:text-2xl">
+      {/* Scales with the viewport rather than stepping at one breakpoint. The
+          header carries the mark, the wordmark, a language menu and a call to
+          action, and the CTA label is three times longer in French than in
+          Chinese — the wordmark is the piece with slack in it. Measured: every
+          language fits from 360px up; below that this shrinks and truncates
+          rather than pushing the page sideways. */}
+      <span className="truncate font-display text-[clamp(0.95rem,4.4vw,1.5rem)] leading-none tracking-wide">
         RINGBORNN
       </span>
     </span>

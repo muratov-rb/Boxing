@@ -35,7 +35,10 @@ export function SiteNav({ authed = false }: { authed?: boolean }) {
           </span>
           <LocaleSwitcher />
           {authed ? (
-            <Link href="/dashboard" className="btn btn-primary !px-3.5 !py-2 text-sm sm:!px-5 sm:!py-2.5">
+            <Link
+              href="/dashboard"
+              className="btn btn-primary whitespace-nowrap !px-3.5 !py-2 text-sm sm:!px-5 sm:!py-2.5"
+            >
               {t("dashboard")}
             </Link>
           ) : (
@@ -46,11 +49,17 @@ export function SiteNav({ authed = false }: { authed?: boolean }) {
               >
                 {t("login")}
               </Link>
+              {/* Two labels, because one length cannot serve five languages in
+                  a fixed header. "Start Training" is 14 characters; the same
+                  phrase is 17 in Russian and 24 in French, which wraps the
+                  button onto two lines and crushes the logo against it. The
+                  header gets the short verb, the hero keeps the full phrase. */}
               <Link
                 href="/onboarding"
-                className="btn btn-primary !px-3.5 !py-2 text-sm sm:!px-5 sm:!py-2.5"
+                className="btn btn-primary whitespace-nowrap !px-3.5 !py-2 text-sm sm:!px-5 sm:!py-2.5"
               >
-                {t("start")}
+                <span className="sm:hidden">{t("startShort")}</span>
+                <span className="hidden sm:inline">{t("start")}</span>
               </Link>
             </>
           )}

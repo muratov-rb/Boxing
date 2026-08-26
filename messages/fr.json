@@ -23,7 +23,8 @@
     "theme_system": "Système",
     "theme_light": "Clair",
     "theme_dark": "Sombre",
-    "circuits": "Circuits"
+    "circuits": "Circuits",
+    "startShort": "Démarrer"
   },
   "hero": {
     "kicker": "Commence gratuitement · Boxe dans le navigateur",
@@ -31,7 +32,7 @@
     "title2pre": "Aie l'allure d'un ",
     "title2accent": "athlète.",
     "sub": "Un seul endroit pour vraiment apprendre la boxe et atteindre la meilleure forme de ta vie. Des plans conçus par IA, une technique réelle et des progrès visibles — que tu n'aies jamais bandé tes mains ou que tu sois sur le ring depuis des années.",
-    "ctaStart": "Commence ton entraînement",
+    "ctaStart": "Commencer maintenant",
     "ctaInside": "Voir ce qu'il y a dedans",
     "trustFree": "Sans Carte",
     "trustNoApp": "Aucune app à installer",

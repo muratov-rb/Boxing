@@ -27,7 +27,11 @@ export function Hero() {
       <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-28 lg:pb-32">
         <p className="kicker animate-rise">{t("kicker")}</p>
 
-        <h1 className="animate-rise mt-6 font-display text-[clamp(2.9rem,9vw,7.5rem)] uppercase text-bone [animation-delay:80ms]">
+        {/* The lower bound was 2.9rem, which on a 375px phone left the longest
+            words touching both edges — "Тренируйся" and "Entraîne-toi" have no
+            slack at that size. Dropping the floor gives every language a
+            margin instead of only the shortest one. */}
+        <h1 className="animate-rise mt-6 font-display text-[clamp(2.35rem,8.5vw,7.5rem)] uppercase text-bone [animation-delay:80ms]">
           {t("title1")}
           <br />
           <span className="text-ash">{t("title2pre")}</span>

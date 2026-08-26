@@ -23,7 +23,8 @@
     "theme_system": "Как в системе",
     "theme_light": "Светлая",
     "theme_dark": "Тёмная",
-    "circuits": "Круги"
+    "circuits": "Круги",
+    "startShort": "Начать"
   },
   "hero": {
     "kicker": "Начни бесплатно · Бокс в браузере",

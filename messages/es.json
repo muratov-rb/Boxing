@@ -23,7 +23,8 @@
     "theme_system": "Sistema",
     "theme_light": "Claro",
     "theme_dark": "Oscuro",
-    "circuits": "Circuitos"
+    "circuits": "Circuitos",
+    "startShort": "Empezar"
   },
   "hero": {
     "kicker": "Empieza gratis · Boxeo desde el navegador",
@@ -31,8 +32,8 @@
     "title2pre": "Luce como un ",
     "title2accent": "atleta.",
     "sub": "Un solo lugar para aprender boxeo de verdad y ponerte en la mejor forma de tu vida. Planes creados por IA, técnica real y progreso que puedes ver — hayas o no vendado nunca tus manos, o lleves años en el ring.",
-    "ctaStart": "Empieza tu entrenamiento",
-    "ctaInside": "Mira lo que hay dentro",
+    "ctaStart": "Empieza a entrenar",
+    "ctaInside": "Ver qué incluye",
     "trustFree": "Sin Tarjeta",
     "trustNoApp": "Sin descargar app",
     "trustNoGear": "Sin equipo",
