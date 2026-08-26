@@ -94,7 +94,8 @@
     "privacy": "Privacidad",
     "terms": "Términos",
     "refunds": "Reembolsos",
-    "support": "Soporte"
+    "support": "Soporte",
+    "guides": "Guías"
   },
   "auth": {
     "welcomeBack": "Bienvenido de nuevo",
@@ -989,6 +990,13 @@
     "cat_recovery": "Recuperación",
     "cat_mind": "Mentalidad",
     "cat_safety": "Seguridad",
-    "shortVersion": "En resumen"
+    "shortVersion": "En resumen",
+    "home": "Inicio",
+    "indexTitlePre": "Guías de ",
+    "indexTitleAccent": "boxeo",
+    "indexSub": "Respuestas directas sobre entrenamiento, semana de pelea, respiración, comida, recuperación y cuándo parar. Cada una empieza por el resumen.",
+    "moreGuides": "Más guías",
+    "allGuides": "Todas las guías",
+    "kicker": "Consejos"
   }
 }

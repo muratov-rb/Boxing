@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/legal";
+import { GUIDES } from "@/lib/guides";
 
 /* Which pages search engines should know about.
 
@@ -17,6 +18,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/plans`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/lessons`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/technique`, changeFrequency: "weekly", priority: 0.8 },
+    /* The guides are the most searchable thing here — they answer questions
+       people actually type, rather than describing a product. Listed above the
+       sign-up pages for that reason. */
+    { url: `${SITE_URL}/guides`, changeFrequency: "monthly", priority: 0.9 },
+    ...GUIDES.map(
+      (g): MetadataRoute.Sitemap[number] => ({
+        url: `${SITE_URL}/guides/${g.id}`,
+        changeFrequency: "yearly",
+        priority: 0.7,
+      }),
+    ),
     { url: `${SITE_URL}/register`, changeFrequency: "yearly", priority: 0.6 },
     { url: `${SITE_URL}/login`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${SITE_URL}/support`, changeFrequency: "yearly", priority: 0.5 },

@@ -94,7 +94,8 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "refunds": "Refunds",
-    "support": "Support"
+    "support": "Support",
+    "guides": "Guides"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -989,6 +990,13 @@
     "cat_recovery": "Recovery",
     "cat_mind": "Mindset",
     "cat_safety": "Safety",
-    "shortVersion": "The short version"
+    "shortVersion": "The short version",
+    "home": "Home",
+    "indexTitlePre": "Boxing ",
+    "indexTitleAccent": "guides",
+    "indexSub": "Straight answers on training, fight week, breathing, food, recovery and when to stop. Each one opens with the short version.",
+    "moreGuides": "More guides",
+    "allGuides": "All guides",
+    "kicker": "Coaching"
   }
 }

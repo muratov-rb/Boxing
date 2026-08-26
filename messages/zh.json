@@ -94,7 +94,8 @@
     "privacy": "隐私政策",
     "terms": "服务条款",
     "refunds": "退款",
-    "support": "支持"
+    "support": "支持",
+    "guides": "指南"
   },
   "auth": {
     "welcomeBack": "欢迎回来",
@@ -989,6 +990,13 @@
     "cat_recovery": "恢复",
     "cat_mind": "心理",
     "cat_safety": "安全",
-    "shortVersion": "一句话版本"
+    "shortVersion": "一句话版本",
+    "home": "首页",
+    "indexTitlePre": "拳击",
+    "indexTitleAccent": "指南",
+    "indexSub": "关于训练、赛前一周、呼吸、饮食、恢复以及何时停下的直接答案。每篇都以一句话版本开头。",
+    "moreGuides": "更多指南",
+    "allGuides": "全部指南",
+    "kicker": "教练建议"
   }
 }

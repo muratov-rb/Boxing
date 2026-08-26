@@ -94,7 +94,8 @@
     "privacy": "Confidentialité",
     "terms": "Conditions",
     "refunds": "Remboursements",
-    "support": "Assistance"
+    "support": "Assistance",
+    "guides": "Guides"
   },
   "auth": {
     "welcomeBack": "Content de te revoir",
@@ -989,6 +990,13 @@
     "cat_recovery": "Récupération",
     "cat_mind": "Mental",
     "cat_safety": "Sécurité",
-    "shortVersion": "L essentiel"
+    "shortVersion": "L essentiel",
+    "home": "Accueil",
+    "indexTitlePre": "Guides de ",
+    "indexTitleAccent": "boxe",
+    "indexSub": "Des réponses directes sur l entraînement, la semaine de combat, la respiration, l alimentation, la récupération et quand s arrêter. Chacune commence par l essentiel.",
+    "moreGuides": "Autres guides",
+    "allGuides": "Tous les guides",
+    "kicker": "Conseils"
   }
 }

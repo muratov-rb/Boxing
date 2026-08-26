@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import type { IconName } from "@/components/ui/Icons";
-import { GUIDES, GUIDE_CATS, guidesByCat, type Guide, type GuideCat } from "@/lib/guides";
+import { GUIDES, GUIDE_CATS, guidesByCat, type GuideCat } from "@/lib/guides";
 
-/* The reading half of the library.
+/* The reading half of the library, as links.
 
-   Everything else in this app is a movement or a timer. These are the answers
-   a corner gives that are not "throw the jab" — fight week, breathing, what to
-   eat, when to stop. Text, because that is the right shape for advice. */
+   The article itself lives at /guides/[id] and is rendered on the server. This
+   used to hold its own copy of the reader, which meant the same prose was
+   rendered by two components and — more importantly — the only way to read a
+   guide was through a client-side switch on /lessons, so no search engine
+   could ever see one. Now there is one article, at one URL, and this is a way
+   into it. */
 
 const CAT_ICON: Record<GuideCat, IconName> = {
   prep: "target",
@@ -21,102 +25,14 @@ const CAT_ICON: Record<GuideCat, IconName> = {
   safety: "lock",
 };
 
-/** `initialId` opens straight to one guide. Exists so a guide can be linked to
-    directly, and so the reader view can be exercised without a click. */
-export function GuidesPanel({ initialId }: { initialId?: string } = {}) {
+export function GuidesPanel() {
   const t = useTranslations("guides");
   const locale = useLocale();
   const li = locale === "ru" ? 1 : 0;
-
   const [cat, setCat] = useState<GuideCat | "all">("all");
-  const [open, setOpen] = useState<Guide | null>(
-    initialId ? (GUIDES.find((x) => x.id === initialId) ?? null) : null,
-  );
-
-  if (open) {
-    return (
-      <article className="mx-auto w-full max-w-2xl">
-        <button
-          type="button"
-          onClick={() => setOpen(null)}
-          className="mb-5 inline-flex items-center gap-2 font-condensed text-xs uppercase tracking-widest text-ash transition-colors hover:text-bone"
-        >
-          <span className="rotate-180">
-            <Icon name="arrow" size={14} />
-          </span>
-          {t("back")}
-        </button>
-
-        <p className="kicker">{t(`cat_${open.cat}`)}</p>
-        <h2 className="mt-3 font-display text-[clamp(1.7rem,5vw,2.75rem)] uppercase leading-none">
-          {open.title[li]}
-        </h2>
-        <p className="mt-3 leading-relaxed text-ash">{open.summary[li]}</p>
-        <p className="mt-2 font-condensed text-xs uppercase tracking-widest text-ash-dim">
-          {t("readMins", { n: open.readMins })}
-        </p>
-
-        {/* The answer, before the article. Most readers stop here, and the
-            guide has to be useful to them rather than only to whoever
-            scrolls — so this is the whole point, not a summary of it. */}
-        <section className="mt-6 rounded-xl border border-blood/40 bg-blood/5 p-5">
-          <h3 className="font-condensed text-xs uppercase tracking-widest text-blood">
-            {t("shortVersion")}
-          </h3>
-          <ul className="mt-3 space-y-2.5">
-            {open.keyPoints.map((p) => (
-              <li key={p[0]} className="flex gap-3 leading-relaxed text-bone">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blood" />
-                <span>{p[li]}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <div className="mt-8 space-y-8">
-          {open.sections.map((s) => (
-            <section key={s.heading[0]}>
-              <h3 className="font-condensed text-lg font-bold uppercase tracking-wide text-bone">
-                {s.heading[li]}
-              </h3>
-              <div className="mt-3 space-y-3">
-                {s.body.map((block, i) =>
-                  Array.isArray(block[0]) ? (
-                    <ul key={i} className="space-y-2.5">
-                      {(block as [string, string][]).map((item) => (
-                        <li key={item[0]} className="flex gap-3 leading-relaxed text-ash">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blood" />
-                          <span>{item[li]}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p key={i} className="leading-relaxed text-ash">
-                      {(block as [string, string])[li]}
-                    </p>
-                  ),
-                )}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Only on guides that quote a figure. A vague appeal to "studies" is
-            worse than none — if a number is given, its origin is given too. */}
-        {open.evidence && (
-          <p className="mt-8 border-t border-line/70 pt-5 text-xs leading-relaxed text-ash-dim">
-            {open.evidence[li]}
-          </p>
-        )}
-      </article>
-    );
-  }
-
-  const list = guidesByCat(cat);
 
   return (
     <div>
-      {/* category filter */}
       <div className="flex flex-wrap gap-2">
         {(["all", ...GUIDE_CATS] as const).map((id) => (
           <button
@@ -135,31 +51,30 @@ export function GuidesPanel({ initialId }: { initialId?: string } = {}) {
       </div>
 
       <ul className="mt-6 space-y-3">
-        {list.map((guide) => (
+        {guidesByCat(cat).map((guide) => (
           <li key={guide.id}>
-            <button
-              type="button"
-              onClick={() => setOpen(guide)}
-              className="panel group w-full p-5 text-left transition-colors hover:border-blood/40"
+            <Link
+              href={`/guides/${guide.id}`}
+              className="panel group flex items-start gap-3.5 p-5 transition-colors hover:border-blood/40"
             >
-              <div className="flex items-start gap-3.5">
-                <span className="mt-0.5 shrink-0 text-blood">
-                  <Icon name={CAT_ICON[guide.cat]} size={18} />
+              <span className="mt-0.5 shrink-0 text-blood">
+                <Icon name={CAT_ICON[guide.cat]} size={18} />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-display text-xl uppercase leading-none">
+                  {guide.title[li]}
                 </span>
-                <div className="min-w-0">
-                  <h3 className="font-display text-xl uppercase leading-none">
-                    {guide.title[li]}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ash">{guide.summary[li]}</p>
-                  <p className="mt-2 font-condensed text-[0.65rem] uppercase tracking-widest text-ash-dim">
-                    {t(`cat_${guide.cat}`)} · {t("readMins", { n: guide.readMins })}
-                  </p>
-                </div>
-                <span className="ml-auto shrink-0 self-center text-ash-dim transition-transform group-hover:translate-x-0.5 group-hover:text-blood">
-                  <Icon name="arrow" size={16} />
+                <span className="mt-2 block text-sm leading-relaxed text-ash">
+                  {guide.summary[li]}
                 </span>
-              </div>
-            </button>
+                <span className="mt-2 block font-condensed text-[0.65rem] uppercase tracking-widest text-ash-dim">
+                  {t(`cat_${guide.cat}`)} · {t("readMins", { n: guide.readMins })}
+                </span>
+              </span>
+              <span className="ml-auto shrink-0 self-center text-ash-dim transition-transform group-hover:translate-x-0.5 group-hover:text-blood">
+                <Icon name="arrow" size={16} />
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
