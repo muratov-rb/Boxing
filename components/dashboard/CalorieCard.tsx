@@ -30,6 +30,9 @@ export function CalorieCard() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [name, setName] = useState("");
   const [kcal, setKcal] = useState("");
+  const [protein, setProtein] = useState("");
+  const [carbs, setCarbs] = useState("");
+  const [fat, setFat] = useState("");
   const [kcalError, setKcalError] = useState(false);
   const [burned, setBurned] = useState(0);
   const [limit, setLimit] = useState<LimitState | null>(null);
@@ -64,6 +67,14 @@ export function CalorieCard() {
   const left = budget - eaten;
   const pct = Math.min(100, Math.round((eaten / budget) * 100));
 
+  /* Optional macro fields: blank stays blank rather than becoming zero, so a
+     meal you could not be bothered to break down does not drag the day's
+     protein ring down with a fake reading. */
+  const grams = (v: string) => {
+    const n = Number(v);
+    return v.trim() !== "" && Number.isFinite(n) && n >= 0 && n <= 500 ? n : undefined;
+  };
+
   const submitManual = (e: React.FormEvent) => {
     e.preventDefault();
     const n = Number(kcal);
@@ -73,9 +84,18 @@ export function CalorieCard() {
       return;
     }
     setKcalError(false);
-    setMeals(addMeal(name, n, "manual"));
+    setMeals(
+      addMeal(name, n, "manual", {
+        protein: grams(protein),
+        carbs: grams(carbs),
+        fat: grams(fat),
+      }),
+    );
     setName("");
     setKcal("");
+    setProtein("");
+    setCarbs("");
+    setFat("");
   };
 
   /* no width class here — each instance sets its own, otherwise the two
@@ -202,6 +222,31 @@ export function CalorieCard() {
           <button type="submit" className="btn btn-primary !px-5 !py-2 text-sm">
             +
           </button>
+        </div>
+
+        {/* Optional, and off the critical path: calories alone is still a
+            valid entry. These exist so the macro rings work for people who
+            read a food label instead of photographing the plate. */}
+        <div className="grid grid-cols-3 gap-2">
+          {(
+            [
+              [protein, setProtein, t("protein")],
+              [carbs, setCarbs, t("carbs")],
+              [fat, setFat, t("fat")],
+            ] as const
+          ).map(([value, set, label]) => (
+            <input
+              key={label}
+              value={value}
+              onChange={(e) => set(e.target.value)}
+              placeholder={`${label} (g)`}
+              type="number"
+              min="0"
+              max="500"
+              inputMode="numeric"
+              className={`${inputCls} w-full`}
+            />
+          ))}
         </div>
       </form>
       <p className={`mt-2 text-xs ${kcalError ? "text-blood-bright" : "text-ash-dim"}`}>

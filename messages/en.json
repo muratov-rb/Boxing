@@ -903,5 +903,31 @@
     "potassium": "Potassium",
     "sodium": "Sodium",
     "vitaminC": "Vitamin C"
+  },
+  "remind": {
+    "title": "Reminders",
+    "sub": "Nudges to eat and drink, on your schedule. Skipped automatically if you already logged a meal around that time.",
+    "mealsLabel": "Meal times",
+    "mealAria": "Meal time {n}",
+    "waterLabel": "Water reminders",
+    "on": "On",
+    "off": "Off",
+    "everyMin": "{n} min",
+    "everyHour": "{n} h",
+    "to": "to",
+    "fromAria": "Remind from",
+    "toAria": "Remind until",
+    "dueMeal": "Time to eat — your {at} meal.",
+    "dueWater": "Time for a drink.",
+    "mealTitle": "RingBornn — time to eat",
+    "mealBody": "Your {at} meal is due. Log it when you're done.",
+    "waterTitle": "RingBornn — drink up",
+    "waterBody": "You're behind on water for today.",
+    "permAsk": "Allow notifications and these arrive on your device instead of only here.",
+    "permButton": "Allow notifications",
+    "permGranted": "Notifications are on for this device.",
+    "permDenied": "Notifications are blocked for this site. Turn them back on in your browser's site settings if you want them.",
+    "permUnsupported": "This browser does not support notifications. Reminders still show here.",
+    "limitNote": "Reminders run while RingBornn is open in a tab. On iPhone, add the site to your home screen first for notifications to work at all."
   }
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MacroPanel } from "@/components/nutrition/MacroPanel";
 import { MicroPanel } from "@/components/nutrition/MicroPanel";
 import { WaterCard } from "@/components/nutrition/WaterCard";
+import { ReminderCard } from "@/components/nutrition/ReminderCard";
 import type { Meal } from "@/lib/tracking";
 import type { Profile } from "@/lib/onboarding";
 
@@ -60,7 +61,7 @@ const MEALS: Meal[] = [
   { id: "c", name: "Handful of almonds", kcal: 180, at: "2026-08-26T16:00:00Z", source: "manual" },
 ];
 
-const VIEWS = ["macros", "water", "micros", "empty"] as const;
+const VIEWS = ["macros", "water", "micros", "remind", "empty"] as const;
 type View = (typeof VIEWS)[number];
 
 export default function NutritionBench() {
@@ -92,6 +93,7 @@ export default function NutritionBench() {
         {view === "macros" && <MacroPanel meals={MEALS} profile={PROFILE} />}
         {view === "water" && <WaterCard />}
         {view === "micros" && <MicroPanel meals={MEALS} profile={PROFILE} />}
+        {view === "remind" && <ReminderCard />}
         {view === "empty" && <MicroPanel meals={[]} profile={PROFILE} />}
       </div>
     </main>

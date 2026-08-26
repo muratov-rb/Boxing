@@ -7,6 +7,7 @@ import { CalorieCard } from "@/components/dashboard/CalorieCard";
 import { MacroPanel } from "@/components/nutrition/MacroPanel";
 import { MicroPanel } from "@/components/nutrition/MicroPanel";
 import { WaterCard } from "@/components/nutrition/WaterCard";
+import { ReminderCard } from "@/components/nutrition/ReminderCard";
 import { useTodayNutrition } from "@/components/nutrition/useTodayNutrition";
 import { Icon } from "@/components/ui/Icons";
 
@@ -42,6 +43,7 @@ export function CaloriesClient() {
               <MacroPanel meals={meals} profile={profile} />
               <WaterCard />
               <MicroPanel meals={meals} profile={profile} />
+              <ReminderCard />
             </>
           )}
         </div>

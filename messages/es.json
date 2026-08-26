@@ -903,5 +903,31 @@
     "potassium": "Potasio",
     "sodium": "Sodio",
     "vitaminC": "Vitamina C"
+  },
+  "remind": {
+    "title": "Recordatorios",
+    "sub": "Avisos para comer y beber, a tu horario. Se omiten si ya registraste una comida a esa hora.",
+    "mealsLabel": "Horas de comida",
+    "mealAria": "Comida {n}",
+    "waterLabel": "Recordatorios de agua",
+    "on": "Sí",
+    "off": "No",
+    "everyMin": "{n} min",
+    "everyHour": "{n} h",
+    "to": "a",
+    "fromAria": "Avisar desde",
+    "toAria": "Avisar hasta",
+    "dueMeal": "Hora de comer — tu comida de las {at}.",
+    "dueWater": "Hora de beber agua.",
+    "mealTitle": "RingBornn — hora de comer",
+    "mealBody": "Toca tu comida de las {at}. Regístrala cuando termines.",
+    "waterTitle": "RingBornn — bebe agua",
+    "waterBody": "Vas por detrás con el agua de hoy.",
+    "permAsk": "Permite las notificaciones y llegarán a tu dispositivo, no solo aquí.",
+    "permButton": "Permitir notificaciones",
+    "permGranted": "Las notificaciones están activas en este dispositivo.",
+    "permDenied": "Las notificaciones están bloqueadas para este sitio. Actívalas en los ajustes del navegador si las quieres.",
+    "permUnsupported": "Este navegador no admite notificaciones. Los recordatorios se ven igual aquí.",
+    "limitNote": "Los recordatorios funcionan mientras RingBornn esté abierto en una pestaña. En iPhone, añade el sitio a la pantalla de inicio para que lleguen."
   }
 }

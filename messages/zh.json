@@ -903,5 +903,31 @@
     "potassium": "钾",
     "sodium": "钠",
     "vitaminC": "维生素 C"
+  },
+  "remind": {
+    "title": "提醒",
+    "sub": "按你的作息提醒进餐和喝水。若该时段已记录过一餐，会自动跳过。",
+    "mealsLabel": "用餐时间",
+    "mealAria": "第 {n} 餐",
+    "waterLabel": "饮水提醒",
+    "on": "开",
+    "off": "关",
+    "everyMin": "{n} 分钟",
+    "everyHour": "{n} 小时",
+    "to": "至",
+    "fromAria": "开始提醒时间",
+    "toAria": "结束提醒时间",
+    "dueMeal": "该吃饭了——{at} 那一餐。",
+    "dueWater": "该喝水了。",
+    "mealTitle": "RingBornn — 该吃饭了",
+    "mealBody": "到了 {at} 那一餐的时间。吃完记得记录。",
+    "waterTitle": "RingBornn — 记得喝水",
+    "waterBody": "今天的饮水量落后了。",
+    "permAsk": "允许通知后，提醒会发送到你的设备，而不只是显示在这里。",
+    "permButton": "允许通知",
+    "permGranted": "此设备已开启通知。",
+    "permDenied": "本站通知已被屏蔽。如需使用，请在浏览器的网站设置中重新开启。",
+    "permUnsupported": "此浏览器不支持通知。提醒仍会显示在这里。",
+    "limitNote": "提醒在 RingBornn 标签页打开时运行。iPhone 需先将网站添加到主屏幕，通知才能送达。"
   }
 }

@@ -903,5 +903,31 @@
     "potassium": "Potassium",
     "sodium": "Sodium",
     "vitaminC": "Vitamine C"
+  },
+  "remind": {
+    "title": "Rappels",
+    "sub": "Des rappels pour manger et boire, à vos horaires. Ignorés si un repas a déjà été enregistré à peu près à cette heure.",
+    "mealsLabel": "Heures des repas",
+    "mealAria": "Repas {n}",
+    "waterLabel": "Rappels d'hydratation",
+    "on": "Activé",
+    "off": "Désactivé",
+    "everyMin": "{n} min",
+    "everyHour": "{n} h",
+    "to": "à",
+    "fromAria": "Rappeler à partir de",
+    "toAria": "Rappeler jusqu'à",
+    "dueMeal": "C'est l'heure de manger — votre repas de {at}.",
+    "dueWater": "C'est l'heure de boire.",
+    "mealTitle": "RingBornn — l'heure de manger",
+    "mealBody": "Votre repas de {at} est prévu. Enregistrez-le une fois terminé.",
+    "waterTitle": "RingBornn — buvez",
+    "waterBody": "Vous êtes en retard sur l'eau aujourd'hui.",
+    "permAsk": "Autorisez les notifications pour les recevoir sur votre appareil, et pas seulement ici.",
+    "permButton": "Autoriser les notifications",
+    "permGranted": "Les notifications sont actives sur cet appareil.",
+    "permDenied": "Les notifications sont bloquées pour ce site. Réactivez-les dans les paramètres du navigateur si vous les voulez.",
+    "permUnsupported": "Ce navigateur ne gère pas les notifications. Les rappels restent visibles ici.",
+    "limitNote": "Les rappels fonctionnent tant que RingBornn est ouvert dans un onglet. Sur iPhone, ajoutez d'abord le site à l'écran d'accueil."
   }
 }

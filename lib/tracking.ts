@@ -17,6 +17,7 @@ import {
 /* Re-exported so existing call sites keep working; lib/xp.ts is the source. */
 export { RANK_XP, rankFromXp };
 import { GLASS_ML, WATER_MAX_ML, type Micros } from "./nutrients";
+import { DEFAULT_REMINDERS, type ReminderSettings } from "./reminders";
 import {
   entitlementsFor,
   TRIAL_DAYS,
@@ -36,6 +37,7 @@ const K_SUB = "pressure.sub"; // SubState
 const K_USAGE = "pressure.usage"; // Record<date, Record<UsageKey, number>>
 const K_BURN = "pressure.burn"; // Record<date, number> — kcal burned training
 const K_WATER = "pressure.water"; // Record<date, number> — millilitres drunk
+const K_REMINDERS = "pressure.reminders"; // ReminderSettings — device-local
 
 export interface Meal {
   id: string;
@@ -117,6 +119,9 @@ export const KEYS = {
   usage: K_USAGE,
   burn: K_BURN,
   water: K_WATER,
+  /* Listed so wipeLocal clears it, but deliberately absent from the sync
+     layer's push: a schedule that suits a phone is wrong for a laptop. */
+  reminders: K_REMINDERS,
 } as const;
 
 /** Raw slice reads for the sync layer (typed accessors live further down). */
@@ -494,6 +499,38 @@ export function resetWaterToday(): number {
   all[todayKey()] = 0;
   write(K_WATER, all);
   return 0;
+}
+
+/* -------------------------------- reminders ------------------------------ */
+
+/** Merged over the defaults so a settings blob saved by an older build — one
+    without the water block — cannot crash the scheduler. */
+export function loadReminders(): ReminderSettings {
+  const saved = read<Partial<ReminderSettings> | null>(K_REMINDERS, null);
+  if (!saved) return DEFAULT_REMINDERS;
+  return {
+    ...DEFAULT_REMINDERS,
+    ...saved,
+    water: { ...DEFAULT_REMINDERS.water, ...(saved.water ?? {}) },
+    lastFired: saved.lastFired ?? {},
+    meals: Array.isArray(saved.meals) && saved.meals.length ? saved.meals : DEFAULT_REMINDERS.meals,
+  };
+}
+
+export function saveReminders(s: ReminderSettings): ReminderSettings {
+  write(K_REMINDERS, s);
+  return s;
+}
+
+/** Minutes-of-day for each meal logged today — what the scheduler needs to
+    decide whether a slot has already been satisfied. */
+export function mealMinutesToday(): number[] {
+  return mealsToday()
+    .map((m) => {
+      const d = new Date(m.at);
+      return Number.isNaN(d.getTime()) ? null : d.getHours() * 60 + d.getMinutes();
+    })
+    .filter((n): n is number => n !== null);
 }
 
 /* ---------------------------- calorie target ----------------------------- */
