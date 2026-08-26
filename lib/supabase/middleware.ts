@@ -3,8 +3,20 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseUrl, supabaseAnonKey, isSupabaseConfigured } from "./config";
 
 /* Routes that require an account. Onboarding collects the user's stats, so we
-   want them signed in first — "create a profile" → auth → statistics. */
-const PROTECTED = ["/dashboard", "/onboarding", "/profile", "/calories"];
+   want them signed in first — "create a profile" → auth → statistics.
+
+   THIS LIST IS THE GATE. A `redirect()` inside the page's own server component
+   is not a substitute and must not be relied on alone: /circuits shipped with
+   exactly that guard and still served itself to signed-out visitors, because a
+   route absent from this list never gets the session resolved on the way in.
+   Adding a page that needs an account means adding it here. */
+const PROTECTED = [
+  "/dashboard",
+  "/onboarding",
+  "/profile",
+  "/calories",
+  "/circuits",
+];
 
 /* Refreshes the Supabase session cookie and guards protected routes.
    No-op when Supabase isn't configured yet, so the app still runs. */
