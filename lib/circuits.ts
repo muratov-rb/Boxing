@@ -376,6 +376,354 @@ export const CIRCUITS: Circuit[] = [
   }),
 ];
 
+/* ------------------------- equipment-based circuits ----------------------- */
+/* The first eight are all floor-and-bar work. These need something, and are
+   hidden from anyone who has not ticked the gear at onboarding. */
+
+CIRCUITS.push(
+  c({
+    id: "heavy-bag-rounds",
+    name: ["Heavy Bag Rounds", "Раунды на мешке"],
+    origin: ["Standard bag work, on the fight clock", "Стандартная работа на мешке по боевому таймеру"],
+    blurb: [
+      "Eight rounds on the bag. The one session that builds punch endurance and nothing else does.",
+      "Восемь раундов на мешке. Единственная работа, которая строит выносливость удара.",
+    ],
+    timer: { mode: "interval", workSec: 180, restSec: 60, rounds: 8 },
+    level: 2,
+    requires: ["heavybag"],
+    steps: [{ exerciseId: "heavy-bag-combos", seconds: 180 }],
+    howTo: [
+      ["Three minutes on the bag, one minute off, eight times.", "Три минуты на мешке, минута отдыха, восемь раз."],
+      [
+        "Pick one combination per round and live on it. Rounds spent throwing whatever comes teach nothing.",
+        "Выбери одну комбинацию на раунд и живи в ней. Раунды «что придёт» ничему не учат.",
+      ],
+      [
+        "Move after every combination. A fighter who stands still after punching gets hit.",
+        "Двигайся после каждой комбинации. Кто стоит после ударов — тот получает.",
+      ],
+      [
+        "Last thirty seconds of each round: throw at full output. That is where the round is won.",
+        "Последние тридцать секунд раунда — работай на полную. Именно там раунд выигрывается.",
+      ],
+    ],
+    scaling: [
+      "Four rounds, or drop to two minutes. Volume before intensity.",
+      "Четыре раунда или по две минуты. Сначала объём, потом интенсивность.",
+    ],
+  }),
+
+  c({
+    id: "bag-and-burpee",
+    name: ["Bag & Burpee", "Мешок и бёрпи"],
+    origin: ["Gym conditioning pairing", "Классическая связка зального кондиционирования"],
+    blurb: [
+      "Punch, hit the floor, get up, punch again. Teaches you to work while your lungs argue.",
+      "Бей, падай, вставай, снова бей. Учит работать, когда лёгкие против.",
+    ],
+    timer: { mode: "interval", workSec: 60, restSec: 30, rounds: 10 },
+    level: 3,
+    requires: ["heavybag"],
+    steps: [
+      { exerciseId: "heavy-bag-combos", seconds: 30 },
+      { exerciseId: "burpee", seconds: 30 },
+    ],
+    howTo: [
+      [
+        "Thirty seconds on the bag, then thirty seconds of burpees, without stopping between.",
+        "Тридцать секунд на мешке, затем тридцать секунд бёрпи, без паузы между ними.",
+      ],
+      ["Thirty seconds rest, then go again. Ten times.", "Тридцать секунд отдыха и снова. Десять раз."],
+      [
+        "Punch at real speed even on the last round. Slow punches make this cardio, not boxing.",
+        "Бей в реальной скорости даже на последнем круге. Медленные удары превращают это в кардио, а не бокс.",
+      ],
+    ],
+    scaling: [
+      "Six rounds, or replace burpees with sprawls to keep the pace honest.",
+      "Шесть кругов или замени бёрпи на спролы, чтобы держать темп честным.",
+    ],
+  }),
+
+  c({
+    id: "rope-rounds",
+    name: ["Rope Rounds", "Раунды на скакалке"],
+    origin: ["Boxing gym warm-up standard", "Стандартная разминка боксёрского зала"],
+    blurb: [
+      "Six rounds of rope. Boring, unglamorous, and the reason good fighters have light feet.",
+      "Шесть раундов скакалки. Скучно, непразднично — и именно поэтому у хороших бойцов лёгкие ноги.",
+    ],
+    timer: { mode: "interval", workSec: 180, restSec: 60, rounds: 6 },
+    level: 1,
+    requires: ["jumprope"],
+    steps: [{ exerciseId: "jump-rope", seconds: 180 }],
+    howTo: [
+      ["Three minutes skipping, one minute off, six rounds.", "Три минуты прыжков, минута отдыха, шесть раундов."],
+      [
+        "Round 1–2 steady. Rounds 3–4 add a step: alternate feet, then boxer skip.",
+        "Раунды 1–2 ровно. В 3–4 добавь вариант: попеременно ноги, затем боксёрский шаг.",
+      ],
+      [
+        "Rounds 5–6: thirty seconds fast, thirty steady, repeat.",
+        "Раунды 5–6: тридцать секунд быстро, тридцать ровно, повторяй.",
+      ],
+      [
+        "Trip-ups are part of it. Pick the rope up and carry on — the clock does not stop.",
+        "Зацепы — часть дела. Поднял скакалку и продолжай, таймер не ждёт.",
+      ],
+    ],
+    scaling: [
+      "Three rounds, and step over the rope instead of jumping if your calves are new to this.",
+      "Три раунда, и переступай скакалку вместо прыжков, если икры к этому не привыкли.",
+    ],
+  }),
+
+  c({
+    id: "kettlebell-engine",
+    name: ["Kettlebell Engine", "Гиревой мотор"],
+    origin: ["Fighter's kettlebell complex", "Гиревой комплекс для бойцов"],
+    blurb: [
+      "The swing is the closest a gym movement gets to the hip snap of a real punch.",
+      "Мах гирей — самое близкое к работе таза в настоящем ударе, что есть в зале.",
+    ],
+    timer: { mode: "interval", workSec: 40, restSec: 20, rounds: 12 },
+    level: 2,
+    requires: ["kettlebell"],
+    steps: [
+      { exerciseId: "kb-swing", seconds: 40 },
+      { exerciseId: "goblet-squat", seconds: 40 },
+      { exerciseId: "farmer-carry", seconds: 40 },
+    ],
+    howTo: [
+      [
+        "Forty seconds work, twenty rest, rotating through the three movements.",
+        "Сорок секунд работы, двадцать отдыха, по кругу через три движения.",
+      ],
+      ["Twelve stations — that is four full laps.", "Двенадцать станций — это четыре полных круга."],
+      [
+        "The swing is a hip snap, not a squat and not a lift with the arms. The bell floats; you do not raise it.",
+        "Мах — это щелчок тазом, не присед и не подъём руками. Гиря летит сама, ты её не поднимаешь.",
+      ],
+      [
+        "Set the bell down the moment your back rounds. That is the rep that hurts you.",
+        "Ставь гирю, как только округлилась спина. Именно это повторение и травмирует.",
+      ],
+    ],
+    scaling: [
+      "Eight stations, and swing to chest height rather than overhead.",
+      "Восемь станций, и маши до груди, а не над головой.",
+    ],
+  }),
+
+  c({
+    id: "dumbbell-fighter",
+    name: ["Dumbbell Fighter", "Боец с гантелями"],
+    origin: ["Strength-endurance circuit", "Круг на силовую выносливость"],
+    blurb: [
+      "Pressing and rowing under fatigue — the shoulders and back that hold a guard up in round ten.",
+      "Жимы и тяги на фоне усталости — плечи и спина, которые держат защиту в десятом раунде.",
+    ],
+    timer: { mode: "interval", workSec: 45, restSec: 15, rounds: 12 },
+    level: 2,
+    requires: ["dumbbells"],
+    steps: [
+      { exerciseId: "db-shoulder-press", seconds: 45 },
+      { exerciseId: "db-row", seconds: 45 },
+      { exerciseId: "lunge", seconds: 45 },
+    ],
+    howTo: [
+      ["Forty-five seconds on, fifteen off, through the three movements.", "Сорок пять секунд работы, пятнадцать отдыха, через три движения."],
+      ["Four laps. Pick a weight you could press for a full minute, not your heaviest.", "Четыре круга. Бери вес, который выжмешь целую минуту, а не максимальный."],
+      [
+        "Fifteen seconds is not enough to recover, and that is the point — this trains the tank, not the lift.",
+        "Пятнадцати секунд не хватит на восстановление — в этом и смысл: тренируем бак, а не подъём.",
+      ],
+    ],
+    scaling: [
+      "Thirty seconds of work, thirty of rest, and lighter than you think.",
+      "Тридцать секунд работы, тридцать отдыха, и легче, чем кажется.",
+    ],
+  }),
+
+  c({
+    id: "angie",
+    name: ["Angie", "Энджи"],
+    origin: ["CrossFit benchmark workout", "Эталонная тренировка CrossFit"],
+    blurb: [
+      "One hundred of each, in order, nothing shared out. A long, honest grind.",
+      "По сто каждого, по порядку, без дробления. Долгая честная работа.",
+    ],
+    timer: { mode: "fortime", minutes: 40 },
+    level: 3,
+    requires: ["pullupbar"],
+    steps: [
+      { exerciseId: "pullups", reps: 100 },
+      { exerciseId: "pushup", reps: 100 },
+      { exerciseId: "situp", reps: 100 },
+      { exerciseId: "squat", reps: 100 },
+    ],
+    howTo: [
+      [
+        "Finish all 100 pull-ups before starting push-ups. Then all 100 push-ups, and so on.",
+        "Закончи все 100 подтягиваний до отжиманий. Затем все 100 отжиманий, и так далее.",
+      ],
+      [
+        "Break into small sets from rep one — 10 sets of 10 beats going to failure at rep 14.",
+        "Дроби на маленькие подходы с первого повтора: 10 по 10 лучше, чем отказ на 14-м.",
+      ],
+      [
+        "The squats at the end are the easy part on paper and the hard part in reality.",
+        "Приседания в конце легки на бумаге и тяжелы в реальности.",
+      ],
+      ["The 40-minute cap is a safety net, not a target.", "Лимит в 40 минут — страховка, а не цель."],
+    ],
+    scaling: [
+      "Halve everything: 50 of each. Still a full session, and finishable.",
+      "Урежь вдвое: по 50 каждого. Всё ещё полноценно и выполнимо.",
+    ],
+  }),
+
+  c({
+    id: "the-300",
+    name: ["The 300", "Триста"],
+    origin: ["Classic bodyweight century test", "Классический тест на сотни повторов"],
+    blurb: [
+      "Three hundred reps, no equipment, no excuses. The simplest hard thing in the library.",
+      "Триста повторов, без инвентаря и без отговорок. Самое простое из тяжёлого.",
+    ],
+    timer: { mode: "fortime", minutes: 30 },
+    level: 2,
+    requires: [],
+    steps: [
+      { exerciseId: "pushup", reps: 100 },
+      { exerciseId: "situp", reps: 100 },
+      { exerciseId: "squat", reps: 100 },
+    ],
+    howTo: [
+      ["100 push-ups, 100 sit-ups, 100 squats, in that order.", "100 отжиманий, 100 скручиваний, 100 приседаний, в этом порядке."],
+      [
+        "Sets of ten from the start. Everyone who opens with a set of thirty regrets it by rep sixty.",
+        "Подходы по десять с самого начала. Кто начинает с тридцати, жалеет к шестидесятому.",
+      ],
+      [
+        "Rest as little as you can rather than as much as you want.",
+        "Отдыхай как можно меньше, а не сколько хочется.",
+      ],
+    ],
+    scaling: [
+      "150 total — 50 of each. Add ten a week rather than pushing through bad form.",
+      "150 всего — по 50 каждого. Прибавляй по десять в неделю, а не ломай технику.",
+    ],
+  }),
+
+  c({
+    id: "core-finisher",
+    name: ["Core Finisher", "Добивка корпуса"],
+    origin: ["Standard end-of-session core block", "Стандартный блок корпуса в конце тренировки"],
+    blurb: [
+      "Six minutes to bolt onto any session. Power comes from the floor and passes through here.",
+      "Шесть минут в конец любой тренировки. Сила идёт от пола и проходит здесь.",
+    ],
+    timer: { mode: "interval", workSec: 30, restSec: 15, rounds: 8 },
+    level: 1,
+    requires: [],
+    steps: [
+      { exerciseId: "plank", seconds: 30 },
+      { exerciseId: "russian-twists", seconds: 30 },
+      { exerciseId: "hollow-hold", seconds: 30 },
+      { exerciseId: "leg-raises", seconds: 30 },
+    ],
+    howTo: [
+      ["Thirty seconds each, fifteen to switch, two full laps.", "По тридцать секунд, пятнадцать на смену, два полных круга."],
+      [
+        "Breathe throughout. Holding your breath in a plank makes it a breath-hold, not a core exercise.",
+        "Дыши всё время. Задержка дыхания в планке — это упражнение на задержку, а не на корпус.",
+      ],
+      [
+        "Stop a set the moment your lower back lifts off or arches. Quality is the whole point here.",
+        "Останови подход, как только поясница отрывается или прогибается. Качество здесь — весь смысл.",
+      ],
+    ],
+    scaling: [
+      "Twenty seconds of work, or one lap instead of two.",
+      "Двадцать секунд работы или один круг вместо двух.",
+    ],
+  }),
+
+  c({
+    id: "shadow-pyramid",
+    name: ["Shadow Pyramid", "Пирамида с тенью"],
+    origin: ["Tempo-varied shadowboxing", "Бой с тенью с переменным темпом"],
+    blurb: [
+      "Rounds that get longer, then shorter. Pacing you can feel rather than be told about.",
+      "Раунды, которые удлиняются, затем укорачиваются. Чувство темпа, а не рассказ о нём.",
+    ],
+    timer: { mode: "interval", workSec: 60, restSec: 30, rounds: 9 },
+    level: 1,
+    requires: [],
+    steps: [{ exerciseId: "shadowboxing", seconds: 60 }],
+    howTo: [
+      [
+        "Nine one-minute rounds with thirty seconds between. Output climbs to round five, then comes back down.",
+        "Девять раундов по минуте с тридцатью секундами между. Нагрузка растёт до пятого раунда, потом снижается.",
+      ],
+      [
+        "Rounds 1–3: technical, slow, perfect. Rounds 4–6: full speed. Rounds 7–9: technical again while tired.",
+        "Раунды 1–3: технично, медленно, чисто. 4–6: полная скорость. 7–9: снова технично, но уже уставшим.",
+      ],
+      [
+        "The last three are the real work — clean technique when the legs have gone is what carries into a fight.",
+        "Последние три — настоящая работа: чистая техника на убитых ногах и есть то, что переносится в бой.",
+      ],
+    ],
+    scaling: [
+      "Five rounds instead of nine, keeping the same slow-fast-slow shape.",
+      "Пять раундов вместо девяти, сохраняя форму «медленно-быстро-медленно».",
+    ],
+  }),
+
+  c({
+    id: "barbell-base",
+    name: ["Barbell Base", "Штанговая база"],
+    origin: ["Strength circuit for fighters", "Силовой круг для бойцов"],
+    blurb: [
+      "Heavy, slow, and nothing like a round — which is exactly why it belongs in the week.",
+      "Тяжело, медленно и совсем не похоже на раунд — именно поэтому это нужно в неделе.",
+    ],
+    timer: { mode: "interval", workSec: 90, restSec: 90, rounds: 9 },
+    level: 3,
+    requires: ["barbell"],
+    steps: [
+      { exerciseId: "barbell-squat", seconds: 90 },
+      { exerciseId: "barbell-row", seconds: 90 },
+      { exerciseId: "overhead-press", seconds: 90 },
+    ],
+    howTo: [
+      [
+        "Ninety seconds to complete 5 good reps, then ninety seconds rest. Three laps.",
+        "Девяносто секунд на 5 качественных повторов, затем девяносто секунд отдыха. Три круга.",
+      ],
+      [
+        "This is a strength block, not conditioning. Rest the full ninety even if you feel fine.",
+        "Это силовой блок, а не кондиция. Отдыхай все девяносто, даже если кажется, что не нужно.",
+      ],
+      [
+        "Leave two reps in the tank on every set. Fighters do not need to miss lifts.",
+        "Оставляй два повтора в запасе в каждом подходе. Бойцу незачем «ронять» подход.",
+      ],
+      [
+        "Never on the day before hard sparring — heavy legs make you slow, not strong.",
+        "Никогда накануне жёсткого спарринга: тяжёлые ноги делают медленным, а не сильным.",
+      ],
+    ],
+    scaling: [
+      "Use the bar alone, or swap for goblet squats and dumbbell rows until the movement is solid.",
+      "Работай с пустым грифом или замени на гоблет-приседы и тяги гантели, пока техника не встанет.",
+    ],
+  }),
+);
+
 /* ------------------------------ helpers ---------------------------------- */
 
 export function circuitById(id: string): Circuit | undefined {

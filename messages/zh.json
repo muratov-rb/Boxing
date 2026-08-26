@@ -435,7 +435,9 @@
     "bp_back": "背部",
     "bp_core": "核心",
     "bp_legs": "腿部",
-    "demoSoon": "示意图即将上线——请先按下面的步骤练习。"
+    "demoSoon": "示意图即将上线——请先按下面的步骤练习。",
+    "tabMoves": "动作",
+    "tabGuides": "指南"
   },
   "track": {
     "streakTitle": "连续打卡",
@@ -976,5 +978,16 @@
     "soundOff": "关闭声音",
     "teaserKicker": "还想再练？",
     "teaserSub": "经典体能格式 · {min} 分钟"
+  },
+  "guides": {
+    "back": "全部指南",
+    "all": "全部 {n} 篇",
+    "readMins": "阅读约 {n} 分钟",
+    "cat_prep": "赛前准备",
+    "cat_session": "训练中",
+    "cat_fuel": "饮食",
+    "cat_recovery": "恢复",
+    "cat_mind": "心理",
+    "cat_safety": "安全"
   }
 }

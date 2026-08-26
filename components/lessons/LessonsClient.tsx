@@ -19,6 +19,7 @@ import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "./BodyMap";
 import { LessonAnimation } from "./LessonAnimation";
 import { CircuitTeaser } from "@/components/circuits/CircuitTeaser";
+import { GuidesPanel } from "./GuidesPanel";
 import { AppNav } from "@/components/nav/AppNav";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
@@ -161,6 +162,7 @@ export function LessonsClient() {
 
   const tp = useTranslations("plans");
   const [cat, setCat] = useState<LessonCat | "all">("all");
+  const [view, setView] = useState<"moves" | "guides">("moves");
   const [open, setOpen] = useState<Exercise | null>(null);
   const [cap, setCap] = useState<number>(Number.POSITIVE_INFINITY);
   const [locked, setLocked] = useState(false);
@@ -195,6 +197,34 @@ export function LessonsClient() {
         {locked ? (
           <div className="mt-8">
             <LockedFeature icon="video" title={tp("f_lessons")} body={tp("lockedLessons")} />
+          </div>
+        ) : (
+        <>
+        {/* Movements or guides. The library only ever taught movements, which
+            left the questions a corner actually answers — fight week, how to
+            breathe, when to stop — with nowhere to live. */}
+        <div className="mt-8 flex gap-2">
+          {(["moves", "guides"] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              aria-pressed={view === tab}
+              onClick={() => setView(tab)}
+              className={cx(
+                "min-h-[44px] flex-1 rounded-xl border px-4 font-condensed text-sm uppercase tracking-widest transition-colors sm:flex-none sm:px-6",
+                view === tab
+                  ? "border-blood bg-blood/10 text-bone"
+                  : "border-line text-ash hover:border-blood/50",
+              )}
+            >
+              {t(tab === "moves" ? "tabMoves" : "tabGuides")}
+            </button>
+          ))}
+        </div>
+
+        {view === "guides" ? (
+          <div className="mt-8">
+            <GuidesPanel />
           </div>
         ) : (
         <>
@@ -274,6 +304,8 @@ export function LessonsClient() {
 
         {list.length === 0 && !locked && (
           <p className="mt-10 text-center text-ash">{t("empty")}</p>
+        )}
+        </>
         )}
         </>
         )}

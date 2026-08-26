@@ -435,7 +435,9 @@
     "bp_back": "Espalda",
     "bp_core": "Core",
     "bp_legs": "Piernas",
-    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo."
+    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo.",
+    "tabMoves": "Movimientos",
+    "tabGuides": "Guías"
   },
   "track": {
     "streakTitle": "Racha",
@@ -976,5 +978,16 @@
     "soundOff": "Silenciar",
     "teaserKicker": "¿Listo para más?",
     "teaserSub": "Formato de acondicionamiento · {min} min"
+  },
+  "guides": {
+    "back": "Todas las guías",
+    "all": "Todas ({n})",
+    "readMins": "{n} min de lectura",
+    "cat_prep": "Preparación",
+    "cat_session": "En la sesión",
+    "cat_fuel": "Nutrición",
+    "cat_recovery": "Recuperación",
+    "cat_mind": "Mentalidad",
+    "cat_safety": "Seguridad"
   }
 }

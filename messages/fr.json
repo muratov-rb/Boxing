@@ -435,7 +435,9 @@
     "bp_back": "Dos",
     "bp_core": "Gainage",
     "bp_legs": "Jambes",
-    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous."
+    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous.",
+    "tabMoves": "Mouvements",
+    "tabGuides": "Guides"
   },
   "track": {
     "streakTitle": "Série",
@@ -976,5 +978,16 @@
     "soundOff": "Couper le son",
     "teaserKicker": "Prêt pour plus ?",
     "teaserSub": "Format de condition physique · {min} min"
+  },
+  "guides": {
+    "back": "Tous les guides",
+    "all": "Tous ({n})",
+    "readMins": "{n} min de lecture",
+    "cat_prep": "Préparation",
+    "cat_session": "Pendant la séance",
+    "cat_fuel": "Nutrition",
+    "cat_recovery": "Récupération",
+    "cat_mind": "Mental",
+    "cat_safety": "Sécurité"
   }
 }

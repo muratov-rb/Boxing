@@ -435,7 +435,9 @@
     "bp_back": "Back",
     "bp_core": "Core",
     "bp_legs": "Legs",
-    "demoSoon": "Illustration coming soon — follow the steps below."
+    "demoSoon": "Illustration coming soon — follow the steps below.",
+    "tabMoves": "Movements",
+    "tabGuides": "Guides"
   },
   "track": {
     "streakTitle": "Streak",
@@ -976,5 +978,16 @@
     "soundOff": "Turn sound off",
     "teaserKicker": "Ready for more?",
     "teaserSub": "Named conditioning format · {min} min"
+  },
+  "guides": {
+    "back": "All guides",
+    "all": "All {n}",
+    "readMins": "{n} min read",
+    "cat_prep": "Fight prep",
+    "cat_session": "In the session",
+    "cat_fuel": "Fuel",
+    "cat_recovery": "Recovery",
+    "cat_mind": "Mindset",
+    "cat_safety": "Safety"
   }
 }
