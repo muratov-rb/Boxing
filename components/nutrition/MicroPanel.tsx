@@ -46,10 +46,8 @@ export function MicroPanel({ meals, profile }: { meals: Meal[]; profile: Profile
           {t("title")}
         </h2>
       </div>
-      <p className="text-xs leading-relaxed text-ash-dim">{t("estimateNote")}</p>
-
       {!anyData ? (
-        <p className="mt-5 text-sm leading-relaxed text-ash">{t("empty")}</p>
+        <p className="mt-4 text-sm leading-relaxed text-ash">{t("empty")}</p>
       ) : (
         <>
           <ul className="mt-5 space-y-3.5">
@@ -67,10 +65,7 @@ export function MicroPanel({ meals, profile }: { meals: Meal[]; profile: Profile
           </ul>
 
           {coverage < 100 && (
-            <p className="mt-5 flex items-start gap-2 rounded-xl border border-line px-3.5 py-2.5 text-xs leading-relaxed text-ash">
-              <span className="mt-0.5 shrink-0 text-ash-dim">
-                <Icon name="clock" size={13} />
-              </span>
+            <p className="mt-4 text-xs leading-relaxed text-ash-dim">
               {t("coverage", { pct: coverage })}
             </p>
           )}

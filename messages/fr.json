@@ -188,7 +188,6 @@
     "dietLabel": "Quelque chose à savoir ? (facultatif)",
     "dietPlaceholder": "Allergies, végétarien/halal, aliments que tu détestes, repas par jour…",
     "analyze": "Analyse mes chances",
-    "goToDashboard": "Aller à mon tableau de bord",
     "customTimeframeHint": "Indique la durée — par exemple « 6 mois », « 12 semaines » ou « 2 ans ».",
     "customTimeframeReads": "Interprété comme {weeks} semaines.",
     "customTimeframeUnreadable": "Ajoute une unité — « 6 mois », « 12 semaines », « 2 ans »."
@@ -240,7 +239,8 @@
     "startOver": "Recommencer",
     "createAccount": "Créer un compte",
     "by": "Pour",
-    "previewTag": "Aperçu"
+    "previewTag": "Aperçu",
+    "goToDashboard": "Aller à mon tableau de bord"
   },
   "dashPage": {
     "signOut": "Déconnexion",
@@ -563,7 +563,9 @@
     "alreadyDoneTitle": "La séance d'aujourd'hui est faite",
     "alreadyDoneSub": "Ta série est préservée. Tout le reste aujourd'hui est un bonus, pas une dette.",
     "startAgain": "S'entraîner encore",
-    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous."
+    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous.",
+    "soundOn": "Activer le son",
+    "soundOff": "Couper le son"
   },
   "recovery": {
     "title": "Repos et récupération",
@@ -893,8 +895,7 @@
   },
   "micro": {
     "title": "Minéraux et vitamine C",
-    "estimateNote": "Estimations issues des tables de composition des aliments — une indication, pas une mesure.",
-    "empty": "Scannez un repas pour l'afficher. Les scans estiment les minéraux ; la saisie manuelle ne retient que les calories.",
+    "empty": "Scannez un repas et tout se remplit automatiquement.",
     "coverage": "Basé sur les {pct}% des repas du jour porteurs de données nutritionnelles.",
     "iron": "Fer",
     "calcium": "Calcium",

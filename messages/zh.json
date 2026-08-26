@@ -188,7 +188,6 @@
     "dietLabel": "有什么需要我们知道的吗？（可选）",
     "dietPlaceholder": "过敏、素食／清真、讨厌的食物、每天几餐……",
     "analyze": "分析我的成功几率",
-    "goToDashboard": "进入我的面板",
     "customTimeframeHint": "请写明时长，例如「6个月」「12周」或「2年」。",
     "customTimeframeReads": "已理解为 {weeks} 周。",
     "customTimeframeUnreadable": "请加上时间单位，例如「6个月」「12周」「2年」。"
@@ -240,7 +239,8 @@
     "startOver": "重新开始",
     "createAccount": "创建账户",
     "by": "期限",
-    "previewTag": "预览"
+    "previewTag": "预览",
+    "goToDashboard": "进入我的面板"
   },
   "dashPage": {
     "signOut": "退出登录",
@@ -563,7 +563,9 @@
     "alreadyDoneTitle": "今天的训练已完成",
     "alreadyDoneSub": "连续记录已保住。今天再练都是额外收获，不是负担。",
     "startAgain": "再练一次",
-    "demoSoon": "示意图即将上线——请先按下面的步骤练习。"
+    "demoSoon": "示意图即将上线——请先按下面的步骤练习。",
+    "soundOn": "开启声音",
+    "soundOff": "关闭声音"
   },
   "recovery": {
     "title": "休息与恢复",
@@ -893,8 +895,7 @@
   },
   "micro": {
     "title": "矿物质与维生素 C",
-    "estimateNote": "依据标准食物成分表估算——用作方向参考，并非精确测量。",
-    "empty": "拍照识别一餐后即可查看。拍照会估算矿物质；手动输入只记录热量。",
+    "empty": "拍照识别一餐，这里会自动填好。",
     "coverage": "基于今日 {pct}% 含有营养数据的餐食。",
     "iron": "铁",
     "calcium": "钙",

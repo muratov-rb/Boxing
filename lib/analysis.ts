@@ -214,18 +214,28 @@ export function localAnalysis(
     );
   } else if (goals.length >= 4) score -= 7;
 
-  /* weight-change pace: judged whenever a target weight is set */
+  /* Weight-change pace, judged whenever a target weight is set.
+
+     ONLY THE RATE DECIDES WHETHER SOMETHING IS POSSIBLE. This used to also
+     fail a plan when the total exceeded 25% of bodyweight, and then printed
+     the rate message for it — so someone losing 16 kg over 26 weeks, a
+     textbook-safe 0.6 kg/week, was told that 0.6 kg/week was "physically
+     impossible" and in the same breath that 0.5–1 kg/week is the safe range.
+     A big total at a sane pace is a long journey, not an impossible one, and
+     saying otherwise talks the people who need this most out of starting. */
   if (w > 0 && tw > 0 && weeks > 0 && Math.abs(w - tw) > 0.5) {
     const deltaKg = Math.abs(w - tw);
     const rate = deltaKg / weeks;
     const pctOfBody = (deltaKg / w) * 100;
-    if (rate > 2 || pctOfBody > 25) {
-      /* beyond any safe or physically possible pace */
+    const weeksAtSafePace = Math.ceil(deltaKg / 0.75);
+
+    if (rate > 2) {
+      /* beyond what a body can do, however long you are willing to suffer */
       hardCap = Math.min(hardCap, 4);
       cautions.push(
         L === "ru"
-          ? `Изменить ${deltaKg.toFixed(0)} кг за ${weeks} нед. (~${rate.toFixed(1)} кг/нед.) физически невозможно. Реальный безопасный темп — 0,5–1 кг в неделю: на такую цель нужно порядка ${Math.ceil(deltaKg / 0.75)} недель.`
-          : `Changing ${deltaKg.toFixed(0)} kg in ${weeks} weeks (~${rate.toFixed(1)} kg/week) is physically impossible. A real, safe pace is 0.5–1 kg per week — that target needs roughly ${Math.ceil(deltaKg / 0.75)} weeks.`,
+          ? `${deltaKg.toFixed(0)} кг за ${weeks} нед. — это ~${rate.toFixed(1)} кг в неделю, быстрее, чем тело физически может. При безопасных 0,5–1 кг/нед. на такую цель нужно около ${weeksAtSafePace} недель — поставь этот срок, и цель станет реальной.`
+          : `${deltaKg.toFixed(0)} kg in ${weeks} weeks is ~${rate.toFixed(1)} kg per week, faster than a body can physically go. At a safe 0.5–1 kg per week that target needs about ${weeksAtSafePace} weeks — set that timeframe and the goal becomes real.`,
       );
     } else if (rate > 1.25) {
       score -= 28;
@@ -241,8 +251,18 @@ export function localAnalysis(
           ? `Темп ~${rate.toFixed(1)} кг/нед. быстрее устойчивого — целимся в 0,5–0,75 кг и корректируем по ходу.`
           : `~${rate.toFixed(1)} kg/week is faster than sustainable — we'll aim for 0.5–0.75 kg and adjust as we go.`,
       );
-    } else if (rate <= 0.6) {
-      score += 4;
+    } else {
+      /* The pace is sound. Say so — and if the total is large, frame it as
+         the long commitment it is rather than as a warning. */
+      if (rate <= 0.6) score += 4;
+      if (pctOfBody > 25) {
+        score -= 6;
+        cautions.push(
+          L === "ru"
+            ? `${deltaKg.toFixed(0)} кг — это ${Math.round(pctOfBody)}% твоего веса. Темп ~${rate.toFixed(1)} кг/нед. выбран верно, так что цель достижима — но это работа на все ${weeks} нед. Сверяйся раз в месяц, а не каждый день.`
+            : `${deltaKg.toFixed(0)} kg is ${Math.round(pctOfBody)}% of your bodyweight. Your ~${rate.toFixed(1)} kg/week pace is the right one, so this is achievable — but it is a full ${weeks}-week job. Judge it monthly, not daily.`,
+        );
+      }
     }
   }
 

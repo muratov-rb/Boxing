@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { RANKS, hasBag, hasWeights, type Profile } from "@/lib/onboarding";
+import { STARTING_RANK } from "@/lib/xp";
 import { localAnalysis, type Analysis } from "@/lib/analysis";
 import { Icon } from "@/components/ui/Icons";
 import type { IconName } from "@/components/ui/Icons";
@@ -47,7 +48,14 @@ export function DashboardPreview({
 
   const a = analysis ?? localAnalysis(profile, locale === "ru" ? "ru" : "en");
   const pathId = profile.path ?? "beginner";
-  const rank0 = tr("0n");
+  /* The rank this profile actually opens at. This used to be hardcoded to the
+     first rung, so someone who had just declared years of boxing experience
+     was shown "Novice" on the very screen selling them the plan — the one
+     place the choice they had just made should visibly count. The server
+     grants the matching XP once they have an account; this is the same number
+     read locally so the preview and the real dashboard agree. */
+  const startRank = STARTING_RANK[pathId];
+  const rank0 = tr(`${startRank}n`);
   const session = buildSession(profile);
   const totalMins = session.reduce((s, r) => s + r.mins, 0);
   const goalsT = profile.goals.map((id) => tg(`${id}L`));
@@ -131,7 +139,8 @@ export function DashboardPreview({
         <div className="-mx-1 overflow-x-auto pb-1">
           <div className="flex min-w-max items-stretch gap-2 px-1">
             {RANKS.map((r, i) => {
-              const current = i === 0;
+              /* Highlight where this profile starts, not always the bottom. */
+              const current = i === startRank;
               return (
                 <div
                   key={r.name}

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { EXERCISES, filterExercises, type Exercise } from "@/lib/exercises";
+import { chime, primeAudio, setSoundEnabled, soundEnabled } from "@/lib/chime";
 import {
   buildDailyPlan,
   nextTrainingDate,
@@ -59,6 +60,11 @@ export function TrainClient() {
      used to look identical to arriving fresh — same "Start Workout" button,
      no acknowledgement that the day was done. */
   const [doneToday, setDoneToday] = useState(false);
+  /* Starts true and is corrected on mount — localStorage is unreadable during
+     SSR, and a button that flips state on hydration is worse than one that is
+     briefly optimistic. */
+  const [soundOn, setSoundOn] = useState(true);
+  useEffect(() => setSoundOn(soundEnabled()), []);
   const streakDone = useRef(false);
 
   /* build today's structured plan from the saved profile */
@@ -105,14 +111,19 @@ export function TrainClient() {
     if (phase === "work") {
       if (idx + 1 >= session.length) {
         setPhase("done");
+        chime("done");
       } else {
         setPhase("rest");
         setRemaining(REST_SEC);
+        chime("rest");
       }
     } else if (phase === "rest") {
       setIdx((i) => i + 1);
       setPhase("work");
       setRemaining(session[idx + 1]?.workSec ?? 45);
+      /* The signal to look up — you are mid-rest and not watching the screen,
+         which is exactly the moment a number changing silently is useless. */
+      chime("work");
     }
   }, [remaining, phase, idx, session]);
 
@@ -129,11 +140,16 @@ export function TrainClient() {
 
   const start = () => {
     if (session.length === 0) return;
+    /* This click is the user gesture the browser needs before it will let any
+       audio play at all — open the context here or every later chime is
+       silently dropped. */
+    primeAudio();
     setIdx(0);
     setWorkedSec(0);
     setPaused(false);
     setPhase("work");
     setRemaining(session[0].workSec);
+    chime("work");
   };
 
   /* first start of a session — counts against the weekly plan quota (active
@@ -332,9 +348,28 @@ export function TrainClient() {
               <span className="font-display text-[clamp(3.5rem,12vw,6rem)] leading-none tabular-nums">
                 {mmss(remaining)}
               </span>
-              {paused && (
-                <span className="badge border-blood/50 text-blood">{t("pause")}</span>
-              )}
+              <span className="flex items-center gap-2">
+                {paused && (
+                  <span className="badge border-blood/50 text-blood">{t("pause")}</span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !soundOn;
+                    setSoundOn(next);
+                    setSoundEnabled(next);
+                    if (next) chime("rest"); // confirm it audibly
+                  }}
+                  aria-pressed={soundOn}
+                  aria-label={soundOn ? t("soundOff") : t("soundOn")}
+                  title={soundOn ? t("soundOff") : t("soundOn")}
+                  className={`grid h-10 w-10 place-items-center rounded-full border transition-colors ${
+                    soundOn ? "border-blood/50 text-blood" : "border-line text-ash-dim"
+                  }`}
+                >
+                  <Icon name={soundOn ? "sound" : "soundOff"} size={16} />
+                </button>
+              </span>
             </div>
             <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full border border-line/60 bg-void">
               <div

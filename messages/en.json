@@ -188,7 +188,6 @@
     "dietLabel": "Anything we should know? (optional)",
     "dietPlaceholder": "Allergies, vegetarian/halal, foods you hate, meals per day…",
     "analyze": "Analyze My Chances",
-    "goToDashboard": "Go to my dashboard",
     "customTimeframeHint": "Say how long — for example “6 months”, “12 weeks” or “2 years”.",
     "customTimeframeReads": "Read as {weeks} weeks.",
     "customTimeframeUnreadable": "Add a unit so we know the length — “6 months”, “12 weeks”, “2 years”."
@@ -240,7 +239,8 @@
     "startOver": "Start Over",
     "createAccount": "Create Account",
     "by": "By",
-    "previewTag": "Preview"
+    "previewTag": "Preview",
+    "goToDashboard": "Go to my dashboard"
   },
   "dashPage": {
     "signOut": "Sign out",
@@ -563,7 +563,9 @@
     "demoSoon": "Illustration coming soon — follow the steps below.",
     "alreadyDoneTitle": "Today's session is done",
     "alreadyDoneSub": "Your streak is safe. Anything more today is a bonus, not a debt.",
-    "startAgain": "Train again"
+    "startAgain": "Train again",
+    "soundOn": "Turn sound on",
+    "soundOff": "Turn sound off"
   },
   "recovery": {
     "title": "Rest & Recovery",
@@ -893,8 +895,7 @@
   },
   "micro": {
     "title": "Minerals & vitamin C",
-    "estimateNote": "Estimates from standard food composition values — useful as a direction, not a measurement.",
-    "empty": "Scan a meal to see this. Photo scans estimate minerals; meals typed in by hand only record calories.",
+    "empty": "Scan a meal and this fills in automatically.",
     "coverage": "Based on the {pct}% of today's meals that carry nutrient data.",
     "iron": "Iron",
     "calcium": "Calcium",

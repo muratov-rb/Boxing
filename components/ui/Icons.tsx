@@ -28,9 +28,26 @@ export type IconName =
   | "clock"
   | "mail"
   | "water"
+  | "sound"
+  | "soundOff"
   | "chevron";
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  /* Speaker cone plus two radiating arcs. */
+  sound: (
+    <>
+      <path d="M4 9.5h3.2L11.5 6v12L7.2 14.5H4z" />
+      <path d="M15 9.4a4 4 0 0 1 0 5.2" />
+      <path d="M17.6 7a7.5 7.5 0 0 1 0 10" />
+    </>
+  ),
+  soundOff: (
+    <>
+      <path d="M4 9.5h3.2L11.5 6v12L7.2 14.5H4z" />
+      <path d="m15.5 9.5 5 5" />
+      <path d="m20.5 9.5-5 5" />
+    </>
+  ),
   /* A droplet: point at the top, round belly below. */
   water: <path d="M12 3.2s5.5 6.1 5.5 9.6a5.5 5.5 0 0 1-11 0C6.5 9.3 12 3.2 12 3.2Z" />,
   mail: (

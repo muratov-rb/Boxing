@@ -144,6 +144,14 @@ export function buildDailyPlan(
 
   const maxLevel = level >= 2 ? 3 : 2; // experienced fighters unlock advanced work
   const pool = all.filter((e) => e.level <= maxLevel);
+
+  /* Unlocking advanced work was not enough on its own. The pool merely ALLOWED
+     level 3, and levels 1–2 are most of the catalogue, so someone who declared
+     years of boxing still drew mostly beginner movements. Experienced fighters
+     now take their main work from level 2 and up, with the easier movements
+     kept as filler for any category that runs dry. */
+  const minLevel = level >= 2 ? 2 : 1;
+  const workPool = pool.filter((e) => e.level >= minLevel);
   const focus = spec.focus;
 
   const picked: Exercise[] = [];
@@ -157,8 +165,15 @@ export function buildDailyPlan(
       }
     }
   };
-  const byParts = (parts: BodyPart[]) =>
-    pool.filter((e) => parts.includes(e.bodyPart) && !seen.has(e.id));
+  /* Harder movements first, easier ones appended rather than excluded: a
+     fighter who gets no technique round at all is worse served than one who
+     gets a simpler drill, and some categories have nothing above level 1. */
+  const byParts = (parts: BodyPart[]) => {
+    const match = (e: Exercise) => parts.includes(e.bodyPart) && !seen.has(e.id);
+    const hard = workPool.filter(match);
+    if (minLevel === 1) return hard; // beginners: workPool is the whole pool
+    return [...hard, ...pool.filter((e) => match(e) && e.level < minLevel)];
+  };
 
   // 1) warm-up — a light full-body mover to raise the heart rate
   const warm = pool.filter(
