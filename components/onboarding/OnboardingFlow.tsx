@@ -4,7 +4,13 @@ import { useEffect, useReducer, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { profileReducer, initialProfile } from "@/lib/onboarding";
-import { saveProfile } from "@/lib/tracking";
+import {
+  clearOnboarding,
+  loadOnboardingStep,
+  loadProfile,
+  saveOnboardingStep,
+  saveProfile,
+} from "@/lib/tracking";
 import type { Analysis } from "@/lib/analysis";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -24,12 +30,39 @@ export function OnboardingFlow() {
   const [profile, dispatch] = useReducer(profileReducer, initialProfile);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [step, setStep] = useState(0);
+  /* Nothing renders until localStorage has been read. Showing screen one and
+     then jumping to screen four a frame later looks like a glitch, and reading
+     storage during render would break hydration outright. */
+  const [ready, setReady] = useState(false);
+  const [resumed, setResumed] = useState(false);
+
+  /* Pick up where they left off. The answers were already being saved; they
+     were simply never read back, so anyone who closed the tab — or used the
+     Exit link in the header above — restarted from an empty form. */
+  useEffect(() => {
+    const saved = loadProfile();
+    if (saved?.path) {
+      dispatch({ type: "patch", patch: saved });
+      const at = Math.min(LAST, loadOnboardingStep());
+      if (at > 0) {
+        setStep(at);
+        setResumed(true);
+      }
+    }
+    setReady(true);
+  }, []);
 
   // keep the fighter profile locally so the lesson library and calorie
-  // target can personalise themselves (until DB persistence lands)
+  // target can personalise themselves
   useEffect(() => {
     if (profile.path) saveProfile(profile);
   }, [profile]);
+
+  /* Only once restored, or the initial 0 would overwrite a real saved step
+     before the effect above has had a chance to read it. */
+  useEffect(() => {
+    if (ready) saveOnboardingStep(step);
+  }, [ready, step]);
 
   const rail = [
     t("railPath"),
@@ -65,8 +98,30 @@ export function OnboardingFlow() {
 
       {step < LAST && <ProgressRail steps={rail} current={step} />}
 
+      {/* Say that we resumed, and offer the way out. Restoring answers silently
+          would leave someone who wanted a clean start quietly editing an old
+          profile they cannot see the top of. */}
+      {resumed && step < LAST && (
+        <div className="mx-auto mt-4 flex w-full max-w-2xl flex-wrap items-center justify-between gap-3 rounded-xl border border-blood/40 bg-blood/5 px-4 py-3 sm:px-6">
+          <p className="text-sm text-ash">{t("resumed")}</p>
+          <button
+            type="button"
+            onClick={() => {
+              clearOnboarding();
+              dispatch({ type: "reset" });
+              setAnalysis(null);
+              setResumed(false);
+              go(0);
+            }}
+            className="font-condensed text-xs uppercase tracking-widest text-blood transition-opacity hover:opacity-70"
+          >
+            {t("startFresh")}
+          </button>
+        </div>
+      )}
+
       <main className="flex flex-1 items-start justify-center px-4 py-12 sm:px-6 sm:py-16">
-        <div key={step} className="animate-rise w-full">
+        <div key={step} className={ready ? "animate-rise w-full" : "w-full opacity-0"}>
           {step === 0 && (
             <PathSelector
               profile={profile}
@@ -111,8 +166,10 @@ export function OnboardingFlow() {
               profile={profile}
               analysis={analysis}
               onRestart={() => {
+                clearOnboarding();
                 dispatch({ type: "reset" });
                 setAnalysis(null);
+                setResumed(false);
                 go(0);
               }}
             />

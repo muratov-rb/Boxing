@@ -191,7 +191,11 @@
     "analyze": "Analiza mis posibilidades",
     "customTimeframeHint": "Indica cuánto tiempo — por ejemplo «6 meses», «12 semanas» o «2 años».",
     "customTimeframeReads": "Se interpreta como {weeks} semanas.",
-    "customTimeframeUnreadable": "Añade la unidad — «6 meses», «12 semanas», «2 años»."
+    "customTimeframeUnreadable": "Añade la unidad — «6 meses», «12 semanas», «2 años».",
+    "resumed": "Retomamos donde lo dejaste: tus respuestas están guardadas.",
+    "startFresh": "Empezar de cero",
+    "customEquipLabel": "Cualquier otra cosa con la que entrenes",
+    "customEquipAdd": "Añadir"
   },
   "analysis": {
     "round": "Asalto 05 — El veredicto",
@@ -969,6 +973,8 @@
     "yourScore": "Tu marca",
     "scoreRounds": "{n} rondas",
     "soundOn": "Activar sonido",
-    "soundOff": "Silenciar"
+    "soundOff": "Silenciar",
+    "teaserKicker": "¿Listo para más?",
+    "teaserSub": "Formato de acondicionamiento · {min} min"
   }
 }

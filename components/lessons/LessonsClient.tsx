@@ -18,6 +18,7 @@ import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "./BodyMap";
 import { LessonAnimation } from "./LessonAnimation";
+import { CircuitTeaser } from "@/components/circuits/CircuitTeaser";
 import { AppNav } from "@/components/nav/AppNav";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
@@ -224,6 +225,12 @@ export function LessonsClient() {
               {t(`cat_${c}`)}
             </button>
           ))}
+        </div>
+
+        {/* Where the library stops teaching movements and starts combining
+            them. Self-hiding for readers the circuits do not suit yet. */}
+        <div className="mt-6">
+          <CircuitTeaser />
         </div>
 
         {/* grid */}

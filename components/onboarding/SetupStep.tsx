@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   ENVIRONMENTS,
@@ -29,6 +30,22 @@ export function SetupStep({
   const teq = useTranslations("equipment");
   const set = (patch: Partial<Profile>) => dispatch({ type: "patch", patch });
   const valid = profile.environment !== null;
+
+  const [customDraft, setCustomDraft] = useState("");
+  const trimmed = customDraft.trim();
+  /* Case-insensitive duplicate check: "Tyre" and "tyre" are the same tyre, and
+     two chips for it would just look like a bug. Capped so the list stays a
+     list rather than an essay. */
+  const canAddCustom =
+    trimmed.length > 0 &&
+    profile.customEquipment.length < 12 &&
+    !profile.customEquipment.some((x) => x.toLowerCase() === trimmed.toLowerCase());
+
+  const addCustom = () => {
+    if (!canAddCustom) return;
+    set({ customEquipment: [...profile.customEquipment, trimmed] });
+    setCustomDraft("");
+  };
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -82,13 +99,56 @@ export function SetupStep({
                 ))}
               </div>
             </Field>
-            <input
-              type="text"
-              placeholder={t("equipPlaceholder")}
-              value={profile.equipmentNotes}
-              onChange={(e) => set({ equipmentNotes: e.target.value })}
-              className={inputCls}
-            />
+            {/* Anything the tiles don't cover — a tyre, a vest, a sandbag. */}
+            <Field label={t("customEquipLabel")}>
+              {profile.customEquipment.length > 0 && (
+                <ul className="mb-3 flex flex-wrap gap-2">
+                  {profile.customEquipment.map((item) => (
+                    <li key={item}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          set({
+                            customEquipment: profile.customEquipment.filter((x) => x !== item),
+                          })
+                        }
+                        className="flex min-h-[36px] items-center gap-2 rounded-full border border-blood/50 bg-blood/10 px-3.5 text-sm text-bone transition-colors hover:border-blood"
+                      >
+                        {item}
+                        <span className="text-ash-dim">×</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={t("equipPlaceholder")}
+                  value={customDraft}
+                  maxLength={40}
+                  onChange={(e) => setCustomDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    /* Enter adds the item rather than submitting the step —
+                       otherwise typing a name and pressing Enter skips ahead
+                       and silently drops what was typed. */
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addCustom();
+                    }
+                  }}
+                  className={`${inputCls} min-w-0 flex-1`}
+                />
+                <button
+                  type="button"
+                  onClick={addCustom}
+                  disabled={!canAddCustom}
+                  className="btn btn-ghost !px-5 disabled:opacity-40"
+                >
+                  {t("customEquipAdd")}
+                </button>
+              </div>
+            </Field>
           </div>
         )}
 

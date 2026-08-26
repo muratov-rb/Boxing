@@ -38,6 +38,7 @@ const K_USAGE = "pressure.usage"; // Record<date, Record<UsageKey, number>>
 const K_BURN = "pressure.burn"; // Record<date, number> — kcal burned training
 const K_WATER = "pressure.water"; // Record<date, number> — millilitres drunk
 const K_REMINDERS = "pressure.reminders"; // ReminderSettings — device-local
+const K_ONB_STEP = "pressure.onbStep"; // how far through onboarding you got
 
 export interface Meal {
   id: string;
@@ -122,6 +123,7 @@ export const KEYS = {
   /* Listed so wipeLocal clears it, but deliberately absent from the sync
      layer's push: a schedule that suits a phone is wrong for a laptop. */
   reminders: K_REMINDERS,
+  onbStep: K_ONB_STEP,
 } as const;
 
 /** Raw slice reads for the sync layer (typed accessors live further down). */
@@ -157,6 +159,33 @@ export function saveProfile(p: Profile) {
 
 export function loadProfile(): Profile | null {
   return read<Profile | null>(K_PROFILE, null);
+}
+
+/* ---------------------------- onboarding resume --------------------------- */
+/* Onboarding is five screens of questions. It used to hold all of that in React
+   state alone, so leaving the tab — or tapping the Exit link in its own header —
+   threw the lot away and dropped the returning visitor back on screen one with
+   empty fields. That is the likeliest reason most accounts had no profile: the
+   flow was survivable only in a single unbroken sitting. */
+
+export function saveOnboardingStep(step: number): void {
+  write(K_ONB_STEP, Math.max(0, Math.round(step)));
+}
+
+export function loadOnboardingStep(): number {
+  const n = read<number>(K_ONB_STEP, 0);
+  return typeof n === "number" && n >= 0 ? n : 0;
+}
+
+/** Wipe the half-finished answers so "start over" really starts over. */
+export function clearOnboarding(): void {
+  if (!isBrowser()) return;
+  try {
+    localStorage.removeItem(K_PROFILE);
+    localStorage.removeItem(K_ONB_STEP);
+  } catch {
+    /* ignore */
+  }
 }
 
 /* ------------------------------- streaks -------------------------------- */

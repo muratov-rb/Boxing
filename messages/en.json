@@ -191,7 +191,11 @@
     "analyze": "Analyze My Chances",
     "customTimeframeHint": "Say how long — for example “6 months”, “12 weeks” or “2 years”.",
     "customTimeframeReads": "Read as {weeks} weeks.",
-    "customTimeframeUnreadable": "Add a unit so we know the length — “6 months”, “12 weeks”, “2 years”."
+    "customTimeframeUnreadable": "Add a unit so we know the length — “6 months”, “12 weeks”, “2 years”.",
+    "resumed": "Picked up where you left off — your answers are saved.",
+    "startFresh": "Start fresh",
+    "customEquipLabel": "Anything else you train with",
+    "customEquipAdd": "Add"
   },
   "analysis": {
     "round": "Round 05 — The verdict",
@@ -969,6 +973,8 @@
     "yourScore": "Your score",
     "scoreRounds": "{n} rounds",
     "soundOn": "Turn sound on",
-    "soundOff": "Turn sound off"
+    "soundOff": "Turn sound off",
+    "teaserKicker": "Ready for more?",
+    "teaserSub": "Named conditioning format · {min} min"
   }
 }

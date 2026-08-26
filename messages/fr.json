@@ -191,7 +191,11 @@
     "analyze": "Analyse mes chances",
     "customTimeframeHint": "Indique la durée — par exemple « 6 mois », « 12 semaines » ou « 2 ans ».",
     "customTimeframeReads": "Interprété comme {weeks} semaines.",
-    "customTimeframeUnreadable": "Ajoute une unité — « 6 mois », « 12 semaines », « 2 ans »."
+    "customTimeframeUnreadable": "Ajoute une unité — « 6 mois », « 12 semaines », « 2 ans ».",
+    "resumed": "On reprend où vous en étiez — vos réponses sont enregistrées.",
+    "startFresh": "Tout recommencer",
+    "customEquipLabel": "Tout autre matériel que vous utilisez",
+    "customEquipAdd": "Ajouter"
   },
   "analysis": {
     "round": "Round 05 — Le verdict",
@@ -969,6 +973,8 @@
     "yourScore": "Votre score",
     "scoreRounds": "{n} rounds",
     "soundOn": "Activer le son",
-    "soundOff": "Couper le son"
+    "soundOff": "Couper le son",
+    "teaserKicker": "Prêt pour plus ?",
+    "teaserSub": "Format de condition physique · {min} min"
   }
 }

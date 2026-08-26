@@ -191,7 +191,11 @@
     "analyze": "分析我的成功几率",
     "customTimeframeHint": "请写明时长，例如「6个月」「12周」或「2年」。",
     "customTimeframeReads": "已理解为 {weeks} 周。",
-    "customTimeframeUnreadable": "请加上时间单位，例如「6个月」「12周」「2年」。"
+    "customTimeframeUnreadable": "请加上时间单位，例如「6个月」「12周」「2年」。",
+    "resumed": "已从上次的位置继续——你的答案已保存。",
+    "startFresh": "重新开始",
+    "customEquipLabel": "你还用什么器械训练",
+    "customEquipAdd": "添加"
   },
   "analysis": {
     "round": "第 05 回合 — 裁决",
@@ -969,6 +973,8 @@
     "yourScore": "你的成绩",
     "scoreRounds": "{n} 轮",
     "soundOn": "开启声音",
-    "soundOff": "关闭声音"
+    "soundOff": "关闭声音",
+    "teaserKicker": "还想再练？",
+    "teaserSub": "经典体能格式 · {min} 分钟"
   }
 }

@@ -68,6 +68,12 @@ export interface Profile {
   /* training environment + equipment inventory */
   environment: EnvId | null;
   equipment: EquipmentId[];
+  /* Kit we don't have a tile for. Free text on purpose: the preset list can
+     never cover a tyre, a weighted vest or somebody's improvised sandbag, and
+     it does not need to — these inform the AI's programming and the recap, and
+     deliberately do NOT unlock catalogue exercises, whose `requires` fields
+     name specific known equipment. */
+  customEquipment: string[];
   equipmentNotes: string;
 
   /* nutrition access / budget */
@@ -91,6 +97,7 @@ export const initialProfile: Profile = {
   customTimeframe: "",
   environment: null,
   equipment: [],
+  customEquipment: [],
   equipmentNotes: "",
   nutritionAccess: null,
   supplements: false,

@@ -45,6 +45,12 @@ function buildPrompt(p: Profile): string {
     `Timeframe: ${timeframeText(p) || "open"} (~${timeframeWeeks(p)} weeks)`,
     `Training environment: ${environmentLabel(p.environment) || "unspecified"}`,
     p.equipment.length ? `Equipment: ${equipmentLabels(p).join(", ")}` : null,
+    /* Kit the preset list has no tile for. Worth naming to the model even
+       though it cannot unlock catalogue exercises: a plan that ignores the
+       tyre in someone's yard is a worse plan. */
+    p.customEquipment?.length
+      ? `Also owns (their own words): ${p.customEquipment.join(", ")}`
+      : null,
     p.equipmentNotes ? `Equipment notes: ${p.equipmentNotes}` : null,
     `Nutrition access: ${nutritionAccessLabel(p.nutritionAccess) || "unspecified"}`,
     `Can buy supplements/protein: ${p.supplements ? "yes" : "no"}`,

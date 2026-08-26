@@ -27,6 +27,7 @@ import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { BodyMap } from "@/components/lessons/BodyMap";
 import { DailyCorner } from "@/components/train/DailyCorner";
+import { CircuitTeaser } from "@/components/circuits/CircuitTeaser";
 import { LessonAnimation } from "@/components/lessons/LessonAnimation";
 import { AppNav } from "@/components/nav/AppNav";
 
@@ -317,6 +318,11 @@ export function TrainClient() {
               )}
             </div>
             <DailyCorner className="mt-4" />
+            {/* Extra work for people who want it — renders nothing for
+                anyone the circuits are not yet suitable for. */}
+            <div className="mt-4">
+              <CircuitTeaser />
+            </div>
           </div>
         )}
 
