@@ -28,6 +28,28 @@ const NEXT_STATUS: Record<SupportStatus, SupportStatus> = {
   done: "new",
 };
 
+/* Opens Gmail's compose window with the reply already addressed and the
+   ticket number in the subject.
+
+   Not a mailto: link — that hands off to whatever desktop mail client the
+   machine has registered, which on a machine with none simply does nothing
+   and looks broken. This goes to the web client the support inbox actually
+   lives in, and quotes what the person wrote so the reply has context. */
+function gmailReplyUrl(t: Ticket): string {
+  const subject = `Re: RingBornn support #${t.id}`;
+  const quoted = t.message
+    .split("\n")
+    .map((line) => `> ${line}`)
+    .join("\n");
+  const body = `\n\n---\nYou wrote:\n${quoted}`;
+  return (
+    "https://mail.google.com/mail/?view=cm&fs=1" +
+    `&to=${encodeURIComponent(t.email)}` +
+    `&su=${encodeURIComponent(subject)}` +
+    `&body=${encodeURIComponent(body)}`
+  );
+}
+
 export function AdminTickets() {
   const t = useTranslations("admin");
   const [open, setOpen] = useState(false);
@@ -126,7 +148,10 @@ export function AdminTickets() {
                       {t(`ticketTopic_${r.topic}`)}
                     </span>
                     <a
-                      href={`mailto:${r.email}?subject=RingBornn support #${r.id}`}
+                      href={gmailReplyUrl(r)}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={t("ticketReplyHint")}
                       className="font-semibold text-bone hover:text-blood hover:underline"
                     >
                       {r.email}
@@ -150,14 +175,25 @@ export function AdminTickets() {
                       </time>
                       {r.page && <span className="break-all">{r.page}</span>}
                     </span>
-                    <button
-                      type="button"
-                      disabled={busy === r.id}
-                      onClick={() => advance(r)}
-                      className="min-h-[34px] rounded-lg border border-line px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-ash transition-colors hover:border-blood/50 hover:text-bone disabled:opacity-50"
-                    >
-                      {t(`ticketAction_${r.status}`)}
-                    </button>
+                    <span className="flex items-center gap-2">
+                      <a
+                        href={gmailReplyUrl(r)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg border border-blood/40 px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-blood transition-colors hover:bg-blood/10"
+                      >
+                        <Icon name="mail" size={12} />
+                        {t("ticketReply")}
+                      </a>
+                      <button
+                        type="button"
+                        disabled={busy === r.id}
+                        onClick={() => advance(r)}
+                        className="min-h-[34px] rounded-lg border border-line px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-ash transition-colors hover:border-blood/50 hover:text-bone disabled:opacity-50"
+                      >
+                        {t(`ticketAction_${r.status}`)}
+                      </button>
+                    </span>
                   </div>
                 </li>
               ))}

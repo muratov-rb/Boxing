@@ -190,10 +190,6 @@ export function NutritionClient() {
               </>
             )}
 
-            <p className="mt-8 flex items-center gap-2 border-t border-line/70 pt-5 text-xs text-ash-dim">
-              <Icon name="lock" size={12} />
-              {plan.source === "ai" ? t("aiNote") : t("localNote")}
-            </p>
           </>
         )}
       </main>

@@ -208,8 +208,6 @@
     "fuelPlan": "Plan nutrition",
     "straightTalk": "Sans détour",
     "enterGym": "Entre dans la salle",
-    "coachEstimate": "Moteur de coaching intégré · sans IA",
-    "claudeAnalysis": "Analysé par l'IA Claude",
     "recapGoals": "Objectifs",
     "recapBy": "Pour",
     "recapSetup": "Matériel",
@@ -491,9 +489,7 @@
     "slot_lunch": "Déjeuner",
     "slot_dinner": "Dîner",
     "slot_snack": "Collation",
-    "tipsTitle": "Conseils du coach",
-    "aiNote": "Personnalisé pour vous par l'IA Claude.",
-    "localNote": "Généré par le moteur intégré — aucune IA n'a été utilisée pour ce plan."
+    "tipsTitle": "Conseils du coach"
   },
   "scan": {
     "title": "Scanner de repas",
@@ -771,7 +767,9 @@
     "ticketTopic_other": "Autre",
     "ticketAction_new": "Prendre en charge",
     "ticketAction_open": "Marquer traité",
-    "ticketAction_done": "Rouvrir"
+    "ticketAction_done": "Rouvrir",
+    "ticketReply": "Répondre",
+    "ticketReplyHint": "Ouvre Gmail avec le destinataire rempli et le message cité"
   },
   "account": {
     "dangerTitle": "Compte",
@@ -907,8 +905,6 @@
   "remind": {
     "title": "Rappels",
     "sub": "Des rappels pour manger et boire, à vos horaires. Ignorés si un repas a déjà été enregistré à peu près à cette heure.",
-    "mealsLabel": "Heures des repas",
-    "mealAria": "Repas {n}",
     "waterLabel": "Rappels d'hydratation",
     "on": "Activé",
     "off": "Désactivé",
@@ -917,7 +913,6 @@
     "to": "à",
     "fromAria": "Rappeler à partir de",
     "toAria": "Rappeler jusqu'à",
-    "dueMeal": "C'est l'heure de manger — votre repas de {at}.",
     "dueWater": "C'est l'heure de boire.",
     "mealTitle": "RingBornn — l'heure de manger",
     "mealBody": "Votre repas de {at} est prévu. Enregistrez-le une fois terminé.",
@@ -928,6 +923,17 @@
     "permGranted": "Les notifications sont actives sur cet appareil.",
     "permDenied": "Les notifications sont bloquées pour ce site. Réactivez-les dans les paramètres du navigateur si vous les voulez.",
     "permUnsupported": "Ce navigateur ne gère pas les notifications. Les rappels restent visibles ici.",
-    "limitNote": "Les rappels fonctionnent tant que RingBornn est ouvert dans un onglet. Sur iPhone, ajoutez d'abord le site à l'écran d'accueil."
+    "limitNote": "Les rappels fonctionnent tant que RingBornn est ouvert dans un onglet. Sur iPhone, ajoutez d'abord le site à l'écran d'accueil.",
+    "slotsLabel": "Vos rappels",
+    "slotNamePlaceholder": "Donnez-lui un nom",
+    "slotNameAria": "Nom du rappel",
+    "slotTimeAria": "Heure du rappel",
+    "slotRemove": "Supprimer le rappel",
+    "slotAdd": "Ajouter un rappel",
+    "slotNewName": "Nouveau rappel",
+    "dueSlot": "{name} — {at}.",
+    "slotBreakfast": "Petit-déjeuner",
+    "slotLunch": "Déjeuner",
+    "slotDinner": "Dîner"
   }
 }

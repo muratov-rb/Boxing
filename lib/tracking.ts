@@ -17,7 +17,7 @@ import {
 /* Re-exported so existing call sites keep working; lib/xp.ts is the source. */
 export { RANK_XP, rankFromXp };
 import { GLASS_ML, WATER_MAX_ML, type Micros } from "./nutrients";
-import { DEFAULT_REMINDERS, type ReminderSettings } from "./reminders";
+import { DEFAULT_REMINDERS, migrateSettings, type ReminderSettings } from "./reminders";
 import {
   entitlementsFor,
   TRIAL_DAYS,
@@ -503,23 +503,24 @@ export function resetWaterToday(): number {
 
 /* -------------------------------- reminders ------------------------------ */
 
-/** Merged over the defaults so a settings blob saved by an older build — one
-    without the water block — cannot crash the scheduler. */
+/** Repaired on the way out, so a blob written by an older build — one with a
+    flat `meals` array and no slots — is upgraded rather than discarded. */
 export function loadReminders(): ReminderSettings {
   const saved = read<Partial<ReminderSettings> | null>(K_REMINDERS, null);
   if (!saved) return DEFAULT_REMINDERS;
-  return {
-    ...DEFAULT_REMINDERS,
-    ...saved,
-    water: { ...DEFAULT_REMINDERS.water, ...(saved.water ?? {}) },
-    lastFired: saved.lastFired ?? {},
-    meals: Array.isArray(saved.meals) && saved.meals.length ? saved.meals : DEFAULT_REMINDERS.meals,
-  };
+  return migrateSettings(saved);
 }
 
 export function saveReminders(s: ReminderSettings): ReminderSettings {
   write(K_REMINDERS, s);
   return s;
+}
+
+/** Whether this device has ever saved reminder settings. The UI uses it to
+    decide if it may replace the built-in English slot names with translated
+    ones — it must never overwrite names the user chose themselves. */
+export function hasSavedReminders(): boolean {
+  return read<unknown>(K_REMINDERS, null) !== null;
 }
 
 /** Minutes-of-day for each meal logged today — what the scheduler needs to

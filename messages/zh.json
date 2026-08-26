@@ -208,8 +208,6 @@
     "fuelPlan": "饮食计划",
     "straightTalk": "直话直说",
     "enterGym": "进入拳馆",
-    "coachEstimate": "内置教练引擎 · 未使用 AI",
-    "claudeAnalysis": "由 Claude AI 分析",
     "recapGoals": "目标",
     "recapBy": "期限",
     "recapSetup": "器材",
@@ -491,9 +489,7 @@
     "slot_lunch": "午餐",
     "slot_dinner": "晚餐",
     "slot_snack": "加餐",
-    "tipsTitle": "教练贴士",
-    "aiNote": "由 Claude AI 为你个性化定制。",
-    "localNote": "由内置教练引擎生成——本计划未使用 AI。"
+    "tipsTitle": "教练贴士"
   },
   "scan": {
     "title": "餐食扫描",
@@ -771,7 +767,9 @@
     "ticketTopic_other": "其他",
     "ticketAction_new": "开始处理",
     "ticketAction_open": "标记完成",
-    "ticketAction_done": "重新打开"
+    "ticketAction_done": "重新打开",
+    "ticketReply": "回复",
+    "ticketReplyHint": "打开 Gmail，已填好收件人并引用原文"
   },
   "account": {
     "dangerTitle": "账号",
@@ -907,8 +905,6 @@
   "remind": {
     "title": "提醒",
     "sub": "按你的作息提醒进餐和喝水。若该时段已记录过一餐，会自动跳过。",
-    "mealsLabel": "用餐时间",
-    "mealAria": "第 {n} 餐",
     "waterLabel": "饮水提醒",
     "on": "开",
     "off": "关",
@@ -917,7 +913,6 @@
     "to": "至",
     "fromAria": "开始提醒时间",
     "toAria": "结束提醒时间",
-    "dueMeal": "该吃饭了——{at} 那一餐。",
     "dueWater": "该喝水了。",
     "mealTitle": "RingBornn — 该吃饭了",
     "mealBody": "到了 {at} 那一餐的时间。吃完记得记录。",
@@ -928,6 +923,17 @@
     "permGranted": "此设备已开启通知。",
     "permDenied": "本站通知已被屏蔽。如需使用，请在浏览器的网站设置中重新开启。",
     "permUnsupported": "此浏览器不支持通知。提醒仍会显示在这里。",
-    "limitNote": "提醒在 RingBornn 标签页打开时运行。iPhone 需先将网站添加到主屏幕，通知才能送达。"
+    "limitNote": "提醒在 RingBornn 标签页打开时运行。iPhone 需先将网站添加到主屏幕，通知才能送达。",
+    "slotsLabel": "你的提醒",
+    "slotNamePlaceholder": "起个名字",
+    "slotNameAria": "提醒名称",
+    "slotTimeAria": "提醒时间",
+    "slotRemove": "删除提醒",
+    "slotAdd": "添加提醒",
+    "slotNewName": "新提醒",
+    "dueSlot": "{name} — {at}。",
+    "slotBreakfast": "早餐",
+    "slotLunch": "午餐",
+    "slotDinner": "晚餐"
   }
 }

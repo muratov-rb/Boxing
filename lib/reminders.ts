@@ -20,21 +20,84 @@ export interface WaterReminder {
   to: string;
 }
 
+/* A reminder the user owns: their label, their time, and removable.
+
+   The three meals started as a fixed array of times, which meant the app
+   decided that everyone eats three times a day at hours it chose. A slot is
+   now just a row — rename it "Pre-workout shake", move it to 16:45, delete the
+   one you don't want. */
+export interface ReminderSlot {
+  id: string;
+  label: string;
+  /** "HH:MM" in the device's own timezone. */
+  time: string;
+}
+
+export const MAX_SLOTS = 8;
+export const SLOT_LABEL_MAX = 40;
+
 export interface ReminderSettings {
   enabled: boolean;
-  /** Meal times as "HH:MM", in the device's own timezone. */
-  meals: string[];
+  slots: ReminderSlot[];
   water: WaterReminder;
   /** slot key → ISO timestamp it last fired, so a reload cannot re-fire it. */
   lastFired: Record<string, string>;
 }
 
+/** Labels are seeded from the message catalogue by the UI; these are the
+    fallbacks for a device whose settings are created before that runs. */
+export const DEFAULT_SLOTS: ReminderSlot[] = [
+  { id: "m1", label: "Breakfast", time: "08:00" },
+  { id: "m2", label: "Lunch", time: "13:00" },
+  { id: "m3", label: "Dinner", time: "19:00" },
+];
+
 export const DEFAULT_REMINDERS: ReminderSettings = {
   enabled: false,
-  meals: ["08:00", "13:00", "19:00"],
+  slots: DEFAULT_SLOTS,
   water: { enabled: true, everyMinutes: 120, from: "08:00", to: "22:00" },
   lastFired: {},
 };
+
+export function newSlotId(): string {
+  return `s${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+}
+
+/** Settings saved by the build that only knew about a `meals: string[]` field.
+    Upgrading in place beats discarding: someone who already set their hours
+    should not find them reset. */
+export function migrateSettings(
+  saved: Partial<ReminderSettings> & { meals?: unknown },
+): ReminderSettings {
+  let slots = Array.isArray(saved.slots) ? saved.slots.filter(isSlot) : [];
+
+  if (slots.length === 0 && Array.isArray(saved.meals)) {
+    slots = (saved.meals as unknown[])
+      .filter((t): t is string => typeof t === "string")
+      .map((time, i) => ({
+        id: `m${i + 1}`,
+        label: DEFAULT_SLOTS[i]?.label ?? `Meal ${i + 1}`,
+        time,
+      }));
+  }
+
+  return {
+    ...DEFAULT_REMINDERS,
+    ...saved,
+    slots: slots.length ? slots.slice(0, MAX_SLOTS) : DEFAULT_SLOTS,
+    water: { ...DEFAULT_REMINDERS.water, ...(saved.water ?? {}) },
+    lastFired: saved.lastFired ?? {},
+  };
+}
+
+function isSlot(v: unknown): v is ReminderSlot {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    typeof (v as ReminderSlot).id === "string" &&
+    typeof (v as ReminderSlot).time === "string"
+  );
+}
 
 export const WATER_INTERVAL_CHOICES = [60, 90, 120, 180] as const;
 
@@ -75,10 +138,12 @@ export type DueKind = "meal" | "water";
 
 export interface DueReminder {
   kind: DueKind;
-  /** Stable per-day identity, e.g. "meal:2026-08-26:13:00". */
+  /** Stable per-day identity, e.g. "meal:2026-08-26:m2". */
   key: string;
-  /** The slot this came from, for display. */
+  /** The slot's time, for display. */
   at: string;
+  /** The slot's own name, so the notification can say "Pre-workout shake". */
+  label: string;
 }
 
 export interface DueInput {
@@ -105,15 +170,17 @@ export function dueReminders(input: DueInput): DueReminder[] {
   const out: DueReminder[] = [];
   const nowMin = minutesOfDay(now);
 
-  for (const slot of settings.meals) {
-    const at = parseHhMm(slot);
+  for (const slot of settings.slots) {
+    const at = parseHhMm(slot.time);
     if (at === null || nowMin < at) continue;
 
     /* Stale slots don't fire. Opening the app at 21:00 should not deliver a
        stack of reminders for breakfast, lunch and dinner all at once. */
     if (nowMin - at > 90) continue;
 
-    const key = `meal:${today}:${slot}`;
+    /* Keyed by slot id, not by time: renaming or moving a slot must not make
+       it fire a second time on the same day. */
+    const key = `meal:${today}:${slot.id}`;
     if (settings.lastFired[key]) continue;
 
     const alreadyEaten = loggedMealMinutes.some(
@@ -121,7 +188,7 @@ export function dueReminders(input: DueInput): DueReminder[] {
     );
     if (alreadyEaten) continue;
 
-    out.push({ kind: "meal", key, at: slot });
+    out.push({ kind: "meal", key, at: slot.time, label: slot.label });
   }
 
   const w = settings.water;
@@ -134,7 +201,7 @@ export function dueReminders(input: DueInput): DueReminder[] {
       const bucket = Math.floor((nowMin - from) / Math.max(15, w.everyMinutes));
       const key = `water:${today}:${bucket}`;
       if (!settings.lastFired[key] && bucket >= 1) {
-        out.push({ kind: "water", key, at: formatHhMm(nowMin) });
+        out.push({ kind: "water", key, at: formatHhMm(nowMin), label: "" });
       }
     }
   }

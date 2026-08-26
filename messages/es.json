@@ -208,8 +208,6 @@
     "fuelPlan": "Plan de comida",
     "straightTalk": "Sin rodeos",
     "enterGym": "Entra al gimnasio",
-    "coachEstimate": "Motor de entrenamiento integrado · sin IA",
-    "claudeAnalysis": "Analizado por Claude IA",
     "recapGoals": "Objetivos",
     "recapBy": "Para",
     "recapSetup": "Equipo",
@@ -491,9 +489,7 @@
     "slot_lunch": "Almuerzo",
     "slot_dinner": "Cena",
     "slot_snack": "Snack",
-    "tipsTitle": "Consejos del entrenador",
-    "aiNote": "Personalizado para ti por Claude IA.",
-    "localNote": "Creado por el motor integrado — no se usó IA para este plan."
+    "tipsTitle": "Consejos del entrenador"
   },
   "scan": {
     "title": "Escáner de comidas",
@@ -771,7 +767,9 @@
     "ticketTopic_other": "Otro",
     "ticketAction_new": "Empezar",
     "ticketAction_open": "Marcar hecho",
-    "ticketAction_done": "Reabrir"
+    "ticketAction_done": "Reabrir",
+    "ticketReply": "Responder",
+    "ticketReplyHint": "Abre Gmail con el destinatario puesto y el mensaje citado"
   },
   "account": {
     "dangerTitle": "Cuenta",
@@ -907,8 +905,6 @@
   "remind": {
     "title": "Recordatorios",
     "sub": "Avisos para comer y beber, a tu horario. Se omiten si ya registraste una comida a esa hora.",
-    "mealsLabel": "Horas de comida",
-    "mealAria": "Comida {n}",
     "waterLabel": "Recordatorios de agua",
     "on": "Sí",
     "off": "No",
@@ -917,7 +913,6 @@
     "to": "a",
     "fromAria": "Avisar desde",
     "toAria": "Avisar hasta",
-    "dueMeal": "Hora de comer — tu comida de las {at}.",
     "dueWater": "Hora de beber agua.",
     "mealTitle": "RingBornn — hora de comer",
     "mealBody": "Toca tu comida de las {at}. Regístrala cuando termines.",
@@ -928,6 +923,17 @@
     "permGranted": "Las notificaciones están activas en este dispositivo.",
     "permDenied": "Las notificaciones están bloqueadas para este sitio. Actívalas en los ajustes del navegador si las quieres.",
     "permUnsupported": "Este navegador no admite notificaciones. Los recordatorios se ven igual aquí.",
-    "limitNote": "Los recordatorios funcionan mientras RingBornn esté abierto en una pestaña. En iPhone, añade el sitio a la pantalla de inicio para que lleguen."
+    "limitNote": "Los recordatorios funcionan mientras RingBornn esté abierto en una pestaña. En iPhone, añade el sitio a la pantalla de inicio para que lleguen.",
+    "slotsLabel": "Tus recordatorios",
+    "slotNamePlaceholder": "Ponle nombre",
+    "slotNameAria": "Nombre del recordatorio",
+    "slotTimeAria": "Hora del recordatorio",
+    "slotRemove": "Eliminar recordatorio",
+    "slotAdd": "Añadir recordatorio",
+    "slotNewName": "Nuevo recordatorio",
+    "dueSlot": "{name} — {at}.",
+    "slotBreakfast": "Desayuno",
+    "slotLunch": "Comida",
+    "slotDinner": "Cena"
   }
 }

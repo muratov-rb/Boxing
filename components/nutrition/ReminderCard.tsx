@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import {
+  hasSavedReminders,
   loadProfile,
   loadReminders,
   mealMinutesToday,
@@ -14,10 +15,14 @@ import {
 } from "@/lib/tracking";
 import { waterTarget } from "@/lib/nutrients";
 import {
+  MAX_SLOTS,
+  SLOT_LABEL_MAX,
   WATER_INTERVAL_CHOICES,
   dueReminders,
   markFired,
+  newSlotId,
   type ReminderSettings,
+  type ReminderSlot,
 } from "@/lib/reminders";
 
 /* Reminders to eat and drink.
@@ -44,17 +49,31 @@ export function ReminderCard() {
   const t = useTranslations("remind");
   const [settings, setSettings] = useState<ReminderSettings | null>(null);
   const [permission, setPermission] = useState<Permission>("default");
-  const [dueNow, setDueNow] = useState<{ kind: string; at: string }[]>([]);
+  const [dueNow, setDueNow] = useState<{ kind: string; at: string; label: string }[]>([]);
   /* Held in a ref as well as state: the interval closes over this and must see
      the latest settings without being torn down and rebuilt every keystroke. */
   const settingsRef = useRef<ReminderSettings | null>(null);
 
   useEffect(() => {
-    const s = loadReminders();
+    let s = loadReminders();
+
+    /* First run on this device: give the three starter slots names in the
+       reader's language. Guarded on hasSavedReminders so a returning user's
+       own names are never overwritten — including if they renamed one back to
+       something that happens to match a default. */
+    if (!hasSavedReminders()) {
+      const names: Record<string, string> = {
+        m1: t("slotBreakfast"),
+        m2: t("slotLunch"),
+        m3: t("slotDinner"),
+      };
+      s = { ...s, slots: s.slots.map((x) => ({ ...x, label: names[x.id] ?? x.label })) };
+    }
+
     setSettings(s);
     settingsRef.current = s;
     setPermission(readPermission());
-  }, []);
+  }, [t]);
 
   const update = useCallback((next: ReminderSettings) => {
     settingsRef.current = next;
@@ -82,15 +101,21 @@ export function ReminderCard() {
       });
       if (due.length === 0) return;
 
-      setDueNow(due.map((d) => ({ kind: d.kind, at: d.at })));
+      setDueNow(due.map((d) => ({ kind: d.kind, at: d.at, label: d.label })));
 
       if (readPermission() === "granted") {
         for (const d of due) {
           try {
-            new Notification(d.kind === "meal" ? t("mealTitle") : t("waterTitle"), {
-              body: d.kind === "meal" ? t("mealBody", { at: d.at }) : t("waterBody"),
-              tag: d.key, // replaces rather than stacks if one is still on screen
-            });
+            /* The slot's own name leads, so a custom "Pre-workout shake"
+               reminder says that rather than a generic "time to eat". */
+            const named = d.kind === "meal" && d.label.trim().length > 0;
+            new Notification(
+              named ? d.label : d.kind === "meal" ? t("mealTitle") : t("waterTitle"),
+              {
+                body: d.kind === "meal" ? t("mealBody", { at: d.at }) : t("waterBody"),
+                tag: d.key, // replaces rather than stacks if one is still on screen
+              },
+            );
           } catch {
             /* a blocked or throttled notification must not stop the in-app card */
           }
@@ -121,11 +146,29 @@ export function ReminderCard() {
 
   if (!settings) return null;
 
-  const setMeal = (i: number, value: string) => {
-    const meals = [...settings.meals];
-    meals[i] = value;
-    update({ ...settings, meals });
+  const setSlot = (id: string, patch: Partial<ReminderSlot>) =>
+    update({
+      ...settings,
+      slots: settings.slots.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+    });
+
+  /* Removing a slot drops its fired-key too. Otherwise deleting a slot and
+     adding one back at the same hour would find the day already marked. */
+  const removeSlot = (id: string) => {
+    const lastFired = Object.fromEntries(
+      Object.entries(settings.lastFired).filter(([k]) => !k.endsWith(`:${id}`)),
+    );
+    update({ ...settings, slots: settings.slots.filter((s) => s.id !== id), lastFired });
   };
+
+  const addSlot = () =>
+    update({
+      ...settings,
+      slots: [
+        ...settings.slots,
+        { id: newSlotId(), label: t("slotNewName"), time: "16:00" },
+      ],
+    });
 
   return (
     <section className="panel p-6">
@@ -169,28 +212,59 @@ export function ReminderCard() {
                   <span className="text-blood">
                     <Icon name={d.kind === "meal" ? "calorie" : "water"} size={15} />
                   </span>
-                  {d.kind === "meal" ? t("dueMeal", { at: d.at }) : t("dueWater")}
+                  {d.kind === "meal"
+                    ? t("dueSlot", { name: d.label || t("slotNewName"), at: d.at })
+                    : t("dueWater")}
                 </li>
               ))}
             </ul>
           )}
 
-          {/* meal times */}
+          {/* the user's own slots — rename, re-time, remove, add */}
           <p className="mt-6 font-condensed text-xs uppercase tracking-widest text-ash">
-            {t("mealsLabel")}
+            {t("slotsLabel")}
           </p>
-          <div className="mt-2.5 grid grid-cols-3 gap-2">
-            {settings.meals.map((slot, i) => (
-              <input
-                key={i}
-                type="time"
-                value={slot}
-                onChange={(e) => setMeal(i, e.target.value)}
-                aria-label={t("mealAria", { n: i + 1 })}
-                className="min-h-[45px] w-full rounded-md border border-line bg-void px-3 py-2 text-base text-bone focus:border-blood focus:outline-none"
-              />
+          <ul className="mt-2.5 space-y-2">
+            {settings.slots.map((slot) => (
+              <li key={slot.id} className="flex items-center gap-2">
+                <input
+                  value={slot.label}
+                  onChange={(e) => setSlot(slot.id, { label: e.target.value.slice(0, SLOT_LABEL_MAX) })}
+                  placeholder={t("slotNamePlaceholder")}
+                  maxLength={SLOT_LABEL_MAX}
+                  aria-label={t("slotNameAria")}
+                  className="min-h-[45px] min-w-0 flex-1 rounded-md border border-line bg-void px-3 py-2 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none"
+                />
+                <input
+                  type="time"
+                  value={slot.time}
+                  onChange={(e) => setSlot(slot.id, { time: e.target.value })}
+                  aria-label={t("slotTimeAria")}
+                  className="min-h-[45px] w-[7.5rem] shrink-0 rounded-md border border-line bg-void px-2 py-2 text-base text-bone focus:border-blood focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSlot(slot.id)}
+                  disabled={settings.slots.length <= 1}
+                  aria-label={t("slotRemove")}
+                  title={t("slotRemove")}
+                  className="grid h-[45px] w-[45px] shrink-0 place-items-center rounded-md border border-line text-ash-dim transition-colors hover:border-blood/50 hover:text-blood disabled:opacity-30"
+                >
+                  <Icon name="close" size={15} />
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
+
+          {settings.slots.length < MAX_SLOTS && (
+            <button
+              type="button"
+              onClick={addSlot}
+              className="btn btn-ghost mt-2.5 w-full !py-2.5 text-xs"
+            >
+              + {t("slotAdd")}
+            </button>
+          )}
 
           {/* water cadence */}
           <div className="mt-6 flex items-center justify-between gap-3">

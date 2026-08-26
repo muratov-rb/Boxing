@@ -208,8 +208,6 @@
     "fuelPlan": "Fuel plan",
     "straightTalk": "Straight talk",
     "enterGym": "Enter the Gym",
-    "coachEstimate": "Built-in coach engine · AI not used",
-    "claudeAnalysis": "Analysed by Claude AI",
     "recapGoals": "Goals",
     "recapBy": "By",
     "recapSetup": "Setup",
@@ -491,9 +489,7 @@
     "slot_lunch": "Lunch",
     "slot_dinner": "Dinner",
     "slot_snack": "Snack",
-    "tipsTitle": "Coach's tips",
-    "aiNote": "Personalised for you by Claude AI.",
-    "localNote": "Built by the built-in coach engine — AI was not used for this plan."
+    "tipsTitle": "Coach's tips"
   },
   "scan": {
     "title": "Meal scanner",
@@ -771,7 +767,9 @@
     "ticketTopic_other": "Other",
     "ticketAction_new": "Start",
     "ticketAction_open": "Mark done",
-    "ticketAction_done": "Reopen"
+    "ticketAction_done": "Reopen",
+    "ticketReply": "Reply",
+    "ticketReplyHint": "Opens Gmail with the reply addressed and the ticket quoted"
   },
   "account": {
     "dangerTitle": "Account",
@@ -907,8 +905,6 @@
   "remind": {
     "title": "Reminders",
     "sub": "Nudges to eat and drink, on your schedule. Skipped automatically if you already logged a meal around that time.",
-    "mealsLabel": "Meal times",
-    "mealAria": "Meal time {n}",
     "waterLabel": "Water reminders",
     "on": "On",
     "off": "Off",
@@ -917,7 +913,6 @@
     "to": "to",
     "fromAria": "Remind from",
     "toAria": "Remind until",
-    "dueMeal": "Time to eat — your {at} meal.",
     "dueWater": "Time for a drink.",
     "mealTitle": "RingBornn — time to eat",
     "mealBody": "Your {at} meal is due. Log it when you're done.",
@@ -928,6 +923,17 @@
     "permGranted": "Notifications are on for this device.",
     "permDenied": "Notifications are blocked for this site. Turn them back on in your browser's site settings if you want them.",
     "permUnsupported": "This browser does not support notifications. Reminders still show here.",
-    "limitNote": "Reminders run while RingBornn is open in a tab. On iPhone, add the site to your home screen first for notifications to work at all."
+    "limitNote": "Reminders run while RingBornn is open in a tab. On iPhone, add the site to your home screen first for notifications to work at all.",
+    "slotsLabel": "Your reminders",
+    "slotNamePlaceholder": "Name it",
+    "slotNameAria": "Reminder name",
+    "slotTimeAria": "Reminder time",
+    "slotRemove": "Remove reminder",
+    "slotAdd": "Add a reminder",
+    "slotNewName": "New reminder",
+    "dueSlot": "{name} — {at}.",
+    "slotBreakfast": "Breakfast",
+    "slotLunch": "Lunch",
+    "slotDinner": "Dinner"
   }
 }
