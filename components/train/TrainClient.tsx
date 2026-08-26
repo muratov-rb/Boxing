@@ -386,7 +386,7 @@ export function TrainClient() {
               />
             </div>
 
-            {/* 3D coach + cues */}
+            {/* illustrated demo + cues */}
             <div className="mt-6 grid gap-4 sm:grid-cols-5">
               <div className="min-w-0 sm:col-span-3">
                 <div className="overflow-hidden rounded-lg border border-line/70 bg-void/40">

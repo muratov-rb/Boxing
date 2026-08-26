@@ -96,26 +96,24 @@ Restart the dev server and you're live: real auth on the nav/login/register, Cla
 
 ---
 
-## 3D coach model (optional)
-
-Lesson demos always show the 2D movement guide. If a compressed model exists at
-`public/models/coach.glb`, lessons additionally show a **3D model** tab (rotate/zoom
-viewer). To install one from a Tripo3D / Blender export:
-
-1. Export a **binary GLB**: Blender → File → Export → glTF 2.0 (`.glb`), or download
-   the GLB from Tripo3D directly. **Never open/save the file with a text editor and
-   avoid copy tools that convert encodings** — that corrupts the binary data
-   (the script detects this and refuses the file).
-2. Compress + install it (targets < 10 MB from a raw scan of any size):
-
-   ```bash
-   node scripts/prepare-coach-model.mjs "C:/path/to/your-model.glb"
-   ```
-
-3. Commit `public/models/coach.glb` and push — the 3D tab appears automatically.
-
----
 
 ## Deploying
 
 Set the same four variables in your host's environment (e.g. Vercel Project → Settings → Environment Variables), update the Supabase **Site URL** and **Redirect URLs** to your production domain (`https://yourdomain.com/auth/callback`), and redeploy.
+
+### Why `vercel.json` pins the region
+
+Vercel defaults serverless functions to `iad1` (Washington DC). Our database is
+Supabase in `ap-southeast-1` (**Singapore**), so on the default the request path
+was: user in Asia → Hong Kong edge → **function in Virginia** → **database in
+Singapore** → and all the way back. Two Pacific crossings per page, and the auth
+check makes more than one database round trip.
+
+`"regions": ["sin1"]` puts the function next to the database. Measured before
+the change: `X-Vercel-Id: hkg1::iad1::…` — the two codes are the edge that took
+the request and the region that ran it, and they should not be continents apart
+from the data.
+
+If you ever move the Supabase project to another region, move this with it —
+the function wants to be beside the database, not beside the user, because one
+page render makes several database calls and only one trip back to the browser.

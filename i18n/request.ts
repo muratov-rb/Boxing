@@ -32,21 +32,40 @@ function deepMerge(base: Dict, over: Dict): Dict {
   return out;
 }
 
+/* The merged catalogue for a locale, kept between requests.
+
+   deepMerge walks ~700 keys across every namespace and its result depends on
+   nothing but the locale — yet it was running on every single request from a
+   reader in Russian, Spanish, French or Chinese. Serverless instances survive
+   between invocations, so caching it means the merge happens once per instance
+   instead of once per page view. English never merged and is unaffected. */
+const merged = new Map<string, Dict>();
+
+async function catalogFor(locale: string): Promise<Dict> {
+  const hit = merged.get(locale);
+  if (hit) return hit;
+
+  const en = (await import(`../messages/en.json`)).default as Dict;
+  if (locale === "en") {
+    merged.set("en", en);
+    return en;
+  }
+
+  let messages: Dict;
+  try {
+    const target = (await import(`../messages/${locale}.json`)).default as Dict;
+    messages = deepMerge(en, target);
+  } catch {
+    messages = en; // catalog missing → English
+  }
+  merged.set(locale, messages);
+  return messages;
+}
+
 export default getRequestConfig(async () => {
   const store = await cookies();
   const cookieLocale = store.get(LOCALE_COOKIE)?.value;
   const locale = isSupportedLocale(cookieLocale) ? cookieLocale! : DEFAULT_LOCALE;
 
-  const en = (await import(`../messages/en.json`)).default as Dict;
-  let messages = en;
-  if (locale !== "en") {
-    try {
-      const target = (await import(`../messages/${locale}.json`)).default as Dict;
-      messages = deepMerge(en, target);
-    } catch {
-      messages = en; // catalog missing → English
-    }
-  }
-
-  return { locale, messages };
+  return { locale, messages: await catalogFor(locale) };
 });
