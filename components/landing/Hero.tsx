@@ -38,7 +38,11 @@ export function Hero() {
           {t("sub")}
         </p>
 
-        <div className="animate-rise mt-9 flex flex-col gap-3 sm:flex-row sm:items-center [animation-delay:240ms]">
+        {/* items-start matters on mobile: a column flex container stretches its
+            children by default, which turned both CTAs into full-width pills —
+            two 340px lozenges stacked on a phone. They size to their text now,
+            the way they already did from the sm breakpoint up. */}
+        <div className="animate-rise mt-9 flex flex-col items-start gap-3 sm:flex-row sm:items-center [animation-delay:240ms]">
           <Link href="/onboarding" className="btn btn-primary shine">
             {t("ctaStart")}
             <Icon name="arrow" size={18} />

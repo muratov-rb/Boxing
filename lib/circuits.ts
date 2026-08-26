@@ -938,6 +938,137 @@ CIRCUITS.push(
   }),
 );
 
+CIRCUITS.push(
+  c({
+    id: "hands-fast",
+    name: ["Hands Fast", "Быстрые руки"],
+    origin: ["Hand-speed interval", "Интервал на скорость рук"],
+    blurb: [
+      "Ten short bursts. Speed is a skill you practise fresh, not a thing you grind out tired.",
+      "Десять коротких вспышек. Скорость отрабатывают свежим, а не выжимают уставшим.",
+    ],
+    timer: { mode: "interval", workSec: 15, restSec: 45, rounds: 10 },
+    level: 1,
+    requires: [],
+    steps: [{ exerciseId: "jab-cross", seconds: 15 }],
+    howTo: [
+      ["Fifteen seconds as fast as you can throw clean. Forty-five off. Ten times.", "Пятнадцать секунд максимально быстро и чисто. Сорок пять отдыха. Десять раз."],
+      [
+        "Clean is the limit, not effort. A punch that does not return to the chin does not count.",
+        "Предел — чистота, а не старание. Удар, не вернувшийся к подбородку, не считается.",
+      ],
+      [
+        "The long rest is the whole design. Speed work done tired trains slowness.",
+        "Долгий отдых — весь смысл. Скорость на усталости тренирует медлительность.",
+      ],
+    ],
+    scaling: [
+      "Six rounds. Stop the moment the hands stop snapping back.",
+      "Шесть раундов. Останавливайся, как только руки перестают отскакивать назад.",
+    ],
+  }),
+
+  c({
+    id: "body-shot-builder",
+    name: ["Body Shot Builder", "Удары по корпусу"],
+    origin: ["Level-change conditioning", "Кондиция на смену уровня"],
+    blurb: [
+      "Every body shot is a squat you throw a punch out of. This builds the legs that let you.",
+      "Каждый удар по корпусу — это присед, из которого летит удар. Здесь строятся ноги для него.",
+    ],
+    timer: { mode: "interval", workSec: 45, restSec: 25, rounds: 9 },
+    level: 2,
+    requires: [],
+    steps: [
+      { exerciseId: "squat", seconds: 45 },
+      { exerciseId: "hooks", seconds: 45 },
+      { exerciseId: "sprawls", seconds: 45 },
+    ],
+    howTo: [
+      ["Forty-five on, twenty-five off, three movements, three laps.", "Сорок пять работы, двадцать пять отдыха, три движения, три круга."],
+      [
+        "On the hook rounds, bend the knees rather than the waist. Leaning over to hit the body is how you get caught.",
+        "На раундах с хуками сгибай колени, а не поясницу. Наклон к корпусу — это как раз то, за что и ловят.",
+      ],
+      [
+        "Come back up to the guard between every shot. Staying low is how the round ends badly.",
+        "После каждого удара возвращайся в стойку. Кто остаётся внизу — плохо заканчивает раунд.",
+      ],
+    ],
+    scaling: [
+      "Two laps, and step back into the sprawl rather than dropping.",
+      "Два круга, и в спроле — шаг назад вместо падения.",
+    ],
+  }),
+
+  c({
+    id: "quiet-room",
+    name: ["Quiet Room", "Тихая комната"],
+    origin: ["No-jump, no-noise circuit", "Круг без прыжков и шума"],
+    blurb: [
+      "A full session with no jumping and no thumping. For late nights and thin floors.",
+      "Полноценная работа без прыжков и грохота. Для позднего вечера и тонких перекрытий.",
+    ],
+    timer: { mode: "interval", workSec: 40, restSec: 20, rounds: 12 },
+    level: 1,
+    requires: [],
+    steps: [
+      { exerciseId: "pushup", seconds: 40 },
+      { exerciseId: "wall-sit", seconds: 40 },
+      { exerciseId: "plank-up-down", seconds: 40 },
+      { exerciseId: "glute-bridge", seconds: 40 },
+    ],
+    howTo: [
+      ["Forty on, twenty off, four movements, three laps.", "Сорок работы, двадцать отдыха, четыре движения, три круга."],
+      [
+        "Nothing here leaves the floor, so it works at 11pm in a flat with neighbours below.",
+        "Ничего не отрывается от пола — работает в одиннадцать вечера в квартире с соседями снизу.",
+      ],
+      [
+        "Slow beats loud. If your hands slap the floor on a push-up, you are dropping rather than lowering.",
+        "Медленно лучше, чем громко. Если руки шлёпают по полу — ты падаешь, а не опускаешься.",
+      ],
+    ],
+    scaling: [
+      "Two laps, push-ups from the knees.",
+      "Два круга, отжимания с колен.",
+    ],
+  }),
+
+  c({
+    id: "twelve-rounder",
+    name: ["The Twelve Rounder", "Двенадцать раундов"],
+    origin: ["Championship distance", "Чемпионская дистанция"],
+    blurb: [
+      "Twelve rounds, the full championship distance. Nothing in this library is longer.",
+      "Двенадцать раундов — полная чемпионская дистанция. Ничего длиннее в библиотеке нет.",
+    ],
+    timer: { mode: "interval", workSec: 180, restSec: 60, rounds: 12 },
+    level: 3,
+    requires: [],
+    steps: [{ exerciseId: "shadowboxing", seconds: 180 }],
+    howTo: [
+      ["Three minutes on, one off, twelve times. Forty-eight minutes.", "Три минуты работы, минута отдыха, двенадцать раз. Сорок восемь минут."],
+      [
+        "Attempt this only when six rounds is comfortable. Twelve badly is worth less than six well.",
+        "Берись за это, только когда шесть раундов даются легко. Двенадцать плохо хуже, чем шесть хорошо.",
+      ],
+      [
+        "Rounds 1–4 at 60%. Rounds 5–8 at 75%. Rounds 9–12 whatever is left.",
+        "Раунды 1–4 на 60%. 5–8 на 75%. 9–12 — на том, что осталось.",
+      ],
+      [
+        "Getting through it is the achievement. Nobody looks good in round eleven.",
+        "Достижение — просто дойти. В одиннадцатом раунде красиво не выглядит никто.",
+      ],
+    ],
+    scaling: [
+      "Eight rounds. Add one a fortnight, not one a session.",
+      "Восемь раундов. Прибавляй по одному раз в две недели, а не каждую тренировку.",
+    ],
+  }),
+);
+
 /* ------------------------------ helpers ---------------------------------- */
 
 export function circuitById(id: string): Circuit | undefined {

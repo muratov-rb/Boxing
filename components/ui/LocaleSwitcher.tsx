@@ -58,11 +58,18 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label="Language"
-        className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-ash transition-colors hover:text-bone disabled:opacity-50"
+        /* 44px tall: this was py-1.5, about 32px, which is below the size a
+           thumb reliably hits — and a language switcher that needs two taps
+           looks broken rather than fiddly. */
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-line px-3 text-ash transition-colors hover:border-blood/50 hover:text-bone disabled:opacity-50"
       >
-        <Icon name="globe" size={16} />
-        <span className="font-condensed text-xs font-semibold uppercase tracking-wider">
-          {current.code}
+        <Icon name="globe" size={17} />
+        {/* The code alone, small, told you almost nothing about what was
+            selected. The native name is the thing a reader recognises; the
+            code stays for the narrowest screens where the name will not fit. */}
+        <span className="font-condensed text-sm font-semibold uppercase tracking-wider">
+          <span className="hidden sm:inline">{current.native}</span>
+          <span className="sm:hidden">{current.code}</span>
         </span>
       </button>
 
@@ -82,16 +89,23 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
                 onClick={() => pick(l.code)}
                 dir={l.rtl ? "rtl" : "ltr"}
                 className={[
-                  "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors",
+                  "flex min-h-[44px] w-full items-center justify-between gap-2 rounded-lg px-3 text-left text-sm transition-colors",
                   l.code === active
                     ? "bg-blood/10 text-blood"
                     : "text-bone/90 hover:bg-line/40",
                 ].join(" ")}
               >
                 <span>{l.native}</span>
-                <span className="font-condensed text-[0.6rem] uppercase tracking-wider text-ash-dim">
-                  {l.code}
-                </span>
+                {/* A tick, not just a tint. Colour alone is the wrong way to
+                    signal the current choice — it is easy to miss and it is
+                    invisible to anyone who cannot separate those two reds. */}
+                {l.code === active ? (
+                  <Icon name="check" size={15} />
+                ) : (
+                  <span className="font-condensed text-[0.65rem] uppercase tracking-wider text-ash-dim">
+                    {l.code}
+                  </span>
+                )}
               </button>
             </li>
           ))}

@@ -6,6 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { publicSupabaseEnv } from "@/lib/supabase/config";
 import { isRtlLocale } from "@/i18n/locales";
 import { SITE_URL } from "@/lib/legal";
+import { StructuredData } from "@/components/seo/StructuredData";
 import "./globals.css";
 
 /* Geometric display — modern, athletic headlines (Sport Modern direction).
@@ -99,6 +100,7 @@ export default async function RootLayout({
       <body className="min-h-full">
         {themeScript ? <script dangerouslySetInnerHTML={{ __html: themeScript }} /> : null}
         <script dangerouslySetInnerHTML={{ __html: envScript }} />
+        <StructuredData />
         <div className="brush" aria-hidden="true" />
         <div className="grain" aria-hidden="true" />
         <NextIntlClientProvider locale={locale} messages={messages}>
