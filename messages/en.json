@@ -78,7 +78,9 @@
     "rest_t": "Rest & Recovery",
     "rest_c": "Smart rest days built into every plan, so you build strength instead of burning out.",
     "circuits_t": "Conditioning Circuits",
-    "circuits_c": "Named formats fighters actually run — Cindy, Tabata, bag rounds — on a real timer with the round bell."
+    "circuits_c": "Named formats fighters actually run — Cindy, Tabata, bag rounds — on a real timer with the round bell.",
+    "partners_t": "Training Partners",
+    "partners_c": "Add a partner, watch each other's streak, and send challenges. Nobody trains alone."
   },
   "finalCta": {
     "kicker": "No excuses left",

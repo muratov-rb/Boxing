@@ -15,6 +15,7 @@ const FEATURES: { icon: IconName; k: string }[] = [
      A landing page selling something the product no longer does is the same
      class of problem as the "Coming soon" labels on features that shipped. */
   { icon: "streak", k: "circuits" },
+  { icon: "users", k: "partners" },
   { icon: "rest", k: "rest" },
 ];
 

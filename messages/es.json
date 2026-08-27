@@ -78,7 +78,9 @@
     "rest_t": "Descanso y recuperación",
     "rest_c": "Días de descanso inteligentes integrados en cada plan, para que construyas fuerza en vez de quemarte.",
     "circuits_t": "Circuitos de acondicionamiento",
-    "circuits_c": "Formatos que los boxeadores usan de verdad — Cindy, Tabata, rondas de saco — con reloj real y campana."
+    "circuits_c": "Formatos que los boxeadores usan de verdad — Cindy, Tabata, rondas de saco — con reloj real y campana.",
+    "partners_t": "Compañeros",
+    "partners_c": "Añade un compañero, vigilad la racha del otro y lanzaos retos. Nadie entrena solo."
   },
   "finalCta": {
     "kicker": "Sin excusas",

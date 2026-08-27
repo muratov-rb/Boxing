@@ -78,7 +78,9 @@
     "rest_t": "Repos et récupération",
     "rest_c": "Des jours de repos intelligents intégrés à chaque plan, pour construire ta force au lieu de te cramer.",
     "circuits_t": "Circuits de condition",
-    "circuits_c": "Des formats que les boxeurs pratiquent vraiment — Cindy, Tabata, rounds au sac — avec un vrai chrono et le gong."
+    "circuits_c": "Des formats que les boxeurs pratiquent vraiment — Cindy, Tabata, rounds au sac — avec un vrai chrono et le gong.",
+    "partners_t": "Partenaires",
+    "partners_c": "Ajoutez un partenaire, suivez la série de l'autre et lancez des défis. Personne ne s'entraîne seul."
   },
   "finalCta": {
     "kicker": "Plus d'excuses",
