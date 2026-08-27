@@ -27,6 +27,11 @@ export interface Entitlements {
      features because a question costs roughly a tenth of a photo scan — the
      limit is here to bound abuse, not to ration the feature. */
   coachAsksPerDay: number; // 0 = feature locked
+  /* Fresh AI meal plans per day. This was uncapped, and the page generated one
+     on every single mount — so opening /nutrition twenty times cost twenty
+     plans. A plan covers one day, so a small number is the honest allowance:
+     one for the day, plus room to redo it with different preferences. */
+  nutritionPlansPerDay: number; // 0 = local engine only
 }
 
 const INF = Number.POSITIVE_INFINITY;
@@ -50,6 +55,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 2,
     techniqueVideosPerDay: 0,
     coachAsksPerDay: 3,
+    nutritionPlansPerDay: 0,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled
   expired: {
@@ -63,6 +69,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 0,
     techniqueVideosPerDay: 0,
     coachAsksPerDay: 0,
+    nutritionPlansPerDay: 0,
   },
   budget: {
     ranks: false,
@@ -75,6 +82,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 0,
     techniqueVideosPerDay: 0,
     coachAsksPerDay: 3,
+    nutritionPlansPerDay: 0,
   },
   pro: {
     ranks: true,
@@ -87,6 +95,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 2,
     techniqueVideosPerDay: 2,
     coachAsksPerDay: 15,
+    nutritionPlansPerDay: 3,
   },
   max: {
     ranks: true,
@@ -99,6 +108,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 10,
     techniqueVideosPerDay: 8,
     coachAsksPerDay: 50,
+    nutritionPlansPerDay: 6,
   },
 };
 
@@ -155,6 +165,7 @@ export const UNLOCKED: Entitlements = {
   aiNutrition: true,
   nutritionMealSlots: 4,
   coachAsksPerDay: INF,
+  nutritionPlansPerDay: INF,
   calorieScansPerDay: INF,
   techniqueVideosPerDay: INF,
 };

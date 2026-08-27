@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LEGAL_UPDATED } from "@/lib/legal";
@@ -10,6 +11,15 @@ import { LEGAL_UPDATED } from "@/lib/legal";
    The body copy is passed as data rather than JSX so the two pages stay
    structurally identical and the prose has nowhere to drift. A plain string is
    a paragraph, an array is a bullet list. */
+
+/* Titles stay in English here on purpose: these are the legal documents
+   themselves, and the note above this row says the English text is the one
+   that applies. */
+const LEGAL_LINKS = [
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Service" },
+  { href: "/refunds", label: "Refunds" },
+] as const;
 
 export type Block = string | string[];
 
@@ -27,6 +37,8 @@ export function LegalPage({
   intro: string[];
   sections: Section[];
 }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
@@ -113,16 +125,16 @@ export function LegalPage({
           applies.
         </p>
 
+        {/* The other two documents, never the one being read. A "Privacy
+            Policy" button at the bottom of the privacy policy looks like it
+            goes somewhere and does not, which is exactly the kind of small
+            wrongness that makes a legal page feel untrustworthy. */}
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/privacy" className="btn btn-ghost !px-4 !py-2 text-xs">
-            Privacy Policy
-          </Link>
-          <Link href="/terms" className="btn btn-ghost !px-4 !py-2 text-xs">
-            Terms of Service
-          </Link>
-          <Link href="/refunds" className="btn btn-ghost !px-4 !py-2 text-xs">
-            Refunds
-          </Link>
+          {LEGAL_LINKS.filter((l) => l.href !== pathname).map((l) => (
+            <Link key={l.href} href={l.href} className="btn btn-ghost !px-4 !py-2 text-xs">
+              {l.label}
+            </Link>
+          ))}
         </div>
       </main>
     </div>

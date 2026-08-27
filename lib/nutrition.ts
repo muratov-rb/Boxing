@@ -473,15 +473,24 @@ export function localNutrition(profile: Profile, locale: Locale = "en"): Nutriti
 
 /* Client helper: try the Claude-backed route, fall back to the local engine.
    Works today (no key → route returns local); no UI change when a key lands. */
+/** Today's requests, as opposed to the permanent settings on the profile. */
+export interface NutritionPrefs {
+  budget?: "tight" | "normal" | "comfortable";
+  diet?: "any" | "vegetarian" | "halal" | "nodairy";
+  prep?: "quick" | "any";
+  avoid?: string;
+}
+
 export async function requestNutrition(
   profile: Profile,
   locale: Locale = "en",
+  prefs?: NutritionPrefs,
 ): Promise<NutritionPlan> {
   try {
     const res = await fetch("/api/nutrition", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(profile),
+      body: JSON.stringify({ ...profile, prefs }),
     });
     if (res.ok) {
       const data = (await res.json()) as Partial<NutritionPlan>;

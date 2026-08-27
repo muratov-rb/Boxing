@@ -5,7 +5,13 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Icon, type IconName } from "@/components/ui/Icons";
 import { loadProfile, entitlements } from "@/lib/tracking";
-import { requestNutrition, type NutritionPlan, type Slot } from "@/lib/nutrition";
+import {
+  requestNutrition,
+  type NutritionPlan,
+  type NutritionPrefs,
+  type Slot,
+} from "@/lib/nutrition";
+import { loadTodaysPlan, saveTodaysPlan } from "@/lib/nutrition-cache";
 import { statIssues, type Profile } from "@/lib/onboarding";
 import { LockedFeature } from "@/components/dashboard/LockedFeature";
 import { AppNav } from "@/components/nav/AppNav";
@@ -27,7 +33,20 @@ export function NutritionClient() {
   const [plan, setPlan] = useState<NutritionPlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [access, setAccess] = useState<{ ai: boolean; slots: number } | null>(null);
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const [prefs, setPrefs] = useState<NutritionPrefs>({
+    budget: "normal",
+    diet: "any",
+    prep: "any",
+    avoid: "",
+  });
 
+  /* Today's plan is cached, and generating is an explicit act.
+
+     This page used to fetch on every mount, so a plan was generated — and
+     paid for — each time someone opened it, even to re-read the meals they
+     already had. A plan covers one day, so today's is kept until tomorrow and
+     a new one is only made when asked for. */
   useEffect(() => {
     const e = entitlements();
     setAccess({ ai: e.aiNutrition, slots: e.nutritionMealSlots });
@@ -37,14 +56,35 @@ export function NutritionClient() {
     }
     const p = loadProfile();
     setProfile(p);
-    setLoaded(true);
-    if (p && statIssues(p).length === 0) {
+
+    const cached = loadTodaysPlan();
+    if (cached) setPlan(cached);
+    else if (p && statIssues(p).length === 0) {
+      /* Nothing yet today: make the first one automatically, so arriving on
+         the page still shows a plan rather than an empty screen and a button. */
       setLoading(true);
       requestNutrition(p, locale)
-        .then(setPlan)
+        .then((fresh) => {
+          setPlan(fresh);
+          saveTodaysPlan(fresh);
+        })
         .finally(() => setLoading(false));
     }
+    setLoaded(true);
   }, [locale]);
+
+  const regenerate = async (next: NutritionPrefs) => {
+    if (!profile || loading) return;
+    setLoading(true);
+    setPrefsOpen(false);
+    try {
+      const fresh = await requestNutrition(profile, locale, next);
+      setPlan(fresh);
+      saveTodaysPlan(fresh);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // pro shows a subset of meals (e.g. breakfast + lunch); max/trial show all
   const shownMeals =
@@ -73,6 +113,81 @@ export function NutritionClient() {
         <p className="mt-3 max-w-xl text-ash">
           {plan?.headline || t("sub")}
         </p>
+
+        {/* Ask for a different day. Not a refresh button: the plan is for one
+            day and re-reading it is free, so this exists for "I can't afford
+            that this week" rather than for shuffling until something appeals. */}
+        {loaded && access?.ai && profile && plan && (
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={() => setPrefsOpen((v) => !v)}
+              aria-expanded={prefsOpen}
+              className="btn btn-ghost !px-5 !py-2.5 text-xs"
+            >
+              <Icon name="nutrition" size={14} /> {t("adjustCta")}
+            </button>
+
+            {prefsOpen && (
+              <div className="panel mt-3 p-5">
+                <p className="text-xs leading-relaxed text-ash-dim">{t("adjustSub")}</p>
+
+                {(
+                  [
+                    ["budget", ["tight", "normal", "comfortable"]],
+                    ["diet", ["any", "vegetarian", "halal", "nodairy"]],
+                    ["prep", ["any", "quick"]],
+                  ] as const
+                ).map(([group, options]) => (
+                  <div key={group} className="mt-4">
+                    <p className="font-condensed text-[0.65rem] uppercase tracking-widest text-ash">
+                      {t(`pref_${group}`)}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {options.map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => setPrefs((p) => ({ ...p, [group]: opt }))}
+                          aria-pressed={prefs[group] === opt}
+                          className={`min-h-[40px] rounded-xl border px-3.5 font-condensed text-xs uppercase tracking-wider transition-colors ${
+                            prefs[group] === opt
+                              ? "border-blood bg-blood/10 text-bone"
+                              : "border-line text-ash hover:border-blood/50"
+                          }`}
+                        >
+                          {t(`opt_${opt}`)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="mt-4">
+                  <p className="font-condensed text-[0.65rem] uppercase tracking-widest text-ash">
+                    {t("pref_avoid")}
+                  </p>
+                  <input
+                    value={prefs.avoid ?? ""}
+                    onChange={(e) => setPrefs((p) => ({ ...p, avoid: e.target.value }))}
+                    maxLength={120}
+                    placeholder={t("avoidPlaceholder")}
+                    className="mt-2 w-full rounded-md border border-line bg-void px-3.5 py-2.5 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => void regenerate(prefs)}
+                  disabled={loading}
+                  className="btn btn-primary mt-5 w-full !py-2.5 text-sm disabled:opacity-40"
+                >
+                  {loading ? t("building") : t("rebuild")}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* not in this plan */}
         {loaded && access && !access.ai && (
