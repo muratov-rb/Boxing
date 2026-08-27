@@ -16,6 +16,7 @@ const PROTECTED = [
   "/profile",
   "/calories",
   "/circuits",
+  "/friends",
 ];
 
 /* Refreshes the Supabase session cookie and guards protected routes.

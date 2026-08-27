@@ -31,6 +31,7 @@ export type IconName =
   | "sound"
   | "soundOff"
   | "chevron"
+  | "users"
   | "camera"
   | "edit";
 
@@ -83,6 +84,15 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <circle cx="12" cy="8" r="3.6" />
       <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+    </>
+  ),
+  /* Two figures, the second half-behind the first. */
+  users: (
+    <>
+      <circle cx="9.5" cy="8.2" r="3.2" />
+      <path d="M3.2 19.5a6.4 6.4 0 0 1 12.6 0" />
+      <path d="M16.2 5.4a3.2 3.2 0 0 1 0 5.7" />
+      <path d="M17.6 14.2a6.4 6.4 0 0 1 3.2 5.3" />
     </>
   ),
   /* Body, lens, and the little bump for the viewfinder. */

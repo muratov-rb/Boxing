@@ -32,6 +32,7 @@ export const PRIMARY_NAV: NavItem[] = [
 /** Occasional destinations. Behind the account menu on desktop. */
 export const ACCOUNT_NAV: NavItem[] = [
   { key: "profile", href: "/profile", icon: "user" },
+  { key: "friends", href: "/friends", icon: "users" },
   { key: "circuits", href: "/circuits", icon: "streak" },
   { key: "nutrition", href: "/nutrition", icon: "nutrition" },
   { key: "plans", href: "/plans", icon: "card" },
