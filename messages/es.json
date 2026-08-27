@@ -125,7 +125,11 @@
     "agreeTerms": "Términos del Servicio",
     "agreeMid": "y la",
     "agreePrivacy": "Política de Privacidad",
-    "agreeErr": "Acepta los Términos del Servicio y la Política de Privacidad para crear una cuenta."
+    "agreeErr": "Acepta los Términos del Servicio y la Política de Privacidad para crear una cuenta.",
+    "name": "Tu nombre",
+    "namePlaceholder": "¿Cómo te llamamos?",
+    "errNoName": "Dinos tu nombre, así sabemos a quién entrenamos.",
+    "errThrowaway": "Eso parece una dirección temporal. Usa una que puedas recibir de verdad: la necesitarás para confirmar tu cuenta."
   },
   "verify": {
     "kicker": "Un asalto más",
@@ -761,7 +765,13 @@
     "ticketAction_open": "Marcar hecho",
     "ticketAction_done": "Reabrir",
     "ticketReply": "Responder",
-    "ticketReplyHint": "Abre Gmail con el destinatario puesto y el mensaje citado"
+    "ticketReplyHint": "Abre Gmail con el destinatario puesto y el mensaje citado",
+    "ticketReplyHere": "Responder aquí",
+    "ticketReplyPlaceholder": "Tu respuesta: la leerán dentro del sitio.",
+    "ticketSend": "Enviar",
+    "ticketSending": "Enviando…",
+    "ticketCancel": "Cancelar",
+    "ticketSentNote": "Enviado. Lo verán en la página de soporte."
   },
   "account": {
     "dangerTitle": "Cuenta",
@@ -807,7 +817,18 @@
     "legalTerms": "Términos del Servicio",
     "legalPrivacy": "Política de Privacidad",
     "legalRefunds": "Reembolsos y cancelación",
-    "legalSupport": "Obtener ayuda"
+    "legalSupport": "Obtener ayuda",
+    "noName": "Sin nombre",
+    "nameEdit": "Editar tu nombre",
+    "nameEmpty": "El nombre no puede estar vacío.",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "saveFailed": "No se pudo guardar. Inténtalo otra vez.",
+    "avatarChange": "Cambiar tu foto",
+    "avatarRemove": "Quitar foto",
+    "avatarTooBig": "Esa imagen supera {n} MB. Elige una más pequeña.",
+    "avatarFailed": "No se pudo subir. Inténtalo otra vez.",
+    "avatarNoBucket": "El almacenamiento de fotos aún no está configurado."
   },
   "calories": {
     "kicker": "Combustible",
@@ -862,7 +883,17 @@
     "sendAnother": "Enviar otro",
     "otherTitle": "Otras formas de contactarnos",
     "otherBody": "El formulario es lo más rápido: entra directo en nuestra cola. Telegram también sirve, pero lo miramos menos.",
-    "otherTelegram": "Telegram"
+    "otherTelegram": "Telegram",
+    "threadsTitle": "Tus solicitudes",
+    "threadNew": "Nueva respuesta",
+    "threadYou": "Tú",
+    "threadUs": "RingBornn",
+    "threadReplyPlaceholder": "Responder…",
+    "threadSend": "Enviar respuesta",
+    "threadSending": "Enviando…",
+    "status_new": "Esperando respuesta",
+    "status_open": "En curso",
+    "status_done": "Cerrada"
   },
   "macro": {
     "title": "Macros de hoy",

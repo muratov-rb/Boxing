@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import { AppNav } from "@/components/nav/AppNav";
 import { DangerZone } from "@/components/dashboard/DangerZone";
+import { ProfileIdentity } from "@/components/profile/ProfileIdentity";
 import {
   rankProgress,
   rankName,
@@ -81,19 +82,13 @@ export function ProfileClient({ email }: { email: string | null }) {
         </h1>
 
         {/* ------------------------------ account ----------------------------- */}
-        <section className="panel mt-8 p-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-blood/40 text-blood">
-              <Icon name="user" size={26} />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-lg text-bone">{email ?? t("noEmail")}</p>
-              <p className="mt-0.5 font-condensed text-xs uppercase tracking-widest text-ash-dim">
-                {name ? tp(`${name}Label`) : t("noPath")}
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* Name and picture are account state and load from the server, so they
+            live in their own component rather than beside the local stats. */}
+        <ProfileIdentity email={email} />
+
+        <p className="mt-2 px-1 font-condensed text-xs uppercase tracking-widest text-ash-dim">
+          {name ? tp(`${name}Label`) : t("noPath")}
+        </p>
 
         {/* ---------------------------- your numbers -------------------------- */}
         <h2 className="mt-10 font-condensed text-sm font-bold uppercase tracking-widest text-ash">

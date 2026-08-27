@@ -125,7 +125,11 @@
     "agreeTerms": "Conditions d'utilisation",
     "agreeMid": "et la",
     "agreePrivacy": "Politique de confidentialité",
-    "agreeErr": "Veuillez accepter les Conditions d'utilisation et la Politique de confidentialité pour créer un compte."
+    "agreeErr": "Veuillez accepter les Conditions d'utilisation et la Politique de confidentialité pour créer un compte.",
+    "name": "Votre nom",
+    "namePlaceholder": "Comment doit-on vous appeler ?",
+    "errNoName": "Donnez-nous votre nom, qu'on sache qui on entraîne.",
+    "errThrowaway": "Cela ressemble à une adresse jetable. Utilisez une adresse que vous relevez vraiment : elle servira à confirmer votre compte."
   },
   "verify": {
     "kicker": "Un round de plus",
@@ -761,7 +765,13 @@
     "ticketAction_open": "Marquer traité",
     "ticketAction_done": "Rouvrir",
     "ticketReply": "Répondre",
-    "ticketReplyHint": "Ouvre Gmail avec le destinataire rempli et le message cité"
+    "ticketReplyHint": "Ouvre Gmail avec le destinataire rempli et le message cité",
+    "ticketReplyHere": "Répondre ici",
+    "ticketReplyPlaceholder": "Votre réponse — elle sera lue dans le site.",
+    "ticketSend": "Envoyer",
+    "ticketSending": "Envoi…",
+    "ticketCancel": "Annuler",
+    "ticketSentNote": "Envoyé. Visible sur la page d'assistance."
   },
   "account": {
     "dangerTitle": "Compte",
@@ -807,7 +817,18 @@
     "legalTerms": "Conditions d'utilisation",
     "legalPrivacy": "Politique de confidentialité",
     "legalRefunds": "Remboursements et annulation",
-    "legalSupport": "Obtenir de l'aide"
+    "legalSupport": "Obtenir de l'aide",
+    "noName": "Aucun nom",
+    "nameEdit": "Modifier votre nom",
+    "nameEmpty": "Le nom ne peut pas être vide.",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "saveFailed": "Enregistrement impossible. Réessayez.",
+    "avatarChange": "Changer votre photo",
+    "avatarRemove": "Retirer la photo",
+    "avatarTooBig": "Cette image dépasse {n} Mo. Choisissez-en une plus petite.",
+    "avatarFailed": "Envoi impossible. Réessayez.",
+    "avatarNoBucket": "Le stockage des photos n'est pas encore configuré."
   },
   "calories": {
     "kicker": "Carburant",
@@ -862,7 +883,17 @@
     "sendAnother": "Envoyer un autre message",
     "otherTitle": "Autres moyens de nous joindre",
     "otherBody": "Le formulaire est le plus rapide : il arrive directement dans notre file. Telegram fonctionne aussi, mais nous le consultons moins souvent.",
-    "otherTelegram": "Telegram"
+    "otherTelegram": "Telegram",
+    "threadsTitle": "Vos demandes",
+    "threadNew": "Nouvelle réponse",
+    "threadYou": "Vous",
+    "threadUs": "RingBornn",
+    "threadReplyPlaceholder": "Répondre…",
+    "threadSend": "Envoyer",
+    "threadSending": "Envoi…",
+    "status_new": "En attente de notre réponse",
+    "status_open": "En cours",
+    "status_done": "Clôturée"
   },
   "macro": {
     "title": "Macros du jour",

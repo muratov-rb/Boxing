@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Icon } from "@/components/ui/Icons";
 import { MIN_PASSWORD_LENGTH, passwordLongEnough } from "@/lib/auth-rules";
 import { LEGAL_UPDATED } from "@/lib/legal";
+import { cleanDisplayName, isThrowawayEmail, NAME_MAX } from "@/lib/support";
 
 const inputCls =
   "w-full border border-line bg-void px-4 py-3 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none";
@@ -55,6 +56,7 @@ export function AuthCard({
   const router = useRouter();
   const isLogin = mode === "login";
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(
@@ -77,6 +79,11 @@ export function AuthCard({
     if (!isLogin && !passwordLongEnough(password)) {
       return setError(t("errShortPw", { n: MIN_PASSWORD_LENGTH }));
     }
+    const cleanName = cleanDisplayName(name);
+    if (!isLogin && !cleanName) return setError(t("errNoName"));
+    /* Caught here as well as on the server so the person is told before they
+       wait on a confirmation mail that can never arrive. */
+    if (!isLogin && isThrowawayEmail(email)) return setError(t("errThrowaway"));
 
     setLoading("email");
     const supabase = createClient();
@@ -100,6 +107,10 @@ export function AuthCard({
             data: {
               terms_accepted_at: new Date().toISOString(),
               terms_version: LEGAL_UPDATED,
+              /* Written onto the account itself, not a profile row: the
+                 confirmation step happens before the user ever reaches the
+                 app, so there is nowhere else for it to live yet. */
+              display_name: cleanName,
             },
           },
         });
@@ -142,6 +153,29 @@ export function AuthCard({
 
 
         <form onSubmit={handleEmail} className="space-y-4">
+          {/* Only when creating an account. Asking a returning user to retype
+              their name to log in would be a step for nothing. */}
+          {!isLogin && (
+            <div>
+              <label
+                htmlFor="name"
+                className="mb-2 block font-condensed text-xs uppercase tracking-widest text-ash"
+              >
+                {t("name")}
+              </label>
+              <input
+                id="name"
+                type="text"
+                required
+                maxLength={NAME_MAX}
+                autoComplete="name"
+                placeholder={t("namePlaceholder")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputCls}
+              />
+            </div>
+          )}
           <div>
             <label
               htmlFor="email"

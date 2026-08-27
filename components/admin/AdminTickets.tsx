@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
-import type { SupportStatus } from "@/lib/support";
+import { REPLY_MAX, type SupportStatus } from "@/lib/support";
 
 /* What people have written in.
 
@@ -56,6 +56,35 @@ export function AdminTickets() {
   const [rows, setRows] = useState<Ticket[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<number | null>(null);
+  /* Which ticket's reply box is open, and what is typed in it. Kept here
+     rather than per-row so only one is ever open at a time. */
+  const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [draft, setDraft] = useState("");
+  const [sent, setSent] = useState<number | null>(null);
+
+  async function sendReply(id: number) {
+    const body = draft.trim();
+    if (!body) return;
+    setBusy(id);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/tickets/reply", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id, body }),
+      });
+      if (!res.ok) throw new Error();
+      setDraft("");
+      setReplyTo(null);
+      setSent(id);
+      /* The reply moves the ticket to "open"; reload so the row shows it. */
+      await load();
+    } catch {
+      setError(t("ticketsFailed"));
+    } finally {
+      setBusy(null);
+    }
+  }
 
   const load = useCallback(async () => {
     setError(null);
@@ -176,15 +205,33 @@ export function AdminTickets() {
                       {r.page && <span className="break-all">{r.page}</span>}
                     </span>
                     <span className="flex items-center gap-2">
-                      <a
-                        href={gmailReplyUrl(r)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg border border-blood/40 px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-blood transition-colors hover:bg-blood/10"
-                      >
-                        <Icon name="mail" size={12} />
-                        {t("ticketReply")}
-                      </a>
+                      {/* Only a ticket filed by a signed-in user has somewhere
+                          in the app to put the answer. For the rest, email is
+                          still the only route we have to them. */}
+                      {r.user_id ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyTo(replyTo === r.id ? null : r.id);
+                            setDraft("");
+                            setSent(null);
+                          }}
+                          className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg border border-blood/40 px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-blood transition-colors hover:bg-blood/10"
+                        >
+                          <Icon name="mail" size={12} />
+                          {t("ticketReplyHere")}
+                        </button>
+                      ) : (
+                        <a
+                          href={gmailReplyUrl(r)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg border border-blood/40 px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-blood transition-colors hover:bg-blood/10"
+                        >
+                          <Icon name="mail" size={12} />
+                          {t("ticketReply")}
+                        </a>
+                      )}
                       <button
                         type="button"
                         disabled={busy === r.id}
@@ -195,6 +242,43 @@ export function AdminTickets() {
                       </button>
                     </span>
                   </div>
+
+                  {replyTo === r.id && (
+                    <div className="mt-3 border-t border-line/60 pt-3">
+                      <textarea
+                        autoFocus
+                        rows={4}
+                        maxLength={REPLY_MAX}
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        placeholder={t("ticketReplyPlaceholder")}
+                        className="w-full resize-y border border-line bg-void px-3 py-2 text-sm text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none"
+                      />
+                      <div className="mt-2 flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={busy === r.id || !draft.trim()}
+                          onClick={() => void sendReply(r.id)}
+                          className="min-h-[34px] rounded-lg border border-blood/50 bg-blood/10 px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-blood transition-colors hover:bg-blood/20 disabled:opacity-50"
+                        >
+                          {busy === r.id ? t("ticketSending") : t("ticketSend")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setReplyTo(null)}
+                          className="min-h-[34px] rounded-lg border border-line px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-ash transition-colors hover:text-bone"
+                        >
+                          {t("ticketCancel")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {sent === r.id && (
+                    <p className="mt-2 font-condensed text-[0.7rem] uppercase tracking-wider text-blood">
+                      {t("ticketSentNote")}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

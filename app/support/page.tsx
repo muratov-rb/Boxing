@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Icon } from "@/components/ui/Icons";
 import { SupportForm } from "@/components/support/SupportForm";
+import { SupportThreads } from "@/components/support/SupportThreads";
 import { getUser } from "@/lib/supabase/user";
 import { CONTACT_EMAIL, CONTACT_TELEGRAM, SERVICE } from "@/lib/legal";
 
@@ -77,6 +78,11 @@ export default async function SupportPage() {
         <div className="mt-10">
           <SupportForm email={user?.email ?? null} />
         </div>
+
+        {/* Answers arrive here, not only by email. Signed-out visitors have no
+            account to hang a thread on, so they see nothing and this renders
+            no empty state for them. */}
+        {user && <SupportThreads locale={await getLocale()} />}
 
         {/* the other ways to reach a human */}
         <section className="panel mt-4 p-6">

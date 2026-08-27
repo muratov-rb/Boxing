@@ -30,7 +30,9 @@ export type IconName =
   | "water"
   | "sound"
   | "soundOff"
-  | "chevron";
+  | "chevron"
+  | "camera"
+  | "edit";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   /* Speaker cone plus two radiating arcs. */
@@ -81,6 +83,20 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <circle cx="12" cy="8" r="3.6" />
       <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+    </>
+  ),
+  /* Body, lens, and the little bump for the viewfinder. */
+  camera: (
+    <>
+      <path d="M3 8.5h3.4l1.4-2.2h8.4l1.4 2.2H21v10.5H3z" />
+      <circle cx="12" cy="13.6" r="3.4" />
+    </>
+  ),
+  /* Pencil over its underline. */
+  edit: (
+    <>
+      <path d="M4 20h4l10-10-4-4L4 16z" />
+      <path d="m14.5 5.5 4 4" />
     </>
   ),
   home: (

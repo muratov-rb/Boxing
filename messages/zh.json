@@ -125,7 +125,11 @@
     "agreeTerms": "服务条款",
     "agreeMid": "和",
     "agreePrivacy": "隐私政策",
-    "agreeErr": "请接受服务条款和隐私政策以创建账户。"
+    "agreeErr": "请接受服务条款和隐私政策以创建账户。",
+    "name": "你的名字",
+    "namePlaceholder": "我们该怎么称呼你？",
+    "errNoName": "告诉我们你的名字，好知道在训练谁。",
+    "errThrowaway": "这看起来是临时邮箱。请填一个你真正能收信的地址——确认账户要用到它。"
   },
   "verify": {
     "kicker": "再来一回合",
@@ -761,7 +765,13 @@
     "ticketAction_open": "标记完成",
     "ticketAction_done": "重新打开",
     "ticketReply": "回复",
-    "ticketReplyHint": "打开 Gmail，已填好收件人并引用原文"
+    "ticketReplyHint": "打开 Gmail，已填好收件人并引用原文",
+    "ticketReplyHere": "在此回复",
+    "ticketReplyPlaceholder": "你的回复——用户会在站内看到。",
+    "ticketSend": "发送",
+    "ticketSending": "发送中…",
+    "ticketCancel": "取消",
+    "ticketSentNote": "已发送，用户会在支持页看到。"
   },
   "account": {
     "dangerTitle": "账号",
@@ -807,7 +817,18 @@
     "legalTerms": "服务条款",
     "legalPrivacy": "隐私政策",
     "legalRefunds": "退款与取消",
-    "legalSupport": "获取帮助"
+    "legalSupport": "获取帮助",
+    "noName": "未设置名字",
+    "nameEdit": "修改名字",
+    "nameEmpty": "名字不能为空。",
+    "save": "保存",
+    "cancel": "取消",
+    "saveFailed": "保存失败，请再试一次。",
+    "avatarChange": "更换头像",
+    "avatarRemove": "移除头像",
+    "avatarTooBig": "图片超过 {n} MB，请换一张小一些的。",
+    "avatarFailed": "上传失败，请再试一次。",
+    "avatarNoBucket": "头像存储尚未配置。"
   },
   "calories": {
     "kicker": "能量",
@@ -862,7 +883,17 @@
     "sendAnother": "再发一条",
     "otherTitle": "其他联系方式",
     "otherBody": "表单最快，会直接进入我们的处理队列。Telegram 也可以，但我们查看得较少。",
-    "otherTelegram": "Telegram"
+    "otherTelegram": "Telegram",
+    "threadsTitle": "你的求助",
+    "threadNew": "新回复",
+    "threadYou": "你",
+    "threadUs": "RingBornn",
+    "threadReplyPlaceholder": "回复…",
+    "threadSend": "发送回复",
+    "threadSending": "发送中…",
+    "status_new": "等待我们回复",
+    "status_open": "处理中",
+    "status_done": "已关闭"
   },
   "macro": {
     "title": "今日三大营养素",

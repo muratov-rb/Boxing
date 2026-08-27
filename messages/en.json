@@ -125,7 +125,11 @@
     "agreeTerms": "Terms of Service",
     "agreeMid": "and",
     "agreePrivacy": "Privacy Policy",
-    "agreeErr": "Please accept the Terms of Service and Privacy Policy to create an account."
+    "agreeErr": "Please accept the Terms of Service and Privacy Policy to create an account.",
+    "name": "Your name",
+    "namePlaceholder": "What should we call you?",
+    "errNoName": "Tell us your name so we know who we're training.",
+    "errThrowaway": "That looks like a temporary address. Use one you can actually receive mail at — you'll need it to confirm your account."
   },
   "verify": {
     "kicker": "One more round",
@@ -761,7 +765,13 @@
     "ticketAction_open": "Mark done",
     "ticketAction_done": "Reopen",
     "ticketReply": "Reply",
-    "ticketReplyHint": "Opens Gmail with the reply addressed and the ticket quoted"
+    "ticketReplyHint": "Opens Gmail with the reply addressed and the ticket quoted",
+    "ticketReplyHere": "Reply here",
+    "ticketReplyPlaceholder": "Your answer — they read this inside the site.",
+    "ticketSend": "Send",
+    "ticketSending": "Sending…",
+    "ticketCancel": "Cancel",
+    "ticketSentNote": "Sent. They'll see it on the support page."
   },
   "account": {
     "dangerTitle": "Account",
@@ -807,7 +817,18 @@
     "legalTerms": "Terms of Service",
     "legalPrivacy": "Privacy Policy",
     "legalRefunds": "Refunds & Cancellation",
-    "legalSupport": "Get help"
+    "legalSupport": "Get help",
+    "noName": "No name set",
+    "nameEdit": "Edit your name",
+    "nameEmpty": "Your name can't be empty.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saveFailed": "Couldn't save that. Try again.",
+    "avatarChange": "Change your picture",
+    "avatarRemove": "Remove picture",
+    "avatarTooBig": "That image is over {n} MB. Pick a smaller one.",
+    "avatarFailed": "Couldn't upload that. Try again.",
+    "avatarNoBucket": "Picture storage isn't set up yet."
   },
   "calories": {
     "kicker": "Fuel",
@@ -862,7 +883,17 @@
     "sendAnother": "Send another",
     "otherTitle": "Other ways to reach us",
     "otherBody": "The form is the fastest route — it lands straight in our queue. Telegram works too, but we check it less often.",
-    "otherTelegram": "Telegram"
+    "otherTelegram": "Telegram",
+    "threadsTitle": "Your requests",
+    "threadNew": "New reply",
+    "threadYou": "You",
+    "threadUs": "RingBornn",
+    "threadReplyPlaceholder": "Write back…",
+    "threadSend": "Send reply",
+    "threadSending": "Sending…",
+    "status_new": "Waiting on us",
+    "status_open": "In progress",
+    "status_done": "Closed"
   },
   "macro": {
     "title": "Macros today",
