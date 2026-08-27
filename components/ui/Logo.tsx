@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { BrandMark } from "./BrandMark";
 
-/* RINGBORNN wordmark with an angular blood-red mark. */
+/* RINGBORNN wordmark beside the crowned-glove mark. */
 
 export function Logo({
   className = "",
@@ -14,21 +15,8 @@ export function Logo({
        than the screen. Without it a long CTA label in French or Spanish pushes
        the row past the viewport and the whole page scrolls sideways. */
     <span className={`inline-flex min-w-0 items-center gap-2 sm:gap-2.5 ${className}`}>
-      <span className="relative grid h-7 w-7 place-items-center rounded-lg bg-blood sm:h-8 sm:w-8">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#fff"
-          strokeWidth={2.4}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="m6 5 6 7-6 7" />
-          <path d="m13 5 6 7-6 7" />
-        </svg>
+      <span className="relative grid shrink-0 place-items-center">
+        <BrandMark size={34} className="h-8 w-8 sm:h-9 sm:w-9" />
       </span>
       {/* Scales with the viewport rather than stepping at one breakpoint. The
           header carries the mark, the wordmark, a language menu and a call to
