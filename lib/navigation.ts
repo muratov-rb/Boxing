@@ -34,7 +34,6 @@ export const ACCOUNT_NAV: NavItem[] = [
   { key: "profile", href: "/profile", icon: "user" },
   { key: "circuits", href: "/circuits", icon: "streak" },
   { key: "nutrition", href: "/nutrition", icon: "nutrition" },
-  { key: "technique", href: "/technique", icon: "technique" },
   { key: "plans", href: "/plans", icon: "card" },
 ];
 

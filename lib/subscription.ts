@@ -22,11 +22,6 @@ export interface Entitlements {
   aiNutrition: boolean;
   nutritionMealSlots: number; // 0 locked · 2 = pro (pick 2) · 4 = all
   calorieScansPerDay: number; // 0 = feature locked
-  techniqueVideosPerDay: number; // 0 = feature locked
-  /* Text questions to the coach. Allowances are far higher than the vision
-     features because a question costs roughly a tenth of a photo scan — the
-     limit is here to bound abuse, not to ration the feature. */
-  coachAsksPerDay: number; // 0 = feature locked
   /* Fresh AI meal plans per day. This was uncapped, and the page generated one
      on every single mount — so opening /nutrition twenty times cost twenty
      plans. A plan covers one day, so a small number is the honest allowance:
@@ -53,8 +48,6 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: false,
     nutritionMealSlots: 0,
     calorieScansPerDay: 2,
-    techniqueVideosPerDay: 0,
-    coachAsksPerDay: 3,
     nutritionPlansPerDay: 0,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled
@@ -67,8 +60,6 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: false,
     nutritionMealSlots: 0,
     calorieScansPerDay: 0,
-    techniqueVideosPerDay: 0,
-    coachAsksPerDay: 0,
     nutritionPlansPerDay: 0,
   },
   budget: {
@@ -80,8 +71,6 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: false,
     nutritionMealSlots: 0,
     calorieScansPerDay: 0,
-    techniqueVideosPerDay: 0,
-    coachAsksPerDay: 3,
     nutritionPlansPerDay: 0,
   },
   pro: {
@@ -93,8 +82,6 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: true,
     nutritionMealSlots: 2,
     calorieScansPerDay: 2,
-    techniqueVideosPerDay: 2,
-    coachAsksPerDay: 15,
     nutritionPlansPerDay: 3,
   },
   max: {
@@ -106,8 +93,6 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: true,
     nutritionMealSlots: 4,
     calorieScansPerDay: 10,
-    techniqueVideosPerDay: 8,
-    coachAsksPerDay: 50,
     nutritionPlansPerDay: 6,
   },
 };
@@ -164,10 +149,8 @@ export const UNLOCKED: Entitlements = {
   dailyPlansPerWeek: INF,
   aiNutrition: true,
   nutritionMealSlots: 4,
-  coachAsksPerDay: INF,
   nutritionPlansPerDay: INF,
   calorieScansPerDay: INF,
-  techniqueVideosPerDay: INF,
 };
 
 export function entitlementsFor(plan: PlanId): Entitlements {

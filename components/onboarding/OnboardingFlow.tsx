@@ -12,6 +12,7 @@ import {
   saveProfile,
 } from "@/lib/tracking";
 import type { Analysis } from "@/lib/analysis";
+import { Icon } from "@/components/ui/Icons";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -35,6 +36,10 @@ export function OnboardingFlow() {
      storage during render would break hydration outright. */
   const [ready, setReady] = useState(false);
   const [resumed, setResumed] = useState(false);
+  /* Someone who already finished this once and came back. They are not
+     resuming a half-done form — they have a working plan and a decision to
+     make, so they get asked rather than dropped back into step three. */
+  const [returning, setReturning] = useState(false);
 
   /* Pick up where they left off. The answers were already being saved; they
      were simply never read back, so anyone who closed the tab — or used the
@@ -44,7 +49,13 @@ export function OnboardingFlow() {
     if (saved?.path) {
       dispatch({ type: "patch", patch: saved });
       const at = Math.min(LAST, loadOnboardingStep());
-      if (at > 0) {
+
+      /* A finished profile, not an abandoned one: they answered every screen
+         that matters. Anything less is a half-filled form and resumes. */
+      if (saved.timeframe && saved.environment && saved.nutritionAccess) {
+        setReturning(true);
+        setStep(LAST);
+      } else if (at > 0) {
         setStep(at);
         setResumed(true);
       }
@@ -96,7 +107,68 @@ export function OnboardingFlow() {
         </div>
       </header>
 
-      {step < LAST && <ProgressRail steps={rail} current={step} />}
+      {/* A finished profile and a fresh visit: ask, don't assume. Someone who
+          came back to change their targets and someone who just wanted their
+          dashboard both land here, and guessing wrong either wipes a plan they
+          liked or traps them in one they have outgrown. */}
+      {ready && returning && (
+        <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
+          <p className="kicker">{t("welcomeBackKicker")}</p>
+          <h1 className="mt-3 font-display text-[clamp(1.9rem,6vw,3rem)] uppercase leading-none">
+            {t("welcomeBackTitle")}
+          </h1>
+          <p className="mt-3 leading-relaxed text-ash">{t("welcomeBackSub")}</p>
+
+          <div className="mt-8 space-y-3">
+            <Link
+              href="/dashboard"
+              className="panel group flex items-center justify-between gap-4 p-5 transition-colors hover:border-blood/40"
+            >
+              <span className="min-w-0">
+                <span className="block font-display text-xl uppercase leading-none">
+                  {t("keepTitle")}
+                </span>
+                <span className="mt-1.5 block text-sm leading-relaxed text-ash">
+                  {t("keepSub")}
+                </span>
+              </span>
+              <span className="shrink-0 text-ash-dim transition-transform group-hover:translate-x-0.5 group-hover:text-blood">
+                <Icon name="arrow" size={18} />
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                /* Wipes the answers only. Streak, rank and training history
+                   live under different keys and are deliberately untouched —
+                   changing your targets is not starting your life over. */
+                clearOnboarding();
+                dispatch({ type: "reset" });
+                setAnalysis(null);
+                setReturning(false);
+                setResumed(false);
+                go(0);
+              }}
+              className="panel group flex w-full items-center justify-between gap-4 p-5 text-left transition-colors hover:border-blood/40"
+            >
+              <span className="min-w-0">
+                <span className="block font-display text-xl uppercase leading-none">
+                  {t("rebuildTitle")}
+                </span>
+                <span className="mt-1.5 block text-sm leading-relaxed text-ash">
+                  {t("rebuildSub")}
+                </span>
+              </span>
+              <span className="shrink-0 text-ash-dim transition-transform group-hover:translate-x-0.5 group-hover:text-blood">
+                <Icon name="arrow" size={18} />
+              </span>
+            </button>
+          </div>
+        </main>
+      )}
+
+      {!returning && step < LAST && <ProgressRail steps={rail} current={step} />}
 
       {/* Say that we resumed, and offer the way out. Restoring answers silently
           would leave someone who wanted a clean start quietly editing an old
@@ -120,7 +192,11 @@ export function OnboardingFlow() {
         </div>
       )}
 
-      <main className="flex flex-1 items-start justify-center px-4 py-12 sm:px-6 sm:py-16">
+      <main
+        className={`flex-1 items-start justify-center px-4 py-12 sm:px-6 sm:py-16 ${
+          returning ? "hidden" : "flex"
+        }`}
+      >
         <div key={step} className={ready ? "animate-rise w-full" : "w-full opacity-0"}>
           {step === 0 && (
             <PathSelector

@@ -89,7 +89,10 @@ export function NutritionClient() {
   // pro shows a subset of meals (e.g. breakfast + lunch); max/trial show all
   const shownMeals =
     plan && access ? plan.meals.slice(0, access.slots >= 4 ? plan.meals.length : access.slots) : [];
-  const mealsLimited = !!plan && !!access && access.slots < plan.meals.length;
+  /* Compare what is actually on screen, not the raw slot number. Max has 4
+     slots but is shown the whole plan, so a 5-meal day made `4 < 5` true and
+     told Max subscribers to upgrade to Max while showing them every meal. */
+  const mealsLimited = !!plan && shownMeals.length < plan.meals.length;
 
   const macroItems = plan
     ? [

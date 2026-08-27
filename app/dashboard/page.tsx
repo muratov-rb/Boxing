@@ -9,7 +9,6 @@ import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
 import { SubscriptionSync } from "@/components/dashboard/SubscriptionSync";
 import { PlanNudge } from "@/components/dashboard/PlanNudge";
-import { AskCoach } from "@/components/coach/AskCoach";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
 import { AppNav } from "@/components/nav/AppNav";
@@ -96,23 +95,6 @@ export default async function DashboardPage() {
             </Link>
           </section>
 
-          {/* technique check */}
-          <section className="panel flex flex-col justify-between p-7">
-            <div>
-              <span className="badge border-azure/40 text-azure">
-                <Icon name="video" size={13} /> {t("techBadge")}
-              </span>
-              <h2 className="mt-5 font-condensed text-2xl font-bold uppercase tracking-wide">
-                {t("techTitle")}
-              </h2>
-              <p className="mt-2 text-sm text-ash">{t("techCopy")}</p>
-            </div>
-            <Link href="/technique" className="btn btn-ghost mt-6">
-              {t("techCta")}
-              <Icon name="arrow" size={18} />
-            </Link>
-          </section>
-
           {/* nutrition */}
           <section className="panel flex flex-col justify-between p-7">
             <div>
@@ -151,11 +133,6 @@ export default async function DashboardPage() {
           <RecoveryCard />
         </div>
 
-        {/* Full width: the answer needs room to be read, and this is the one
-            card people come back to rather than glance at. */}
-        <div className="mt-4">
-          <AskCoach />
-        </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-line/70 pt-5 sm:flex-row">
           <p className="flex items-center gap-2 text-xs text-ash-dim">

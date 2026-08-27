@@ -59,12 +59,6 @@ function cell(
         : e.calorieScansPerDay === INF
           ? { on: true, text: t("vUnlimited") }
           : { on: true, text: t("vPerDay", { n: e.calorieScansPerDay }) };
-    case "technique":
-      return e.techniqueVideosPerDay === 0
-        ? { on: false, text: t("vNo") }
-        : e.techniqueVideosPerDay === INF
-          ? { on: true, text: t("vUnlimited") }
-          : { on: true, text: t("vPerDay", { n: e.techniqueVideosPerDay }) };
     case "recovery":
       return { on: e.restRecovery, text: e.restRecovery ? t("vYes") : t("vNo") };
     default:
@@ -79,7 +73,6 @@ const FEATURE_KEYS = [
   "lessons",
   "nutrition",
   "calorie",
-  "technique",
   "recovery",
 ] as const;
 
