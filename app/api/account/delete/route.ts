@@ -59,10 +59,9 @@ export async function POST(req: Request) {
     const { error } = await admin.auth.admin.deleteUser(id);
     if (error) throw error;
   } catch (e) {
-    return NextResponse.json(
-      { error: "delete_failed", detail: e instanceof Error ? e.message : String(e) },
-      { status: 500 },
-    );
+    // logged, not returned: the message can carry Supabase/Paddle internals
+    console.error("[delete_failed]", e);
+    return NextResponse.json({ error: "delete_failed" }, { status: 500 });
   }
 
   await supabase.auth.signOut();

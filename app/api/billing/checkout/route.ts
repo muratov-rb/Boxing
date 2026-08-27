@@ -88,9 +88,8 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ url });
   } catch (e) {
-    return NextResponse.json(
-      { error: "checkout_failed", detail: e instanceof Error ? e.message : String(e) },
-      { status: 500 },
-    );
+    // logged, not returned: the message can carry Supabase/Paddle internals
+    console.error("[checkout_failed]", e);
+    return NextResponse.json({ error: "checkout_failed" }, { status: 500 });
   }
 }

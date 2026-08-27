@@ -39,9 +39,8 @@ export async function POST() {
     );
     return NextResponse.json({ url: session.urls.general.overview });
   } catch (e) {
-    return NextResponse.json(
-      { error: "portal_failed", detail: e instanceof Error ? e.message : String(e) },
-      { status: 500 },
-    );
+    // logged, not returned: the message can carry Supabase/Paddle internals
+    console.error("[portal_failed]", e);
+    return NextResponse.json({ error: "portal_failed" }, { status: 500 });
   }
 }
