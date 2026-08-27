@@ -100,6 +100,15 @@ export async function POST(req: Request) {
   if (!data || data.length < 100) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
+  /* Upper bound as well as lower. Vercel caps a request body around 4.5 MB, so
+     this is a second line rather than the only one, but the cap belongs next to
+     the code that builds an upstream request out of the value: a caller with
+     quota left should not be able to hand Anthropic an arbitrarily large image
+     on our account. ~7 MB of base64 is ~5 MB of picture, far above any phone
+     photo the scanner actually sends. */
+  if (data.length > 7_000_000) {
+    return NextResponse.json({ error: "image_too_large" }, { status: 413 });
+  }
   if (!ALLOWED_MEDIA.includes(mediaType as MediaType)) {
     return NextResponse.json({ error: "bad_media" }, { status: 400 });
   }
