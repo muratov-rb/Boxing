@@ -65,7 +65,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-  const messages = await getMessages();
+  /* The whole catalogue is serialised into the HTML of every page, so anything
+     left in here is downloaded by people who will never see it. The admin
+     panel is the clearest case: its strings name environment variables and
+     explain how to fix a Supabase key, and they were shipping to every
+     visitor on every page. /admin supplies them to itself instead. */
+  const { admin: _admin, ...messages } = await getMessages();
   const store = await cookies();
   /* A saved choice wins; with no cookie we let the device decide, which the
      inline script below does before first paint. The server can't read

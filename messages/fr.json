@@ -258,7 +258,7 @@
   "dashPage": {
     "signOut": "Déconnexion",
     "previewBold": "Aperçu.",
-    "previewRest": "Voici le tableau de bord connecté — branche Supabase (voir SETUP.md) pour rendre la connexion réelle.",
+    "previewRest": "Voici votre tableau de bord. Votre plan, votre série et votre progression sont ici.",
     "kicker": "Ton coin",
     "welcomePre": "Bienvenue sur ",
     "welcomeAccent": "RingBornn.",
@@ -435,7 +435,7 @@
     "bp_back": "Dos",
     "bp_core": "Gainage",
     "bp_legs": "Jambes",
-    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous.",
+    "demoSoon": "Pas d'illustration pour celui-ci — suivez les étapes ci-dessous.",
     "tabMoves": "Mouvements",
     "tabGuides": "Guides"
   },
@@ -587,7 +587,7 @@
     "alreadyDoneTitle": "La séance d'aujourd'hui est faite",
     "alreadyDoneSub": "Ta série est préservée. Tout le reste aujourd'hui est un bonus, pas une dette.",
     "startAgain": "S'entraîner encore",
-    "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous.",
+    "demoSoon": "Pas d'illustration pour celui-ci — suivez les étapes ci-dessous.",
     "soundOn": "Activer le son",
     "soundOff": "Couper le son",
     "setOf": "Série {i} / {n}"

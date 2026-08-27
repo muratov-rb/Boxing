@@ -258,7 +258,7 @@
   "dashPage": {
     "signOut": "Cerrar sesión",
     "previewBold": "Vista previa.",
-    "previewRest": "Este es el panel con sesión iniciada — conecta Supabase (ver SETUP.md) para que el inicio de sesión sea real.",
+    "previewRest": "Este es tu panel. Tu plan, tu racha y tu progreso están aquí.",
     "kicker": "Tu esquina",
     "welcomePre": "Bienvenido a ",
     "welcomeAccent": "RingBornn.",
@@ -435,7 +435,7 @@
     "bp_back": "Espalda",
     "bp_core": "Core",
     "bp_legs": "Piernas",
-    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo.",
+    "demoSoon": "Este no tiene ilustración: sigue los pasos de abajo.",
     "tabMoves": "Movimientos",
     "tabGuides": "Guías"
   },
@@ -587,7 +587,7 @@
     "alreadyDoneTitle": "La sesión de hoy está hecha",
     "alreadyDoneSub": "Tu racha está a salvo. Todo lo demás hoy es un extra, no una deuda.",
     "startAgain": "Entrenar otra vez",
-    "demoSoon": "Ilustración próximamente — sigue los pasos de abajo.",
+    "demoSoon": "Este no tiene ilustración: sigue los pasos de abajo.",
     "soundOn": "Activar sonido",
     "soundOff": "Silenciar",
     "setOf": "Serie {i} / {n}"

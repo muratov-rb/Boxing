@@ -258,7 +258,7 @@
   "dashPage": {
     "signOut": "Sign out",
     "previewBold": "Preview.",
-    "previewRest": "This is the signed-in dashboard — connect Supabase (see SETUP.md) to make log-in real.",
+    "previewRest": "This is your dashboard. Your plan, your streak and your progress all live here.",
     "kicker": "Your corner",
     "welcomePre": "Welcome to ",
     "welcomeAccent": "RingBornn.",
@@ -435,7 +435,7 @@
     "bp_back": "Back",
     "bp_core": "Core",
     "bp_legs": "Legs",
-    "demoSoon": "Illustration coming soon — follow the steps below.",
+    "demoSoon": "No illustration for this one — follow the steps below.",
     "tabMoves": "Movements",
     "tabGuides": "Guides"
   },
@@ -584,7 +584,7 @@
     "restTip2": "Light walk or gentle mobility, nothing taxing",
     "restTip3": "Hydrate and eat enough protein to rebuild",
     "trainAnyway": "Train anyway",
-    "demoSoon": "Illustration coming soon — follow the steps below.",
+    "demoSoon": "No illustration for this one — follow the steps below.",
     "alreadyDoneTitle": "Today's session is done",
     "alreadyDoneSub": "Your streak is safe. Anything more today is a bonus, not a debt.",
     "startAgain": "Train again",

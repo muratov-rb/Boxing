@@ -258,7 +258,7 @@
   "dashPage": {
     "signOut": "退出登录",
     "previewBold": "预览。",
-    "previewRest": "这是登录后的面板——接入 Supabase（见 SETUP.md）即可让登录真正生效。",
+    "previewRest": "这是你的面板。你的计划、连续天数和进度都在这里。",
     "kicker": "你的角落",
     "welcomePre": "欢迎来到 ",
     "welcomeAccent": "RingBornn。",
@@ -435,7 +435,7 @@
     "bp_back": "背部",
     "bp_core": "核心",
     "bp_legs": "腿部",
-    "demoSoon": "示意图即将上线——请先按下面的步骤练习。",
+    "demoSoon": "这个动作暂无图示——请按下面的步骤练习。",
     "tabMoves": "动作",
     "tabGuides": "指南"
   },
@@ -587,7 +587,7 @@
     "alreadyDoneTitle": "今天的训练已完成",
     "alreadyDoneSub": "连续记录已保住。今天再练都是额外收获，不是负担。",
     "startAgain": "再练一次",
-    "demoSoon": "示意图即将上线——请先按下面的步骤练习。",
+    "demoSoon": "这个动作暂无图示——请按下面的步骤练习。",
     "soundOn": "开启声音",
     "soundOff": "关闭声音",
     "setOf": "第 {i} / {n} 组"

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { AdminClient } from "@/components/admin/AdminClient";
 import { AdminGate } from "@/components/admin/AdminGate";
 import { currentAdmin, adminPasswordConfigured } from "@/lib/admin-auth";
@@ -12,9 +14,19 @@ export const dynamic = "force-dynamic";
    privileged is handed to the browser and the panel has its data on first
    paint. */
 export default async function AdminPage() {
+  /* The root layout deliberately withholds the admin strings so they are not
+     part of every visitor's payload, so this page provides its own. Everything
+     under here reads the "admin" namespace and nothing else. */
+  const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
+  const wrap = (node: React.ReactNode) => (
+    <NextIntlClientProvider locale={locale} messages={{ admin: messages.admin }}>
+      {node}
+    </NextIntlClientProvider>
+  );
+
   const actor = await currentAdmin();
   if (!actor) {
-    return <AdminGate configured={adminPasswordConfigured()} />;
+    return wrap(<AdminGate configured={adminPasswordConfigured()} />);
   }
 
   let list: UserList;
@@ -29,12 +41,12 @@ export default async function AdminPage() {
     };
   }
 
-  return (
+  return wrap(
     <AdminClient
       users={list.users}
       problem={list.problem}
       detail={list.detail}
       me={actor}
-    />
+    />,
   );
 }
