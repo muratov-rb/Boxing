@@ -56,9 +56,13 @@ export const MIN_AGE = 16;
 /* The form leads because it is the only route with a delivery guarantee — it
    writes to our database rather than to somebody's inbox, and every request
    filed through it appears in the admin panel with a reference number. */
-export function contactLine(): string {
-  const form = `Use the support form at ${SITE}/support`;
-  return CONTACT_EMAIL
-    ? `${form}, email ${CONTACT_EMAIL}, or message us on Telegram at t.me/ringbornn.`
-    : `${form}, or message us on Telegram at t.me/ringbornn.`;
+export function contactLine(): Record<"en"|"ru"|"es"|"fr"|"zh", string> {
+  const mail = CONTACT_EMAIL ? `, ${CONTACT_EMAIL}` : "";
+  return {
+    en: `Use the support form at ${SITE}/support${mail ? `, email ${CONTACT_EMAIL}` : ""}, or message us on Telegram at t.me/ringbornn.`,
+    ru: `Напиши через форму поддержки на ${SITE}/support${mail ? `, на почту ${CONTACT_EMAIL}` : ""} или в Telegram: t.me/ringbornn.`,
+    es: `Usa el formulario de soporte en ${SITE}/support${mail ? `, escribe a ${CONTACT_EMAIL}` : ""} o escríbenos por Telegram en t.me/ringbornn.`,
+    fr: `Utilisez le formulaire d’assistance sur ${SITE}/support${mail ? `, écrivez à ${CONTACT_EMAIL}` : ""} ou contactez-nous sur Telegram : t.me/ringbornn.`,
+    zh: `请使用 ${SITE}/support 的支持表单${mail ? `，或发邮件至 ${CONTACT_EMAIL}` : ""}，也可以在 Telegram 上联系我们：t.me/ringbornn。`,
+  };
 }
