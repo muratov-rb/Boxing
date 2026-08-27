@@ -28,7 +28,13 @@ export interface Entitlements {
 const INF = Number.POSITIVE_INFINITY;
 
 export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
-  // trial = Budget-level access for 7 days: a real taste, not the whole meal
+  /* trial = Budget-level access for 7 days: a real taste, not the whole meal.
+     The one deliberate exception is the meal scanner. It was locked to zero,
+     which meant nobody could try the single feature that makes people say
+     "oh" out loud — they met a padlock instead. Two a day is enough to
+     photograph lunch and dinner and understand what they would be paying
+     for, and it is bounded: two scans is a fraction of a cent, and the trial
+     is seven days long. */
   trial: {
     ranks: false,
     streaks: true,
@@ -37,7 +43,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     dailyPlansPerWeek: 3,
     aiNutrition: false,
     nutritionMealSlots: 0,
-    calorieScansPerDay: 0,
+    calorieScansPerDay: 2,
     techniqueVideosPerDay: 0,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled

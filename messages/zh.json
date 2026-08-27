@@ -520,7 +520,8 @@
     "addMeal": "加入今天",
     "cameraDenied": "摄像头访问被拒绝。你可以改为上传照片。",
     "noAi": "AI 扫描尚未接通（无 API 密钥）。请在下方手动添加餐食。",
-    "scanFailed": "无法分析该照片。请重试或手动添加餐食。"
+    "scanFailed": "无法分析该照片。请重试或手动添加餐食。",
+    "frameHint": "让餐盘填满取景框"
   },
   "common": {
     "language": "语言"

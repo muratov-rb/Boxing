@@ -520,7 +520,8 @@
     "addMeal": "Ajouter à aujourd'hui",
     "cameraDenied": "L'accès à la caméra a été refusé. Tu peux téléverser une photo à la place.",
     "noAi": "Le scan par IA n'est pas encore branché (pas de clé API). Ajoute le repas manuellement ci-dessous.",
-    "scanFailed": "Impossible d'analyser la photo. Réessaie ou ajoute le repas manuellement."
+    "scanFailed": "Impossible d'analyser la photo. Réessaie ou ajoute le repas manuellement.",
+    "frameHint": "Cadrez l assiette dans le repère"
   },
   "common": {
     "language": "Langue"

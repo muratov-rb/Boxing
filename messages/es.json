@@ -520,7 +520,8 @@
     "addMeal": "Añadir a hoy",
     "cameraDenied": "Se denegó el acceso a la cámara. Puedes subir una foto en su lugar.",
     "noAi": "El escaneo con IA aún no está conectado (sin clave de API). Añade la comida manualmente abajo.",
-    "scanFailed": "No se pudo analizar la foto. Inténtalo de nuevo o añade la comida manualmente."
+    "scanFailed": "No se pudo analizar la foto. Inténtalo de nuevo o añade la comida manualmente.",
+    "frameHint": "Encuadra el plato en el marco"
   },
   "common": {
     "language": "Idioma"

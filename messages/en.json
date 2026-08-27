@@ -520,7 +520,8 @@
     "addMeal": "Add to today",
     "cameraDenied": "Camera access was denied. You can upload a photo instead.",
     "noAi": "AI scanning isn't connected yet (no API key). Add the meal manually below.",
-    "scanFailed": "Couldn't analyze the photo. Try again or add the meal manually."
+    "scanFailed": "Couldn't analyze the photo. Try again or add the meal manually.",
+    "frameHint": "Fill the frame with the plate"
   },
   "common": {
     "language": "Language"

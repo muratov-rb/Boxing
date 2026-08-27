@@ -65,8 +65,19 @@ export function FoodScanner({
   /* -- consent accepted → NOW we may ask the browser for the camera -- */
   async function allowCamera() {
     try {
+      /* Ask for the rear camera at a decent resolution and continuous
+         autofocus. The default stream on many phones is 640x480 and
+         fixed-focus, which is where blurry, unreadable plates come from —
+         and the estimate is only as good as the photo. `advanced` entries
+         are ignored by devices that do not support them, so this degrades
+         quietly rather than failing the whole request. */
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1920 },
+          height: { ideal: 1440 },
+          advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet],
+        },
         audio: false,
       });
       streamRef.current = stream;
@@ -84,13 +95,22 @@ export function FoodScanner({
     }
   }
 
+  /* Claude downsizes anything larger than roughly this before it looks at it,
+     so sending a 1920px photo buys no accuracy and costs upload time on a
+     phone connection. Capture sharp, then send sensible. */
+  const MAX_EDGE = 1280;
+
   function capture() {
     const video = videoRef.current;
     if (!video) return;
+    const w = video.videoWidth || 720;
+    const h = video.videoHeight || 540;
+    const scale = Math.min(1, MAX_EDGE / Math.max(w, h));
+
     const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth || 720;
-    canvas.height = video.videoHeight || 540;
-    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    canvas.width = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
     setPhoto(canvas.toDataURL("image/jpeg", 0.85));
     stopCamera();
     setStage("preview");
@@ -194,12 +214,37 @@ export function FoodScanner({
         {/* -------- live camera -------- */}
         {stage === "camera" && (
           <div>
-            <video
-              ref={videoRef}
-              playsInline
-              muted
-              className="aspect-[4/3] w-full rounded-lg border border-line/70 bg-black object-cover"
-            />
+            {/* Framing guide. The model's estimate depends almost entirely on
+                being able to judge portion size, and the commonest bad photo
+                is taken from too far away with half a table in it. Corner
+                brackets give people something to fill without hiding the
+                view the way a dimming overlay would. */}
+            <div className="relative">
+              <video
+                ref={videoRef}
+                playsInline
+                muted
+                className="aspect-[4/3] w-full rounded-lg border border-line/70 bg-black object-cover"
+              />
+              <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                <div className="relative h-[72%] w-[72%]">
+                  {[
+                    "left-0 top-0 border-l-2 border-t-2 rounded-tl-lg",
+                    "right-0 top-0 border-r-2 border-t-2 rounded-tr-lg",
+                    "left-0 bottom-0 border-l-2 border-b-2 rounded-bl-lg",
+                    "right-0 bottom-0 border-r-2 border-b-2 rounded-br-lg",
+                  ].map((pos) => (
+                    <span
+                      key={pos}
+                      className={`absolute h-8 w-8 border-blood/90 ${pos}`}
+                    />
+                  ))}
+                </div>
+              </div>
+              <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
+                {t("frameHint")}
+              </p>
+            </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button type="button" onClick={capture} className="btn btn-primary">
                 {t("capture")}

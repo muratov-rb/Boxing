@@ -8,6 +8,11 @@ import { Icon } from "./Icons";
 
 /* Globe-icon language menu — lists every shipped language by its native name.
    Sets the `locale` cookie and refreshes so the server re-renders translated. */
+
+/** The menu's width, in px. Kept next to the w-44 class it mirrors: the open
+    handler measures against it to decide which edge to hang the menu from, and
+    the two must not drift apart. */
+const MENU_W = 176; // = w-44
 export function LocaleSwitcher({ className = "" }: { className?: string }) {
   const active = useLocale();
   const router = useRouter();
@@ -17,6 +22,11 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
      downwards lands past the bottom of the screen and can't be read or
      reached. Measure the button and open upwards when there isn't room. */
   const [dropUp, setDropUp] = useState(false);
+  /* Same problem sideways, and worse. The menu hangs from the button's RIGHT
+     edge, so when the button sits near the left of the screen the menu runs
+     off it — every language name clipped down to "nglish", "усский",
+     "spañol". Flip the anchor when there is no room to the left. */
+  const [alignLeft, setAlignLeft] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
@@ -50,8 +60,14 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
         type="button"
         onClick={() => {
           const rect = btnRef.current?.getBoundingClientRect();
-          // 288px ≈ the menu's max height; below that, flip it above the button
-          if (rect) setDropUp(window.innerHeight - rect.bottom < 288);
+          if (rect) {
+            // 288px ≈ the menu's max height; below that, flip it above the button
+            setDropUp(window.innerHeight - rect.bottom < 288);
+            /* MENU_W is the menu's own width. Anchored right, its left edge
+               lands at rect.right - MENU_W; if that is off-screen, anchor it
+               to the button's left edge instead. */
+            setAlignLeft(rect.right - MENU_W < 8);
+          }
           setOpen((o) => !o);
         }}
         disabled={pending}
@@ -76,9 +92,9 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
       {open && (
         <ul
           role="listbox"
-          className={`absolute right-0 z-[200] max-h-72 w-44 overflow-y-auto rounded-xl border border-line bg-void p-1 shadow-xl ${
+          className={`absolute z-[200] max-h-72 w-44 overflow-y-auto rounded-xl border border-line bg-void p-1 shadow-xl ${
             dropUp ? "bottom-full mb-2" : "mt-2"
-          }`}
+          } ${alignLeft ? "left-0" : "right-0"}`}
         >
           {LOCALES.map((l) => (
             <li key={l.code}>
