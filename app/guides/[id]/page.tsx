@@ -84,7 +84,7 @@ export default async function GuidePage({
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <article>
           <p className="kicker">{t(`cat_${guide.cat}`)}</p>
-          <h1 className="mt-3 font-display text-[clamp(1.8rem,5.5vw,3rem)] uppercase leading-none">
+          <h1 className="mt-3 font-display text-[clamp(1.4rem, 5.5vw, 3rem)] uppercase leading-none">
             {guide.title[li]}
           </h1>
           <p className="mt-4 leading-relaxed text-ash">{guide.summary[li]}</p>

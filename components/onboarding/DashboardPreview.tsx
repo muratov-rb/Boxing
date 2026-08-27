@@ -119,7 +119,7 @@ export function DashboardPreview({
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="kicker">{t("welcome")}</p>
-          <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
+          <h1 className="mt-3 font-display text-[clamp(1.56rem, 6vw, 3.5rem)] uppercase leading-none">
             {t("dayOnePre")}
             <span className="text-blood">{rank0}.</span>
           </h1>

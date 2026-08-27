@@ -20,7 +20,7 @@ export function FinalCTA() {
       />
       <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 sm:py-28">
         <p className="kicker justify-center">{t("kicker")}</p>
-        <h2 className="mt-6 font-display text-[clamp(2.4rem,7vw,5rem)] uppercase leading-[0.9]">
+        <h2 className="mt-6 font-display text-[clamp(1.87rem, 7vw, 5rem)] uppercase leading-[0.9]">
           {t("titlePre")}
           <span className="text-blood">{t("titleAccent")}</span>
         </h2>

@@ -33,7 +33,7 @@ export default async function VerifyEmailPage({
       </div>
 
       <p className="kicker mt-8 justify-center">{t("kicker")}</p>
-      <h1 className="mt-4 font-display text-[clamp(2rem,7vw,3rem)] uppercase leading-none">
+      <h1 className="mt-4 font-display text-[clamp(1.56rem, 7vw, 3rem)] uppercase leading-none">
         {t("titlePre")}
         <span className="text-blood">{t("titleAccent")}</span>
       </h1>

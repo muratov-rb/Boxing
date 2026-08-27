@@ -30,7 +30,7 @@ export function FuelStep({
     <div className="mx-auto w-full max-w-2xl">
       <header className="text-center">
         <p className="kicker justify-center">{t("fuelKicker")}</p>
-        <h1 className="mt-4 font-display text-[clamp(2.1rem,6vw,3.75rem)] uppercase leading-none">
+        <h1 className="mt-4 font-display text-[clamp(1.64rem, 6vw, 3.75rem)] uppercase leading-none">
           {t("fuelTitlePre")}
           <span className="text-blood">{t("fuelTitleAccent")}</span>
         </h1>

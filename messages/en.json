@@ -74,10 +74,10 @@
     "nutrition_c": "Meal ideas tuned to your body stats and daily training load.",
     "calorie_t": "Calorie Counter",
     "calorie_c": "Track what you eat against what training burns, so you fuel the work properly.",
-    "technique_t": "Technique Check",
-    "technique_c": "Quick self-assessment checklists to keep your form honest between sessions.",
     "rest_t": "Rest & Recovery",
-    "rest_c": "Smart rest days built into every plan, so you build strength instead of burning out."
+    "rest_c": "Smart rest days built into every plan, so you build strength instead of burning out.",
+    "circuits_t": "Conditioning Circuits",
+    "circuits_c": "Named formats fighters actually run — Cindy, Tabata, bag rounds — on a real timer with the round bell."
   },
   "finalCta": {
     "kicker": "No excuses left",
@@ -593,7 +593,8 @@
     "alreadyDoneSub": "Your streak is safe. Anything more today is a bonus, not a debt.",
     "startAgain": "Train again",
     "soundOn": "Turn sound on",
-    "soundOff": "Turn sound off"
+    "soundOff": "Turn sound off",
+    "setOf": "Set {i} / {n}"
   },
   "recovery": {
     "title": "Rest & Recovery",

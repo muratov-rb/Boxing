@@ -149,7 +149,7 @@ export function AnalysisReveal({
           <FeasibilityRing value={analysis.feasibility} label={t("chance")} />
         </div>
         <div className="text-center sm:text-left">
-          <h1 className="font-display text-[clamp(2rem,5vw,3rem)] uppercase leading-none text-blood">
+          <h1 className="font-display text-[clamp(1.56rem, 5vw, 3rem)] uppercase leading-none text-blood">
             {analysis.verdict}
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-ash">{analysis.summary}</p>

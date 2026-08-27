@@ -74,10 +74,10 @@
     "nutrition_c": "Idées de repas adaptées à tes mensurations et à ta charge quotidienne.",
     "calorie_t": "Compteur de calories",
     "calorie_c": "Compare ce que tu manges à ce que l'entraînement brûle, pour bien alimenter le travail.",
-    "technique_t": "Contrôle technique",
-    "technique_c": "Des listes d'auto-évaluation rapides pour garder ta forme honnête entre les séances.",
     "rest_t": "Repos et récupération",
-    "rest_c": "Des jours de repos intelligents intégrés à chaque plan, pour construire ta force au lieu de te cramer."
+    "rest_c": "Des jours de repos intelligents intégrés à chaque plan, pour construire ta force au lieu de te cramer.",
+    "circuits_t": "Circuits de condition",
+    "circuits_c": "Des formats que les boxeurs pratiquent vraiment — Cindy, Tabata, rounds au sac — avec un vrai chrono et le gong."
   },
   "finalCta": {
     "kicker": "Plus d'excuses",
@@ -593,7 +593,8 @@
     "startAgain": "S'entraîner encore",
     "demoSoon": "Illustration bientôt disponible — suis les étapes ci-dessous.",
     "soundOn": "Activer le son",
-    "soundOff": "Couper le son"
+    "soundOff": "Couper le son",
+    "setOf": "Série {i} / {n}"
   },
   "recovery": {
     "title": "Repos et récupération",

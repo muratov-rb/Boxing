@@ -114,7 +114,7 @@ export function OnboardingFlow() {
       {ready && returning && (
         <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
           <p className="kicker">{t("welcomeBackKicker")}</p>
-          <h1 className="mt-3 font-display text-[clamp(1.9rem,6vw,3rem)] uppercase leading-none">
+          <h1 className="mt-3 font-display text-[clamp(1.48rem, 6vw, 3rem)] uppercase leading-none">
             {t("welcomeBackTitle")}
           </h1>
           <p className="mt-3 leading-relaxed text-ash">{t("welcomeBackSub")}</p>

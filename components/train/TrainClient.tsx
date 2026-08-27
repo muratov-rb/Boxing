@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { EXERCISES, filterExercises, type Exercise } from "@/lib/exercises";
+import { EXERCISES, filterExercises, setsFor, type Exercise } from "@/lib/exercises";
 import { chime, primeAudio, setSoundEnabled, soundEnabled } from "@/lib/chime";
 import {
   buildDailyPlan,
@@ -53,6 +53,8 @@ export function TrainClient() {
   const [usedFallback, setUsedFallback] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [idx, setIdx] = useState(0);
+  /* Which set of the current exercise. */
+  const [setNo, setSetNo] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [paused, setPaused] = useState(false);
   const [workedSec, setWorkedSec] = useState(0);
@@ -86,12 +88,24 @@ export function TrainClient() {
     );
   }, []);
 
-  const totalSec = useMemo(
-    () => session.reduce((s, e) => s + e.workSec, 0) + Math.max(0, session.length - 1) * REST_SEC,
+  /* Every figure below counts sets. They used to count one work block per
+     exercise, so a session prescribing "3 ×" everywhere advertised roughly a
+     third of its real length and a third of its real burn. */
+  const totalSets = useMemo(
+    () => session.reduce((s, e) => s + setsFor(e), 0),
     [session],
   );
+  const totalSec = useMemo(
+    () =>
+      session.reduce((s, e) => s + e.workSec * setsFor(e), 0) +
+      Math.max(0, totalSets - 1) * REST_SEC,
+    [session, totalSets],
+  );
   const estKcal = useMemo(
-    () => Math.round(session.reduce((s, e) => s + (e.workSec / 600) * e.kcal10min, 0)),
+    () =>
+      Math.round(
+        session.reduce((s, e) => s + ((e.workSec * setsFor(e)) / 600) * e.kcal10min, 0),
+      ),
     [session],
   );
 
@@ -106,11 +120,20 @@ export function TrainClient() {
     return () => clearInterval(id);
   }, [phase, paused]);
 
-  /* phase transitions when the countdown hits zero */
+  /* Phase transitions when the countdown hits zero.
+
+     Work → rest → either the NEXT SET of the same exercise, or the first set
+     of the next one. The session used to move on after a single block, so the
+     card said "3 × 12–15" and you were given one set before it skipped. */
   useEffect(() => {
     if (remaining > 0) return;
+    const current = session[idx];
+    if (!current) return;
+
     if (phase === "work") {
-      if (idx + 1 >= session.length) {
+      const lastSet = setNo + 1 >= setsFor(current);
+      const lastExercise = idx + 1 >= session.length;
+      if (lastSet && lastExercise) {
         setPhase("done");
         chime("done");
       } else {
@@ -119,14 +142,21 @@ export function TrainClient() {
         chime("rest");
       }
     } else if (phase === "rest") {
-      setIdx((i) => i + 1);
+      const lastSet = setNo + 1 >= setsFor(current);
+      if (lastSet) {
+        setIdx((i) => i + 1);
+        setSetNo(0);
+        setRemaining(session[idx + 1]?.workSec ?? 45);
+      } else {
+        setSetNo((s) => s + 1);
+        setRemaining(current.workSec);
+      }
       setPhase("work");
-      setRemaining(session[idx + 1]?.workSec ?? 45);
       /* The signal to look up — you are mid-rest and not watching the screen,
          which is exactly the moment a number changing silently is useless. */
       chime("work");
     }
-  }, [remaining, phase, idx, session]);
+  }, [remaining, phase, idx, setNo, session]);
 
   /* log the streak exactly once on completion */
   useEffect(() => {
@@ -146,6 +176,7 @@ export function TrainClient() {
        silently dropped. */
     primeAudio();
     setIdx(0);
+    setSetNo(0);
     setWorkedSec(0);
     setPaused(false);
     setPhase("work");
@@ -178,7 +209,12 @@ export function TrainClient() {
 
   const current = session[idx];
   const next = session[idx + 1];
-  const shown = phase === "rest" && next ? next : current;
+  const sets = current ? setsFor(current) : 1;
+  /* True only when the rest leads into a different exercise. Resting between
+     sets of the same movement must keep showing that movement — otherwise the
+     screen advertises the next exercise and then does not go to it. */
+  const restingIntoNext = phase === "rest" && setNo + 1 >= sets && !!next;
+  const shown = restingIntoNext ? next : current;
   const phaseTotal = phase === "rest" ? REST_SEC : (current?.workSec ?? 1);
   const pct = phase === "work" || phase === "rest"
     ? Math.max(0, Math.min(100, Math.round(((phaseTotal - remaining) / phaseTotal) * 100)))
@@ -199,7 +235,7 @@ export function TrainClient() {
             <div className="mx-auto grid h-20 w-20 place-items-center rounded-full border border-azure/50 text-azure">
               <Icon name="rest" size={38} />
             </div>
-            <h1 className="mt-6 font-display text-[clamp(2rem,7vw,3.25rem)] uppercase leading-none">
+            <h1 className="mt-6 font-display text-[clamp(1.56rem, 7vw, 3.25rem)] uppercase leading-none">
               {t("restDayTitle")}
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-ash">{t("restDaySub")}</p>
@@ -234,7 +270,7 @@ export function TrainClient() {
         {phase === "idle" && kind !== "rest" && (
           <div className="animate-rise">
             <p className="kicker">{kind === "active" ? t("kickerActive") : t("kicker")}</p>
-            <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
+            <h1 className="mt-3 font-display text-[clamp(1.56rem, 6vw, 3.5rem)] uppercase leading-none">
               {t("titlePre")}
               <span className="text-blood">
                 {kind === "active" ? t("titleAccentActive") : t("titleAccent")}
@@ -333,6 +369,13 @@ export function TrainClient() {
               <span className="badge">
                 {t("exOf", { i: Math.min(idx + 1, session.length), n: session.length })}
               </span>
+              {/* Which set you are on. Without it the timer restarting on the
+                  same exercise reads as a glitch rather than as set two. */}
+              {sets > 1 && (
+                <span className="badge border-blood/40 text-blood">
+                  {t("setOf", { i: Math.min(setNo + 1, sets), n: sets })}
+                </span>
+              )}
               <span
                 className={`badge ${phase === "rest" ? "border-azure/50 text-azure" : "border-blood/50 text-blood"}`}
               >
@@ -340,7 +383,7 @@ export function TrainClient() {
               </span>
             </div>
 
-            <h1 className="mt-4 font-display text-[clamp(1.8rem,5vw,3rem)] uppercase leading-none">
+            <h1 className="mt-4 font-display text-[clamp(1.4rem, 5vw, 3rem)] uppercase leading-none">
               {phase === "rest" && (
                 <span className="mr-3 text-ash">{t("nextUp")}:</span>
               )}
@@ -351,7 +394,7 @@ export function TrainClient() {
 
             {/* countdown + progress */}
             <div className="mt-5 flex items-end justify-between">
-              <span className="font-display text-[clamp(3.5rem,12vw,6rem)] leading-none tabular-nums">
+              <span className="font-display text-[clamp(2.73rem, 12vw, 6rem)] leading-none tabular-nums">
                 {mmss(remaining)}
               </span>
               <span className="flex items-center gap-2">
@@ -441,7 +484,7 @@ export function TrainClient() {
             <div className="animate-glow mx-auto grid h-20 w-20 place-items-center rounded-full border border-blood/50 text-blood">
               <Icon name="belt" size={38} />
             </div>
-            <h1 className="mt-6 font-display text-[clamp(2.2rem,7vw,3.5rem)] uppercase leading-none">
+            <h1 className="mt-6 font-display text-[clamp(1.72rem, 7vw, 3.5rem)] uppercase leading-none">
               {t("doneTitle")}
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-ash">{t("doneSub")}</p>

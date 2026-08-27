@@ -2502,6 +2502,23 @@ export function availableToProfile(
   return ex.requires.some((r) => equipment.includes(r as EquipmentId));
 }
 
+/* How many sets the prescription actually asks for.
+
+   `dose` is display text — "3 × 12–15 reps", "3 rounds × 3 min" — and the
+   guided session used to ignore it entirely, running one work block per
+   exercise and moving on. So the screen said three sets and the timer gave
+   you one, which is the difference between a workout and a warm-up.
+
+   Read from the English string rather than stored separately, because a
+   second field would be one more thing to keep in step across 89 entries and
+   would silently disagree with the text people are reading. Anything that
+   does not start with a count is one set. */
+export function setsFor(ex: Pick<Exercise, "dose">): number {
+  const m = /^\s*(\d+)\s*(?:rounds?\s*)?[×x]/i.exec(ex.dose.en);
+  const n = m ? Number(m[1]) : 1;
+  return Number.isFinite(n) && n >= 1 && n <= 10 ? n : 1;
+}
+
 export function filterExercises(profile: Pick<Profile, "environment" | "equipment">) {
   return EXERCISES.filter((e) =>
     availableToProfile(e, profile.environment, profile.equipment),

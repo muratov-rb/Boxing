@@ -11,7 +11,10 @@ const FEATURES: { icon: IconName; k: string }[] = [
   { icon: "video", k: "video" },
   { icon: "nutrition", k: "nutrition" },
   { icon: "calorie", k: "calorie" },
-  { icon: "technique", k: "technique" },
+  /* "Technique Check" was here, advertising a feature that has been removed.
+     A landing page selling something the product no longer does is the same
+     class of problem as the "Coming soon" labels on features that shipped. */
+  { icon: "streak", k: "circuits" },
   { icon: "rest", k: "rest" },
 ];
 
@@ -24,7 +27,7 @@ export function FeaturePreview() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">
             <p className="kicker">{t("kicker")}</p>
-            <h2 className="mt-5 font-display text-[clamp(2rem,5vw,3.5rem)] uppercase leading-none">
+            <h2 className="mt-5 font-display text-[clamp(1.56rem, 5vw, 3.5rem)] uppercase leading-none">
               {t("titlePre")}
               <span className="text-blood">{t("titleAccent")}</span>
             </h2>

@@ -31,7 +31,7 @@ export function Hero() {
             words touching both edges — "Тренируйся" and "Entraîne-toi" have no
             slack at that size. Dropping the floor gives every language a
             margin instead of only the shortest one. */}
-        <h1 className="animate-rise mt-6 font-display text-[clamp(2.35rem,8.5vw,7.5rem)] uppercase text-bone [animation-delay:80ms]">
+        <h1 className="animate-rise mt-6 font-display text-[clamp(1.83rem, 8.5vw, 7.5rem)] uppercase text-bone [animation-delay:80ms]">
           {t("title1")}
           <br />
           <span className="text-ash">{t("title2pre")}</span>

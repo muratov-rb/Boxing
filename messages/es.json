@@ -74,10 +74,10 @@
     "nutrition_c": "Ideas de comidas ajustadas a tus datos y a tu carga diaria.",
     "calorie_t": "Contador de calorías",
     "calorie_c": "Compara lo que comes con lo que quema el entrenamiento, para alimentar bien el trabajo.",
-    "technique_t": "Chequeo de técnica",
-    "technique_c": "Listas rápidas de autoevaluación para mantener tu forma honesta entre sesiones.",
     "rest_t": "Descanso y recuperación",
-    "rest_c": "Días de descanso inteligentes integrados en cada plan, para que construyas fuerza en vez de quemarte."
+    "rest_c": "Días de descanso inteligentes integrados en cada plan, para que construyas fuerza en vez de quemarte.",
+    "circuits_t": "Circuitos de acondicionamiento",
+    "circuits_c": "Formatos que los boxeadores usan de verdad — Cindy, Tabata, rondas de saco — con reloj real y campana."
   },
   "finalCta": {
     "kicker": "Sin excusas",
@@ -593,7 +593,8 @@
     "startAgain": "Entrenar otra vez",
     "demoSoon": "Ilustración próximamente — sigue los pasos de abajo.",
     "soundOn": "Activar sonido",
-    "soundOff": "Silenciar"
+    "soundOff": "Silenciar",
+    "setOf": "Serie {i} / {n}"
   },
   "recovery": {
     "title": "Descanso y recuperación",

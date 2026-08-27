@@ -198,7 +198,7 @@ export function AdminClient({
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <p className="kicker">{t("kicker")}</p>
-        <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
+        <h1 className="mt-3 font-display text-[clamp(1.56rem, 6vw, 3.5rem)] uppercase leading-none">
           {t("titlePre")}
           <span className="text-blood">{t("titleAccent")}</span>
           {refreshing && (
