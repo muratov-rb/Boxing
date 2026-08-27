@@ -122,7 +122,7 @@ export function AuthCard({
         <p className="kicker justify-center">
           {isLogin ? t("welcomeBack") : t("join")}
         </p>
-        <h1 className="mt-4 font-display text-[clamp(1.56rem, 7vw, 3rem)] uppercase leading-none">
+        <h1 className="mt-4 font-display text-[clamp(2rem,7vw,3rem)] uppercase leading-none">
           {isLogin ? t("loginTitlePre") : t("registerTitlePre")}
           <span className="text-blood">
             {isLogin ? t("loginTitleAccent") : t("registerTitleAccent")}

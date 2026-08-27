@@ -21,7 +21,7 @@ export function PathSelector({
     <div className="mx-auto w-full max-w-4xl">
       <header className="text-center">
         <p className="kicker justify-center">{t("pathKicker")}</p>
-        <h1 className="mt-4 font-display text-[clamp(1.64rem, 6vw, 3.75rem)] uppercase leading-none">
+        <h1 className="mt-4 font-display text-[clamp(2.1rem,6vw,3.75rem)] uppercase leading-none">
           {t("pathTitlePre")}
           <span className="text-blood">{t("pathTitleAccent")}</span>
         </h1>

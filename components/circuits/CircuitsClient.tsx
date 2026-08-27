@@ -55,7 +55,7 @@ export function CircuitsClient() {
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         <p className="kicker">{t("kicker")}</p>
-        <h1 className="mt-3 font-display text-[clamp(1.56rem, 6vw, 3.5rem)] uppercase leading-none">
+        <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
           {t("titlePre")}
           <span className="text-blood">{t("titleAccent")}</span>
         </h1>
@@ -116,7 +116,7 @@ export function CircuitsClient() {
               {t("back")}
             </button>
 
-            <h2 className="font-display text-[clamp(1.4rem, 5vw, 3rem)] uppercase leading-none">
+            <h2 className="font-display text-[clamp(1.8rem,5vw,3rem)] uppercase leading-none">
               {open.name[li]}
             </h2>
             <p className="mt-2 font-condensed text-xs uppercase tracking-widest text-ash-dim">

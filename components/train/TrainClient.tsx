@@ -235,7 +235,7 @@ export function TrainClient() {
             <div className="mx-auto grid h-20 w-20 place-items-center rounded-full border border-azure/50 text-azure">
               <Icon name="rest" size={38} />
             </div>
-            <h1 className="mt-6 font-display text-[clamp(1.56rem, 7vw, 3.25rem)] uppercase leading-none">
+            <h1 className="mt-6 font-display text-[clamp(2rem,7vw,3.25rem)] uppercase leading-none">
               {t("restDayTitle")}
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-ash">{t("restDaySub")}</p>
@@ -270,7 +270,7 @@ export function TrainClient() {
         {phase === "idle" && kind !== "rest" && (
           <div className="animate-rise">
             <p className="kicker">{kind === "active" ? t("kickerActive") : t("kicker")}</p>
-            <h1 className="mt-3 font-display text-[clamp(1.56rem, 6vw, 3.5rem)] uppercase leading-none">
+            <h1 className="mt-3 font-display text-[clamp(2rem,6vw,3.5rem)] uppercase leading-none">
               {t("titlePre")}
               <span className="text-blood">
                 {kind === "active" ? t("titleAccentActive") : t("titleAccent")}
@@ -383,7 +383,7 @@ export function TrainClient() {
               </span>
             </div>
 
-            <h1 className="mt-4 font-display text-[clamp(1.4rem, 5vw, 3rem)] uppercase leading-none">
+            <h1 className="mt-4 font-display text-[clamp(1.8rem,5vw,3rem)] uppercase leading-none">
               {phase === "rest" && (
                 <span className="mr-3 text-ash">{t("nextUp")}:</span>
               )}
@@ -394,7 +394,7 @@ export function TrainClient() {
 
             {/* countdown + progress */}
             <div className="mt-5 flex items-end justify-between">
-              <span className="font-display text-[clamp(2.73rem, 12vw, 6rem)] leading-none tabular-nums">
+              <span className="font-display text-[clamp(3.5rem,12vw,6rem)] leading-none tabular-nums">
                 {mmss(remaining)}
               </span>
               <span className="flex items-center gap-2">
@@ -484,7 +484,7 @@ export function TrainClient() {
             <div className="animate-glow mx-auto grid h-20 w-20 place-items-center rounded-full border border-blood/50 text-blood">
               <Icon name="belt" size={38} />
             </div>
-            <h1 className="mt-6 font-display text-[clamp(1.72rem, 7vw, 3.5rem)] uppercase leading-none">
+            <h1 className="mt-6 font-display text-[clamp(2.2rem,7vw,3.5rem)] uppercase leading-none">
               {t("doneTitle")}
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-ash">{t("doneSub")}</p>

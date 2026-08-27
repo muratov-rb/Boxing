@@ -196,7 +196,7 @@ export function CircuitRunner({ circuit }: { circuit: Circuit }) {
                     : t("work")}
           </p>
           <p
-            className={`font-display text-[clamp(2.34rem, 14vw, 5.5rem)] leading-none tabular-nums ${
+            className={`font-display text-[clamp(3rem,14vw,5.5rem)] leading-none tabular-nums ${
               phase === "rest" ? "text-azure" : "text-bone"
             }`}
           >

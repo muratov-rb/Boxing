@@ -95,7 +95,7 @@ export function Celebration({
           </span>
         </div>
 
-        <h2 className="animate-count mt-6 font-display text-[clamp(1.56rem, 7vw, 3rem)] uppercase leading-none text-blood">
+        <h2 className="animate-count mt-6 font-display text-[clamp(2rem,7vw,3rem)] uppercase leading-none text-blood">
           {title}
         </h2>
         <p className="mx-auto mt-3 max-w-xs text-sm text-ash">{body}</p>
