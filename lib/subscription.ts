@@ -23,6 +23,10 @@ export interface Entitlements {
   nutritionMealSlots: number; // 0 locked · 2 = pro (pick 2) · 4 = all
   calorieScansPerDay: number; // 0 = feature locked
   techniqueVideosPerDay: number; // 0 = feature locked
+  /* Text questions to the coach. Allowances are far higher than the vision
+     features because a question costs roughly a tenth of a photo scan — the
+     limit is here to bound abuse, not to ration the feature. */
+  coachAsksPerDay: number; // 0 = feature locked
 }
 
 const INF = Number.POSITIVE_INFINITY;
@@ -45,6 +49,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 2,
     techniqueVideosPerDay: 0,
+    coachAsksPerDay: 3,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled
   expired: {
@@ -57,6 +62,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 0,
     techniqueVideosPerDay: 0,
+    coachAsksPerDay: 0,
   },
   budget: {
     ranks: false,
@@ -68,6 +74,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 0,
     techniqueVideosPerDay: 0,
+    coachAsksPerDay: 3,
   },
   pro: {
     ranks: true,
@@ -79,6 +86,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 2,
     calorieScansPerDay: 2,
     techniqueVideosPerDay: 2,
+    coachAsksPerDay: 15,
   },
   max: {
     ranks: true,
@@ -90,6 +98,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 4,
     calorieScansPerDay: 10,
     techniqueVideosPerDay: 8,
+    coachAsksPerDay: 50,
   },
 };
 
@@ -145,6 +154,7 @@ export const UNLOCKED: Entitlements = {
   dailyPlansPerWeek: INF,
   aiNutrition: true,
   nutritionMealSlots: 4,
+  coachAsksPerDay: INF,
   calorieScansPerDay: INF,
   techniqueVideosPerDay: INF,
 };

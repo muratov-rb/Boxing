@@ -9,7 +9,7 @@ import { dailyLimit, type LimitState } from "./tracking";
    signed-out fallback — better a slightly stale number than a spinner.
    =========================================================================== */
 
-export type QuotaKey = "calorieScan" | "techniqueVideo";
+export type QuotaKey = "calorieScan" | "techniqueVideo" | "coachAsk";
 
 interface ServerQuota {
   used: number;

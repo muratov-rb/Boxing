@@ -1000,5 +1000,22 @@
     "moreGuides": "Autres guides",
     "allGuides": "Tous les guides",
     "kicker": "Conseils"
+  },
+  "coach": {
+    "title": "Demandez au coach",
+    "sub": "Une vraie question, une réponse directe. Utilise vos propres chiffres quand ils comptent.",
+    "placeholder": "Pourquoi mon épaule fait mal quand je jabe ?",
+    "ask": "Demander",
+    "asking": "Réflexion…",
+    "left": "{n} restantes",
+    "spent": "Vos questions du jour sont épuisées. Elles reviennent demain.",
+    "locked": "Les questions au coach font partie d'une formule payante. Les réponses tiennent compte de votre poids et de vos objectifs.",
+    "disclaimer": "Conseil d'entraînement, pas médical. Un coup à la tête, une douleur vive ou une blessure exigent un médecin.",
+    "errLimit": "Vous avez utilisé vos questions du jour. Elles reviennent demain.",
+    "errOffline": "Le coach est indisponible pour l'instant. Réessayez bientôt.",
+    "errFailed": "L'envoi a échoué. Vérifiez votre connexion et réessayez.",
+    "q1": "Comment arrêter de baisser ma main droite ?",
+    "q2": "Puis-je m'entraîner avec un rhume ?",
+    "q3": "Combien de protéines dois-je manger ?"
   }
 }

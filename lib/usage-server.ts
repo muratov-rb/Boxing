@@ -10,7 +10,7 @@ import type { Caller } from "./entitlements-server";
    decides whether an expensive call actually happens.
    =========================================================================== */
 
-export type QuotaKey = "calorieScan" | "techniqueVideo";
+export type QuotaKey = "calorieScan" | "techniqueVideo" | "coachAsk";
 
 export interface QuotaVerdict {
   allowed: boolean;
@@ -21,10 +21,13 @@ export interface QuotaVerdict {
 }
 
 function limitFor(caller: Caller, key: QuotaKey): number {
-  return key === "calorieScan"
-    ? caller.entitlements.calorieScansPerDay
-    : caller.entitlements.techniqueVideosPerDay;
+  const e = caller.entitlements;
+  if (key === "calorieScan") return e.calorieScansPerDay;
+  if (key === "techniqueVideo") return e.techniqueVideosPerDay;
+  return e.coachAsksPerDay;
 }
+
+const ALL_KEYS: QuotaKey[] = ["calorieScan", "techniqueVideo", "coachAsk"];
 
 /** Read today's counters without spending anything — for showing "2 of 3 left"
     honestly, including on a second device where localStorage knows nothing. */
@@ -32,15 +35,16 @@ export async function readQuotas(
   caller: Caller,
   today = new Date().toISOString().slice(0, 10),
 ): Promise<Record<QuotaKey, QuotaVerdict>> {
-  const keys: QuotaKey[] = ["calorieScan", "techniqueVideo"];
   const blank = (key: QuotaKey): QuotaVerdict => {
     const limit = limitFor(caller, key);
     return { allowed: limit > 0, used: 0, limit, locked: limit <= 0 };
   };
+  /* Built from ALL_KEYS rather than listed by hand, so adding a quota cannot
+     leave a gap here that shows as an undefined counter in the UI. */
+  const allBlank = () =>
+    Object.fromEntries(ALL_KEYS.map((k) => [k, blank(k)])) as Record<QuotaKey, QuotaVerdict>;
 
-  if (!serviceRoleConfigured()) {
-    return { calorieScan: blank("calorieScan"), techniqueVideo: blank("techniqueVideo") };
-  }
+  if (!serviceRoleConfigured()) return allBlank();
 
   try {
     const { data } = await createAdminClient()
@@ -51,14 +55,14 @@ export async function readQuotas(
       .maybeSingle<{ usage: Record<string, number> }>();
 
     const out = {} as Record<QuotaKey, QuotaVerdict>;
-    for (const key of keys) {
+    for (const key of ALL_KEYS) {
       const limit = limitFor(caller, key);
       const used = data?.usage?.[key] ?? 0;
       out[key] = { allowed: used < limit, used, limit, locked: limit <= 0 };
     }
     return out;
   } catch {
-    return { calorieScan: blank("calorieScan"), techniqueVideo: blank("techniqueVideo") };
+    return allBlank();
   }
 }
 

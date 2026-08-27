@@ -1000,5 +1000,22 @@
     "moreGuides": "Más guías",
     "allGuides": "Todas las guías",
     "kicker": "Consejos"
+  },
+  "coach": {
+    "title": "Pregunta al entrenador",
+    "sub": "Una pregunta real, una respuesta directa. Usa tus propios números cuando importan.",
+    "placeholder": "¿Por qué me duele el hombro al lanzar el jab?",
+    "ask": "Preguntar",
+    "asking": "Pensando…",
+    "left": "quedan {n} hoy",
+    "spent": "Se acabaron tus preguntas de hoy. Se renuevan mañana.",
+    "locked": "Preguntar al entrenador forma parte de un plan de pago. Las respuestas usan tu peso, tus metas y tus objetivos.",
+    "disclaimer": "Es consejo de entrenamiento, no médico. Un golpe en la cabeza, dolor agudo o una lesión necesitan un médico.",
+    "errLimit": "Ya has usado las preguntas de hoy. Se renuevan mañana.",
+    "errOffline": "El entrenador no está disponible ahora. Inténtalo en un momento.",
+    "errFailed": "No se ha enviado. Revisa tu conexión e inténtalo de nuevo.",
+    "q1": "¿Cómo dejo de bajar la mano derecha?",
+    "q2": "¿Puedo entrenar con un resfriado?",
+    "q3": "¿Cuánta proteína debo comer?"
   }
 }

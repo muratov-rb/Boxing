@@ -704,7 +704,7 @@ export function entitlements(): Entitlements {
 }
 
 /* ------------------------------ usage meters ----------------------------- */
-export type UsageKey = "calorieScan" | "techniqueVideo" | "dailyPlan";
+export type UsageKey = "calorieScan" | "techniqueVideo" | "coachAsk" | "dailyPlan";
 
 type UsageMap = Record<string, Record<string, number>>;
 
@@ -741,13 +741,17 @@ export interface LimitState {
   locked: boolean; // limit === 0 → not in this plan at all
 }
 
-/** Daily-metered features: calorie scans, technique videos. */
+/** Daily-metered features: calorie scans, technique photos, coach questions. */
 export function dailyLimit(
-  key: "calorieScan" | "techniqueVideo",
+  key: "calorieScan" | "techniqueVideo" | "coachAsk",
 ): LimitState {
   const e = entitlements();
   const limit =
-    key === "calorieScan" ? e.calorieScansPerDay : e.techniqueVideosPerDay;
+    key === "calorieScan"
+      ? e.calorieScansPerDay
+      : key === "techniqueVideo"
+        ? e.techniqueVideosPerDay
+        : e.coachAsksPerDay;
   const used = usageToday(key);
   return { ok: used < limit, used, limit, locked: limit === 0 };
 }
