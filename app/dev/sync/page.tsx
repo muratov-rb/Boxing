@@ -79,7 +79,7 @@ export default function SyncBench() {
           // glasses must not wipe out drinks logged on another device
           water: 750,
           meals: [{ id: "srv2", name: "milk", kcal: 90, at: "T3", source: "manual" }],
-          usage: { techniqueVideo: 1 },
+          usage: { nutritionPlan: 1 },
         },
       ],
     });
@@ -101,7 +101,7 @@ export default function SyncBench() {
       waterKeepsLocalHigher: water["2026-01-05"] === 1500, // local 1500 vs server 750
       waterGainsServerDay: water["2026-01-06"] === 2000, // day only the server had
       usageUnioned:
-        usage["2026-01-05"].calorieScan === 1 && usage["2026-01-05"].techniqueVideo === 1,
+        usage["2026-01-05"].calorieScan === 1 && usage["2026-01-05"].nutritionPlan === 1,
       xpTakesHigher: xp?.xp === 90, // server ahead
       rankSeenAdopted: patch[KEYS.rankSeen] === 2,
     };

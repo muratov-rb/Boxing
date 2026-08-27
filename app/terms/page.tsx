@@ -152,9 +152,8 @@ const SECTIONS: Section[] = [
   {
     heading: "10. AI-generated content",
     blocks: [
-      "Several features — the goal analysis, nutrition plans, food photo scanning and technique review — are produced by an AI model. AI output can be wrong, incomplete or confidently mistaken. Treat it as a suggestion to sanity-check, never as an authority.",
+      "Several features — the goal analysis, nutrition plans and food photo scanning — are produced by an AI model. AI output can be wrong, incomplete or confidently mistaken. Treat it as a suggestion to sanity-check, never as an authority.",
       "The calorie and macro figures returned by the food scanner are estimates from a photograph. They are not measurements, and they should not be relied on where accuracy matters medically.",
-      "The technique review looks at a handful of frames from a short video. It cannot see everything a coach standing next to you would see, and a good score is not a certification that a movement is safe for you.",
       "AI features depend on a third-party provider and may be changed, limited or withdrawn if that provider's service changes.",
       "We do not guarantee that AI output is accurate, complete, suitable for you, or free from bias or error. Section 3 applies to AI output in full.",
     ],
