@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import { NAME_MAX } from "@/lib/support";
+import { shrinkForAvatar } from "@/lib/image-resize";
 
 /* Who you are, on the account page: your picture and the name you chose.
 
@@ -18,6 +19,8 @@ interface Me {
 }
 
 const MAX_MB = 2;
+/* Must match the route and the bucket. */
+const SERVER_ACCEPTS = ["image/jpeg", "image/png", "image/webp"];
 
 export function ProfileIdentity({ email }: { email: string | null }) {
   const t = useTranslations("profile");
@@ -64,12 +67,27 @@ export function ProfileIdentity({ email }: { email: string | null }) {
   }
 
   async function upload(file: File) {
-    if (file.size > MAX_MB * 1024 * 1024) return setError(t("avatarTooBig", { n: MAX_MB }));
     setBusy(true);
     setError(null);
     try {
+      /* Resized before it is sent, so the 2 MB ceiling is never something the
+         person has to work around -- a phone photo is several times that and
+         the avatar is drawn at 56px. */
+      const shrunk = await shrinkForAvatar(file);
+      /* A successful resize always comes back as JPEG. Anything else means the
+         browser could not decode the file at all -- an HEIC on a browser
+         without support, usually -- and the server would only reject it with a
+         vaguer message. */
+      if (!SERVER_ACCEPTS.includes(shrunk.type)) {
+        setError(t("avatarBadType"));
+        return;
+      }
+      if (shrunk.blob.size > MAX_MB * 1024 * 1024) {
+        setError(t("avatarTooBig", { n: MAX_MB }));
+        return;
+      }
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", new File([shrunk.blob], "avatar.jpg", { type: shrunk.type }));
       const res = await fetch("/api/profile/avatar", { method: "POST", body: fd });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(d.error ?? "");
@@ -132,7 +150,7 @@ export function ProfileIdentity({ email }: { email: string | null }) {
           <input
             ref={fileRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/*"
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];

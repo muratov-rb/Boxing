@@ -129,7 +129,8 @@
     "name": "Votre nom",
     "namePlaceholder": "Comment doit-on vous appeler ?",
     "errNoName": "Donnez-nous votre nom, qu'on sache qui on entraîne.",
-    "errThrowaway": "Cela ressemble à une adresse jetable. Utilisez une adresse que vous relevez vraiment : elle servira à confirmer votre compte."
+    "errThrowaway": "Cela ressemble à une adresse jetable. Utilisez une adresse que vous relevez vraiment : elle servira à confirmer votre compte.",
+    "errAlreadyRegistered": "Cette adresse a déjà un compte. Connectez-vous ci-dessous, ou réinitialisez votre mot de passe si vous l'avez oublié."
   },
   "verify": {
     "kicker": "Un round de plus",
@@ -828,7 +829,8 @@
     "avatarRemove": "Retirer la photo",
     "avatarTooBig": "Cette image dépasse {n} Mo. Choisissez-en une plus petite.",
     "avatarFailed": "Envoi impossible. Réessayez.",
-    "avatarNoBucket": "Le stockage des photos n'est pas encore configuré."
+    "avatarNoBucket": "Le stockage des photos n'est pas encore configuré.",
+    "avatarBadType": "Ce fichier n'est pas une image lisible. Essayez un JPG ou un PNG."
   },
   "calories": {
     "kicker": "Carburant",
@@ -893,7 +895,10 @@
     "threadSending": "Envoi…",
     "status_new": "En attente de notre réponse",
     "status_open": "En cours",
-    "status_done": "Clôturée"
+    "status_done": "Clôturée",
+    "replyHereNote": "Nous répondrons sur cette page, dans Vos demandes — inutile de surveiller votre boîte mail. Revenez y jeter un œil.",
+    "replyMailNote": "Nous répondrons par e-mail. Connectez-vous avant d'écrire et la réponse arrivera sur cette page.",
+    "sentBodyInApp": "Votre réponse apparaîtra sur cette page, dans Vos demandes. Comptez généralement deux jours."
   },
   "macro": {
     "title": "Macros du jour",

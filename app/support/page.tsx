@@ -76,7 +76,7 @@ export default async function SupportPage() {
         </section>
 
         <div className="mt-10">
-          <SupportForm email={user?.email ?? null} />
+          <SupportForm email={user?.email ?? null} signedIn={!!user} />
         </div>
 
         {/* Answers arrive here, not only by email. Signed-out visitors have no

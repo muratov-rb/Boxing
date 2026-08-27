@@ -129,7 +129,8 @@
     "name": "你的名字",
     "namePlaceholder": "我们该怎么称呼你？",
     "errNoName": "告诉我们你的名字，好知道在训练谁。",
-    "errThrowaway": "这看起来是临时邮箱。请填一个你真正能收信的地址——确认账户要用到它。"
+    "errThrowaway": "这看起来是临时邮箱。请填一个你真正能收信的地址——确认账户要用到它。",
+    "errAlreadyRegistered": "该邮箱已有账户。请在下方登录——忘记密码就重置一下。"
   },
   "verify": {
     "kicker": "再来一回合",
@@ -828,7 +829,8 @@
     "avatarRemove": "移除头像",
     "avatarTooBig": "图片超过 {n} MB，请换一张小一些的。",
     "avatarFailed": "上传失败，请再试一次。",
-    "avatarNoBucket": "头像存储尚未配置。"
+    "avatarNoBucket": "头像存储尚未配置。",
+    "avatarBadType": "无法读取该文件，请换成 JPG 或 PNG。"
   },
   "calories": {
     "kicker": "能量",
@@ -893,7 +895,10 @@
     "threadSending": "发送中…",
     "status_new": "等待我们回复",
     "status_open": "处理中",
-    "status_done": "已关闭"
+    "status_done": "已关闭",
+    "replyHereNote": "我们会在本页「你的求助」里回复，不用一直盯着邮箱，回来看看即可。",
+    "replyMailNote": "我们会通过邮件回复。登录后再提交，回复就会直接出现在本页。",
+    "sentBodyInApp": "回复会出现在本页「你的求助」中。通常一两天内答复。"
   },
   "macro": {
     "title": "今日三大营养素",

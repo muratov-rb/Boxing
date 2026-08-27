@@ -115,6 +115,25 @@ export function AuthCard({
           },
         });
         if (error) throw error;
+
+        /* Registering an address that already has a confirmed account is not
+           an error as far as Supabase is concerned: it returns a user with no
+           session and, deliberately, no complaint -- telling the caller "that
+           one is taken" would let anyone test which addresses are registered.
+           The giveaway is an empty identities array.
+
+           Without this check that response is indistinguishable from a fresh
+           signup, so we sent people to "check your inbox" for a mail that is
+           never sent, where the only way onward is "try again" -- back to this
+           form, to do the same thing again. */
+        const alreadyRegistered =
+          !data.session && !!data.user && (data.user.identities?.length ?? 0) === 0;
+        if (alreadyRegistered) {
+          setError(t("errAlreadyRegistered"));
+          setLoading(null);
+          return;
+        }
+
         if (data.session) {
           go(next);
         } else {

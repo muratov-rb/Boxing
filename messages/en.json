@@ -129,7 +129,8 @@
     "name": "Your name",
     "namePlaceholder": "What should we call you?",
     "errNoName": "Tell us your name so we know who we're training.",
-    "errThrowaway": "That looks like a temporary address. Use one you can actually receive mail at — you'll need it to confirm your account."
+    "errThrowaway": "That looks like a temporary address. Use one you can actually receive mail at — you'll need it to confirm your account.",
+    "errAlreadyRegistered": "That email already has an account. Log in below instead — or reset your password if you've forgotten it."
   },
   "verify": {
     "kicker": "One more round",
@@ -828,7 +829,8 @@
     "avatarRemove": "Remove picture",
     "avatarTooBig": "That image is over {n} MB. Pick a smaller one.",
     "avatarFailed": "Couldn't upload that. Try again.",
-    "avatarNoBucket": "Picture storage isn't set up yet."
+    "avatarNoBucket": "Picture storage isn't set up yet.",
+    "avatarBadType": "That file isn't an image we can read. Try a JPG or PNG."
   },
   "calories": {
     "kicker": "Fuel",
@@ -893,7 +895,10 @@
     "threadSending": "Sending…",
     "status_new": "Waiting on us",
     "status_open": "In progress",
-    "status_done": "Closed"
+    "status_done": "Closed",
+    "replyHereNote": "We'll answer on this page, under Your requests — no need to watch your inbox. Come back and check.",
+    "replyMailNote": "We'll answer by email. Log in before writing and you'll get the reply on this page instead.",
+    "sentBodyInApp": "Your reply will appear on this page, under Your requests. Most things get an answer within a couple of days."
   },
   "macro": {
     "title": "Macros today",

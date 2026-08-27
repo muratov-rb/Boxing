@@ -17,7 +17,15 @@ import {
 
    The signed-in email is offered as a starting value rather than forced, since
    a wrong address on the account is itself a thing people write in about. */
-export function SupportForm({ email: accountEmail }: { email: string | null }) {
+export function SupportForm({
+  email: accountEmail,
+  signedIn = false,
+}: {
+  email: string | null;
+  /* Where the answer will land depends on whether there is an account to
+     attach the thread to, not on whether an address was typed in. */
+  signedIn?: boolean;
+}) {
   const t = useTranslations("support");
   const [topic, setTopic] = useState<SupportTopic>("bug");
   const [email, setEmail] = useState(accountEmail ?? "");
@@ -79,7 +87,7 @@ export function SupportForm({ email: accountEmail }: { email: string | null }) {
           <div className="min-w-0">
             <h2 className="font-display text-2xl uppercase leading-none">{t("sentTitle")}</h2>
             <p className="mt-3 text-sm leading-relaxed text-ash">
-              {t("sentBody", { email })}
+              {signedIn ? t("sentBodyInApp") : t("sentBody", { email })}
             </p>
             <p className="mt-3 font-condensed text-xs uppercase tracking-widest text-ash-dim">
               {t("sentRef", { id: ticket })}
@@ -184,7 +192,10 @@ export function SupportForm({ email: accountEmail }: { email: string | null }) {
         {sending ? t("sending") : t("send")}
       </button>
 
-      <p className="mt-4 text-xs leading-relaxed text-ash-dim">{t("privacyNote")}</p>
+      <p className="mt-4 text-xs leading-relaxed text-blood/90">
+        {signedIn ? t("replyHereNote") : t("replyMailNote")}
+      </p>
+      <p className="mt-2 text-xs leading-relaxed text-ash-dim">{t("privacyNote")}</p>
     </form>
   );
 }

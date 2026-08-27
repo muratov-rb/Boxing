@@ -129,7 +129,8 @@
     "name": "Tu nombre",
     "namePlaceholder": "¿Cómo te llamamos?",
     "errNoName": "Dinos tu nombre, así sabemos a quién entrenamos.",
-    "errThrowaway": "Eso parece una dirección temporal. Usa una que puedas recibir de verdad: la necesitarás para confirmar tu cuenta."
+    "errThrowaway": "Eso parece una dirección temporal. Usa una que puedas recibir de verdad: la necesitarás para confirmar tu cuenta.",
+    "errAlreadyRegistered": "Ese correo ya tiene una cuenta. Inicia sesión abajo, o restablece la contraseña si la has olvidado."
   },
   "verify": {
     "kicker": "Un asalto más",
@@ -828,7 +829,8 @@
     "avatarRemove": "Quitar foto",
     "avatarTooBig": "Esa imagen supera {n} MB. Elige una más pequeña.",
     "avatarFailed": "No se pudo subir. Inténtalo otra vez.",
-    "avatarNoBucket": "El almacenamiento de fotos aún no está configurado."
+    "avatarNoBucket": "El almacenamiento de fotos aún no está configurado.",
+    "avatarBadType": "No podemos leer ese archivo. Prueba con un JPG o PNG."
   },
   "calories": {
     "kicker": "Combustible",
@@ -893,7 +895,10 @@
     "threadSending": "Enviando…",
     "status_new": "Esperando respuesta",
     "status_open": "En curso",
-    "status_done": "Cerrada"
+    "status_done": "Cerrada",
+    "replyHereNote": "Te responderemos en esta página, en Tus solicitudes; no hace falta vigilar el correo. Vuelve y échale un vistazo.",
+    "replyMailNote": "Te responderemos por correo. Inicia sesión antes de escribir y la respuesta llegará a esta página.",
+    "sentBodyInApp": "Tu respuesta aparecerá en esta página, en Tus solicitudes. Solemos contestar en un par de días."
   },
   "macro": {
     "title": "Macros de hoy",
