@@ -16,7 +16,8 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
    Worth doing deliberately, not as a one-line addition. */
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
-  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+  /* Content-Security-Policy is NOT here: it carries a per-request nonce, so
+     it is built in proxy.ts. frame-ancestors moved there with it. */
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   /* The scanner needs the camera on our own origin and nothing else needs

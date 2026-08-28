@@ -643,11 +643,11 @@ const SECTIONS: Section[] = [
     },
     blocks: [
       {
-        en: `${SERVICE} is not intended for anyone under ${MIN_AGE}, and the sign-up form will not accept an age below that. If you are under 18, please have a parent or guardian read this with you before you start training.`,
-        ru: `${SERVICE} не предназначен для тех, кому меньше ${MIN_AGE}, и форма регистрации не примет меньший возраст. Если тебе нет 18, попроси родителя или опекуна прочитать это вместе с тобой до начала тренировок.`,
-        es: `${SERVICE} no está pensado para menores de ${MIN_AGE} años, y el formulario de registro no aceptará una edad inferior. Si eres menor de 18, pide a un padre o tutor que lea esto contigo antes de empezar a entrenar.`,
-        fr: `${SERVICE} n'est pas destiné aux personnes de moins de ${MIN_AGE} ans, et le formulaire d'inscription n'acceptera pas un âge inférieur. Si vous avez moins de 18 ans, faites lire ce document par un parent ou tuteur avant de commencer à vous entraîner.`,
-        zh: `${SERVICE} 不面向 ${MIN_AGE} 岁以下人士，注册表单也不会接受低于该年龄的填写。如果你未满 18 岁，请在开始训练前让家长或监护人与你一起阅读本文件。`,
+        en: `${SERVICE} is not intended for anyone under ${MIN_AGE}, and we will not accept an age below that when you set up your profile. If you are under 18, please have a parent or guardian read this with you before you start training.`,
+        ru: `${SERVICE} не предназначен для тех, кому меньше ${MIN_AGE}, и меньший возраст не принимается при заполнении профиля. Если тебе нет 18, попроси родителя или опекуна прочитать это вместе с тобой до начала тренировок.`,
+        es: `${SERVICE} no está pensado para menores de ${MIN_AGE} años, y no aceptaremos una edad inferior al configurar tu perfil. Si eres menor de 18, pide a un padre o tutor que lea esto contigo antes de empezar a entrenar.`,
+        fr: `${SERVICE} n'est pas destiné aux personnes de moins de ${MIN_AGE} ans, et nous n'accepterons pas un âge inférieur lors de la configuration de votre profil. Si vous avez moins de 18 ans, faites lire ce document par un parent ou tuteur avant de commencer à vous entraîner.`,
+        zh: `${SERVICE} 不面向 ${MIN_AGE} 岁以下人士，在设置个人档案时也不会接受低于该年龄的填写。如果你未满 18 岁，请在开始训练前让家长或监护人与你一起阅读本文件。`,
       },
       {
         en: "Where local law sets a higher age for consenting to this kind of processing, that higher age applies to you.",

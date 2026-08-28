@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Space_Grotesk, Oswald, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -72,6 +72,9 @@ export default async function RootLayout({
      visitor on every page. /admin supplies them to itself instead. */
   const { admin: _admin, ...messages } = await getMessages();
   const store = await cookies();
+  /* Minted per request in proxy.ts. Both inline scripts below must carry it
+     or the CSP blocks them -- and the env one is what auth reads. */
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   /* A saved choice wins; with no cookie we let the device decide, which the
      inline script below does before first paint. The server can't read
      prefers-color-scheme, so it renders neutral and the script corrects it —
@@ -103,9 +106,11 @@ export default async function RootLayout({
       className={`${spaceGrotesk.variable} ${oswald.variable} ${inter.variable} h-full antialiased${isDark ? " dark" : ""}`}
     >
       <body className="min-h-full">
-        {themeScript ? <script dangerouslySetInnerHTML={{ __html: themeScript }} /> : null}
-        <script dangerouslySetInnerHTML={{ __html: envScript }} />
-        <StructuredData />
+        {themeScript ? (
+          <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
+        ) : null}
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: envScript }} />
+        <StructuredData nonce={nonce} />
         <div className="brush" aria-hidden="true" />
         <div className="grain" aria-hidden="true" />
         <NextIntlClientProvider locale={locale} messages={messages}>

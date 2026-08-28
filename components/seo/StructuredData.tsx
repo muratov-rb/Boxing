@@ -14,7 +14,7 @@ import { CONTACT_EMAIL, CONTACT_TELEGRAM, OPERATOR, SERVICE, SITE_URL } from "@/
 
 const INSTAGRAM = "https://instagram.com/ring.bornn";
 
-export function StructuredData() {
+export function StructuredData({ nonce }: { nonce?: string }) {
   const graph = [
     {
       "@type": "Organization",
@@ -53,6 +53,7 @@ export function StructuredData() {
 
   return (
     <script
+      nonce={nonce}
       type="application/ld+json"
       /* Escaping "<" stops a value that happens to contain a closing script
          tag from ending this block early. */

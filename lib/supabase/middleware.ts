@@ -21,8 +21,16 @@ const PROTECTED = [
 
 /* Refreshes the Supabase session cookie and guards protected routes.
    No-op when Supabase isn't configured yet, so the app still runs. */
-export async function updateSession(request: NextRequest) {
-  const response = NextResponse.next({ request });
+export async function updateSession(
+  request: NextRequest,
+  /* Carries the per-request CSP nonce through to the layout. */
+  requestHeaders?: Headers,
+) {
+  const next = () =>
+    requestHeaders
+      ? NextResponse.next({ request: { headers: requestHeaders } })
+      : NextResponse.next({ request });
+  const response = next();
 
   if (!isSupabaseConfigured()) return response;
 
@@ -40,11 +48,15 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
-  return guardProtected(request);
+  return guardProtected(request, requestHeaders);
 }
 
-async function guardProtected(request: NextRequest) {
-  let response = NextResponse.next({ request });
+async function guardProtected(request: NextRequest, requestHeaders?: Headers) {
+  const next = () =>
+    requestHeaders
+      ? NextResponse.next({ request: { headers: requestHeaders } })
+      : NextResponse.next({ request });
+  let response = next();
 
   const supabase = createServerClient(supabaseUrl(), supabaseAnonKey(), {
     cookies: {
@@ -55,7 +67,9 @@ async function guardProtected(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value),
         );
-        response = NextResponse.next({ request });
+        /* next() rather than NextResponse.next(request): rebuilding the
+           response here must not drop the CSP nonce headers. */
+        response = next();
         cookiesToSet.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options),
         );
