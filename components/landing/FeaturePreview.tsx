@@ -14,7 +14,7 @@ const FEATURES: { icon: IconName; k: string }[] = [
   /* "Technique Check" was here, advertising a feature that has been removed.
      A landing page selling something the product no longer does is the same
      class of problem as the "Coming soon" labels on features that shipped. */
-  { icon: "streak", k: "circuits" },
+  { icon: "clock", k: "circuits" },
   { icon: "users", k: "partners" },
   { icon: "rest", k: "rest" },
 ];
@@ -39,13 +39,20 @@ export function FeaturePreview() {
           </span>
         </div>
 
-        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((f) => (
+        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f, i) => (
             <article
               key={f.k}
-              className="group relative flex flex-col bg-surface p-6 transition-colors duration-300 hover:bg-surface-2"
+              className={`group relative flex flex-col bg-surface p-7 transition-colors duration-300 hover:bg-surface-2 ${
+                i === FEATURES.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""
+              }`}
             >
-              <span className="grid h-12 w-12 place-items-center rounded-xl border border-line text-blood transition-transform duration-300 group-hover:-translate-y-0.5">
+              {/* a hairline of brand colour that arrives on hover */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-px scale-x-0 bg-blood transition-transform duration-300 group-hover:scale-x-100"
+              />
+              <span className="grid h-12 w-12 place-items-center rounded-xl border border-blood/25 bg-blood/10 text-blood transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-105">
                 <Icon name={f.icon} size={24} />
               </span>
               <h3 className="mt-5 font-condensed text-xl font-semibold uppercase tracking-wide">
