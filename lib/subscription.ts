@@ -2,9 +2,9 @@
    RINGBORNN — subscription plans & entitlements.
    A 7-day free trial (Budget-level access) then one of three paid tiers.
    Every feature reads its access + numeric limits from the active plan's
-   entitlements, so gating lives in one place. Billing is not wired yet —
-   `setPlan` just records the choice locally; a later Stripe pass swaps that
-   for a real checkout.
+   entitlements, so gating lives in one place. Billing runs through Paddle as
+   merchant of record: /api/billing/checkout opens it, and the webhook writes
+   the plan back. `setPlan` remains for the local/offline path only.
    =========================================================================== */
 
 export type PaidPlanId = "budget" | "pro" | "max";
@@ -20,7 +20,7 @@ export interface Entitlements {
   lessonTier: LessonTier;
   dailyPlansPerWeek: number; // Infinity = unlimited
   aiNutrition: boolean;
-  nutritionMealSlots: number; // 0 locked · 2 = pro (pick 2) · 4 = all
+  nutritionMealSlots: number; // 0 locked · 3 = pro · 4 = every meal
   calorieScansPerDay: number; // 0 = feature locked
   /* Fresh AI meal plans per day. This was uncapped, and the page generated one
      on every single mount — so opening /nutrition twenty times cost twenty
@@ -76,6 +76,8 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 2,
     nutritionPlansPerDay: 0,
   },
+  /* Pro is the plan meant to be bought: generous enough that the limits are
+     not felt by a normal user. Five scans covers every meal of a day. */
   pro: {
     ranks: true,
     streaks: true,
@@ -83,10 +85,14 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     lessonTier: "small",
     dailyPlansPerWeek: INF,
     aiNutrition: true,
-    nutritionMealSlots: 2,
-    calorieScansPerDay: 2,
+    nutritionMealSlots: 3,
+    calorieScansPerDay: 5,
     nutritionPlansPerDay: 3,
   },
+  /* Max is "no limits", which is a story someone can hold in their head --
+     unlike "six of this and four of that". The scan ceiling is a real number
+     rather than Infinity because each one costs us money at the AI provider:
+     30 a day is past any honest use and still bounded if a key leaks. */
   max: {
     ranks: true,
     streaks: true,
@@ -95,8 +101,8 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     dailyPlansPerWeek: INF,
     aiNutrition: true,
     nutritionMealSlots: 4,
-    calorieScansPerDay: 10,
-    nutritionPlansPerDay: 6,
+    calorieScansPerDay: 30,
+    nutritionPlansPerDay: INF,
   },
 };
 
