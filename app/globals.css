@@ -639,3 +639,69 @@ textarea:focus {
     scroll-behavior: auto !important;
   }
 }
+
+/* ===========================================================================
+   ADMIN SURFACE
+
+   The rest of the site is a shop window: a drifting brush texture, grain over
+   the top, translucent panels that let it through. That treatment sells the
+   product. On a screen made of numbers it does the opposite -- the streaks run
+   underneath every figure and the blur muddies the one thing you came to read.
+
+   So the admin opts out. Flat opaque panels, no texture behind them, a tighter
+   radius that reads as a tool rather than a landing page. Scoped to
+   .admin-shell so none of it can leak into the app.
+   =========================================================================== */
+
+body:has(.admin-shell) .brush,
+body:has(.admin-shell) .grain {
+  display: none;
+}
+
+.admin-shell {
+  --admin-surface: #14161c;
+  --admin-surface-2: #191c24;
+  --admin-line: #262a34;
+  background: #0d0f14;
+}
+
+:root:not([data-theme="dark"]) .admin-shell {
+  --admin-surface: #ffffff;
+  --admin-surface-2: #f7f8fa;
+  --admin-line: #e3e6ec;
+  background: #f2f4f7;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .admin-shell {
+    --admin-surface: #ffffff;
+    --admin-surface-2: #f7f8fa;
+    --admin-line: #e3e6ec;
+    background: #f2f4f7;
+  }
+}
+
+/* Opaque, no blur: a panel on this screen is a surface to read off, not a
+   pane to look through. */
+.admin-shell .panel {
+  background: var(--admin-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.admin-shell .panel:hover {
+  border-color: var(--admin-line);
+}
+
+/* A number nobody needs to act on should not shout as loudly as one they do. */
+.admin-stat-zero {
+  opacity: 0.45;
+}
+
+/* The two figures the panel exists to show. */
+.admin-headline {
+  background: linear-gradient(180deg, var(--admin-surface-2), var(--admin-surface));
+  border-color: color-mix(in srgb, var(--color-blood) 28%, var(--admin-line));
+}
