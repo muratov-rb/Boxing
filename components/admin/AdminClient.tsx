@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { priceLabel, type PaidPlanId } from "@/lib/subscription";
+import { priceLabel, TRIAL_DAYS, type PaidPlanId } from "@/lib/subscription";
 import {
   isPaid,
   summarise,
@@ -12,12 +12,14 @@ import {
   signupsByMonth,
   toCsv,
   type UserRow,
+  trialConversion,
 } from "@/lib/admin-stats";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { AdminActivity } from "./AdminActivity";
+import { AdminCohorts } from "@/components/admin/AdminCohorts";
 import { AdminTickets } from "./AdminTickets";
 
 /* ===========================================================================
@@ -142,6 +144,7 @@ export function AdminClient({
   );
 
   const stats = useMemo(() => summarise(rows), [rows]);
+  const conv = useMemo(() => trialConversion(rows, TRIAL_DAYS), [rows]);
 
   const revenueBars = useMemo(() => {
     const tiers = revenueByTier(rows);
@@ -267,6 +270,24 @@ export function AdminClient({
                 <p className="mt-1 text-xs text-ash-dim">
                   {t("arrLine", { amount: priceLabel(stats.arr) })}
                 </p>
+              </div>
+              <div className="panel p-5">
+                <p className="font-condensed text-xs font-bold uppercase tracking-widest text-ash">
+                  {t("conversionTitle")}
+                </p>
+                <p className="mt-2 font-display text-4xl leading-none text-blood">
+                  {conv.pct === null ? "—" : `${conv.pct}%`}
+                </p>
+                <p className="mt-1 text-xs text-ash-dim">
+                  {conv.pct === null
+                    ? t("conversionNone")
+                    : t("conversionLine", { converted: conv.converted, ended: conv.ended })}
+                </p>
+                {conv.running > 0 && (
+                  <p className="mt-0.5 text-xs text-ash-dim">
+                    {t("conversionRunning", { n: conv.running })}
+                  </p>
+                )}
               </div>
               <BarChart
                 title={t("chartRevenueTier")}
@@ -426,7 +447,8 @@ export function AdminClient({
 
             <p className="mt-6 text-xs text-ash-dim">{t("note")}</p>
 
-            <AdminTickets />
+            <AdminCohorts />
+        <AdminTickets />
             <AdminActivity />
           </>
         )}

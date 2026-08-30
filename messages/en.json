@@ -785,7 +785,18 @@
     "ticketCancel": "Cancel",
     "ticketSentNote": "Sent. They'll see it on the support page.",
     "ticketDelete": "Delete this request",
-    "ticketDeleteConfirm": "Delete for good"
+    "ticketDeleteConfirm": "Delete for good",
+    "conversionTitle": "Trial → paid",
+    "conversionLine": "{converted} of {ended} finished trials became paying.",
+    "conversionNone": "No trial has finished yet.",
+    "conversionRunning": "{n} still inside their trial — not counted.",
+    "cohortsTitle": "Retention by signup week",
+    "cohortsHelp": "Each row is the people who signed up that week. Each column is how many of them were still training that many weeks later. A column reading “—” has not finished yet.",
+    "cohortsEmpty": "Not enough signups yet to show a cohort.",
+    "cohortsFailed": "Couldn't load retention.",
+    "cohortWeek": "Signed up",
+    "cohortSize": "People",
+    "cohortWeekN": "W{n}"
   },
   "account": {
     "dangerTitle": "Account",

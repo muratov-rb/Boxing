@@ -785,7 +785,18 @@
     "ticketCancel": "Annuler",
     "ticketSentNote": "Envoyé. Visible sur la page d'assistance.",
     "ticketDelete": "Supprimer cette demande",
-    "ticketDeleteConfirm": "Supprimer définitivement"
+    "ticketDeleteConfirm": "Supprimer définitivement",
+    "conversionTitle": "Essai → payant",
+    "conversionLine": "{converted} essais terminés sur {ended} sont devenus payants.",
+    "conversionNone": "Aucun essai n'est encore terminé.",
+    "conversionRunning": "{n} encore en essai — non comptés.",
+    "cohortsTitle": "Rétention par semaine d'inscription",
+    "cohortsHelp": "Chaque ligne correspond aux personnes inscrites cette semaine-là. Chaque colonne indique combien s'entraînaient encore ce nombre de semaines plus tard. Un « — » signifie que la semaine n'est pas terminée.",
+    "cohortsEmpty": "Pas encore assez d'inscriptions pour afficher une cohorte.",
+    "cohortsFailed": "Impossible de charger la rétention.",
+    "cohortWeek": "Inscrits",
+    "cohortSize": "Personnes",
+    "cohortWeekN": "S{n}"
   },
   "account": {
     "dangerTitle": "Compte",

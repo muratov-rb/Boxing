@@ -785,7 +785,18 @@
     "ticketCancel": "Cancelar",
     "ticketSentNote": "Enviado. Lo verán en la página de soporte.",
     "ticketDelete": "Eliminar esta solicitud",
-    "ticketDeleteConfirm": "Eliminar definitivamente"
+    "ticketDeleteConfirm": "Eliminar definitivamente",
+    "conversionTitle": "Prueba → pago",
+    "conversionLine": "{converted} de {ended} pruebas terminadas pasaron a pago.",
+    "conversionNone": "Aún no ha terminado ninguna prueba.",
+    "conversionRunning": "{n} siguen en periodo de prueba: no se cuentan.",
+    "cohortsTitle": "Retención por semana de alta",
+    "cohortsHelp": "Cada fila son las personas que se registraron esa semana. Cada columna indica cuántas seguían entrenando tantas semanas después. Un “—” significa que esa semana aún no ha terminado.",
+    "cohortsEmpty": "Todavía no hay altas suficientes para mostrar una cohorte.",
+    "cohortsFailed": "No se pudo cargar la retención.",
+    "cohortWeek": "Alta",
+    "cohortSize": "Personas",
+    "cohortWeekN": "S{n}"
   },
   "account": {
     "dangerTitle": "Cuenta",

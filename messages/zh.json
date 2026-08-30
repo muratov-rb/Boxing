@@ -785,7 +785,18 @@
     "ticketCancel": "取消",
     "ticketSentNote": "已发送，用户会在支持页看到。",
     "ticketDelete": "删除该求助",
-    "ticketDeleteConfirm": "永久删除"
+    "ticketDeleteConfirm": "永久删除",
+    "conversionTitle": "试用 → 付费",
+    "conversionLine": "{ended} 个已结束的试用中，有 {converted} 个转为付费。",
+    "conversionNone": "还没有试用结束。",
+    "conversionRunning": "{n} 人仍在试用期内——不计入。",
+    "cohortsTitle": "按注册周的留存",
+    "cohortsHelp": "每一行是当周注册的人。每一列表示其中有多少人在若干周后仍在训练。显示「—」表示该周尚未结束。",
+    "cohortsEmpty": "注册人数还不足以形成一个队列。",
+    "cohortsFailed": "无法加载留存数据。",
+    "cohortWeek": "注册于",
+    "cohortSize": "人数",
+    "cohortWeekN": "第{n}周"
   },
   "account": {
     "dangerTitle": "账号",
