@@ -831,31 +831,6 @@ export const EXERCISES: Exercise[] = [
     40,
   ),
   ex(
-    "wall-handstand",
-    ["Wall Handstand Hold", "Стойка на руках у стены"],
-    [
-      "Full bodyweight overhead — elite shoulder strength and control.",
-      "Весь вес над головой — элитная сила и контроль плеч.",
-    ],
-    [
-      "Kick up with heels resting on the wall",
-      "Arms locked, fingers gripping the floor",
-      "Squeeze glutes and ribs in; breathe, don't hold",
-    ],
-    [
-      "Забрось ноги, пятки касаются стены",
-      "Руки прямые, пальцы вжаты в пол",
-      "Сожми ягодицы, рёбра внутрь; дыши, не задерживай",
-    ],
-    "shoulders",
-    ["shoulders", "traps", "triceps", "abs"],
-    3,
-    ["3 × 15–40 sec", "3 × 15–40 сек"],
-    "handstand",
-    60,
-    30,
-  ),
-  ex(
     "shoulder-taps",
     ["Shoulder Taps", "Касания плеч в планке"],
     [
@@ -1912,31 +1887,6 @@ export const EXERCISES: Exercise[] = [
     "sprawl",
     125,
     40,
-  ),
-  ex(
-    "skater-jumps",
-    ["Skater Jumps", "Прыжки конькобежца"],
-    [
-      "Side-to-side bounds — lateral explosiveness for angles and slips.",
-      "Прыжки из стороны в сторону — боковая взрывность для углов и уклонов.",
-    ],
-    [
-      "Bound sideways onto one leg",
-      "Free leg sweeps behind, arms counter-swing",
-      "Stick the landing, then explode the other way",
-    ],
-    [
-      "Прыгни вбок на одну ногу",
-      "Свободная нога уходит за опорную, руки в противоход",
-      "Зафиксируй приземление и взорвись в другую сторону",
-    ],
-    "fullbody",
-    ["quads", "glutes", "calves", "abs"],
-    2,
-    ["4 × 20–30 sec", "4 × 20–30 сек"],
-    "skater",
-    120,
-    30,
   ),
   ex(
     "tuck-jumps",

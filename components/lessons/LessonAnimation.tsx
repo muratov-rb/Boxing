@@ -12,9 +12,11 @@
    empty box — the lesson still carries its muscle map and written cues.
    =========================================================================== */
 
-/** Exercises that have no picture. Everything else resolves by id, so this
-    list is the only thing to edit when the remaining art lands. */
-const MISSING = new Set(["wall-handstand", "skater-jumps"]);
+/** Exercises that have no picture. Empty today -- the two that had none were
+    removed from the library rather than shipped behind a placeholder -- but
+    the check stays, so a movement added without art degrades quietly instead
+    of rendering a broken image. */
+const MISSING = new Set<string>();
 
 export function hasLessonImage(exerciseId: string): boolean {
   return !MISSING.has(exerciseId);
