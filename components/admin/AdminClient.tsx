@@ -289,14 +289,17 @@ export function AdminClient({
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Three charts, so the row divides by three. Stacked below lg
+                rather than two-up: two columns leaves the third orphaned
+                with an empty cell beside it, which is what this was. */}
+            <div className="mt-3 grid gap-3 lg:grid-cols-3">
               <BarChart
                 title={t("chartRevenueTier")}
                 data={revenueBars}
                 format={(n) => priceLabel(n)}
               />
-            </div>
-
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <BarChart
                 title={t("chartPlanMix")}
                 data={[
