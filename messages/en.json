@@ -1093,6 +1093,7 @@
     "errNoCode": "No one has that code. Check it and try again.",
     "errBadCode": "That isn't a valid code — they're six characters long.",
     "errTooMany": "You've reached the maximum number of partners.",
-    "errGeneric": "That didn't work. Try again."
+    "errGeneric": "That didn't work. Try again.",
+    "xpShort": "{xp} XP"
   }
 }

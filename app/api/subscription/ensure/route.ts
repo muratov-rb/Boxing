@@ -26,6 +26,36 @@ export async function POST() {
 
   const admin = createAdminClient();
 
+  /* Fill the profile name from the account metadata when it is blank.
+
+     The name is captured into user_metadata at signup and was never copied
+     anywhere else, so a partner who had not opened their own profile page
+     showed up to their friends as "a fighter" -- the fallback, not their name.
+
+     Only when blank: an unconditional write would reset a name the person had
+     since edited, every time this route ran. And it sits above the early
+     return below, so an account that already has a subscription row is healed
+     too rather than only new ones. */
+  const signupName = (user.user_metadata?.display_name ?? "").toString().trim();
+  if (signupName) {
+    const { data: prof } = await admin
+      .from("user_profiles")
+      .select("display_name")
+      .eq("user_id", user.id)
+      .maybeSingle<{ display_name: string | null }>();
+
+    if (!prof?.display_name) {
+      await admin.from("user_profiles").upsert(
+        {
+          user_id: user.id,
+          display_name: signupName.slice(0, 40),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+    }
+  }
+
   const { data: existing } = await admin
     .from("subscriptions")
     .select("plan, period, trial_start, banned")

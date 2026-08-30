@@ -11,6 +11,7 @@ import {
   type ChallengeKind,
   type Partner,
 } from "@/lib/friends";
+import { rankFromXp } from "@/lib/xp";
 
 /* Training partners.
 
@@ -20,6 +21,7 @@ import {
 
 export function FriendsClient() {
   const t = useTranslations("friends");
+  const tr = useTranslations("ranks");
   const [code, setCode] = useState("");
   const [friends, setFriends] = useState<Partner[]>([]);
   const [pending, setPending] = useState<Partner[]>([]);
@@ -283,11 +285,28 @@ export function FriendsClient() {
                   <Avatar p={p} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-bone">{p.name ?? t("noName")}</span>
-                    <span className="mt-0.5 flex items-center gap-1.5 font-condensed text-[0.7rem] uppercase tracking-widest text-ash-dim">
-                      <span className={p.streak > 0 ? "text-blood" : ""}>
-                        <Icon name="streak" size={12} />
+                    {/* Streak, rank and XP: the API already returned all three
+                        and the card showed only the streak. Seeing where a
+                        partner actually is is the reason to add one. */}
+                    <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-condensed text-[0.7rem] uppercase tracking-widest text-ash-dim">
+                      <span className="flex items-center gap-1.5">
+                        <span className={p.streak > 0 ? "text-blood" : ""}>
+                          <Icon name="streak" size={12} />
+                        </span>
+                        {t("streakDays", { n: p.streak })}
                       </span>
-                      {t("streakDays", { n: p.streak })}
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-ash-dim">
+                          <Icon name="belt" size={12} />
+                        </span>
+                        {tr(`${rankFromXp(p.xp)}n`)}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-ash-dim">
+                          <Icon name="bolt" size={12} />
+                        </span>
+                        {t("xpShort", { xp: p.xp })}
+                      </span>
                     </span>
                   </span>
                   <span className="flex gap-2">

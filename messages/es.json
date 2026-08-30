@@ -1093,6 +1093,7 @@
     "errNoCode": "Nadie tiene ese código. Compruébalo e inténtalo de nuevo.",
     "errBadCode": "Ese código no vale: son seis caracteres.",
     "errTooMany": "Has alcanzado el máximo de compañeros.",
-    "errGeneric": "No ha funcionado. Inténtalo otra vez."
+    "errGeneric": "No ha funcionado. Inténtalo otra vez.",
+    "xpShort": "{xp} XP"
   }
 }

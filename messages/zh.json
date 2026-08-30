@@ -1093,6 +1093,7 @@
     "errNoCode": "没有这个码，请核对后重试。",
     "errBadCode": "这不是有效的码——邀请码是六位。",
     "errTooMany": "已达到搭档数量上限。",
-    "errGeneric": "没成功，请再试一次。"
+    "errGeneric": "没成功，请再试一次。",
+    "xpShort": "{xp} XP"
   }
 }

@@ -1093,6 +1093,7 @@
     "errNoCode": "Personne n'a ce code. Vérifiez et réessayez.",
     "errBadCode": "Ce n'est pas un code valide : ils font six caractères.",
     "errTooMany": "Vous avez atteint le nombre maximum de partenaires.",
-    "errGeneric": "Cela n'a pas fonctionné. Réessayez."
+    "errGeneric": "Cela n'a pas fonctionné. Réessayez.",
+    "xpShort": "{xp} XP"
   }
 }
