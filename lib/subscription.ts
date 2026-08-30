@@ -62,6 +62,9 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     calorieScansPerDay: 0,
     nutritionPlansPerDay: 0,
   },
+  /* Was 0 scans, which made Budget worse than the free trial it follows —
+     nobody pays to lose a feature they already had for a week. Budget's real
+     pitch is "keep what the trial gave you," so it has to at least match it. */
   budget: {
     ranks: false,
     streaks: true,
@@ -70,7 +73,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     dailyPlansPerWeek: 3,
     aiNutrition: false,
     nutritionMealSlots: 0,
-    calorieScansPerDay: 0,
+    calorieScansPerDay: 2,
     nutritionPlansPerDay: 0,
   },
   pro: {
