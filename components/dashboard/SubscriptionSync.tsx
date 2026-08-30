@@ -53,14 +53,14 @@ export function SubscriptionSync() {
         if (row) {
           applyServerSub(row.plan, row.trial_start, row.period);
         } else {
-          const local = exportSubState();
-          await supabase.from("subscriptions").insert({
-            user_id: user.id,
-            email: user.email,
-            plan: local.plan ?? activePlan(), // 'trial' or 'expired' when unpaid
-            period: local.period,
-            trial_start: local.trialStart,
-          });
+          /* The server decides the plan for a new row. This used to insert
+             whatever the browser had in localStorage, so anyone who had
+             clicked Max while billing was off got it written down as fact. */
+          const res = await fetch("/api/subscription/ensure", { method: "POST" });
+          if (res.ok) {
+            const created = await res.json();
+            applyServerSub(created.plan, created.trial_start, created.period);
+          }
         }
       } catch {
         /* offline / table missing — local state keeps working */

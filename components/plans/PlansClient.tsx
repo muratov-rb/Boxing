@@ -15,7 +15,7 @@ import {
   type PaidPlanId,
   type PlanId,
 } from "@/lib/subscription";
-import { activePlan, setPlan, trialDaysLeft, billingPeriod } from "@/lib/tracking";
+import { activePlan, trialDaysLeft, billingPeriod } from "@/lib/tracking";
 import { Icon } from "@/components/ui/Icons";
 import { AppNav } from "@/components/nav/AppNav";
 
@@ -127,10 +127,10 @@ export function PlansClient() {
         return;
       }
       if (data.error === "billing_off" || data.error === "price_not_configured") {
-        // billing not switched on yet — keep the pre-Stripe behaviour
-        setPlan(id, period);
-        setCurrent(id);
-        setJustPicked(id);
+        /* Was: setPlan(id) -- the browser handed itself the tier for free, and
+           the sync then wrote it to the database as though it were paid. A
+           plan may only ever arrive from the Paddle webhook. */
+        setError(t("errBillingOff"));
         return;
       }
       setError(t("checkoutFailed"));

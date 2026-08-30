@@ -694,7 +694,8 @@
     "billYearly": "Anual",
     "yearlyEquiv": "{price} / mes, facturado al año",
     "yearlySave": "ahorra {amount} al año ({n}%)",
-    "yearlyHint": "o {price} / año — 2 meses gratis"
+    "yearlyHint": "o {price} / año — 2 meses gratis",
+    "errBillingOff": "El pago no está disponible ahora mismo. Inténtalo de nuevo en un momento."
   },
   "admin": {
     "gateTitle": "Acceso de administrador",

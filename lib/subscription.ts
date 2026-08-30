@@ -113,14 +113,19 @@ export type BillingPeriod = "monthly" | "yearly";
 export const PRICES: Record<PaidPlanId, number> = {
   budget: 9.99,
   pro: 24.99,
-  max: 79.99,
+  /* Was 79.99, which was 3.2x Pro for the same product with the limits taken
+     off -- a price nobody was going to reach for. */
+  max: 49.99,
 };
 
-/** Yearly = 10 months' money for 12 months — the usual "2 months free". */
+/* Yearly is a smaller discount than the old flat "2 months free": the point is
+   to reward committing, not to undercut the monthly plan we actually want
+   people on. Budget gets the deepest cut because it is the tier most likely to
+   be abandoned after a month. Each lands on a .99 so it reads as a price. */
 export const PRICES_YEARLY: Record<PaidPlanId, number> = {
-  budget: 99.99,
-  pro: 249.99,
-  max: 799.99,
+  budget: 101.99, // 15% off 119.88
+  pro: 269.99, //    10% off 299.88
+  max: 539.99, //    10% off 599.88
 };
 
 export function priceFor(plan: PaidPlanId, period: BillingPeriod): number {
