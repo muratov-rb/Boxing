@@ -75,3 +75,33 @@ export async function POST(req: Request) {
   await auditAdmin(actor, "ticket", null, { id, status });
   return NextResponse.json({ ok: true, id, status });
 }
+
+/* Delete a ticket outright, with its replies.
+
+   Marking one "done" leaves it in the list to be reopened or answered a second
+   time by mistake; spam in particular should not linger in a queue that is
+   meant to mean "someone is waiting". The replies go with it through the
+   foreign key's ON DELETE CASCADE, so there is no orphaned conversation. */
+export async function DELETE(req: Request) {
+  const actor = await currentAdmin();
+  if (!actor) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
+  if (!serviceRoleConfigured()) {
+    return NextResponse.json({ error: "no_service_key" }, { status: 503 });
+  }
+
+  const id = Number(new URL(req.url).searchParams.get("id"));
+  if (!Number.isFinite(id)) {
+    return NextResponse.json({ error: "bad_request" }, { status: 400 });
+  }
+
+  const { error } = await createAdminClient().from("support_tickets").delete().eq("id", id);
+  if (error) {
+    console.error("[ticket_delete]", error);
+    return NextResponse.json({ error: "delete_failed" }, { status: 500 });
+  }
+
+  /* Logged: "who deleted the complaint" is exactly the question that gets
+     asked later, and a deleted row cannot answer it itself. */
+  await auditAdmin(actor, "ticket_delete", null, { id });
+  return NextResponse.json({ ok: true, id });
+}

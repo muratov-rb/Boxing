@@ -164,7 +164,7 @@ export function LessonsClient() {
   const [cat, setCat] = useState<LessonCat | "all">("all");
   const [view, setView] = useState<"moves" | "guides">("moves");
   const [open, setOpen] = useState<Exercise | null>(null);
-  const [cap, setCap] = useState<number>(Number.POSITIVE_INFINITY);
+  const [cap, setCap] = useState<number>(lessonLimitFor("limited"));
   const [locked, setLocked] = useState(false);
 
   useEffect(() => {

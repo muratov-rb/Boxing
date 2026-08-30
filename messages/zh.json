@@ -695,7 +695,14 @@
     "yearlyEquiv": "{price} / 月，按年结算",
     "yearlySave": "每年省 {amount}（{n}%）",
     "yearlyHint": "或 {price} / 年 — 免费 2 个月",
-    "errBillingOff": "结账暂时不可用，请稍后再试。"
+    "errBillingOff": "结账暂时不可用，请稍后再试。",
+    "plan_trial": "试用",
+    "plan_expired": "免费",
+    "plan_budget": "Budget",
+    "plan_pro": "Pro",
+    "plan_max": "Max",
+    "period_monthly": "月",
+    "period_yearly": "年"
   },
   "admin": {
     "gateTitle": "管理员访问",
@@ -776,7 +783,9 @@
     "ticketSend": "发送",
     "ticketSending": "发送中…",
     "ticketCancel": "取消",
-    "ticketSentNote": "已发送，用户会在支持页看到。"
+    "ticketSentNote": "已发送，用户会在支持页看到。",
+    "ticketDelete": "删除该求助",
+    "ticketDeleteConfirm": "永久删除"
   },
   "account": {
     "dangerTitle": "账号",

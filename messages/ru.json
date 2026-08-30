@@ -695,7 +695,14 @@
     "checkoutOpening": "Открываю оплату…",
     "checkoutFailed": "Не удалось начать оплату. Попробуй ещё раз.",
     "manageBilling": "Управление подпиской",
-    "errBillingOff": "Оплата сейчас недоступна. Попробуй ещё раз чуть позже."
+    "errBillingOff": "Оплата сейчас недоступна. Попробуй ещё раз чуть позже.",
+    "plan_trial": "Пробный",
+    "plan_expired": "Бесплатный",
+    "plan_budget": "Budget",
+    "plan_pro": "Pro",
+    "plan_max": "Max",
+    "period_monthly": "месяц",
+    "period_yearly": "год"
   },
   "admin": {
     "gateTitle": "Доступ администратора",
@@ -776,7 +783,9 @@
     "ticketSend": "Отправить",
     "ticketSending": "Отправляем…",
     "ticketCancel": "Отмена",
-    "ticketSentNote": "Отправлено. Пользователь увидит это на странице поддержки."
+    "ticketSentNote": "Отправлено. Пользователь увидит это на странице поддержки.",
+    "ticketDelete": "Удалить обращение",
+    "ticketDeleteConfirm": "Удалить навсегда"
   },
   "account": {
     "dangerTitle": "Аккаунт",

@@ -62,6 +62,23 @@ export function AdminTickets() {
   const [draft, setDraft] = useState("");
   const [sent, setSent] = useState<number | null>(null);
 
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+
+  async function removeTicket(id: number) {
+    setBusy(id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/tickets?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setRows((prev) => (prev ? prev.filter((r) => r.id !== id) : prev));
+      setConfirmDelete(null);
+    } catch {
+      setError(t("ticketsFailed"));
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function sendReply(id: number) {
     const body = draft.trim();
     if (!body) return;
@@ -240,6 +257,35 @@ export function AdminTickets() {
                       >
                         {t(`ticketAction_${r.status}`)}
                       </button>
+                      {confirmDelete === r.id ? (
+                        <>
+                          <button
+                            type="button"
+                            disabled={busy === r.id}
+                            onClick={() => void removeTicket(r.id)}
+                            className="min-h-[34px] rounded-lg border border-blood bg-blood/20 px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-blood-bright transition-colors hover:bg-blood/30 disabled:opacity-50"
+                          >
+                            {t("ticketDeleteConfirm")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDelete(null)}
+                            className="min-h-[34px] rounded-lg border border-line px-3 font-condensed text-[0.7rem] uppercase tracking-wider text-ash transition-colors hover:text-bone"
+                          >
+                            {t("ticketCancel")}
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDelete(r.id)}
+                          aria-label={t("ticketDelete")}
+                          title={t("ticketDelete")}
+                          className="grid h-[34px] w-[34px] place-items-center rounded-lg border border-line text-ash-dim transition-colors hover:border-blood/50 hover:text-blood"
+                        >
+                          <Icon name="close" size={13} />
+                        </button>
+                      )}
                     </span>
                   </div>
 

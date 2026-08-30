@@ -695,7 +695,14 @@
     "yearlyEquiv": "{price} / mois, facturé à l année",
     "yearlySave": "économise {amount} par an ({n}%)",
     "yearlyHint": "ou {price} / an — 2 mois offerts",
-    "errBillingOff": "Le paiement n'est pas disponible pour le moment. Réessayez dans un instant."
+    "errBillingOff": "Le paiement n'est pas disponible pour le moment. Réessayez dans un instant.",
+    "plan_trial": "Essai",
+    "plan_expired": "Gratuit",
+    "plan_budget": "Budget",
+    "plan_pro": "Pro",
+    "plan_max": "Max",
+    "period_monthly": "mois",
+    "period_yearly": "an"
   },
   "admin": {
     "gateTitle": "Accès administrateur",
@@ -776,7 +783,9 @@
     "ticketSend": "Envoyer",
     "ticketSending": "Envoi…",
     "ticketCancel": "Annuler",
-    "ticketSentNote": "Envoyé. Visible sur la page d'assistance."
+    "ticketSentNote": "Envoyé. Visible sur la page d'assistance.",
+    "ticketDelete": "Supprimer cette demande",
+    "ticketDeleteConfirm": "Supprimer définitivement"
   },
   "account": {
     "dangerTitle": "Compte",

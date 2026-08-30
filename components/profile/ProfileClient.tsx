@@ -9,7 +9,6 @@ import { DangerZone } from "@/components/dashboard/DangerZone";
 import { ProfileIdentity } from "@/components/profile/ProfileIdentity";
 import {
   rankProgress,
-  rankName,
   currentStreak,
   bestUsageStreak,
   totalTrainedDays,
@@ -42,6 +41,7 @@ interface Stats {
 export function ProfileClient({ email }: { email: string | null }) {
   const t = useTranslations("profile");
   const tp = useTranslations("plans");
+  const tr = useTranslations("ranks");
   const [stats, setStats] = useState<Stats | null>(null);
   const [plan, setPlan] = useState<PlanId>("trial");
   const [period, setPeriod] = useState<"monthly" | "yearly">("monthly");
@@ -126,7 +126,7 @@ export function ProfileClient({ email }: { email: string | null }) {
                     {t("rankLabel")}
                   </p>
                   <p className="mt-1 font-display text-3xl uppercase leading-none text-blood">
-                    {rankName(stats.rankIndex)}
+                    {tr(`${stats.rankIndex}n`)}
                   </p>
                 </div>
                 <p className="font-condensed text-sm text-ash">
@@ -158,7 +158,7 @@ export function ProfileClient({ email }: { email: string | null }) {
                 {t("currentPlan")}
               </p>
               <p className="mt-1 font-display text-3xl uppercase leading-none">
-                {tp(`plan_${plan}`) || plan}
+                {tp(`plan_${plan}`)}
               </p>
               <p className="mt-1.5 text-sm text-ash">
                 {plan === "trial"

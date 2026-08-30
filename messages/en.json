@@ -695,7 +695,14 @@
     "checkoutOpening": "Opening checkout…",
     "checkoutFailed": "Could not start checkout. Try again in a moment.",
     "manageBilling": "Manage billing",
-    "errBillingOff": "Checkout isn't available right now. Please try again shortly."
+    "errBillingOff": "Checkout isn't available right now. Please try again shortly.",
+    "plan_trial": "Trial",
+    "plan_expired": "Free",
+    "plan_budget": "Budget",
+    "plan_pro": "Pro",
+    "plan_max": "Max",
+    "period_monthly": "month",
+    "period_yearly": "year"
   },
   "admin": {
     "gateTitle": "Admin access",
@@ -776,7 +783,9 @@
     "ticketSend": "Send",
     "ticketSending": "Sending…",
     "ticketCancel": "Cancel",
-    "ticketSentNote": "Sent. They'll see it on the support page."
+    "ticketSentNote": "Sent. They'll see it on the support page.",
+    "ticketDelete": "Delete this request",
+    "ticketDeleteConfirm": "Delete for good"
   },
   "account": {
     "dangerTitle": "Account",
