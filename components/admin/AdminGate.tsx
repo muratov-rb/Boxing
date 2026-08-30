@@ -43,7 +43,9 @@ export function AdminGate({ configured }: { configured: boolean }) {
   };
 
   return (
-    <div className="flex min-h-dvh items-center justify-center px-4">
+    /* Same surface as the panel behind it: the login screen should not
+       look like a different product from the thing it opens. */
+    <div className="admin-shell flex min-h-dvh items-center justify-center px-4">
       <div className="panel w-full max-w-sm p-7 text-center">
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-blood/40 text-blood">
           <Icon name="lock" size={26} />
