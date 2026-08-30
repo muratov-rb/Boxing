@@ -54,27 +54,21 @@ function BarChart({
       <h3 className="font-condensed text-xs font-bold uppercase tracking-widest text-ash">
         {title}
       </h3>
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-2.5">
         {data.map((d) => (
-          <div key={d.label}>
-            {/* label and figure on one line, bar beneath: at this width the
-                three-column version squeezed the bar into almost nothing */}
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="font-condensed text-[0.7rem] uppercase tracking-wider text-ash-dim">
-                {d.label}
-              </span>
-              <span className="font-condensed text-xs tabular-nums text-bone">
-                {format ? format(d.value) : d.value}
-              </span>
-            </div>
-            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--admin-line)]">
+          <div key={d.label} className="flex items-center gap-3">
+            <span className="w-16 shrink-0 font-condensed text-[0.7rem] uppercase tracking-wider text-ash-dim sm:w-20">
+              {d.label}
+            </span>
+            <div className="h-2.5 flex-1 overflow-hidden rounded-full border border-line/60 bg-void">
               <div
-                className={`h-full rounded-full transition-[width] duration-500 ${
-                  d.value === 0 ? "bg-transparent" : "bg-blood"
-                }`}
+                className="h-full rounded-full bg-gradient-to-r from-blood to-ember transition-[width] duration-500"
                 style={{ width: `${(d.value / max) * 100}%` }}
               />
             </div>
+            <span className="w-14 shrink-0 text-right font-condensed text-xs text-bone sm:w-16">
+              {format ? format(d.value) : d.value}
+            </span>
           </div>
         ))}
       </div>
@@ -172,8 +166,8 @@ export function AdminClient({
   };
 
   return (
-    <div className="admin-shell flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-50 border-b border-[var(--admin-line)] bg-[var(--admin-surface)]">
+    <div className="flex min-h-dvh flex-col">
+      <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -244,7 +238,7 @@ export function AdminClient({
         {problem === "none" && (
           <>
             {/* headline numbers */}
-            <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {(
                 [
                   ["statTotal", stats.total],
@@ -255,11 +249,8 @@ export function AdminClient({
                   ["statActive30", stats.active30],
                 ] as const
               ).map(([key, value]) => (
-                <div
-                  key={key}
-                  className={`panel p-4 ${value === 0 ? "admin-stat-zero" : ""}`}
-                >
-                  <p className="font-display text-3xl leading-none tabular-nums">{value}</p>
+                <div key={key} className="panel p-4">
+                  <p className="font-display text-3xl leading-none">{value}</p>
                   <p className="mt-1 font-condensed text-[0.65rem] uppercase tracking-widest text-ash-dim">
                     {t(key)}
                   </p>
@@ -268,8 +259,8 @@ export function AdminClient({
             </div>
 
             {/* revenue */}
-            <div className="mt-2.5 grid gap-2.5 sm:grid-cols-2">
-              <div className="panel admin-headline p-5">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="panel p-5">
                 <p className="font-condensed text-xs font-bold uppercase tracking-widest text-ash">
                   {t("mrr")}
                 </p>
@@ -280,7 +271,7 @@ export function AdminClient({
                   {t("arrLine", { amount: priceLabel(stats.arr) })}
                 </p>
               </div>
-              <div className="panel admin-headline p-5">
+              <div className="panel p-5">
                 <p className="font-condensed text-xs font-bold uppercase tracking-widest text-ash">
                   {t("conversionTitle")}
                 </p>
