@@ -139,11 +139,18 @@
     "kicker": "One more round",
     "titlePre": "Check your ",
     "titleAccent": "inbox.",
-    "lead": "We sent a verification link. Click it to confirm your account, then you're in.",
+    "lead": "We sent a 6-digit code. Enter it below and you're in.",
     "sentTo": "Sent to {email}",
     "spam": "Didn't get it? Check spam, or ",
     "tryAgain": "try again",
-    "back": "Back to Log In"
+    "back": "Back to Log In",
+    "codeLabel": "Verification code",
+    "checking": "Checking…",
+    "codeWrong": "That code isn't right, or it has expired. Try again or send a new one.",
+    "resend": "Send a new code",
+    "resendIn": "Send a new code in {n}s",
+    "resentOk": "New code sent. Check your inbox.",
+    "resendFailed": "Couldn't send a new code. Wait a moment and try again."
   },
   "onb": {
     "exit": "Exit",

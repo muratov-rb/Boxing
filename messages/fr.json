@@ -139,11 +139,18 @@
     "kicker": "Un round de plus",
     "titlePre": "Vérifie ta ",
     "titleAccent": "boîte mail.",
-    "lead": "Nous avons envoyé un lien de vérification. Clique dessus pour confirmer ton compte, et tu es dedans.",
+    "lead": "Nous avons envoyé un code à 6 chiffres. Saisissez-le ci-dessous et c'est parti.",
     "sentTo": "Envoyé à {email}",
-    "spam": "Pas reçu ? Vérifie les spams, ou ",
+    "spam": "Rien reçu ? Regardez dans les spams, ou ",
     "tryAgain": "réessaie",
-    "back": "Retour à la connexion"
+    "back": "Retour à la connexion",
+    "codeLabel": "Code de vérification",
+    "checking": "Vérification…",
+    "codeWrong": "Ce code est incorrect ou a expiré. Réessayez ou demandez-en un nouveau.",
+    "resend": "Envoyer un nouveau code",
+    "resendIn": "Nouveau code dans {n} s",
+    "resentOk": "Nouveau code envoyé. Vérifiez votre boîte mail.",
+    "resendFailed": "Impossible d'envoyer le code. Patientez un instant et réessayez."
   },
   "onb": {
     "exit": "Quitter",

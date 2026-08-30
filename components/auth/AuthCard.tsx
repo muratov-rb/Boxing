@@ -137,7 +137,11 @@ export function AuthCard({
         if (data.session) {
           go(next);
         } else {
-          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+          /* Carry `next` through the code screen, or someone who came
+             here heading for /plans lands on the dashboard instead. */
+          router.push(
+            `/verify-email?email=${encodeURIComponent(email)}&next=${encodeURIComponent(next)}`,
+          );
         }
       }
     } catch (err) {

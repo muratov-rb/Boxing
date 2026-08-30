@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { VerifyCode } from "@/components/auth/VerifyCode";
 
 export const metadata: Metadata = { title: "Verify Your Email — RingBornn" };
 
@@ -11,6 +12,7 @@ export default async function VerifyEmailPage({
 }) {
   const sp = await searchParams;
   const email = typeof sp.email === "string" ? sp.email : undefined;
+  const next = typeof sp.next === "string" ? sp.next : "/dashboard";
   const t = await getTranslations("verify");
 
   return (
@@ -41,6 +43,11 @@ export default async function VerifyEmailPage({
       {email && (
         <p className="mt-2 text-sm text-bone">{t("sentTo", { email })}</p>
       )}
+
+      {/* Without an address there is nothing to verify against -- that only
+          happens if someone opens this page directly, and the register form
+          is the honest thing to show them. */}
+      {email && <VerifyCode email={email} next={next} />}
 
       <p className="mt-6 text-sm text-ash-dim">
         {t("spam")}

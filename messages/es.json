@@ -139,11 +139,18 @@
     "kicker": "Un asalto más",
     "titlePre": "Revisa tu ",
     "titleAccent": "correo.",
-    "lead": "Te enviamos un enlace de verificación. Haz clic para confirmar tu cuenta y ya estás dentro.",
+    "lead": "Te enviamos un código de 6 dígitos. Introdúcelo abajo y ya estás dentro.",
     "sentTo": "Enviado a {email}",
-    "spam": "¿No llegó? Revisa el spam, o ",
+    "spam": "¿No te llegó? Mira en spam, o ",
     "tryAgain": "inténtalo de nuevo",
-    "back": "Volver al inicio de sesión"
+    "back": "Volver al inicio de sesión",
+    "codeLabel": "Código de verificación",
+    "checking": "Comprobando…",
+    "codeWrong": "Ese código no es correcto o ha caducado. Inténtalo o pide uno nuevo.",
+    "resend": "Enviar un código nuevo",
+    "resendIn": "Nuevo código en {n} s",
+    "resentOk": "Código nuevo enviado. Revisa tu correo.",
+    "resendFailed": "No se pudo enviar el código. Espera un momento e inténtalo otra vez."
   },
   "onb": {
     "exit": "Salir",
