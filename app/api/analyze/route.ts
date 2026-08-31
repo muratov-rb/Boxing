@@ -1,4 +1,5 @@
 import { guardAiRoute, isDenied } from "@/lib/api-guard";
+import { spendQuota } from "@/lib/usage-server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
@@ -90,11 +91,16 @@ const SCHEMA = {
 export async function POST(req: Request) {
   /* Sign-in required, like every other route that can reach Anthropic. This
      one was missed: it took a profile from anyone on the internet and spent a
-     model call on it, so the bill was open to whoever found the URL. No quota
-     key — the analysis runs once at the end of onboarding, and metering the
-     one call that produces a person's plan would be the wrong thing to ration.
-     Onboarding itself already requires an account, so nothing legitimate
-     reaches here signed out. */
+     model call on it, so the bill was open to whoever found the URL.
+
+     Signing in was not enough on its own. This is the most expensive call in
+     the app, and it was the only one with no ceiling: the comment here used to
+     argue that the analysis runs once at the end of onboarding and so needed
+     no quota, but nothing in the code made that true. One account could ask
+     for it in a loop.
+
+     `null` here, and the quota spent further down, once we know a Claude call
+     is actually going to happen. */
   const guard = await guardAiRoute(null);
   if (isDenied(guard)) return guard.response;
 
@@ -117,6 +123,21 @@ export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     // No key yet — hand back the local engine so the flow still works.
+    return NextResponse.json(localAnalysis(profile, locale));
+  }
+
+  /* Spend the day's allowance only now that a Claude call is certain.
+     Deliberately below the two fallbacks above: impossible stats and a missing
+     key both return the local engine without touching Anthropic, and charging
+     someone an allowance for a call we never made would be theft of a small
+     kind.
+
+     Out of allowance is not an error either. The client already falls back to
+     the local engine on any non-ok response, so a person who has re-run this
+     three times today still gets a read of their profile -- just not a
+     generated one. */
+  const spend = await spendQuota(guard, "coachAnalysis");
+  if (!spend.allowed) {
     return NextResponse.json(localAnalysis(profile, locale));
   }
 

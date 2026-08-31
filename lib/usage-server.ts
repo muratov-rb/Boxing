@@ -10,7 +10,7 @@ import type { Caller } from "./entitlements-server";
    decides whether an expensive call actually happens.
    =========================================================================== */
 
-export type QuotaKey = "calorieScan" | "nutritionPlan";
+export type QuotaKey = "calorieScan" | "nutritionPlan" | "coachAnalysis";
 
 export interface QuotaVerdict {
   allowed: boolean;
@@ -23,10 +23,11 @@ export interface QuotaVerdict {
 function limitFor(caller: Caller, key: QuotaKey): number {
   const e = caller.entitlements;
   if (key === "calorieScan") return e.calorieScansPerDay;
+  if (key === "coachAnalysis") return e.coachAnalysesPerDay;
   return e.nutritionPlansPerDay;
 }
 
-const ALL_KEYS: QuotaKey[] = ["calorieScan", "nutritionPlan"];
+const ALL_KEYS: QuotaKey[] = ["calorieScan", "nutritionPlan", "coachAnalysis"];
 
 /** Read today's counters without spending anything — for showing "2 of 3 left"
     honestly, including on a second device where localStorage knows nothing. */

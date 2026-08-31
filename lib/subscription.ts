@@ -27,6 +27,15 @@ export interface Entitlements {
      plans. A plan covers one day, so a small number is the honest allowance:
      one for the day, plus room to redo it with different preferences. */
   nutritionPlansPerDay: number; // 0 = local engine only
+  /* The onboarding coach analysis. It was the one AI route with no ceiling at
+     all: the code assumed it runs once at the end of onboarding, but nothing
+     made that true, so a single signed-in account could call the most
+     expensive endpoint in the app in a loop.
+
+     A small number rather than one, because re-running it is legitimate --
+     people change goal, weight or timeframe and want the read again. Three a
+     day covers that and caps a runaway account at about six cents. */
+  coachAnalysesPerDay: number;
 }
 
 const INF = Number.POSITIVE_INFINITY;
@@ -49,6 +58,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 2,
     nutritionPlansPerDay: 0,
+    coachAnalysesPerDay: 3,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled
   expired: {
@@ -61,6 +71,9 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 0,
     nutritionPlansPerDay: 0,
+    /* Nothing else is open to an expired account either; the route falls back
+       to the local engine, so they still get a read, just not a generated one. */
+    coachAnalysesPerDay: 0,
   },
   /* Was 0 scans, which made Budget worse than the free trial it follows —
      nobody pays to lose a feature they already had for a week. Budget's real
@@ -75,6 +88,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 2,
     nutritionPlansPerDay: 0,
+    coachAnalysesPerDay: 3,
   },
   /* Pro is the plan meant to be bought: generous enough that the limits are
      not felt by a normal user. Five scans covers every meal of a day. */
@@ -88,6 +102,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 3,
     calorieScansPerDay: 5,
     nutritionPlansPerDay: 3,
+    coachAnalysesPerDay: 3,
   },
   /* Max is "no limits", which is a story someone can hold in their head --
      unlike "six of this and four of that". The scan ceiling is a real number
@@ -104,7 +119,13 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: true,
     nutritionMealSlots: 4,
     calorieScansPerDay: 15,
-    nutritionPlansPerDay: INF,
+    /* Was Infinity, which contradicted the paragraph above: a generated meal
+       plan costs about the same as a scan, so leaving it uncapped left the
+       one hole the scan ceiling exists to prevent. Ten a day is three times
+       Pro and more than anyone plans in a day -- it is not advertised
+       anywhere, and no real user will meet it. */
+    nutritionPlansPerDay: 10,
+    coachAnalysesPerDay: 3,
   },
 };
 
@@ -174,6 +195,7 @@ export const UNLOCKED: Entitlements = {
   nutritionMealSlots: 4,
   nutritionPlansPerDay: INF,
   calorieScansPerDay: INF,
+  coachAnalysesPerDay: INF,
 };
 
 export function entitlementsFor(plan: PlanId): Entitlements {
