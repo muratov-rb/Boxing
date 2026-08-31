@@ -505,13 +505,15 @@ function SharedStreakRow({
 }) {
   const s = p.shared;
   if (!s) return null;
-  const name = p.name ?? t("noName");
   const alive = s.days > 0;
 
+  /* No name in the broken-streak label. The card carries their name two lines
+     up, so repeating it said nothing and wrapped the pill onto three lines on
+     a phone. "Missed yesterday" on somebody's card is already about them. */
   const headline = alive
     ? t("togetherDays", { n: s.days })
     : s.brokeBy === "them"
-      ? t("brokeThem", { name })
+      ? t("brokeThem")
       : s.brokeBy === "you"
         ? t("brokeYou")
         : s.brokeBy === "both"
@@ -521,7 +523,7 @@ function SharedStreakRow({
   return (
     <span className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <span
-        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-condensed text-[0.65rem] uppercase tracking-widest ${
+        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 font-condensed text-[0.65rem] uppercase tracking-widest ${
           alive
             ? "border-blood/40 bg-blood/10 text-blood"
             : "border-line bg-void/40 text-ash-dim"
@@ -532,13 +534,16 @@ function SharedStreakRow({
       </span>
 
       {/* Today, as fact. Two ticks are quicker to read than a sentence, and
-          the missing one is the nudge. */}
+          the missing one is the nudge.
+
+          nowrap on each half: without it a narrow card broke "YOU ✓" across
+          two lines, leaving a column of orphaned dashes under the labels. */}
       <span className="inline-flex items-center gap-2 font-condensed text-[0.65rem] uppercase tracking-widest text-ash-dim">
-        {t("todayLabel")}
-        <span className={s.youToday ? "text-blood" : "text-ash-dim"}>
+        <span className="whitespace-nowrap">{t("todayLabel")}</span>
+        <span className={`whitespace-nowrap ${s.youToday ? "text-blood" : "text-ash-dim"}`}>
           {t("todayYou")} {s.youToday ? "✓" : "—"}
         </span>
-        <span className={s.themToday ? "text-blood" : "text-ash-dim"}>
+        <span className={`whitespace-nowrap ${s.themToday ? "text-blood" : "text-ash-dim"}`}>
           {t("todayThem")} {s.themToday ? "✓" : "—"}
         </span>
       </span>
