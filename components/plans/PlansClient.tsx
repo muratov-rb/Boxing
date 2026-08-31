@@ -9,6 +9,7 @@ import {
   priceFor,
   perMonthOnYearly,
   yearlySavingPct,
+  minYearlySavingPct,
   priceLabel,
   type BillingPeriod,
   type Entitlements,
@@ -212,7 +213,7 @@ export function PlansClient() {
                       period === p ? "bg-white/20" : "bg-blood/15 text-blood",
                     )}
                   >
-                    −{yearlySavingPct("pro")}%
+                    −{minYearlySavingPct()}%
                   </span>
                 )}
               </button>
@@ -261,7 +262,10 @@ export function PlansClient() {
                   </p>
                 ) : (
                   <p className="mt-1 text-xs text-ash-dim">
-                    {t("yearlyHint", { price: priceLabel(priceFor(id, "yearly")) })}
+                    {t("yearlyHint", {
+                      price: priceLabel(priceFor(id, "yearly")),
+                      n: yearlySavingPct(id),
+                    })}
                   </p>
                 )}
                 <p className="mt-2 text-sm text-ash">{t(`tagline_${id}`)}</p>

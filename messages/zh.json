@@ -708,7 +708,7 @@
     "billYearly": "按年",
     "yearlyEquiv": "{price} / 月，按年结算",
     "yearlySave": "每年省 {amount}（{n}%）",
-    "yearlyHint": "或 {price} / 年 — 免费 2 个月",
+    "yearlyHint": "或 {price} / 年 — 省 {n}%",
     "errBillingOff": "结账暂时不可用，请稍后再试。",
     "plan_trial": "试用",
     "plan_expired": "免费",

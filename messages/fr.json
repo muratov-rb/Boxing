@@ -708,7 +708,7 @@
     "billYearly": "Annuel",
     "yearlyEquiv": "{price} / mois, facturé à l année",
     "yearlySave": "économise {amount} par an ({n}%)",
-    "yearlyHint": "ou {price} / an — 2 mois offerts",
+    "yearlyHint": "ou {price} par an — {n}% d'économie",
     "errBillingOff": "Le paiement n'est pas disponible pour le moment. Réessayez dans un instant.",
     "plan_trial": "Essai",
     "plan_expired": "Gratuit",

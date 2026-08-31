@@ -145,6 +145,13 @@ export function yearlySavingPct(plan: PaidPlanId): number {
   return Math.round(((monthlyTotal - PRICES_YEARLY[plan]) / monthlyTotal) * 100);
 }
 
+/** The smallest saving any tier gets, for the one badge that has to speak for
+    all three. The floor rather than the best of them: a badge promising 15%
+    to someone about to buy Pro at 10% is a number they can check. */
+export function minYearlySavingPct(): number {
+  return Math.min(...PAID_PLANS.map(yearlySavingPct));
+}
+
 export const PAID_PLANS: PaidPlanId[] = ["budget", "pro", "max"];
 export const BILLING_PERIODS: BillingPeriod[] = ["monthly", "yearly"];
 
