@@ -21,6 +21,22 @@ export interface Partner {
   xp: number;
   /** Set only on requests waiting on you; drives the accept/decline buttons. */
   incoming?: boolean;
+  /** Absent on pending requests — there is no shared anything until they
+      accept, and computing it would be answering a question nobody asked. */
+  shared?: SharedStreak;
+}
+
+/** Who trained on the day the joint streak died. */
+export type BrokeBy = "you" | "them" | "both";
+
+export interface SharedStreak {
+  /** Consecutive days you BOTH trained. */
+  days: number;
+  /** Today so far — the nudge, and the reason today is never blamed. */
+  youToday: boolean;
+  themToday: boolean;
+  /** Only set when there is no streak left to lose. */
+  brokeBy: BrokeBy | null;
 }
 
 export interface Challenge {
@@ -98,4 +114,73 @@ export function streakFrom(days: string[], today = new Date()): number {
     cursor.setUTCDate(cursor.getUTCDate() - 1);
   }
   return n;
+}
+
+/**
+ * The streak the two of you hold together: days you BOTH trained.
+ *
+ * A streak you own alone is a number you can protect by yourself. A shared one
+ * can be taken from you by somebody else, which is the entire point -- it is
+ * the only number in the app that makes skipping a day cost someone besides
+ * you.
+ *
+ * Today is never blamed on anyone. It is still going; a partner who trains in
+ * the evening is not letting you down at nine in the morning, and telling you
+ * they did would make the feature a liar twice a day. So `brokeBy` looks at
+ * yesterday, and today is reported as plain fact through `youToday`/`themToday`.
+ *
+ * Both day lists are ISO dates (YYYY-MM-DD), any order.
+ */
+export function sharedStreakFrom(
+  mine: string[],
+  theirs: string[],
+  today = new Date(),
+): SharedStreak {
+  const setA = new Set(mine);
+  const setB = new Set(theirs);
+  const both = mine.filter((d) => setB.has(d));
+
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const midnight = new Date(today);
+  midnight.setUTCHours(0, 0, 0, 0);
+  const todayIso = iso(midnight);
+
+  const yesterday = new Date(midnight);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const yIso = iso(yesterday);
+
+  const days = streakFrom(both, today);
+  const youToday = setA.has(todayIso);
+  const themToday = setB.has(todayIso);
+
+  /* A live streak has not been broken by anybody. */
+  if (days > 0) return { days, youToday, themToday, brokeBy: null };
+
+  /* With no streak left, yesterday is necessarily where it went: if you had
+     both trained then, streakFrom would have anchored there and days > 0. So
+     there is no search to do -- only the question of who was missing. */
+  const youY = setA.has(yIso);
+  const themY = setB.has(yIso);
+
+  let brokeBy: BrokeBy | null = null;
+  if (youY !== themY) {
+    brokeBy = youY ? "them" : "you";
+  } else if (!youY && !themY) {
+    /* Neither trained. That is only a broken streak if there was one to
+       break -- otherwise two people who linked this morning are told they
+       have both already failed. */
+    const hadOne = both.some((d) => d >= isoDaysAgo(midnight, BLAME_WINDOW_DAYS));
+    brokeBy = hadOne ? "both" : null;
+  }
+
+  return { days, youToday, themToday, brokeBy };
+}
+
+/** How far back a shared day still counts as "you had a streak going". */
+const BLAME_WINDOW_DAYS = 14;
+
+function isoDaysAgo(from: Date, n: number): string {
+  const d = new Date(from);
+  d.setUTCDate(d.getUTCDate() - n);
+  return d.toISOString().slice(0, 10);
 }

@@ -327,6 +327,10 @@ export function FriendsClient() {
                         {t("xpShort", { xp: p.xp })}
                       </span>
                     </span>
+                    {/* The joint streak. Deliberately the loudest thing on the
+                        card when it is alive: it is the only number here that
+                        somebody else can cost you. */}
+                    {p.shared && <SharedStreakRow p={p} t={t} />}
                   </span>
                   <span className="flex gap-2">
                     <button
@@ -479,6 +483,66 @@ export function FriendsClient() {
         </div>
       )}
     </div>
+  );
+}
+
+/* The line that makes a partner worth having.
+
+   Three states, and they say different things on purpose:
+     alive   -- the number, in blood red, plus who has trained today
+     broken  -- who broke it, named, because a number that vanished without a
+                reason just looks like a bug
+     unstarted -- an invitation, not an accusation
+
+   Today is shown but never blamed: a partner who trains after work has not
+   let anyone down at breakfast. */
+function SharedStreakRow({
+  p,
+  t,
+}: {
+  p: Partner;
+  t: ReturnType<typeof useTranslations<"friends">>;
+}) {
+  const s = p.shared;
+  if (!s) return null;
+  const name = p.name ?? t("noName");
+  const alive = s.days > 0;
+
+  const headline = alive
+    ? t("togetherDays", { n: s.days })
+    : s.brokeBy === "them"
+      ? t("brokeThem", { name })
+      : s.brokeBy === "you"
+        ? t("brokeYou")
+        : s.brokeBy === "both"
+          ? t("brokeBoth")
+          : t("togetherNone");
+
+  return (
+    <span className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-condensed text-[0.65rem] uppercase tracking-widest ${
+          alive
+            ? "border-blood/40 bg-blood/10 text-blood"
+            : "border-line bg-void/40 text-ash-dim"
+        }`}
+      >
+        <Icon name={alive ? "streak" : "close"} size={11} />
+        {headline}
+      </span>
+
+      {/* Today, as fact. Two ticks are quicker to read than a sentence, and
+          the missing one is the nudge. */}
+      <span className="inline-flex items-center gap-2 font-condensed text-[0.65rem] uppercase tracking-widest text-ash-dim">
+        {t("todayLabel")}
+        <span className={s.youToday ? "text-blood" : "text-ash-dim"}>
+          {t("todayYou")} {s.youToday ? "✓" : "—"}
+        </span>
+        <span className={s.themToday ? "text-blood" : "text-ash-dim"}>
+          {t("todayThem")} {s.themToday ? "✓" : "—"}
+        </span>
+      </span>
+    </span>
   );
 }
 

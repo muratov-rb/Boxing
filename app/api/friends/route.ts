@@ -5,6 +5,7 @@ import {
   MAX_FRIENDS,
   generateFriendCode,
   normaliseFriendCode,
+  sharedStreakFrom,
   streakFrom,
   type Partner,
 } from "@/lib/friends";
@@ -85,7 +86,7 @@ async function partnersFor(userId: string): Promise<{ friends: Partner[]; pendin
     admin
       .from("user_activity")
       .select("user_id, day")
-      .in("user_id", ids)
+      .in("user_id", [...ids, userId])
       .eq("trained", true)
       .gte(
         "day",
@@ -103,7 +104,9 @@ async function partnersFor(userId: string): Promise<{ friends: Partner[]; pendin
     daysOf.set(a.user_id, list);
   }
 
-  const build = (l: (typeof links)[number]): Partner => {
+  const myDays = daysOf.get(userId) ?? [];
+
+  const build = (l: (typeof links)[number], withShared: boolean): Partner => {
     const other = otherOf(l);
     const p = nameOf.get(other);
     return {
@@ -113,16 +116,20 @@ async function partnersFor(userId: string): Promise<{ friends: Partner[]; pendin
       avatarUrl: p?.avatar_url ?? null,
       streak: streakFrom(daysOf.get(other) ?? []),
       xp: xpOf.get(other) ?? 0,
+      /* Only once they have accepted. Someone who has not answered your
+         request yet does not share a streak with you, and showing one that
+         says they broke it would be an accusation aimed at a stranger. */
+      ...(withShared ? { shared: sharedStreakFrom(myDays, daysOf.get(other) ?? []) } : {}),
     };
   };
 
   return {
-    friends: links.filter((l) => l.status === "accepted").map(build),
+    friends: links.filter((l) => l.status === "accepted").map((l) => build(l, true)),
     /* Only requests waiting on you. Your own outgoing ones are not something
        you can act on, and listing them as "pending" reads like a to-do. */
     pending: links
       .filter((l) => l.status === "pending" && l.addressee_id === userId)
-      .map((l) => ({ ...build(l), incoming: true })),
+      .map((l) => ({ ...build(l, false), incoming: true })),
   };
 }
 
@@ -261,16 +268,26 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
-  const id = Number(new URL(req.url).searchParams.get("id"));
-  if (!Number.isFinite(id)) {
+  /* Number(null) is 0, not NaN, so a request with no id at all used to pass a
+     Number.isFinite check, delete nothing, and still answer {"ok":true}. Ids
+     are positive integers; nothing else is a request worth trying. */
+  const raw = new URL(req.url).searchParams.get("id");
+  const id = raw === null ? NaN : Number(raw);
+  if (!Number.isInteger(id) || id <= 0) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  await createAdminClient()
+  const { data } = await createAdminClient()
     .from("friendships")
     .delete()
     .eq("id", id)
-    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+    .select("id")
+    .maybeSingle<{ id: number }>();
+
+  /* Nothing matched: either it is already gone, or it was never theirs to
+     remove. Both are "no", and saying ok to either was the lie. */
+  if (!data) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
   return NextResponse.json({ ok: true });
 }
