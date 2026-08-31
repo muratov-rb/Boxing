@@ -1085,6 +1085,8 @@
     "challengeFrom": "{name} vous a défié",
     "challengeSent": "Défi envoyé.",
     "awaiting": "En attente de sa réponse",
+    "withdraw": "Retirer",
+    "errCancelAnswered": "Trop tard : il ou elle a déjà répondu à ce défi.",
     "markDone": "Marquer terminé",
     "send": "Envoyer",
     "cancel": "Annuler",

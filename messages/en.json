@@ -1085,6 +1085,8 @@
     "challengeFrom": "{name} challenged you",
     "challengeSent": "Challenge sent.",
     "awaiting": "Waiting for them",
+    "withdraw": "Withdraw",
+    "errCancelAnswered": "Too late — they have already answered that one.",
     "markDone": "Mark done",
     "send": "Send",
     "cancel": "Cancel",

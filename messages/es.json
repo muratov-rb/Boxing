@@ -1085,6 +1085,8 @@
     "challengeFrom": "{name} te ha retado",
     "challengeSent": "Reto enviado.",
     "awaiting": "Esperando respuesta",
+    "withdraw": "Retirar",
+    "errCancelAnswered": "Demasiado tarde: ya han respondido a ese reto.",
     "markDone": "Marcar hecho",
     "send": "Enviar",
     "cancel": "Cancelar",

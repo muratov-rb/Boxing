@@ -92,7 +92,9 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
   /* Max is "no limits", which is a story someone can hold in their head --
      unlike "six of this and four of that". The scan ceiling is a real number
      rather than Infinity because each one costs us money at the AI provider:
-     30 a day is past any honest use and still bounded if a key leaks. */
+     15 a day is three times what Pro allows and still well past what anyone
+     eats in a day, so it is a ceiling nobody honest will meet -- while
+     halving what a leaked account could spend before anyone notices. */
   max: {
     ranks: true,
     streaks: true,
@@ -101,7 +103,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     dailyPlansPerWeek: INF,
     aiNutrition: true,
     nutritionMealSlots: 4,
-    calorieScansPerDay: 30,
+    calorieScansPerDay: 15,
     nutritionPlansPerDay: INF,
   },
 };

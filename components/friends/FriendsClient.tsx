@@ -156,6 +156,25 @@ export function FriendsClient() {
     }
   }
 
+  /* Withdrawing one you sent. Only possible while it is unanswered, which the
+     server enforces too -- by the time the button is clicked they may have
+     just accepted, and then the honest thing is to say so and show the card
+     in its real state rather than pretend the click worked. */
+  async function cancelChallenge(id: number) {
+    if (busy) return;
+    setBusy(true);
+    setNote(null);
+    try {
+      const res = await fetch(`/api/challenges?id=${id}`, { method: "DELETE" });
+      if (!res.ok) setNote({ kind: "err", text: t("errCancelAnswered") });
+      await load();
+    } catch {
+      setNote({ kind: "err", text: t("errGeneric") });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const open = challenges.filter((c) => c.status === "sent" || c.status === "accepted");
 
   return (
@@ -385,9 +404,19 @@ export function FriendsClient() {
                       </button>
                     )}
                     {c.mine && c.status === "sent" && (
-                      <span className="font-condensed text-[0.7rem] uppercase tracking-widest text-ash-dim">
-                        {t("awaiting")}
-                      </span>
+                      <>
+                        <span className="self-center font-condensed text-[0.7rem] uppercase tracking-widest text-ash-dim">
+                          {t("awaiting")}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => void cancelChallenge(c.id)}
+                          className="btn btn-ghost !px-4 !py-2 text-xs disabled:opacity-50"
+                        >
+                          {t("withdraw")}
+                        </button>
+                      </>
                     )}
                   </div>
                 </li>

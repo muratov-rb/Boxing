@@ -1085,6 +1085,8 @@
     "challengeFrom": "{name} 向你发起挑战",
     "challengeSent": "挑战已发送。",
     "awaiting": "等待对方回应",
+    "withdraw": "撤回",
+    "errCancelAnswered": "太晚了，对方已经回应了这个挑战。",
     "markDone": "标记完成",
     "send": "发送",
     "cancel": "取消",

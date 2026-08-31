@@ -1085,6 +1085,8 @@
     "challengeFrom": "{name} бросил тебе вызов",
     "challengeSent": "Вызов отправлен.",
     "awaiting": "Ждём ответа",
+    "withdraw": "Отозвать",
+    "errCancelAnswered": "Поздно — на этот вызов уже ответили.",
     "markDone": "Выполнено",
     "send": "Отправить",
     "cancel": "Отмена",

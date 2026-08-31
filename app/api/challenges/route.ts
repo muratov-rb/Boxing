@@ -166,3 +166,48 @@ export async function PATCH(req: Request) {
 
   return NextResponse.json({ ok: true, status });
 }
+
+/** Withdraw a challenge you sent, while it is still unanswered. */
+export async function DELETE(req: Request) {
+  const user = await getUser();
+  if (!user) return NextResponse.json({ error: "sign_in_required" }, { status: 401 });
+  if (!serviceRoleConfigured()) {
+    return NextResponse.json({ error: "not_configured" }, { status: 503 });
+  }
+
+  const id = Number(new URL(req.url).searchParams.get("id"));
+  if (!Number.isFinite(id)) {
+    return NextResponse.json({ error: "bad_request" }, { status: 400 });
+  }
+
+  /* Three filters, and each one is doing a job.
+
+     from_id  -- only the sender may withdraw. Without it the id in the query
+                 string is enough to delete anyone's challenge.
+     status   -- only before it was answered. Once someone has accepted, they
+                 have committed to doing the thing, and taking it out from
+                 under them is not a cancel. Either side can still mark an
+                 accepted one done.
+
+     The row is deleted rather than moved to a "cancelled" status: a withdrawn
+     challenge is one that never happened, and leaving a tombstone on the
+     receiver's list would tell them about a dare they had not yet read. */
+  const { data, error } = await createAdminClient()
+    .from("challenges")
+    .delete()
+    .eq("id", id)
+    .eq("from_id", user.id)
+    .eq("status", "sent")
+    .select("id")
+    .maybeSingle<{ id: number }>();
+
+  if (error) {
+    console.error("[challenge_cancel]", error);
+    return NextResponse.json({ error: "save_failed" }, { status: 500 });
+  }
+  /* Nothing matched: it is not yours, or they answered it a moment ago. The
+     list is reloaded either way, so the card corrects itself. */
+  if (!data) return NextResponse.json({ error: "not_found" }, { status: 404 });
+
+  return NextResponse.json({ ok: true });
+}
