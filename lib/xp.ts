@@ -10,9 +10,19 @@
    what it earned — /api/progress/award does that.
    =========================================================================== */
 
-/** XP per action. Kept small: a rank should take months, not an evening. */
+/* XP per action. Kept small: a rank should take months, not an evening.
+
+   There used to be a third entry, `visit: 2`, for opening the app once a day.
+   It was wrong twice over. A rank is meant to say what someone has done in
+   the gym, and paying it out for launching the app said only that they had a
+   phone -- someone who trained nothing for a month still climbed.
+
+   It was also the one award the server never saw: it was written straight to
+   localStorage instead of going through /api/progress/award, so the browser's
+   total drifted permanently above the real one (the sync keeps whichever side
+   is higher, and XP is never pushed up). The rank bar on the dashboard and
+   the rank on the profile were reading two different numbers. */
 export const XP_AWARDS = {
-  visit: 2, // opening the app (once/day)
   lesson: 6, // marking a lesson done
   workout: 15, // finishing a guided session
 } as const;

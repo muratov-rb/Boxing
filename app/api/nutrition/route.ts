@@ -18,6 +18,15 @@ export const runtime = "nodejs";
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 
+/* The number of meals is the difference between Pro and Max, so it cannot be
+   baked into the prompt. Asking for five and letting the client hide two
+   would mean paying for output nobody is shown. */
+function mealsLine(slots: number): string {
+  return slots >= 5
+    ? "- Give five meals: breakfast, lunch, dinner, a snack, and a night snack (slot \"night_snack\") eaten shortly before bed. The night snack is slow protein and small -- not a second dinner. Each meal has a short title, a concrete detail line (real foods and rough portions), and a kcal + protein estimate."
+    : "- Give four meals: breakfast, lunch, dinner and one snack. Each has a short title, a concrete detail line (real foods and rough portions), and a kcal + protein estimate.";
+}
+
 const SYSTEM = `You are the fuelling guide at RingBornn, a no-nonsense boxing gym.
 Suggest a practical day of meals for a fighter, built around their training load,
 stats and food budget. These are example meals to fuel training, not a prescribed
@@ -25,7 +34,7 @@ diet and not medical or dietary advice — never frame them as either.
 
 Rules:
 - Respect the given calorie and macro targets — the day's meals should roughly add up to them.
-- Give four meals: breakfast, lunch, dinner and one snack. Each has a short title, a concrete detail line (real foods and rough portions), and a kcal + protein estimate.
+- MEALS_LINE
 - Match the food to their budget tier: never tell a tight-budget fighter to buy salmon or supplements — lean on eggs, milk, tinned fish, legumes, oats, rice.
 - 3-5 short, practical tips.
 - Voice: a real coach — direct and useful, not clinical. Keep strings tight.`;
@@ -43,7 +52,7 @@ const SCHEMA = {
         additionalProperties: false,
         required: ["slot", "title", "detail", "kcal", "protein"],
         properties: {
-          slot: { type: "string", enum: ["breakfast", "lunch", "dinner", "snack"] },
+          slot: { type: "string", enum: ["breakfast", "lunch", "dinner", "snack", "night_snack"] },
           title: { type: "string" },
           detail: { type: "string" },
           kcal: { type: "integer" },
@@ -161,7 +170,7 @@ export async function POST(req: Request) {
       model: MODEL,
       max_tokens: 4096,
       thinking: { type: "adaptive" },
-      system: SYSTEM,
+      system: SYSTEM.replace("- MEALS_LINE", mealsLine(guard.entitlements.nutritionMealSlots)),
       messages: [{ role: "user", content: buildPrompt(profile, prefs) + langLine }],
       output_config: {
         effort: "medium",

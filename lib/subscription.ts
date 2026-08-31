@@ -20,7 +20,7 @@ export interface Entitlements {
   lessonTier: LessonTier;
   dailyPlansPerWeek: number; // Infinity = unlimited
   aiNutrition: boolean;
-  nutritionMealSlots: number; // 0 locked · 3 = pro · 4 = every meal
+  nutritionMealSlots: number; // 0 locked · 3 = pro · 5 = every meal incl. night snack
   calorieScansPerDay: number; // 0 = feature locked
   /* Fresh AI meal plans per day. This was uncapped, and the page generated one
      on every single mount — so opening /nutrition twenty times cost twenty
@@ -102,7 +102,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     aiNutrition: true,
     nutritionMealSlots: 3,
     calorieScansPerDay: 5,
-    nutritionPlansPerDay: 3,
+    nutritionPlansPerDay: 1,
     coachAnalysesPerDay: 2,
   },
   /* Max is "no limits", which is a story someone can hold in their head --
@@ -118,14 +118,18 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     lessonTier: "full",
     dailyPlansPerWeek: INF,
     aiNutrition: true,
-    nutritionMealSlots: 4,
+    /* Five, not four: breakfast, lunch, dinner, a snack and a night snack.
+       The extra slot is the honest difference between Pro and Max on
+       nutrition -- Pro sees three meals of the day, Max sees the whole of it,
+       including the slow protein before bed that actually matters to someone
+       training hard. */
+    nutritionMealSlots: 5,
     calorieScansPerDay: 15,
-    /* Was Infinity, which contradicted the paragraph above: a generated meal
-       plan costs about the same as a scan, so leaving it uncapped left the
-       one hole the scan ceiling exists to prevent. Ten a day is three times
-       Pro and more than anyone plans in a day -- it is not advertised
-       anywhere, and no real user will meet it. */
-    nutritionPlansPerDay: 10,
+    /* One a day, like Pro. A generated plan covers a day, so a second one is
+       not more nutrition -- it is the same day, asked again. What separates
+       Max here is the size of the plan (five slots against three), not how
+       many times you may regenerate it. */
+    nutritionPlansPerDay: 1,
     coachAnalysesPerDay: 2,
   },
 };
@@ -193,7 +197,7 @@ export const UNLOCKED: Entitlements = {
   lessonTier: "full",
   dailyPlansPerWeek: INF,
   aiNutrition: true,
-  nutritionMealSlots: 4,
+  nutritionMealSlots: 5,
   nutritionPlansPerDay: INF,
   calorieScansPerDay: INF,
   coachAnalysesPerDay: INF,

@@ -9,7 +9,7 @@ import { type Profile } from "./onboarding";
 import { macroTargets, type Macros } from "./tracking";
 
 export type Locale = "en" | "ru";
-export type Slot = "breakfast" | "lunch" | "dinner" | "snack";
+export type Slot = "breakfast" | "lunch" | "dinner" | "snack" | "night_snack";
 
 export interface MealRec {
   slot: Slot;
@@ -43,11 +43,16 @@ function budgetOf(p: Profile): Budget {
 }
 
 /* slot share of the day's energy */
+/* Rebalanced for the fifth slot rather than bolted on: the four original
+   shares summed to 1.0, so adding a night snack on top would have inflated
+   the day past its own calorie target. Lunch and dinner give up most of it,
+   because the bedtime meal is small by design. */
 const SPLIT: Record<Slot, number> = {
   breakfast: 0.25,
-  lunch: 0.35,
-  dinner: 0.3,
-  snack: 0.1,
+  lunch: 0.32,
+  dinner: 0.28,
+  snack: 0.08,
+  night_snack: 0.07,
 };
 
 /* meal ideas keyed by slot → diet → budget, EN/RU.
@@ -389,6 +394,65 @@ const MEALS: Record<Slot, SlotTable> = {
       },
     },
   },
+  /* The bedtime meal. Slow protein rather than fuel: the point is to give
+     the body something to rebuild with overnight, not to add a fourth dinner.
+     Small portions everywhere, and nothing that needs cooking at 22:00. */
+  night_snack: {
+    cut: {
+      full: {
+        title: { en: "Cottage cheese & berries", ru: "Творог с ягодами" },
+        detail: { en: "150g cottage cheese, a few berries. Slow protein, barely any sugar.", ru: "150 г творога, немного ягод. Медленный белок, почти без сахара." },
+      },
+      moderate: {
+        title: { en: "Plain yogurt", ru: "Натуральный йогурт" },
+        detail: { en: "200g unsweetened yogurt. Add cinnamon if you want it sweeter.", ru: "200 г несладкого йогурта. Добавь корицу, если хочется слаще." },
+      },
+      tight: {
+        title: { en: "Kefir", ru: "Кефир" },
+        detail: { en: "A glass of kefir. Cheap, filling, and it keeps you off the biscuits.", ru: "Стакан кефира. Дёшево, сытно и удерживает от печенья." },
+      },
+      minimal: {
+        title: { en: "Warm milk", ru: "Тёплое молоко" },
+        detail: { en: "A glass of milk. Protein before sleep for almost nothing.", ru: "Стакан молока. Белок перед сном почти даром." },
+      },
+    },
+    build: {
+      full: {
+        title: { en: "Casein shake & nuts", ru: "Казеин и орехи" },
+        detail: { en: "A slow-protein shake and a small handful of almonds.", ru: "Коктейль на медленном белке и небольшая горсть миндаля." },
+      },
+      moderate: {
+        title: { en: "Cottage cheese & honey", ru: "Творог с мёдом" },
+        detail: { en: "200g cottage cheese, a spoon of honey. Rebuild overnight.", ru: "200 г творога, ложка мёда. Восстановление за ночь." },
+      },
+      tight: {
+        title: { en: "Milk & oats", ru: "Молоко с овсянкой" },
+        detail: { en: "A glass of milk with a few spoons of oats stirred in.", ru: "Стакан молока с парой ложек овсянки." },
+      },
+      minimal: {
+        title: { en: "Boiled egg & milk", ru: "Варёное яйцо и молоко" },
+        detail: { en: "An egg and a glass of milk. The cheapest overnight protein there is.", ru: "Яйцо и стакан молока. Самый дешёвый белок на ночь." },
+      },
+    },
+    maintain: {
+      full: {
+        title: { en: "Greek yogurt & walnuts", ru: "Греческий йогурт и грецкий орех" },
+        detail: { en: "150g Greek yogurt with a few chopped walnuts.", ru: "150 г греческого йогурта с рублеными грецкими орехами." },
+      },
+      moderate: {
+        title: { en: "Cottage cheese", ru: "Творог" },
+        detail: { en: "150g cottage cheese. Nothing else needed.", ru: "150 г творога. Больше ничего не нужно." },
+      },
+      tight: {
+        title: { en: "Kefir & a date", ru: "Кефир и финик" },
+        detail: { en: "A glass of kefir and a date or two.", ru: "Стакан кефира и пара фиников." },
+      },
+      minimal: {
+        title: { en: "Milk", ru: "Молоко" },
+        detail: { en: "A glass of milk before bed.", ru: "Стакан молока перед сном." },
+      },
+    },
+  },
 };
 
 const HEADLINES: Record<Diet, Text> = {
@@ -454,7 +518,7 @@ export function localNutrition(profile: Profile, locale: Locale = "en"): Nutriti
   const diet = dietOf(profile);
   const budget = budgetOf(profile);
 
-  const slots: Slot[] = ["breakfast", "lunch", "dinner", "snack"];
+  const slots: Slot[] = ["breakfast", "lunch", "dinner", "snack", "night_snack"];
   const meals: MealRec[] = slots.map((slot) => {
     const tpl = MEALS[slot][diet][budget];
     const kcal = Math.round((macros.kcal * SPLIT[slot]) / 10) * 10;

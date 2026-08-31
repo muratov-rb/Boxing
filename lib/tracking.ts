@@ -244,14 +244,18 @@ function countConsecutive(days: Set<string>): number {
 export function registerVisit(): number {
   const today = todayKey();
   const visits = new Set(read<string[]>(K_VISITS, []));
-  const firstToday = !visits.has(today);
   visits.add(today);
   write(K_VISITS, [...visits].sort());
 
-  // settle XP to today; award a small daily-use bonus the first time each day
-  const state = readXp();
-  const settled = settleXp(state, today);
-  writeXp({ xp: settled.xp + (firstToday ? XP.visit : 0), lastActive: today });
+  /* Settle decay only. This used to also hand out XP for the first visit of
+     the day, which meant the rank climbed for opening the app -- and it wrote
+     that XP straight to storage rather than through awardXp, so the server
+     never learned about it and the two totals drifted apart for good.
+
+     The visit is still recorded: it feeds the usage streak, which is a
+     different and honest thing to count. */
+  const settled = settleXp(readXp(), today);
+  writeXp({ ...settled, lastActive: today });
 
   return countConsecutive(visits);
 }

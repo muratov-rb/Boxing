@@ -21,6 +21,7 @@ const SLOT_ICON: Record<Slot, IconName> = {
   lunch: "nutrition",
   dinner: "nutrition",
   snack: "calorie",
+  night_snack: "rest",
 };
 
 export function NutritionClient() {
@@ -86,12 +87,15 @@ export function NutritionClient() {
     }
   };
 
-  // pro shows a subset of meals (e.g. breakfast + lunch); max/trial show all
-  const shownMeals =
-    plan && access ? plan.meals.slice(0, access.slots >= 4 ? plan.meals.length : access.slots) : [];
-  /* Compare what is actually on screen, not the raw slot number. Max has 4
-     slots but is shown the whole plan, so a 5-meal day made `4 < 5` true and
-     told Max subscribers to upgrade to Max while showing them every meal. */
+  /* Pro sees the first three meals of the day; Max sees all five.
+     Plain min() rather than the old `slots >= 4 ? everything : slots`: that
+     test was a stand-in for "this tier gets the lot", and it stopped being
+     true the moment Max went to five slots. Nobody without aiNutrition
+     reaches here -- the effect above returns before a plan is ever fetched --
+     so slots is 3 or 5 and min() is simply the answer. */
+  const shownMeals = plan && access ? plan.meals.slice(0, Math.min(access.slots, plan.meals.length)) : [];
+  /* Compare what is on screen, not the slot number, or a tier that happens to
+     match the plan length gets told to upgrade to the tier it is on. */
   const mealsLimited = !!plan && shownMeals.length < plan.meals.length;
 
   const macroItems = plan
