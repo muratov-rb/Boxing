@@ -33,8 +33,9 @@ export interface Entitlements {
      expensive endpoint in the app in a loop.
 
      A small number rather than one, because re-running it is legitimate --
-     people change goal, weight or timeframe and want the read again. Three a
-     day covers that and caps a runaway account at about six cents. */
+     people change goal, weight or timeframe and want the read again. Two a
+     day covers that -- it is sixty times more than anyone really re-runs it --
+     and caps a runaway account at about four cents. */
   coachAnalysesPerDay: number;
 }
 
@@ -58,7 +59,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 2,
     nutritionPlansPerDay: 0,
-    coachAnalysesPerDay: 3,
+    coachAnalysesPerDay: 2,
   },
   // trial ended, no plan chosen — streaks stay (engagement), rest is paywalled
   expired: {
@@ -88,7 +89,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 0,
     calorieScansPerDay: 2,
     nutritionPlansPerDay: 0,
-    coachAnalysesPerDay: 3,
+    coachAnalysesPerDay: 2,
   },
   /* Pro is the plan meant to be bought: generous enough that the limits are
      not felt by a normal user. Five scans covers every meal of a day. */
@@ -102,7 +103,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
     nutritionMealSlots: 3,
     calorieScansPerDay: 5,
     nutritionPlansPerDay: 3,
-    coachAnalysesPerDay: 3,
+    coachAnalysesPerDay: 2,
   },
   /* Max is "no limits", which is a story someone can hold in their head --
      unlike "six of this and four of that". The scan ceiling is a real number
@@ -125,7 +126,7 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
        Pro and more than anyone plans in a day -- it is not advertised
        anywhere, and no real user will meet it. */
     nutritionPlansPerDay: 10,
-    coachAnalysesPerDay: 3,
+    coachAnalysesPerDay: 2,
   },
 };
 
