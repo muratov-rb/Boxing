@@ -133,7 +133,14 @@
     "namePlaceholder": "What should we call you?",
     "errNoName": "Tell us your name so we know who we're training.",
     "errThrowaway": "That looks like a temporary address. Use one you can actually receive mail at — you'll need it to confirm your account.",
-    "errAlreadyRegistered": "That email already has an account. Log in below instead — or reset your password if you've forgotten it."
+    "errAlreadyRegistered": "That email already has an account. Log in below instead — or reset your password if you've forgotten it.",
+    "errInvalidLogin": "Wrong email or password.",
+    "errNotConfirmed": "Confirm your email first — check your inbox for the code.",
+    "errTooFast": "Too many attempts. Wait a minute and try again.",
+    "errWeakPassword": "That password is too weak. Use something longer.",
+    "errSignupsClosed": "New sign-ups are closed right now.",
+    "errCodeExpired": "That code has expired. Ask for a new one.",
+    "errBadEmail": "That email address doesn't look right."
   },
   "verify": {
     "kicker": "One more round",

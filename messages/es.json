@@ -133,7 +133,14 @@
     "namePlaceholder": "¿Cómo te llamamos?",
     "errNoName": "Dinos tu nombre, así sabemos a quién entrenamos.",
     "errThrowaway": "Eso parece una dirección temporal. Usa una que puedas recibir de verdad: la necesitarás para confirmar tu cuenta.",
-    "errAlreadyRegistered": "Ese correo ya tiene una cuenta. Inicia sesión abajo, o restablece la contraseña si la has olvidado."
+    "errAlreadyRegistered": "Ese correo ya tiene una cuenta. Inicia sesión abajo, o restablece la contraseña si la has olvidado.",
+    "errInvalidLogin": "Correo o contraseña incorrectos.",
+    "errNotConfirmed": "Confirma tu correo primero: busca el código en tu bandeja.",
+    "errTooFast": "Demasiados intentos. Espera un minuto e inténtalo otra vez.",
+    "errWeakPassword": "Esa contraseña es demasiado débil. Usa una más larga.",
+    "errSignupsClosed": "Los registros están cerrados ahora mismo.",
+    "errCodeExpired": "Ese código ha caducado. Pide uno nuevo.",
+    "errBadEmail": "Esa dirección de correo no parece correcta."
   },
   "verify": {
     "kicker": "Un asalto más",

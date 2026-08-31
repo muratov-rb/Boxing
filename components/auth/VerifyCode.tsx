@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { authErrorKey } from "@/lib/auth-errors";
 
 /* Confirming a new account by typing a code.
 
@@ -19,6 +20,8 @@ const RESEND_COOLDOWN = 60;
 
 export function VerifyCode({ email, next }: { email: string; next: string }) {
   const t = useTranslations("verify");
+  /* Mapped auth errors live in the "auth" namespace, not this one. */
+  const ta = useTranslations("auth");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,8 +53,11 @@ export function VerifyCode({ email, next }: { email: string; next: string }) {
       /* Full page load, not a router push: the session cookie has only just
          been written and a client navigation can race it. */
       window.location.assign(next);
-    } catch {
-      setError(t("codeWrong"));
+    } catch (err) {
+      /* An expired code and a mistyped one are different problems with
+         different fixes -- "ask for a new one" versus "look again". */
+      const key = authErrorKey(err);
+      setError(key ? ta(key) : t("codeWrong"));
       setCode("");
       inputRef.current?.focus();
       setBusy(false);
@@ -77,8 +83,9 @@ export function VerifyCode({ email, next }: { email: string; next: string }) {
       if (err) throw err;
       setResent(true);
       setCooldown(RESEND_COOLDOWN);
-    } catch {
-      setError(t("resendFailed"));
+    } catch (err) {
+      const key = authErrorKey(err);
+      setError(key ? ta(key) : t("resendFailed"));
     } finally {
       setBusy(false);
     }

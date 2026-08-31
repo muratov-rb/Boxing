@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/Icons";
 import { MIN_PASSWORD_LENGTH, passwordLongEnough } from "@/lib/auth-rules";
 import { LEGAL_UPDATED } from "@/lib/legal";
 import { cleanDisplayName, isThrowawayEmail, NAME_MAX } from "@/lib/support";
+import { authErrorKey } from "@/lib/auth-errors";
 
 const inputCls =
   "w-full border border-line bg-void px-4 py-3 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none";
@@ -145,7 +146,9 @@ export function AuthCard({
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errGeneric"));
+      /* Was err.message -- the provider's own English text, shown to everyone
+         whatever language they had chosen. */
+      setError(t(authErrorKey(err) ?? "errGeneric"));
       setLoading(null);
     }
   }

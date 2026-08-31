@@ -133,7 +133,14 @@
     "namePlaceholder": "我们该怎么称呼你？",
     "errNoName": "告诉我们你的名字，好知道在训练谁。",
     "errThrowaway": "这看起来是临时邮箱。请填一个你真正能收信的地址——确认账户要用到它。",
-    "errAlreadyRegistered": "该邮箱已有账户。请在下方登录——忘记密码就重置一下。"
+    "errAlreadyRegistered": "该邮箱已有账户。请在下方登录——忘记密码就重置一下。",
+    "errInvalidLogin": "邮箱或密码不正确。",
+    "errNotConfirmed": "请先确认邮箱——验证码已发到你的邮箱。",
+    "errTooFast": "尝试次数过多，请一分钟后再试。",
+    "errWeakPassword": "密码强度不够，请换一个更长的。",
+    "errSignupsClosed": "目前暂停注册。",
+    "errCodeExpired": "验证码已过期，请重新获取。",
+    "errBadEmail": "这个邮箱地址看起来不正确。"
   },
   "verify": {
     "kicker": "再来一回合",

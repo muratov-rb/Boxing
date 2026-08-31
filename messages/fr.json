@@ -133,7 +133,14 @@
     "namePlaceholder": "Comment doit-on vous appeler ?",
     "errNoName": "Donnez-nous votre nom, qu'on sache qui on entraîne.",
     "errThrowaway": "Cela ressemble à une adresse jetable. Utilisez une adresse que vous relevez vraiment : elle servira à confirmer votre compte.",
-    "errAlreadyRegistered": "Cette adresse a déjà un compte. Connectez-vous ci-dessous, ou réinitialisez votre mot de passe si vous l'avez oublié."
+    "errAlreadyRegistered": "Cette adresse a déjà un compte. Connectez-vous ci-dessous, ou réinitialisez votre mot de passe si vous l'avez oublié.",
+    "errInvalidLogin": "E-mail ou mot de passe incorrect.",
+    "errNotConfirmed": "Confirmez d'abord votre e-mail — le code est dans votre boîte.",
+    "errTooFast": "Trop de tentatives. Attendez une minute et réessayez.",
+    "errWeakPassword": "Ce mot de passe est trop faible. Prenez-en un plus long.",
+    "errSignupsClosed": "Les inscriptions sont fermées pour le moment.",
+    "errCodeExpired": "Ce code a expiré. Demandez-en un nouveau.",
+    "errBadEmail": "Cette adresse e-mail ne semble pas valide."
   },
   "verify": {
     "kicker": "Un round de plus",
