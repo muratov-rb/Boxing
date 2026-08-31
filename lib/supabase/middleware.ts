@@ -17,6 +17,15 @@ const PROTECTED = [
   "/calories",
   "/circuits",
   "/friends",
+  /* These three render training content and drive the AI routes. They were
+     never in this list, so they answered to the open internet while /calories
+     and /circuits next to them did not -- an inconsistency by accident rather
+     than by decision. No money leaked (every AI route checks auth on its own
+     and always did), but a signed-out visitor reached a page built entirely
+     around a plan they do not have. */
+  "/lessons",
+  "/train",
+  "/nutrition",
 ];
 
 /* Refreshes the Supabase session cookie and guards protected routes.

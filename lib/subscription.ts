@@ -80,7 +80,15 @@ export const ENTITLEMENTS: Record<PlanId, Entitlements> = {
      nobody pays to lose a feature they already had for a week. Budget's real
      pitch is "keep what the trial gave you," so it has to at least match it. */
   budget: {
-    ranks: false,
+    /* Ranks cost nothing to serve and are the reason someone opens the app on
+       a day they do not feel like training -- withholding them from the tier
+       most likely to churn was backwards.
+
+       They are also what Budget now has that the free trial does not. Budget
+       was otherwise identical to the seven days that precede it, so there was
+       nothing to buy at the end of the trial. A week of earned XP with the
+       rank revealed on payment sells something the person already built. */
+    ranks: true,
     streaks: true,
     restRecovery: true,
     lessonTier: "limited",
