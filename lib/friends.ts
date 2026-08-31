@@ -184,3 +184,22 @@ function isoDaysAgo(from: Date, n: number): string {
   d.setUTCDate(d.getUTCDate() - n);
   return d.toISOString().slice(0, 10);
 }
+
+/* --------------------------------- ids ----------------------------------- */
+
+/** A v4-shaped UUID and nothing else.
+
+   The friends and challenges routes take a partner's id from the request body
+   and, in one place, splice it into a raw PostgREST `.or()` filter. A value
+   that is "a string" but not a uuid -- `<uuid>),and(status.eq.accepted` -- can
+   restructure that filter so an arm of it matches any accepted row, which is
+   enough to make an "are these two partners?" check answer yes for strangers.
+
+   Auth ids come from the verified token and are always well formed; only the
+   ones a client hands us need this. Rejecting anything that is not exactly a
+   uuid closes the injection at the door, before the value reaches a query. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isUuid(value: unknown): value is string {
+  return typeof value === "string" && UUID_RE.test(value);
+}

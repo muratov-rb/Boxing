@@ -4,6 +4,7 @@ import { getUser } from "@/lib/supabase/user";
 import {
   CHALLENGE_KINDS,
   CHALLENGE_MAX,
+  isUuid,
   type Challenge,
   type ChallengeKind,
 } from "@/lib/friends";
@@ -28,6 +29,11 @@ interface Row {
 }
 
 async function areFriends(a: string, b: string): Promise<boolean> {
+  /* Both ids are spliced into a raw filter string below, so both are checked
+     here too -- not only at the caller. A guard that lives next to the risk
+     survives a future caller who forgets it; the uuid check at the route is
+     the front door, this is the lock on the room. */
+  if (!isUuid(a) || !isUuid(b)) return false;
   const { count } = await createAdminClient()
     .from("friendships")
     .select("id", { count: "exact", head: true })
@@ -91,7 +97,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  const to = typeof body.to === "string" ? body.to : "";
+  /* Must be a real uuid, not merely a string. Without this it reaches the raw
+     .or() filter inside areFriends, where crafted PostgREST syntax can make the
+     partner check answer yes for a stranger. */
+  const to = isUuid(body.to) ? body.to : "";
   const kind = CHALLENGE_KINDS.includes(body.kind as ChallengeKind)
     ? (body.kind as ChallengeKind)
     : null;
