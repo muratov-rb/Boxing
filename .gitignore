@@ -59,3 +59,6 @@ public/models/coach-mixamo.obj
 # fetched at runtime, so there is no reason to ship 10 MB with every deploy
 public/models/*.glb
 public/models/*.obj
+
+# scratch files from local QA runs — never commit
+.qa-*.tmp.js
