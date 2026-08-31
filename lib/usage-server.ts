@@ -103,3 +103,37 @@ export async function spendQuota(
     return { allowed: true, used: 0, limit, locked: false };
   }
 }
+
+/**
+ * Give back one unit spent on a call that then failed.
+ *
+ * The quota is spent *before* the model is called, and that ordering is what
+ * makes it race-safe — consume_usage does a locked read-check-write, so
+ * twenty parallel requests cannot all slip past a 2/day limit. The price of
+ * that is that a call which fails afterwards has already taken the
+ * allowance: a photo the model choked on, or a provider outage, cost the user
+ * a scan and gave them nothing.
+ *
+ * Refunding fixes that without giving up the ordering. Counting only on
+ * success would reopen the exact race the lock exists to close.
+ *
+ * Best effort on purpose: if the refund itself fails there is nothing useful
+ * to tell the caller, whose real problem is the failed scan. They lose one
+ * unit, which is the behaviour we had everywhere before this existed.
+ */
+export async function refundQuota(
+  caller: Caller,
+  key: QuotaKey,
+  today = new Date().toISOString().slice(0, 10),
+): Promise<void> {
+  if (!serviceRoleConfigured()) return;
+  try {
+    await createAdminClient().rpc("refund_usage", {
+      p_user: caller.userId,
+      p_day: today,
+      p_key: key,
+    });
+  } catch (err) {
+    console.error("[quota_refund]", err);
+  }
+}

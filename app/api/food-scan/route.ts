@@ -1,4 +1,5 @@
-import { guardAiRoute, isDenied } from "@/lib/api-guard";
+import { guardAiRoute, isDenied, quotaDenied } from "@/lib/api-guard";
+import { refundQuota, spendQuota } from "@/lib/usage-server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
@@ -74,10 +75,24 @@ const ALLOWED_MEDIA = [
 type MediaType = (typeof ALLOWED_MEDIA)[number];
 
 export async function POST(req: Request) {
-  /* Sign-in, plan and quota are settled before we look at the image — this
-     call costs money, so the cheapest possible rejection comes first. */
-  const guard = await guardAiRoute("calorieScan");
+  /* Sign-in and plan are settled before we look at the image — this call costs
+     money, so the cheapest possible rejection comes first.
+
+     The quota is NOT spent here any more. It used to be, which meant every
+     rejection below this line still cost the user a scan: a photo we refused
+     for being too large, a missing API key, a provider outage. They were
+     charged an allowance for a call that never reached the model, and on a
+     2-a-day trial two bad photos ended the day.
+
+     It is spent further down instead, once a model call is certain. The plan
+     check stays here, because "your plan has no scanner" is knowable now and
+     there is no reason to read a body to answer it. */
+  const guard = await guardAiRoute(null);
   if (isDenied(guard)) return guard.response;
+
+  if (guard.entitlements.calorieScansPerDay <= 0) {
+    return quotaDenied(guard, { allowed: false, used: 0, limit: 0, locked: true });
+  }
 
   let body: { image?: string; mediaType?: string };
   try {
@@ -115,6 +130,15 @@ export async function POST(req: Request) {
 
   const store = await cookies();
   const locale = store.get("locale")?.value === "ru" ? "ru" : "en";
+
+  /* Everything that could reject this request has now passed, so the call is
+     going to happen: spend the allowance. Still before the call rather than
+     after it, because spending first is what makes the limit hold under
+     concurrency — consume_usage takes a row lock, so twenty requests fired at
+     once cannot all pass a 2/day limit. Counting on success instead would be
+     a check-then-act race, and the limit would be a suggestion. */
+  const spend = await spendQuota(guard, "calorieScan");
+  if (!spend.allowed) return quotaDenied(guard, spend);
 
   try {
     const client = new Anthropic({ apiKey });
@@ -161,6 +185,10 @@ export async function POST(req: Request) {
     const parsed = JSON.parse(block.text);
     return NextResponse.json(parsed);
   } catch {
+    /* The call was made and produced nothing usable — a provider outage, a
+       photo the model would not answer on, malformed output. The user got no
+       scan, so they should not have paid a scan for it. */
+    await refundQuota(guard, "calorieScan");
     return NextResponse.json({ error: "scan_failed" }, { status: 502 });
   }
 }
