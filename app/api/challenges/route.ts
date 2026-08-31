@@ -175,8 +175,13 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
-  const id = Number(new URL(req.url).searchParams.get("id"));
-  if (!Number.isFinite(id)) {
+  /* Read the parameter before converting it: Number(null) is 0, not NaN, so a
+     request with no id at all would pass a Number.isFinite check and go on to
+     delete-nothing -- reported as "they must have answered it" when in fact
+     the caller sent no id. Ids are positive integers, so nothing else is. */
+  const raw = new URL(req.url).searchParams.get("id");
+  const id = raw === null ? NaN : Number(raw);
+  if (!Number.isInteger(id) || id <= 0) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
