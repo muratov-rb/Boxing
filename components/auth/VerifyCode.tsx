@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorKey } from "@/lib/auth-errors";
+import { safeNext } from "@/lib/safe-next";
 
 /* Confirming a new account by typing a code.
 
@@ -52,7 +53,7 @@ export function VerifyCode({ email, next }: { email: string; next: string }) {
       if (err) throw err;
       /* Full page load, not a router push: the session cookie has only just
          been written and a client navigation can race it. */
-      window.location.assign(next);
+      window.location.assign(safeNext(next));
     } catch (err) {
       /* An expired code and a mistyped one are different problems with
          different fixes -- "ask for a new one" versus "look again". */

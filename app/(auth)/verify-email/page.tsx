@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeNext } from "@/lib/safe-next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { VerifyCode } from "@/components/auth/VerifyCode";
@@ -12,7 +13,7 @@ export default async function VerifyEmailPage({
 }) {
   const sp = await searchParams;
   const email = typeof sp.email === "string" ? sp.email : undefined;
-  const next = typeof sp.next === "string" ? sp.next : "/dashboard";
+  const next = safeNext(sp.next);
   const t = await getTranslations("verify");
 
   return (

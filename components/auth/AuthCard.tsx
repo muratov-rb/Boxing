@@ -11,6 +11,7 @@ import { MIN_PASSWORD_LENGTH, passwordLongEnough } from "@/lib/auth-rules";
 import { LEGAL_UPDATED } from "@/lib/legal";
 import { cleanDisplayName, isThrowawayEmail, NAME_MAX } from "@/lib/support";
 import { authErrorKey } from "@/lib/auth-errors";
+import { safeNext } from "@/lib/safe-next";
 
 const inputCls =
   "w-full border border-line bg-void px-4 py-3 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none";
