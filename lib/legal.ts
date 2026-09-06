@@ -9,7 +9,15 @@
 export const LEGAL_UPDATED = "5 August 2026";
 
 /** Who operates the service, as it should appear to a user. */
-export const OPERATOR = "Nexara";
+/* The studio name, used as a brand credit only.
+
+   It was OPERATOR, and the terms named it as the party users contracted with
+   -- "a binding agreement between you and Nexara". No such legal entity
+   exists, so that agreement named a party that could not be held to it, and
+   it contradicted a Paddle application filed by an individual. The contract
+   is with the service itself now, run by a sole trader. This survives as what
+   it always actually was: a name on the work, not a company. */
+export const STUDIO = "Nexara";
 export const SERVICE = "RingBornn";
 export const SITE = "ringbornn.com";
 

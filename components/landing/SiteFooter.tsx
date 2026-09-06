@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { STUDIO } from "@/lib/legal";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/ui/Logo";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -72,6 +73,10 @@ export function SiteFooter() {
             </Link>
           </div>
           <p className="text-xs">{t("rights", { year: new Date().getFullYear() })}</p>
+          {/* A credit, not a legal claim. Nexara used to appear in the terms as
+              the party users contracted with, which asserted a company that
+              does not exist; here it is only a name on the work. */}
+          <p className="text-xs text-ash-dim/70">A {STUDIO} project</p>
         </div>
       </div>
     </footer>

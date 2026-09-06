@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { LegalPage, type Loc, type Section } from "@/components/legal/LegalPage";
 import {
-  OPERATOR,
   SERVICE,
   SITE,
   GOVERNING_LAW,
@@ -61,11 +60,11 @@ const SECTIONS: Section[] = [
       },
       [
         {
-          en: `"We", "us", "our" — ${OPERATOR}, the operator of ${SERVICE}.`,
-          ru: `«Мы», «нас», «наш» — ${OPERATOR}, оператор ${SERVICE}.`,
-          es: `«Nosotros», «nos», «nuestro»: ${OPERATOR}, el operador de ${SERVICE}.`,
-          fr: `« Nous », « notre » — ${OPERATOR}, l'exploitant de ${SERVICE}.`,
-          zh: `「我们」「我方」——${OPERATOR}，即 ${SERVICE} 的运营方。`,
+          en: `"We", "us", "our" — ${SERVICE}, run as a sole trader business based in Uzbekistan.`,
+          ru: `«Мы», «нас», «наш» — ${SERVICE}, который ведётся как индивидуальное предпринимательство в Узбекистане.`,
+          es: `«Nosotros», «nos», «nuestro»: ${SERVICE}, gestionado como empresa individual con base en Uzbekistán.`,
+          fr: `« Nous », « notre » — ${SERVICE}, exploité en tant qu'entreprise individuelle basée en Ouzbékistan.`,
+          zh: `「我们」「我方」——${SERVICE}，以乌兹别克斯坦的个体经营者形式运营。`,
         },
         {
           en: `"Service" — the ${SERVICE} website at ${SITE}, together with every feature, lesson, plan and tool available through it.`,
@@ -115,11 +114,11 @@ const SECTIONS: Section[] = [
     },
     blocks: [
       {
-        en: `These terms are a binding agreement between you and ${OPERATOR}, who operates ${SERVICE} at ${SITE}. By ticking the box at sign-up, creating an account, or otherwise using the Service, you accept them. If you do not accept them, do not use the Service.`,
-        ru: `Эти условия — обязывающее соглашение между тобой и ${OPERATOR}, который ведёт ${SERVICE} на ${SITE}. Отмечая галочку при регистрации, создавая аккаунт или иначе пользуясь Сервисом, ты их принимаешь. Не согласен — не пользуйся Сервисом.`,
-        es: `Estos términos son un acuerdo vinculante entre tú y ${OPERATOR}, que opera ${SERVICE} en ${SITE}. Al marcar la casilla al registrarte, crear una cuenta o usar el Servicio de cualquier otro modo, los aceptas. Si no los aceptas, no uses el Servicio.`,
-        fr: `Les présentes conditions constituent un accord contraignant entre vous et ${OPERATOR}, qui exploite ${SERVICE} à l'adresse ${SITE}. En cochant la case lors de l'inscription, en créant un compte ou en utilisant le Service de toute autre manière, vous les acceptez. Si vous ne les acceptez pas, n'utilisez pas le Service.`,
-        zh: `本条款是你与 ${OPERATOR}（在 ${SITE} 运营 ${SERVICE}）之间具有约束力的协议。当你在注册时勾选选框、创建账户或以其他方式使用本服务，即表示接受本条款。若不接受，请勿使用本服务。`,
+        en: `These terms are a binding agreement between you and ${SERVICE}, the service at ${SITE}. By ticking the box at sign-up, creating an account, or otherwise using the Service, you accept them. If you do not accept them, do not use the Service.`,
+        ru: `Эти условия — обязывающее соглашение между тобой и ${SERVICE}, сервисом на ${SITE}. Отмечая галочку при регистрации, создавая аккаунт или иначе пользуясь Сервисом, ты их принимаешь. Не согласен — не пользуйся Сервисом.`,
+        es: `Estos términos son un acuerdo vinculante entre tú y ${SERVICE}, el servicio en ${SITE}. Al marcar la casilla al registrarte, crear una cuenta o usar el Servicio de cualquier otro modo, los aceptas. Si no los aceptas, no uses el Servicio.`,
+        fr: `Les présentes conditions constituent un accord contraignant entre vous et ${SERVICE}, le service à l'adresse ${SITE}. En cochant la case lors de l'inscription, en créant un compte ou en utilisant le Service de toute autre manière, vous les acceptez. Si vous ne les acceptez pas, n'utilisez pas le Service.`,
+        zh: `本条款是你与 ${SERVICE}（位于 ${SITE} 的服务）之间具有约束力的协议。当你在注册时勾选选框、创建账户或以其他方式使用本服务，即表示接受本条款。若不接受，请勿使用本服务。`,
       },
       {
         en: `You must be at least ${MIN_AGE} years old to hold an account. If the age of digital consent where you live is higher than ${MIN_AGE}, that higher age applies to you instead.`,
@@ -533,11 +532,11 @@ const SECTIONS: Section[] = [
     },
     blocks: [
       {
-        en: `All rights in the Service — including the software, the exercise library, the written coaching material, the illustrations, the rank system, the name ${SERVICE}, and the associated branding and design — are owned by ${OPERATOR} or licensed to us, and are protected by copyright, trade mark and other intellectual property laws.`,
-        ru: `Все права на Сервис — программное обеспечение, библиотеку упражнений, письменные тренерские материалы, иллюстрации, систему рангов, название ${SERVICE}, а также связанный брендинг и дизайн — принадлежат ${OPERATOR} или лицензированы нам и защищены авторским правом, правом на товарные знаки и иными законами об интеллектуальной собственности.`,
-        es: `Todos los derechos sobre el Servicio —incluidos el software, la biblioteca de ejercicios, el material escrito de entrenamiento, las ilustraciones, el sistema de rangos, el nombre ${SERVICE} y la marca y el diseño asociados— pertenecen a ${OPERATOR} o nos han sido licenciados, y están protegidos por las leyes de derechos de autor, marcas y otras de propiedad intelectual.`,
-        fr: `Tous les droits sur le Service — y compris le logiciel, la bibliothèque d'exercices, les contenus écrits de coaching, les illustrations, le système de rangs, le nom ${SERVICE} et l'identité visuelle associée — appartiennent à ${OPERATOR} ou nous sont concédés sous licence, et sont protégés par le droit d'auteur, le droit des marques et les autres lois sur la propriété intellectuelle.`,
-        zh: `本服务的全部权利——包括软件、动作库、书面教学材料、插图、段位体系、${SERVICE} 名称以及相关品牌与设计——归 ${OPERATOR} 所有或已许可给我们，并受著作权法、商标法及其他知识产权法保护。`,
+        en: `All rights in the Service — including the software, the exercise library, the written coaching material, the illustrations, the rank system, the name ${SERVICE}, and the associated branding and design — are owned by us or licensed to us, and are protected by copyright, trade mark and other intellectual property laws.`,
+        ru: `Все права на Сервис — программное обеспечение, библиотеку упражнений, письменные тренерские материалы, иллюстрации, систему рангов, название ${SERVICE}, а также связанный брендинг и дизайн — принадлежат нам или лицензированы нам и защищены авторским правом, правом на товарные знаки и иными законами об интеллектуальной собственности.`,
+        es: `Todos los derechos sobre el Servicio —incluidos el software, la biblioteca de ejercicios, el material escrito de entrenamiento, las ilustraciones, el sistema de rangos, el nombre ${SERVICE} y la marca y el diseño asociados— nos pertenecen o nos han sido licenciados, y están protegidos por las leyes de derechos de autor, marcas y otras de propiedad intelectual.`,
+        fr: `Tous les droits sur le Service — y compris le logiciel, la bibliothèque d'exercices, les contenus écrits de coaching, les illustrations, le système de rangs, le nom ${SERVICE} et l'identité visuelle associée — nous appartiennent ou nous sont concédés sous licence, et sont protégés par le droit d'auteur, le droit des marques et les autres lois sur la propriété intellectuelle.`,
+        zh: `本服务的全部权利——包括软件、动作库、书面教学材料、插图、段位体系、${SERVICE} 名称以及相关品牌与设计——归我们所有或已许可给我们，并受著作权法、商标法及其他知识产权法保护。`,
       },
       {
         en: "Nothing in these terms transfers any of those rights to you. Rights not expressly granted are reserved.",

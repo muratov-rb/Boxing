@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { LegalPage, type Section } from "@/components/legal/LegalPage";
 import {
-  OPERATOR,
   SERVICE,
   SITE,
   DATA_REGION,
@@ -37,11 +36,11 @@ const SECTIONS: Section[] = [
     },
     blocks: [
       {
-        en: `${SERVICE} is a boxing training service operated by ${OPERATOR} at ${SITE}. This policy explains what we do with your information, in plain language.`,
-        ru: `${SERVICE} — сервис боксёрских тренировок, который ведёт ${OPERATOR} на ${SITE}. Эта политика простым языком объясняет, что мы делаем с твоими данными.`,
-        es: `${SERVICE} es un servicio de entrenamiento de boxeo operado por ${OPERATOR} en ${SITE}. Esta política explica en lenguaje claro qué hacemos con tu información.`,
-        fr: `${SERVICE} est un service d'entraînement à la boxe exploité par ${OPERATOR} sur ${SITE}. Cette politique explique en langage clair ce que nous faisons de vos informations.`,
-        zh: `${SERVICE} 是由 ${OPERATOR} 在 ${SITE} 运营的拳击训练服务。本政策用直白的语言说明我们如何处理你的信息。`,
+        en: `${SERVICE} is a boxing training service at ${SITE}, run as a sole trader business based in Uzbekistan. This policy explains what we do with your information, in plain language.`,
+        ru: `${SERVICE} — сервис боксёрских тренировок на ${SITE}, который ведётся как индивидуальное предпринимательство в Узбекистане. Эта политика простым языком объясняет, что мы делаем с твоими данными.`,
+        es: `${SERVICE} es un servicio de entrenamiento de boxeo en ${SITE}, gestionado como empresa individual con base en Uzbekistán. Esta política explica en lenguaje claro qué hacemos con tu información.`,
+        fr: `${SERVICE} est un service d'entraînement à la boxe sur ${SITE}, exploité en tant qu'entreprise individuelle basée en Ouzbékistan. Cette politique explique en langage clair ce que nous faisons de vos informations.`,
+        zh: `${SERVICE} 是位于 ${SITE} 的拳击训练服务，以乌兹别克斯坦的个体经营者形式运营。本政策用直白的语言说明我们如何处理你的信息。`,
       },
       contact,
     ],

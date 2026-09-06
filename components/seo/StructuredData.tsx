@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL, CONTACT_TELEGRAM, OPERATOR, SERVICE, SITE_URL } from "@/lib/legal";
+import { CONTACT_EMAIL, CONTACT_TELEGRAM, SERVICE, SITE_URL } from "@/lib/legal";
 
 /* Machine-readable identity, for the "my own brand name doesn't find me"
    problem.
@@ -28,7 +28,10 @@ export function StructuredData({ nonce }: { nonce?: string }) {
       description:
         "Web-first boxing training for beginners and experienced fighters — plans, technique, conditioning circuits, nutrition and coaching guides.",
       foundingLocation: "Uzbekistan",
-      parentOrganization: { "@type": "Organization", name: OPERATOR },
+      /* No parentOrganization. It used to name "Nexara" as a parent company,
+         which told Google there was a corporate group here -- there is not.
+         RingBornn is run by a sole trader, and inventing a parent entity in
+         machine-readable markup is a claim, not a flourish. */
       sameAs: [CONTACT_TELEGRAM, INSTAGRAM],
       ...(CONTACT_EMAIL
         ? {
