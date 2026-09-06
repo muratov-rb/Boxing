@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Logo } from "@/components/ui/Logo";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Icon } from "@/components/ui/Icons";
+import { SiteNav } from "@/components/landing/SiteNav";
+import { getUser } from "@/lib/supabase/user";
 import { GUIDES, guideById } from "@/lib/guides";
 import { SERVICE, SITE_URL } from "@/lib/legal";
 
@@ -63,27 +63,23 @@ export default async function GuidePage({
 
   const t = await getTranslations("guides");
   const li = (await getLocale()) === "ru" ? 1 : 0;
+  const user = await getUser();
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Logo />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <Link
-              href="/guides"
-              className="font-condensed text-xs uppercase tracking-widest text-ash transition-colors hover:text-bone sm:text-sm"
-            >
-              {t("back")}
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteNav authed={!!user} minimal />
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <article>
-          <p className="kicker">{t(`cat_${guide.cat}`)}</p>
+          {/* Was in the header as "Back to guides"; moved next to the content
+              it actually refers to once SiteNav took the header over. */}
+          <Link
+            href="/guides"
+            className="inline-flex items-center gap-1.5 font-condensed text-xs uppercase tracking-widest text-ash-dim transition-colors hover:text-bone"
+          >
+            <Icon name="arrow" size={12} className="rotate-180" /> {t("allGuides")}
+          </Link>
+          <p className="mt-5 kicker">{t(`cat_${guide.cat}`)}</p>
           <h1 className="mt-3 font-display text-[clamp(1.8rem,5.5vw,3rem)] uppercase leading-none">
             {guide.title[li]}
           </h1>

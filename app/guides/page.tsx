@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Logo } from "@/components/ui/Logo";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Icon } from "@/components/ui/Icons";
+import { SiteNav } from "@/components/landing/SiteNav";
+import { getUser } from "@/lib/supabase/user";
 import type { IconName } from "@/components/ui/Icons";
 import { GUIDES, type GuideCat } from "@/lib/guides";
 import { SERVICE } from "@/lib/legal";
@@ -37,23 +37,11 @@ const CAT_ICON: Record<GuideCat, IconName> = {
 export default async function GuidesIndex() {
   const t = await getTranslations("guides");
   const li = (await getLocale()) === "ru" ? 1 : 0;
+  const user = await getUser();
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Logo />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <Link
-              href="/"
-              className="font-condensed text-xs uppercase tracking-widest text-ash transition-colors hover:text-bone sm:text-sm"
-            >
-              {t("home")}
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteNav authed={!!user} minimal />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <p className="kicker">{t("kicker")}</p>

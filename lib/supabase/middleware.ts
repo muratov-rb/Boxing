@@ -2,31 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseUrl, supabaseAnonKey, isSupabaseConfigured } from "./config";
 
-/* Routes that require an account. Onboarding collects the user's stats, so we
-   want them signed in first — "create a profile" → auth → statistics.
-
-   THIS LIST IS THE GATE. A `redirect()` inside the page's own server component
-   is not a substitute and must not be relied on alone: /circuits shipped with
-   exactly that guard and still served itself to signed-out visitors, because a
-   route absent from this list never gets the session resolved on the way in.
-   Adding a page that needs an account means adding it here. */
-const PROTECTED = [
-  "/dashboard",
-  "/onboarding",
-  "/profile",
-  "/calories",
-  "/circuits",
-  "/friends",
-  /* These three render training content and drive the AI routes. They were
-     never in this list, so they answered to the open internet while /calories
-     and /circuits next to them did not -- an inconsistency by accident rather
-     than by decision. No money leaked (every AI route checks auth on its own
-     and always did), but a signed-out visitor reached a page built entirely
-     around a plan they do not have. */
-  "/lessons",
-  "/train",
-  "/nutrition",
-];
+/* Routes that require an account -- the list itself now lives in
+   lib/protected-routes.ts, shared with app/robots.ts so the two cannot drift
+   apart again. THIS IS STILL THE GATE: a `redirect()` inside a page's own
+   server component is not a substitute, and must not be relied on alone --
+   /circuits shipped with exactly that guard and still served itself to
+   signed-out visitors, because a route absent from the list never gets the
+   session resolved on the way in. */
+import { PROTECTED } from "@/lib/protected-routes";
 
 /* Refreshes the Supabase session cookie and guards protected routes.
    No-op when Supabase isn't configured yet, so the app still runs. */

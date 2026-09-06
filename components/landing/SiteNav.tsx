@@ -6,7 +6,17 @@ import { Logo } from "@/components/ui/Logo";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
-export function SiteNav({ authed = false }: { authed?: boolean }) {
+export function SiteNav({
+  authed = false,
+  /* The homepage has #audience and #features sections to jump to; every other
+     public page (guides, legal) does not, and rendering the links there sends
+     a click to a same-page anchor with nothing under it. This is that
+     difference, not a second header design. */
+  minimal = false,
+}: {
+  authed?: boolean;
+  minimal?: boolean;
+}) {
   const t = useTranslations("nav");
 
   return (
@@ -14,20 +24,22 @@ export function SiteNav({ authed = false }: { authed?: boolean }) {
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
 
-        <div className="hidden items-center gap-8 md:flex">
-          <a
-            href="#audience"
-            className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
-          >
-            {t("whoFor")}
-          </a>
-          <a
-            href="#features"
-            className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
-          >
-            {t("whatsComing")}
-          </a>
-        </div>
+        {!minimal && (
+          <div className="hidden items-center gap-8 md:flex">
+            <a
+              href="#audience"
+              className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
+            >
+              {t("whoFor")}
+            </a>
+            <a
+              href="#features"
+              className="font-condensed text-sm uppercase tracking-widest text-ash transition-colors hover:text-bone"
+            >
+              {t("whatsComing")}
+            </a>
+          </div>
+        )}
 
         <div className="flex items-center gap-2 sm:gap-3">
           <span className="hidden sm:inline-flex">
