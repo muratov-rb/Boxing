@@ -53,11 +53,30 @@ async function applySubscription(sub: Subscription): Promise<void> {
     patch.plan = "expired";
   }
 
-  const q = db.from("subscriptions").update(patch);
-  const { error } = userId
+  const q = db.from("subscriptions").update(patch).select("user_id");
+  const { data, error } = userId
     ? await q.eq("user_id", userId)
     : await q.eq("billing_customer_id", sub.customerId);
   if (error) throw error;
+
+  /* An update that matched nothing is NOT an error in PostgREST -- it comes
+     back with a null error and an empty set. Without this check the handler
+     answered 200 to it, Paddle marked the event delivered, and nothing ever
+     retried: somebody paid, stayed on the free trial, and no trace of it
+     existed anywhere. Money in, nothing granted, no alarm raised.
+
+     It happens whenever neither key resolves -- custom_data absent because
+     the subscription was made inside Paddle rather than through our own
+     checkout, or a customer id we never stored. Throwing turns it into a
+     500, which makes Paddle retry and then show it as a failed delivery in
+     their dashboard. A visible failure beats a silent one when it is
+     somebody's money. */
+  if (!data || data.length === 0) {
+    throw new Error(
+      `no subscription row matched for paddle subscription ${sub.id} ` +
+        `(user_id=${userId ?? "none"}, customer=${sub.customerId ?? "none"})`,
+    );
+  }
 }
 
 export async function POST(req: Request) {
