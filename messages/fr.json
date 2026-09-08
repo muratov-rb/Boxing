@@ -1113,5 +1113,13 @@
     "errTooMany": "Vous avez atteint le nombre maximum de partenaires.",
     "errGeneric": "Cela n'a pas fonctionné. Réessayez.",
     "xpShort": "{xp} XP"
+  },
+  "checkout": {
+    "title": "Ouverture du paiement",
+    "sub": "Paddle gère le paiement. Vos données bancaires ne passent jamais par nos serveurs.",
+    "opening": "Ouverture de la fenêtre de paiement…",
+    "noTransaction": "Il n'y a rien à payer ici. Commencez par la page des offres.",
+    "failed": "La fenêtre de paiement n'a pas pu s'ouvrir. Réessayez.",
+    "backToPlans": "Retour aux offres"
   }
 }

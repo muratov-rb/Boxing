@@ -1113,5 +1113,13 @@
     "errTooMany": "Has alcanzado el máximo de compañeros.",
     "errGeneric": "No ha funcionado. Inténtalo otra vez.",
     "xpShort": "{xp} XP"
+  },
+  "checkout": {
+    "title": "Abriendo el pago",
+    "sub": "Paddle gestiona el pago. Los datos de tu tarjeta nunca pasan por nuestros servidores.",
+    "opening": "Abriendo la ventana de pago…",
+    "noTransaction": "Aquí no hay nada que pagar. Empieza desde la página de planes.",
+    "failed": "No se pudo abrir la ventana de pago. Inténtalo otra vez.",
+    "backToPlans": "Volver a los planes"
   }
 }

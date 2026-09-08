@@ -1113,5 +1113,13 @@
     "errTooMany": "已达到搭档数量上限。",
     "errGeneric": "没成功，请再试一次。",
     "xpShort": "{xp} XP"
+  },
+  "checkout": {
+    "title": "正在打开支付",
+    "sub": "支付由 Paddle 处理，你的银行卡信息不会经过我们的服务器。",
+    "opening": "正在打开支付窗口…",
+    "noTransaction": "这里没有需要支付的内容，请从套餐页面开始。",
+    "failed": "无法打开支付窗口，请重试。",
+    "backToPlans": "返回套餐"
   }
 }

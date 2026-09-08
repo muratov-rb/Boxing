@@ -1113,5 +1113,13 @@
     "errTooMany": "You've reached the maximum number of partners.",
     "errGeneric": "That didn't work. Try again.",
     "xpShort": "{xp} XP"
+  },
+  "checkout": {
+    "title": "Opening checkout",
+    "sub": "Paddle handles the payment. Your card details never touch our servers.",
+    "opening": "Opening the payment window…",
+    "noTransaction": "There is nothing to pay for here. Start from the plans page.",
+    "failed": "The payment window could not be opened. Please try again.",
+    "backToPlans": "Back to plans"
   }
 }

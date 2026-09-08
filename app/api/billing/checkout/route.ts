@@ -77,7 +77,14 @@ export async function POST(req: Request) {
       /* Stamped on the transaction so the webhook can identify the account
          from the event alone, without a lookup that might not resolve. */
       customData: { user_id: caller.userId, plan, period },
-      checkout: { url: `${origin}/dashboard?checkout=success` },
+      /* Where Paddle.js lives, NOT where the customer ends up afterwards.
+         Paddle returns this URL with `?_ptxn=<id>` appended and expects the
+         page to open the overlay itself. It used to point at /dashboard,
+         which loads no Paddle.js at all -- the customer was redirected to
+         their own dashboard with the parameter sitting unused in the address
+         bar, and there was no way to pay. The post-payment redirect is set
+         separately, by the checkout page. */
+      checkout: { url: `${origin}/checkout` },
     });
 
     const url = txn.checkout?.url;

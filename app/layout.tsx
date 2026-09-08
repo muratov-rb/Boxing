@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PADDLE_TOKEN_KEY } from "@/lib/paddle-client";
 import { cookies, headers } from "next/headers";
 import { Space_Grotesk, Oswald, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
@@ -86,7 +87,13 @@ export default async function RootLayout({
 
   /* Public Supabase pair, read at request time and handed to the client —
      keeps auth working even when a cached build inlined stale empty values. */
-  const envScript = `window.__PRESSURE_ENV=${JSON.stringify(publicSupabaseEnv()).replace(/</g, "\\u003c")}`;
+  const envScript = `window.__PRESSURE_ENV=${JSON.stringify({
+    ...publicSupabaseEnv(),
+    /* Paddle.js needs this in the browser, and it has to travel the same
+       request-time path: inlined at build it would be an empty string on
+       any deploy built before the variable existed. */
+    [PADDLE_TOKEN_KEY]: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? "",
+  }).replace(/</g, "\u003c")}`;
 
   /* Runs before the rest of the body paints, so there is no flash of the wrong
      theme. Only needed when the visitor has never chosen: once the cookie

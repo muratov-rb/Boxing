@@ -120,7 +120,9 @@ export function PlansClient() {
       };
 
       if (res.ok && data.url) {
-        window.location.assign(data.url); // Stripe's hosted checkout
+        /* Paddle hands back OUR /checkout url with ?_ptxn on it, not a
+           hosted page of theirs -- the overlay is opened there. */
+        window.location.assign(data.url);
         return;
       }
       if (res.status === 401) {
