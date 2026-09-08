@@ -30,7 +30,12 @@ function buildCsp(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline'`,
-    "style-src 'self' 'unsafe-inline'",
+    /* cdn.paddle.com because Paddle.js fetches its own stylesheet from
+       there for the checkout overlay. strict-dynamic carries the script
+       through, but it does not apply to styles -- so the script ran, the
+       iframe opened, and the sheet was blocked, which is the shape of bug
+       where checkout half-works and looks broken rather than failing. */
+    "style-src 'self' 'unsafe-inline' https://cdn.paddle.com",
     /* avatars come from Supabase storage; data: and blob: are the canvas
        resize step and the scanner's own preview */
     "img-src 'self' data: blob: https://*.supabase.co",

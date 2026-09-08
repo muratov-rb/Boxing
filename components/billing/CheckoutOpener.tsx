@@ -54,6 +54,13 @@ export function CheckoutOpener() {
                itself is granted by the webhook, never here -- this page only
                decides where the customer lands. */
             successUrl: `${window.location.origin}/dashboard?checkout=success`,
+            /* Paddle defaults to light. On a site that is dark for most
+               readers that means the payment step is the one moment which
+               looks like somebody else's website -- exactly where a person
+               is deciding whether to trust it with a card. */
+            theme: document.documentElement.classList.contains("dark")
+              ? "dark"
+              : "light",
           },
         });
         setState("open");
