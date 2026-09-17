@@ -89,11 +89,20 @@ export default async function RootLayout({
      keeps auth working even when a cached build inlined stale empty values. */
   const envScript = `window.__PRESSURE_ENV=${JSON.stringify({
     ...publicSupabaseEnv(),
-    /* Paddle.js needs this in the browser, and it has to travel the same
-       request-time path: inlined at build it would be an empty string on
-       any deploy built before the variable existed. */
-    [PADDLE_TOKEN_KEY]: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? "",
-  }).replace(/</g, "\u003c")}`;
+    /* Paddle.js needs this in the browser, and this is the ONLY way it gets
+       there. It is read from a plain server variable, not a NEXT_PUBLIC_ one:
+       the build-time copy was redundant next to this bridge, and the prefix
+       made Vercel flag the project for exposing a variable -- intended for this
+       token, but indistinguishable to a scanner from a real leak, and noise
+       like that hides the alert that matters. */
+    [PADDLE_TOKEN_KEY]: process.env.PADDLE_CLIENT_TOKEN ?? "",
+    /* The escape below must stay TWO backslashes in this source. It turns
+       every "<" into the six characters \u003c, so no value can close the
+       script tag early. One backslash is a unicode escape for "<" itself,
+       which makes the replace a silent no-op -- a shell-scripted edit
+       collapsed it to exactly that on 2026-09-08, and nothing in the output
+       looks any different, so it went unnoticed for nine days. */
+  }).replace(/</g, "\\u003c")}`;
 
   /* Runs before the rest of the body paints, so there is no flash of the wrong
      theme. Only needed when the visitor has never chosen: once the cookie

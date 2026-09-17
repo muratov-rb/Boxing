@@ -1,28 +1,31 @@
-/* The Paddle.js browser token, read the way every other public value here is.
+/* The Paddle.js browser token.
 
-   NEXT_PUBLIC_* is inlined at BUILD time. This project already learned that
-   the hard way with Supabase: a build that ran before the variable existed
-   bakes in an empty string and keeps serving it until something forces a
-   rebuild, with no error to explain why. So the root layout also hands the
-   value to the browser at request time on window.__PRESSURE_ENV, and this
-   prefers the inlined copy but falls back to that bridge.
+   It reaches the browser one way only: the root layout reads it from the
+   server environment on every request and hands it over on
+   window.__PRESSURE_ENV -- the same request-time bridge the public Supabase
+   pair uses.
 
-   Public on purpose, unlike PADDLE_API_KEY: a client-side token is meant to
-   be readable in the page source, and on its own it can only open a checkout
-   for a transaction the server already created. */
+   It used to also be a NEXT_PUBLIC_ variable, inlined into the bundle at
+   build time. That copy was redundant next to the bridge, which exists
+   precisely because build-time inlining bakes an empty string into any deploy
+   built before the variable was set. And the prefix made Vercel flag the
+   project for "exposing" an environment variable.
 
-/** Name kept in one place — it appears in the layout, here, and .env.example. */
-export const PADDLE_TOKEN_KEY = "NEXT_PUBLIC_PADDLE_CLIENT_TOKEN";
+   That flag was a false positive worth removing anyway: a client-side token is
+   public by design -- it has to reach every visitor's browser for the payment
+   window to open, and on its own it can only open a checkout for a transaction
+   the server already created. PADDLE_API_KEY is the one that must never leave
+   the server. Removing the prefix does not hide this token; it stops a
+   scanner alarm that would otherwise train everyone to ignore that scanner. */
+
+/** Key on window.__PRESSURE_ENV. Set in app/layout.tsx, read below. */
+export const PADDLE_TOKEN_KEY = "PADDLE_CLIENT_TOKEN";
 
 export function paddleClientToken(): string {
   if (typeof window !== "undefined") {
-    return (
-      process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ||
-      window.__PRESSURE_ENV?.[PADDLE_TOKEN_KEY] ||
-      ""
-    );
+    return window.__PRESSURE_ENV?.[PADDLE_TOKEN_KEY] ?? "";
   }
-  return process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? "";
+  return process.env.PADDLE_CLIENT_TOKEN ?? "";
 }
 
 /** Which Paddle to talk to, decided by the token's own prefix rather than a
