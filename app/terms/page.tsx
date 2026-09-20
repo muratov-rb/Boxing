@@ -3,6 +3,9 @@ import { LegalPage, type Loc, type Section } from "@/components/legal/LegalPage"
 import {
   SERVICE,
   SITE,
+  TRADER,
+  STUDIO,
+  LEGAL_ROBOTS,
   GOVERNING_LAW,
   MIN_AGE,
   MERCHANT,
@@ -15,6 +18,9 @@ export const metadata: Metadata = {
   title: "Terms of Service — RingBornn",
   description:
     "The rules for using RingBornn, including the health disclaimer, subscriptions, refunds, licensing and account termination.",
+  /* Visible to anyone who opens the page, absent from search results:
+     the trader is named here and does not need to be a Google result. */
+  robots: LEGAL_ROBOTS,
 };
 
 /* Prices are read from lib/subscription.ts rather than typed out, so a pricing
@@ -60,11 +66,11 @@ const SECTIONS: Section[] = [
       },
       [
         {
-          en: `"We", "us", "our" — ${SERVICE}, run as a sole trader business based in Uzbekistan.`,
-          ru: `«Мы», «нас», «наш» — ${SERVICE}, который ведётся как индивидуальное предпринимательство в Узбекистане.`,
-          es: `«Nosotros», «nos», «nuestro»: ${SERVICE}, gestionado como empresa individual con base en Uzbekistán.`,
-          fr: `« Nous », « notre » — ${SERVICE}, exploité en tant qu'entreprise individuelle basée en Ouzbékistan.`,
-          zh: `「我们」「我方」——${SERVICE}，以乌兹别克斯坦的个体经营者形式运营。`,
+          en: `"We", "us", "our" — ${SERVICE}, a service operated by ${TRADER}, a sole trader based in Uzbekistan, trading as ${STUDIO}.`,
+          ru: `«Мы», «нас», «наш» — ${SERVICE}, сервис, которым управляет ${TRADER}, индивидуальный предприниматель в Узбекистане, работающий под именем ${STUDIO}.`,
+          es: `«Nosotros», «nos», «nuestro»: ${SERVICE}, un servicio gestionado por ${TRADER}, empresario individual con base en Uzbekistán, que opera bajo el nombre ${STUDIO}.`,
+          fr: `« Nous », « notre » — ${SERVICE}, un service exploité par ${TRADER}, entrepreneur individuel basé en Ouzbékistan, sous le nom commercial ${STUDIO}.`,
+          zh: `「我们」「我方」——${SERVICE}，由乌兹别克斯坦个体经营者 ${TRADER} 运营的服务，商号为 ${STUDIO}。`,
         },
         {
           en: `"Service" — the ${SERVICE} website at ${SITE}, together with every feature, lesson, plan and tool available through it.`,
@@ -114,11 +120,11 @@ const SECTIONS: Section[] = [
     },
     blocks: [
       {
-        en: `These terms are a binding agreement between you and ${SERVICE}, the service at ${SITE}. By ticking the box at sign-up, creating an account, or otherwise using the Service, you accept them. If you do not accept them, do not use the Service.`,
-        ru: `Эти условия — обязывающее соглашение между тобой и ${SERVICE}, сервисом на ${SITE}. Отмечая галочку при регистрации, создавая аккаунт или иначе пользуясь Сервисом, ты их принимаешь. Не согласен — не пользуйся Сервисом.`,
-        es: `Estos términos son un acuerdo vinculante entre tú y ${SERVICE}, el servicio en ${SITE}. Al marcar la casilla al registrarte, crear una cuenta o usar el Servicio de cualquier otro modo, los aceptas. Si no los aceptas, no uses el Servicio.`,
-        fr: `Les présentes conditions constituent un accord contraignant entre vous et ${SERVICE}, le service à l'adresse ${SITE}. En cochant la case lors de l'inscription, en créant un compte ou en utilisant le Service de toute autre manière, vous les acceptez. Si vous ne les acceptez pas, n'utilisez pas le Service.`,
-        zh: `本条款是你与 ${SERVICE}（位于 ${SITE} 的服务）之间具有约束力的协议。当你在注册时勾选选框、创建账户或以其他方式使用本服务，即表示接受本条款。若不接受，请勿使用本服务。`,
+        en: `These terms are a binding agreement between you and ${TRADER}, who operates ${SERVICE} at ${SITE}. By ticking the box at sign-up, creating an account, or otherwise using the Service, you accept them. If you do not accept them, do not use the Service.`,
+        ru: `Эти условия — обязывающее соглашение между тобой и ${TRADER}, который ведёт ${SERVICE} на ${SITE}. Отмечая галочку при регистрации, создавая аккаунт или иначе пользуясь Сервисом, ты их принимаешь. Не согласен — не пользуйся Сервисом.`,
+        es: `Estos términos son un acuerdo vinculante entre tú y ${TRADER}, que gestiona ${SERVICE} en ${SITE}. Al marcar la casilla al registrarte, crear una cuenta o usar el Servicio de cualquier otro modo, los aceptas. Si no los aceptas, no uses el Servicio.`,
+        fr: `Les présentes conditions constituent un accord contraignant entre vous et ${TRADER}, qui exploite ${SERVICE} à l'adresse ${SITE}. En cochant la case lors de l'inscription, en créant un compte ou en utilisant le Service de toute autre manière, vous les acceptez. Si vous ne les acceptez pas, n'utilisez pas le Service.`,
+        zh: `本条款是你与 ${TRADER}（运营位于 ${SITE} 的 ${SERVICE}）之间具有约束力的协议。当你在注册时勾选选框、创建账户或以其他方式使用本服务，即表示接受本条款。若不接受，请勿使用本服务。`,
       },
       {
         en: `You must be at least ${MIN_AGE} years old to hold an account. If the age of digital consent where you live is higher than ${MIN_AGE}, that higher age applies to you instead.`,

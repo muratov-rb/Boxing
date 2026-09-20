@@ -3,6 +3,8 @@ import { LegalPage, type Section } from "@/components/legal/LegalPage";
 import {
   SERVICE,
   SITE,
+  TRADER,
+  LEGAL_ROBOTS,
   DATA_REGION,
   MIN_AGE,
   REQUEST_DAYS,
@@ -14,6 +16,9 @@ export const metadata: Metadata = {
   title: "Privacy Policy — RingBornn",
   description:
     "What RingBornn collects, why, who it is shared with, and how to get it deleted.",
+  /* Visible to anyone who opens the page, absent from search results:
+     the trader is named here and does not need to be a Google result. */
+  robots: LEGAL_ROBOTS,
 };
 
 /* Written against what the app actually does — the tables in Supabase, the
@@ -36,11 +41,11 @@ const SECTIONS: Section[] = [
     },
     blocks: [
       {
-        en: `${SERVICE} is a boxing training service at ${SITE}, run as a sole trader business based in Uzbekistan. This policy explains what we do with your information, in plain language.`,
-        ru: `${SERVICE} — сервис боксёрских тренировок на ${SITE}, который ведётся как индивидуальное предпринимательство в Узбекистане. Эта политика простым языком объясняет, что мы делаем с твоими данными.`,
-        es: `${SERVICE} es un servicio de entrenamiento de boxeo en ${SITE}, gestionado como empresa individual con base en Uzbekistán. Esta política explica en lenguaje claro qué hacemos con tu información.`,
-        fr: `${SERVICE} est un service d'entraînement à la boxe sur ${SITE}, exploité en tant qu'entreprise individuelle basée en Ouzbékistan. Cette politique explique en langage clair ce que nous faisons de vos informations.`,
-        zh: `${SERVICE} 是位于 ${SITE} 的拳击训练服务，以乌兹别克斯坦的个体经营者形式运营。本政策用直白的语言说明我们如何处理你的信息。`,
+        en: `${SERVICE} is a boxing training service at ${SITE}, operated by ${TRADER}, a sole trader based in Uzbekistan, who is the data controller. This policy explains what we do with your information, in plain language.`,
+        ru: `${SERVICE} — сервис боксёрских тренировок на ${SITE}, которым управляет ${TRADER}, индивидуальный предприниматель в Узбекистане; он является оператором персональных данных. Эта политика простым языком объясняет, что мы делаем с твоими данными.`,
+        es: `${SERVICE} es un servicio de entrenamiento de boxeo en ${SITE}, gestionado por ${TRADER}, empresario individual con base en Uzbekistán, que es el responsable del tratamiento. Esta política explica en lenguaje claro qué hacemos con tu información.`,
+        fr: `${SERVICE} est un service d'entraînement à la boxe sur ${SITE}, exploité par ${TRADER}, entrepreneur individuel basé en Ouzbékistan, qui est le responsable du traitement. Cette politique explique en langage clair ce que nous faisons de vos informations.`,
+        zh: `${SERVICE} 是位于 ${SITE} 的拳击训练服务，由乌兹别克斯坦个体经营者 ${TRADER} 运营，他是数据控制者。本政策用直白的语言说明我们如何处理你的信息。`,
       },
       contact,
     ],

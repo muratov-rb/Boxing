@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { LegalPage, type Section } from "@/components/legal/LegalPage";
-import { SERVICE, MERCHANT, contactLine, REQUEST_DAYS } from "@/lib/legal";
+import { SERVICE, MERCHANT, LEGAL_ROBOTS, contactLine, REQUEST_DAYS } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Refunds & Cancellation — RingBornn",
   description:
     "How to cancel a RingBornn subscription, when refunds are given, and how long they take.",
+  /* Visible to anyone who opens the page, absent from search results:
+     the trader is named here and does not need to be a Google result. */
+  robots: LEGAL_ROBOTS,
 };
 
 /* A page of its own rather than a clause buried in the terms: people look for

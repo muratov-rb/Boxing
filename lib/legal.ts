@@ -6,20 +6,50 @@
    =========================================================================== */
 
 /** Bump this whenever the wording of either page changes materially. */
-export const LEGAL_UPDATED = "5 August 2026";
+export const LEGAL_UPDATED = "20 September 2026";
 
-/** Who operates the service, as it should appear to a user. */
-/* The studio name, used as a brand credit only.
+/* The trading name. A brand, not a legal entity.
 
    It was OPERATOR, and the terms named it as the party users contracted with
-   -- "a binding agreement between you and Nexara". No such legal entity
-   exists, so that agreement named a party that could not be held to it, and
-   it contradicted a Paddle application filed by an individual. The contract
-   is with the service itself now, run by a sole trader. This survives as what
-   it always actually was: a name on the work, not a company. */
+   -- "a binding agreement between you and Nexara". No such entity exists, so
+   that agreement named a party that could not be held to it, and it
+   contradicted a Paddle application filed by an individual.
+
+   Removing it left the opposite problem: the contract was then with the
+   service itself, which is also not a legal person, and the terms named
+   nobody at all. The party is TRADER below; this appears alongside it as the
+   name he trades under, which is what it always actually was. */
 export const STUDIO = "Nexara";
 export const SERVICE = "RingBornn";
 export const SITE = "ringbornn.com";
+
+/** The person legally party to the terms.
+ *
+ *  The terms used to name no seller at all. "We" was defined as the service
+ *  itself, "run as a sole trader business based in Uzbekistan" — a brand and a
+ *  country, with no identifiable person behind them. That is a gap against
+ *  Paddle's published domain-review checklist, which asks for "the company
+ *  name or sole proprietor's brand (legal name preferred for sole
+ *  proprietors) in the Terms & Conditions", and it is also what consumer law
+ *  generally expects: someone entering a contract is entitled to know who
+ *  with.
+ *
+ *  MUST MATCH the name on his ID and on the Paddle account exactly. A
+ *  mismatch between the site and the documents is the kind of thing that
+ *  fails a verification for a reason nobody explains.
+ *
+ *  The legal pages carry `noindex` (see app/terms, app/privacy, app/refunds)
+ *  so this is visible to a customer or a reviewer who opens the page, but is
+ *  not collected into search results. */
+export const TRADER = "Muratov Baxrom";
+
+/** Robots directive shared by the three legal pages.
+ *
+ *  They must stay crawlable in robots.txt for this to work at all — a
+ *  Disallow would stop the crawler ever reading the noindex, and Google can
+ *  still list a blocked URL it has never fetched. Allowing the fetch and
+ *  refusing the index is the combination that actually keeps a page out. */
+export const LEGAL_ROBOTS = { index: false, follow: true } as const;
 
 /** Absolute origin, for the places that need a real URL rather than a label —
     the sitemap, robots.txt and the link previews shared on social. Derived
