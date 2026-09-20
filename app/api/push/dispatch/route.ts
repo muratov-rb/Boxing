@@ -106,26 +106,55 @@ function deviceNow(tz: string): { minutes: number; today: string } {
   };
 }
 
-function authorised(req: Request): boolean {
-  const secret = process.env.CRON_SECRET?.trim() ?? "";
-  if (!secret) return false;
+function bearer(req: Request): string {
   const header = req.headers.get("authorization") ?? "";
-  const given = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  /* Compare in constant time, and only when the lengths already match —
-     timingSafeEqual throws on a length mismatch rather than returning false. */
-  if (given.length !== secret.length) return false;
-  return timingSafeEqual(Buffer.from(given), Buffer.from(secret));
+  return header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+}
+
+/** Constant time, and only once the lengths already match — timingSafeEqual
+    throws on a length mismatch rather than returning false. */
+function matches(given: string, expected: string): boolean {
+  if (!expected || given.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(given), Buffer.from(expected));
+}
+
+/* The credential pg_cron uses lives in the database and was generated there,
+   so it has never been typed, printed or pasted anywhere. Cached briefly:
+   without that, anything hammering this URL would turn into one database read
+   per request, which is a free amplifier pointed at our own database. */
+let cached = { value: "", at: 0 };
+const SECRET_TTL_MS = 5 * 60 * 1000;
+
+async function storedSecret(db: ReturnType<typeof createAdminClient>): Promise<string> {
+  if (cached.value && Date.now() - cached.at < SECRET_TTL_MS) return cached.value;
+  const { data } = await db
+    .from("app_secrets")
+    .select("value")
+    .eq("name", "push_cron")
+    .maybeSingle<{ value: string }>();
+  const value = data?.value ?? "";
+  if (value) cached = { value, at: Date.now() };
+  return value;
 }
 
 async function dispatch(req: Request) {
-  if (!authorised(req)) {
-    return NextResponse.json({ error: "unauthorised" }, { status: 401 });
-  }
+  /* Reject anything without a bearer before touching Postgres at all —
+     this URL is public and will be found by scanners. */
+  const given = bearer(req);
+  if (!given) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
+
   if (!serviceRoleConfigured() || !pushConfigured()) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
   const db = createAdminClient();
+
+  /* Two valid credentials, both 32 random bytes. The database one is what the
+     cron sends; CRON_SECRET is the break-glass copy for running this by hand
+     without having to read the other out of the database. */
+  let allowed = matches(given, process.env.CRON_SECRET?.trim() ?? "");
+  if (!allowed) allowed = matches(given, await storedSecret(db));
+  if (!allowed) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   const { data, error } = await db
     .from("push_subscriptions")
     .select("id, endpoint, p256dh, auth, tz, locale, slots, meal_minutes, last_fired, failures")
