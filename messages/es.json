@@ -1024,7 +1024,12 @@
     "pushDisable": "Solo con la app abierta",
     "pushWorking": "Configurando…",
     "pushFailed": "No se pudo configurar. Los recordatorios siguen funcionando con la app abierta.",
-    "limitNotePush": "Tu teléfono los recibe aunque RingBornn esté cerrado. La excepción es el agua: solo funciona dentro de la app, porque depende de cuánto hayas bebido."
+    "limitNotePush": "Tu teléfono los recibe aunque RingBornn esté cerrado. La excepción es el agua: solo funciona dentro de la app, porque depende de cuánto hayas bebido.",
+    "testPushTitle": "RingBornn — prueba",
+    "testPushBody": "Si ves esto, los recordatorios te llegarán con la app cerrada.",
+    "testPushSent": "Enviado a tu teléfono: mira tus notificaciones",
+    "testPushNone": "Sonó el aviso, pero no se pudo enviar la notificación",
+    "skippedNote": "{names} se omitirá hoy: ya registraste una comida a esa hora. Los recordatorios de entrenamiento nunca se omiten."
   },
   "circuits": {
     "kicker": "Acondicionamiento",

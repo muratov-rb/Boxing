@@ -348,7 +348,12 @@ export function FoodScanner({
                 muted
                 className="aspect-[4/3] w-full rounded-lg border border-line/70 bg-black object-cover"
               />
-              <div className="pointer-events-none absolute inset-0 grid place-items-center">
+              {/* overflow-hidden is load-bearing, not tidiness. The dimming
+                  below is drawn as a 9999px box-shadow spread, which without
+                  a clip does not stop at the preview — it covers the whole
+                  dialog, and the red Take photo button underneath it comes
+                  out looking greyed out and disabled. */}
+              <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden rounded-lg">
                 <div
                   className="relative"
                   style={{ height: `${FRAME_FRACTION * 100}%`, width: `${FRAME_FRACTION * 100}%` }}

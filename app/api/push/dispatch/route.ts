@@ -3,11 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
 import { sendPush, pushConfigured, type PushPayload } from "@/lib/push-server";
 import { dueReminders, markFired, type ReminderSettings, type ReminderSlot } from "@/lib/reminders";
-import en from "@/messages/en.json";
-import ru from "@/messages/ru.json";
-import es from "@/messages/es.json";
-import fr from "@/messages/fr.json";
-import zh from "@/messages/zh.json";
+import { fill, pushCopy } from "@/lib/push-copy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +12,7 @@ export const dynamic = "force-dynamic";
    The thing that makes a reminder arrive with the app closed.
 
    Called once a minute by pg_cron inside Supabase (see
-   db/migrations/004_reminder_cron.sql). Vercel's own cron was the obvious
+   db/migrations/005_reminder_cron.sql). Vercel's own cron was the obvious
    choice and is not an option: the Hobby plan will not run a job every
    minute. Postgres will, for nothing, and it is already paid for.
 
@@ -30,31 +26,6 @@ export const dynamic = "force-dynamic";
 /** A bound on one run, so a pathological number of rows cannot run the
     function past its timeout and take every reminder down with it. */
 const MAX_ROWS = 1000;
-
-/* The push wording is read from the same catalogues the app uses rather than
-   copied into this file. Copies drift, and the drift would only ever show up
-   on a device that is asleep, where nobody is looking. These never reach the
-   browser — this route is server-only. */
-const CATALOGUE: Record<string, { remind: Record<string, string> }> = {
-  en: en as never,
-  ru: ru as never,
-  es: es as never,
-  fr: fr as never,
-  zh: zh as never,
-};
-
-function copy(locale: string): Record<string, string> {
-  const chosen = CATALOGUE[locale] ?? CATALOGUE.en;
-  /* Fall back key-by-key, not whole-catalogue: a language that has not
-     translated one string should still get the other four in its own words. */
-  return { ...CATALOGUE.en.remind, ...chosen.remind };
-}
-
-/** Substitute {at} without a regex — this file has no business containing an
-    escape, and the codebase has been bitten by one before. */
-function fill(template: string, at: string): string {
-  return template.split("{at}").join(at);
-}
 
 interface Row {
   id: string;
@@ -155,6 +126,7 @@ async function dispatch(req: Request) {
   let allowed = matches(given, process.env.CRON_SECRET?.trim() ?? "");
   if (!allowed) allowed = matches(given, await storedSecret(db));
   if (!allowed) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
+
   const { data, error } = await db
     .from("push_subscriptions")
     .select("id, endpoint, p256dh, auth, tz, locale, slots, meal_minutes, last_fired, failures")
@@ -211,7 +183,7 @@ async function dispatch(req: Request) {
       .update({ last_fired: next.lastFired, updated_at: new Date().toISOString() })
       .eq("id", row.id);
 
-    const words = copy(row.locale);
+    const words = pushCopy(row.locale);
     let gone = false;
 
     for (const item of due) {

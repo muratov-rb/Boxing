@@ -1024,7 +1024,12 @@
     "pushDisable": "仅在打开应用时",
     "pushWorking": "设置中…",
     "pushFailed": "设置失败。打开应用时提醒仍然有效。",
-    "limitNotePush": "即使关闭 RingBornn，手机也会收到这些提醒。喝水提醒除外——它只在应用内运行，因为是否需要取决于你已经喝了多少。"
+    "limitNotePush": "即使关闭 RingBornn，手机也会收到这些提醒。喝水提醒除外——它只在应用内运行，因为是否需要取决于你已经喝了多少。",
+    "testPushTitle": "RingBornn — 测试",
+    "testPushBody": "如果你看到这条消息，关闭应用后也能收到提醒。",
+    "testPushSent": "已发送到你的手机——请查看通知",
+    "testPushNone": "铃声响了，但通知没能发送",
+    "skippedNote": "{names} 今天会被跳过——你已经在那个时间前后记录过一餐。训练提醒永远不会被跳过。"
   },
   "circuits": {
     "kicker": "体能",

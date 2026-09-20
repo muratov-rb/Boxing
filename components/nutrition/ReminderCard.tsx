@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
-import { hasSavedReminders } from "@/lib/tracking";
+import { KEYS, hasSavedReminders, mealMinutesToday, onTrackingChange } from "@/lib/tracking";
 import { primeAlarm } from "@/lib/alarm";
 import { disablePush, enablePush, pushSupported } from "@/lib/push-client";
 import {
@@ -15,9 +15,11 @@ import {
 import { useReminders } from "./useReminders";
 import {
   MAX_SLOTS,
+  MEAL_GRACE_MINUTES,
   SLOT_LABEL_MAX,
   WATER_INTERVAL_CHOICES,
   newSlotId,
+  parseHhMm,
   type ReminderSlot,
 } from "@/lib/reminders";
 
@@ -63,13 +65,21 @@ export function ReminderCard() {
   const { settings, due, pushActive } = useReminders();
   const [permission, setPermission] = useState<Permission>("default");
   const [installHint, setInstallHint] = useState(false);
-  const [tested, setTested] = useState(false);
+  const [tested, setTested] = useState<"" | "local" | "push" | "pushFailed">("");
   const [pushBusy, setPushBusy] = useState(false);
   const [pushFailed, setPushFailed] = useState(false);
+
+  const [mealMinutes, setMealMinutes] = useState<number[]>([]);
 
   useEffect(() => {
     setPermission(readPermission());
     setInstallHint(needsInstallFirst());
+    setMealMinutes(mealMinutesToday());
+    /* Logging a meal can silence a slot later today, so the explanation below
+       has to keep up with the meals as they are added. */
+    return onTrackingChange((key) => {
+      if (key === KEYS.meals) setMealMinutes(mealMinutesToday());
+    });
   }, []);
 
   /* First run on this device: give the three starter slots names in the
@@ -130,14 +140,38 @@ export function ReminderCard() {
     setPushBusy(false);
   };
 
+  /* Rings the local bell AND, when this device is registered, sends a real
+     push through the whole server path. The bell alone proves nothing about
+     whether a notification can reach the phone, which is exactly the question
+     someone pressing this button is asking. */
   const runTest = async () => {
     primeAlarm();
     await testReminder();
-    setTested(true);
-    window.setTimeout(() => setTested(false), 4000);
+
+    if (!pushActive) {
+      setTested("local");
+    } else {
+      try {
+        const res = await fetch("/api/push/test", { method: "POST" });
+        const data = (await res.json()) as { sent?: number };
+        setTested(res.ok && (data.sent ?? 0) > 0 ? "push" : "pushFailed");
+      } catch {
+        setTested("pushFailed");
+      }
+    }
+    window.setTimeout(() => setTested(""), 6000);
   };
 
   if (!settings) return null;
+
+  /* Meal slots that today's logged meals will silence. Training slots are
+     never suppressed — you can eat an hour before a session. */
+  const skipped = settings.slots.filter((slot) => {
+    if (slot.kind === "training") return false;
+    const at = parseHhMm(slot.time);
+    if (at === null) return false;
+    return mealMinutes.some((m) => Math.abs(m - at) <= MEAL_GRACE_MINUTES);
+  });
 
   const setSlot = (id: string, patch: Partial<ReminderSlot>) =>
     update({
@@ -333,8 +367,29 @@ export function ReminderCard() {
           {/* Hearing it once is the only way to know it works — and the tap
               itself is what unlocks audio for the rest of the session. */}
           <button type="button" onClick={runTest} className="btn btn-ghost mt-2 w-full !py-2.5 text-xs">
-            {tested ? t("testDone") : t("testButton")}
+            {tested === "push"
+              ? t("testPushSent")
+              : tested === "pushFailed"
+                ? t("testPushNone")
+                : tested === "local"
+                  ? t("testDone")
+                  : t("testButton")}
           </button>
+
+          {/* Why a reminder you set did not arrive.
+
+              A meal slot is skipped when you logged a meal within 45 minutes
+              of it — deliberate, so the app does not tell you to eat lunch
+              while you are still chewing it. But with nothing said about it,
+              a skipped reminder is indistinguishable from a broken one, which
+              is exactly how the first real test of push read. */}
+          {skipped.length > 0 && (
+            <p className="mt-2.5 text-xs leading-relaxed text-ash-dim">
+              {t("skippedNote", {
+                names: skipped.map((s) => s.label || t("slotNewName")).join(", "),
+              })}
+            </p>
+          )}
 
           {/* water cadence */}
           <div className="mt-6 flex items-center justify-between gap-3">

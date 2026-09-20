@@ -1024,7 +1024,12 @@
     "pushDisable": "Only while the app is open",
     "pushWorking": "Setting up…",
     "pushFailed": "Could not set that up. Reminders still work while the app is open.",
-    "limitNotePush": "Your phone gets these even with RingBornn shut. Water reminders are the exception — they only run in the app, because whether you need one depends on what you have drunk."
+    "limitNotePush": "Your phone gets these even with RingBornn shut. Water reminders are the exception — they only run in the app, because whether you need one depends on what you have drunk.",
+    "testPushTitle": "RingBornn — test",
+    "testPushBody": "If you can see this, reminders will reach you with the app closed.",
+    "testPushSent": "Sent to your phone — check your notifications",
+    "testPushNone": "The bell rang, but no push could be sent",
+    "skippedNote": "{names} will be skipped today — you already logged a meal around that time. Reminders you set as training are never skipped."
   },
   "circuits": {
     "kicker": "Conditioning",
