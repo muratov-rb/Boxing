@@ -558,7 +558,13 @@
     "cameraDenied": "L'accès à la caméra a été refusé. Tu peux téléverser une photo à la place.",
     "noAi": "Le scan est indisponible pour le moment. Ajoutez le repas à la main ci-dessous.",
     "scanFailed": "Impossible d'analyser la photo. Réessaie ou ajoute le repas manuellement.",
-    "frameHint": "Cadrez l assiette dans le repère"
+    "frameHint": "Seul ce qui est entre les coins est compté",
+    "hintLabel": "C'est quoi ? (facultatif)",
+    "hintPlaceholder": "ex. poisson frit, environ 200 g",
+    "hintHelp": "Nommer le plat est ce qui améliore le plus la précision : une photo ne distingue pas toujours un poisson frit d'une tranche de pain.",
+    "itemsHint": "Décochez ce qui ne fait pas partie de votre repas.",
+    "wrongHint": "Faux ? Indiquez le plat ci-dessus et relancez l'analyse.",
+    "tryAgain": "Relancer l'analyse"
   },
   "common": {
     "language": "Langue"
@@ -970,7 +976,7 @@
   },
   "remind": {
     "title": "Rappels",
-    "sub": "Des rappels pour manger et boire, à vos horaires. Ignorés si un repas a déjà été enregistré à peu près à cette heure.",
+    "sub": "Des rappels pour manger, boire et vous entraîner, à vos horaires. Ils sonnent, vibrent et affichent une notification. Les rappels de repas sont ignorés si vous avez déjà enregistré un repas à cette heure-là.",
     "waterLabel": "Rappels d'hydratation",
     "on": "Activé",
     "off": "Désactivé",
@@ -989,7 +995,7 @@
     "permGranted": "Les notifications sont actives sur cet appareil.",
     "permDenied": "Les notifications sont bloquées pour ce site. Réactivez-les dans les paramètres du navigateur si vous les voulez.",
     "permUnsupported": "Ce navigateur ne gère pas les notifications. Les rappels restent visibles ici.",
-    "limitNote": "Les rappels fonctionnent tant que RingBornn est ouvert dans un onglet. Sur iPhone, ajoutez d'abord le site à l'écran d'accueil.",
+    "limitNote": "Les rappels se déclenchent tant que RingBornn est ouvert dans un onglet — sur n'importe quelle page, pas seulement celle-ci. Le son et la vibration demandent d'abord une touche sur la page : c'est à cela que sert le bouton de test.",
     "slotsLabel": "Vos rappels",
     "slotNamePlaceholder": "Donnez-lui un nom",
     "slotNameAria": "Nom du rappel",
@@ -1000,7 +1006,18 @@
     "dueSlot": "{name} — {at}.",
     "slotBreakfast": "Petit-déjeuner",
     "slotLunch": "Déjeuner",
-    "slotDinner": "Dîner"
+    "slotDinner": "Dîner",
+    "alertLabel": "Comment il vous alerte",
+    "soundLabel": "Son",
+    "vibrateLabel": "Vibration",
+    "testButton": "Tester l'alerte",
+    "testDone": "Envoyé — vous l'entendez ?",
+    "permInstallFirst": "Sur iPhone, les notifications ne fonctionnent qu'une fois le site installé. Touchez Partager, puis Sur l'écran d'accueil, et ouvrez RingBornn depuis là.",
+    "trainingTitle": "RingBornn — l'heure de s'entraîner",
+    "trainingBody": "Votre séance de {at} commence. Enfilez les gants.",
+    "slotKindAria": "Repas ou entraînement",
+    "slotKindMeal": "Rappel de repas",
+    "slotKindTraining": "Rappel d'entraînement"
   },
   "circuits": {
     "kicker": "Condition physique",

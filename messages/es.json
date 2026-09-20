@@ -558,7 +558,13 @@
     "cameraDenied": "Se denegó el acceso a la cámara. Puedes subir una foto en su lugar.",
     "noAi": "El escaneo no está disponible ahora mismo. Añade la comida a mano abajo.",
     "scanFailed": "No se pudo analizar la foto. Inténtalo de nuevo o añade la comida manualmente.",
-    "frameHint": "Encuadra el plato en el marco"
+    "frameHint": "Solo se cuenta lo que está dentro de las esquinas",
+    "hintLabel": "¿Qué es? (opcional)",
+    "hintPlaceholder": "p. ej. pescado frito, unos 200 g",
+    "hintHelp": "Nombrar la comida es lo que más ayuda a la precisión: una foto no siempre distingue el pescado frito del pan.",
+    "itemsHint": "Desmarca lo que no forme parte de tu comida.",
+    "wrongHint": "¿Incorrecto? Escribe arriba el nombre de la comida y vuelve a escanear.",
+    "tryAgain": "Escanear otra vez"
   },
   "common": {
     "language": "Idioma"
@@ -970,7 +976,7 @@
   },
   "remind": {
     "title": "Recordatorios",
-    "sub": "Avisos para comer y beber, a tu horario. Se omiten si ya registraste una comida a esa hora.",
+    "sub": "Avisos para comer, beber y entrenar, en tu horario. Suenan, vibran y muestran una notificación. Los avisos de comida se omiten si ya registraste una comida a esa hora.",
     "waterLabel": "Recordatorios de agua",
     "on": "Sí",
     "off": "No",
@@ -989,7 +995,7 @@
     "permGranted": "Las notificaciones están activas en este dispositivo.",
     "permDenied": "Las notificaciones están bloqueadas para este sitio. Actívalas en los ajustes del navegador si las quieres.",
     "permUnsupported": "Este navegador no admite notificaciones. Los recordatorios se ven igual aquí.",
-    "limitNote": "Los recordatorios funcionan mientras RingBornn esté abierto en una pestaña. En iPhone, añade el sitio a la pantalla de inicio para que lleguen.",
+    "limitNote": "Los recordatorios se activan mientras RingBornn esté abierto en una pestaña, en cualquier página, no solo en esta. El sonido y la vibración necesitan que toques la página una vez: para eso está el botón de prueba.",
     "slotsLabel": "Tus recordatorios",
     "slotNamePlaceholder": "Ponle nombre",
     "slotNameAria": "Nombre del recordatorio",
@@ -1000,7 +1006,18 @@
     "dueSlot": "{name} — {at}.",
     "slotBreakfast": "Desayuno",
     "slotLunch": "Comida",
-    "slotDinner": "Cena"
+    "slotDinner": "Cena",
+    "alertLabel": "Cómo te avisa",
+    "soundLabel": "Sonido",
+    "vibrateLabel": "Vibración",
+    "testButton": "Probar el aviso",
+    "testDone": "Enviado, ¿lo has oído?",
+    "permInstallFirst": "En iPhone las notificaciones solo funcionan con el sitio instalado. Pulsa Compartir, luego Añadir a pantalla de inicio, y abre RingBornn desde ahí.",
+    "trainingTitle": "RingBornn — hora de entrenar",
+    "trainingBody": "Tu sesión de las {at} toca ahora. Ponte los guantes.",
+    "slotKindAria": "Comida o entrenamiento",
+    "slotKindMeal": "Recordatorio de comida",
+    "slotKindTraining": "Recordatorio de entrenamiento"
   },
   "circuits": {
     "kicker": "Acondicionamiento",

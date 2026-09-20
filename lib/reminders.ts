@@ -31,7 +31,18 @@ export interface ReminderSlot {
   label: string;
   /** "HH:MM" in the device's own timezone. */
   time: string;
+  /* What the slot is for. Absent on slots saved before this existed, which
+     are all meals, so undefined reads as "meal" everywhere.
+
+     It changes two things that matter. A training reminder is not cancelled
+     by having eaten — the whole point of a 18:00 session nudge is that it
+     arrives whether or not you had dinner at 17:40 — and it says "time to
+     train", not "your 18:00 meal is due", which is what a slot renamed
+     "Training" used to be told. */
+  kind?: SlotKind;
 }
+
+export type SlotKind = "meal" | "training";
 
 export const MAX_SLOTS = 8;
 export const SLOT_LABEL_MAX = 40;
@@ -40,6 +51,12 @@ export interface ReminderSettings {
   enabled: boolean;
   slots: ReminderSlot[];
   water: WaterReminder;
+  /** Ring out loud. On by default: a reminder that arrives silently behind a
+      tab is not a reminder, which is exactly how this feature read as broken. */
+  sound: boolean;
+  /** Buzz the phone. Ignored by desktop and by iOS, neither of which has the
+      API — harmless there, and the one thing that gets noticed in a pocket. */
+  vibrate: boolean;
   /** slot key → ISO timestamp it last fired, so a reload cannot re-fire it. */
   lastFired: Record<string, string>;
 }
@@ -56,6 +73,8 @@ export const DEFAULT_REMINDERS: ReminderSettings = {
   enabled: false,
   slots: DEFAULT_SLOTS,
   water: { enabled: true, everyMinutes: 120, from: "08:00", to: "22:00" },
+  sound: true,
+  vibrate: true,
   lastFired: {},
 };
 
@@ -86,6 +105,11 @@ export function migrateSettings(
     ...saved,
     slots: slots.length ? slots.slice(0, MAX_SLOTS) : DEFAULT_SLOTS,
     water: { ...DEFAULT_REMINDERS.water, ...(saved.water ?? {}) },
+    /* Settings saved before sound and vibration existed have neither key, and
+       a spread of an absent key leaves the default — but a corrupted value of
+       the wrong type would survive it, so they are read explicitly. */
+    sound: typeof saved.sound === "boolean" ? saved.sound : true,
+    vibrate: typeof saved.vibrate === "boolean" ? saved.vibrate : true,
     lastFired: saved.lastFired ?? {},
   };
 }
@@ -134,7 +158,7 @@ export function withinWindow(now: number, from: number, to: number): boolean {
 
 /* --------------------------------- due ----------------------------------- */
 
-export type DueKind = "meal" | "water";
+export type DueKind = "meal" | "water" | "training";
 
 export interface DueReminder {
   kind: DueKind;
@@ -178,17 +202,30 @@ export function dueReminders(input: DueInput): DueReminder[] {
        stack of reminders for breakfast, lunch and dinner all at once. */
     if (nowMin - at > 90) continue;
 
+    const training = slot.kind === "training";
+
     /* Keyed by slot id, not by time: renaming or moving a slot must not make
-       it fire a second time on the same day. */
-    const key = `meal:${today}:${slot.id}`;
+       it fire a second time on the same day. The prefix differs by kind so
+       that switching a slot to training re-arms it for today rather than
+       finding the day already marked. */
+    const key = `${training ? "train" : "meal"}:${today}:${slot.id}`;
     if (settings.lastFired[key]) continue;
 
-    const alreadyEaten = loggedMealMinutes.some(
-      (m) => Math.abs(m - at) <= MEAL_GRACE_MINUTES,
-    );
-    if (alreadyEaten) continue;
+    /* Having eaten cancels a reminder to eat. It must not cancel a reminder
+       to train — those are the hours people most often eat just beforehand. */
+    if (!training) {
+      const alreadyEaten = loggedMealMinutes.some(
+        (m) => Math.abs(m - at) <= MEAL_GRACE_MINUTES,
+      );
+      if (alreadyEaten) continue;
+    }
 
-    out.push({ kind: "meal", key, at: slot.time, label: slot.label });
+    out.push({
+      kind: training ? "training" : "meal",
+      key,
+      at: slot.time,
+      label: slot.label,
+    });
   }
 
   const w = settings.water;

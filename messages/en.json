@@ -558,7 +558,13 @@
     "cameraDenied": "Camera access was denied. You can upload a photo instead.",
     "noAi": "Meal scanning is unavailable right now. Add the meal by hand below.",
     "scanFailed": "Couldn't analyze the photo. Try again or add the meal manually.",
-    "frameHint": "Fill the frame with the plate"
+    "frameHint": "Only what is inside the corners is counted",
+    "hintLabel": "What is it? (optional)",
+    "hintPlaceholder": "e.g. fried fish, about 200 g",
+    "hintHelp": "Naming the food is the single biggest thing you can do for accuracy — a photo cannot always tell fried fish from bread.",
+    "itemsHint": "Untick anything that is not part of your meal.",
+    "wrongHint": "Wrong? Name the food above and scan again.",
+    "tryAgain": "Scan again"
   },
   "common": {
     "language": "Language"
@@ -970,7 +976,7 @@
   },
   "remind": {
     "title": "Reminders",
-    "sub": "Nudges to eat and drink, on your schedule. Skipped automatically if you already logged a meal around that time.",
+    "sub": "Nudges to eat, drink and train, on your schedule. They ring, buzz and show a notification. Meal reminders are skipped automatically if you already logged a meal around that time.",
     "waterLabel": "Water reminders",
     "on": "On",
     "off": "Off",
@@ -989,7 +995,7 @@
     "permGranted": "Notifications are on for this device.",
     "permDenied": "Notifications are blocked for this site. Turn them back on in your browser's site settings if you want them.",
     "permUnsupported": "This browser does not support notifications. Reminders still show here.",
-    "limitNote": "Reminders run while RingBornn is open in a tab. On iPhone, add the site to your home screen first for notifications to work at all.",
+    "limitNote": "Reminders fire while RingBornn is open in a tab — on any page, not just this one. Sound and vibration need one tap on the page first, which is what the test button is for.",
     "slotsLabel": "Your reminders",
     "slotNamePlaceholder": "Name it",
     "slotNameAria": "Reminder name",
@@ -1000,7 +1006,18 @@
     "dueSlot": "{name} — {at}.",
     "slotBreakfast": "Breakfast",
     "slotLunch": "Lunch",
-    "slotDinner": "Dinner"
+    "slotDinner": "Dinner",
+    "alertLabel": "How it alerts you",
+    "soundLabel": "Sound",
+    "vibrateLabel": "Vibrate",
+    "testButton": "Test the alert",
+    "testDone": "Sent — hear it?",
+    "permInstallFirst": "On iPhone, notifications only work once the site is installed. Tap Share, then Add to Home Screen, and open RingBornn from there.",
+    "trainingTitle": "RingBornn — time to train",
+    "trainingBody": "Your {at} session is due. Get the gloves on.",
+    "slotKindAria": "Meal or training",
+    "slotKindMeal": "Meal reminder",
+    "slotKindTraining": "Training reminder"
   },
   "circuits": {
     "kicker": "Conditioning",

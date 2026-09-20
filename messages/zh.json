@@ -558,7 +558,13 @@
     "cameraDenied": "摄像头访问被拒绝。你可以改为上传照片。",
     "noAi": "拍照识别暂时不可用。请在下方手动添加这一餐。",
     "scanFailed": "无法分析该照片。请重试或手动添加餐食。",
-    "frameHint": "让餐盘填满取景框"
+    "frameHint": "只统计边角框内的食物",
+    "hintLabel": "这是什么？（可选）",
+    "hintPlaceholder": "例如：炸鱼，约 200 克",
+    "hintHelp": "写出菜名是提升准确度最有效的办法——照片有时分不清炸鱼和面包。",
+    "itemsHint": "取消勾选不属于这一餐的项目。",
+    "wrongHint": "不对？在上面写出菜名，再扫描一次。",
+    "tryAgain": "重新扫描"
   },
   "common": {
     "language": "语言"
@@ -970,7 +976,7 @@
   },
   "remind": {
     "title": "提醒",
-    "sub": "按你的作息提醒进餐和喝水。若该时段已记录过一餐，会自动跳过。",
+    "sub": "按你的时间提醒吃饭、喝水和训练。会响铃、振动并弹出通知。如果那个时间前后已经记录过一餐，用餐提醒会自动跳过。",
     "waterLabel": "饮水提醒",
     "on": "开",
     "off": "关",
@@ -989,7 +995,7 @@
     "permGranted": "此设备已开启通知。",
     "permDenied": "本站通知已被屏蔽。如需使用，请在浏览器的网站设置中重新开启。",
     "permUnsupported": "此浏览器不支持通知。提醒仍会显示在这里。",
-    "limitNote": "提醒在 RingBornn 标签页打开时运行。iPhone 需先将网站添加到主屏幕，通知才能送达。",
+    "limitNote": "只要 RingBornn 在标签页中打开，提醒就会触发——任何页面都可以，不只是这一页。声音和振动需要先在页面上点一次，测试按钮就是为此准备的。",
     "slotsLabel": "你的提醒",
     "slotNamePlaceholder": "起个名字",
     "slotNameAria": "提醒名称",
@@ -1000,7 +1006,18 @@
     "dueSlot": "{name} — {at}。",
     "slotBreakfast": "早餐",
     "slotLunch": "午餐",
-    "slotDinner": "晚餐"
+    "slotDinner": "晚餐",
+    "alertLabel": "提醒方式",
+    "soundLabel": "声音",
+    "vibrateLabel": "振动",
+    "testButton": "测试提醒",
+    "testDone": "已发送——听到了吗？",
+    "permInstallFirst": "在 iPhone 上，只有把网站添加到主屏幕后通知才能使用。点击「分享」，选择「添加到主屏幕」，然后从那里打开 RingBornn。",
+    "trainingTitle": "RingBornn——该训练了",
+    "trainingBody": "{at} 的训练到点了，戴上拳套。",
+    "slotKindAria": "用餐或训练",
+    "slotKindMeal": "用餐提醒",
+    "slotKindTraining": "训练提醒"
   },
   "circuits": {
     "kicker": "体能",

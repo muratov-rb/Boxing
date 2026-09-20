@@ -36,6 +36,11 @@ function buildCsp(nonce: string): string {
        iframe opened, and the sheet was blocked, which is the shape of bug
        where checkout half-works and looks broken rather than failing. */
     "style-src 'self' 'unsafe-inline' https://cdn.paddle.com",
+    /* worker-src has no default of its own: it falls back to script-src, and
+       script-src here is 'strict-dynamic', which ignores 'self' and would
+       block /sw.js outright. Without this line the notification worker never
+       registers -- and on Android that is the only path a notification has. */
+    "worker-src 'self'",
     /* avatars come from Supabase storage; data: and blob: are the canvas
        resize step and the scanner's own preview */
     "img-src 'self' data: blob: https://*.supabase.co",
