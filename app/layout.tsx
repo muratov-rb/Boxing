@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PADDLE_TOKEN_KEY } from "@/lib/paddle-client";
+import { VAPID_KEY } from "@/lib/push-keys";
 import { cookies, headers } from "next/headers";
 import { Space_Grotesk, Oswald, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
@@ -96,6 +97,13 @@ export default async function RootLayout({
        token, but indistinguishable to a scanner from a real leak, and noise
        like that hides the alert that matters. */
     [PADDLE_TOKEN_KEY]: process.env.PADDLE_CLIENT_TOKEN ?? "",
+    /* The public half of the VAPID pair, which the browser needs in order to
+       subscribe for reminders that arrive with the app closed. Public by
+       definition -- it identifies this server to the push service and
+       authorises nothing. VAPID_PRIVATE_KEY is the half that signs, and it
+       never leaves the server. Same reasoning as the Paddle token above for
+       why there is no NEXT_PUBLIC_ prefix. */
+    [VAPID_KEY]: process.env.VAPID_PUBLIC_KEY ?? "",
     /* The escape below must stay TWO backslashes in this source. It turns
        every "<" into the six characters \u003c, so no value can close the
        script tag early. One backslash is a unicode escape for "<" itself,

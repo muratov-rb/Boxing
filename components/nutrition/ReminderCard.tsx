@@ -5,7 +5,13 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import { hasSavedReminders } from "@/lib/tracking";
 import { primeAlarm } from "@/lib/alarm";
-import { seedSlotLabels, testReminder, updateSettings } from "@/lib/reminder-store";
+import { disablePush, enablePush, pushSupported } from "@/lib/push-client";
+import {
+  seedSlotLabels,
+  setPushActive,
+  testReminder,
+  updateSettings,
+} from "@/lib/reminder-store";
 import { useReminders } from "./useReminders";
 import {
   MAX_SLOTS,
@@ -54,10 +60,12 @@ function needsInstallFirst(): boolean {
 
 export function ReminderCard() {
   const t = useTranslations("remind");
-  const { settings, due } = useReminders();
+  const { settings, due, pushActive } = useReminders();
   const [permission, setPermission] = useState<Permission>("default");
   const [installHint, setInstallHint] = useState(false);
   const [tested, setTested] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+  const [pushFailed, setPushFailed] = useState(false);
 
   useEffect(() => {
     setPermission(readPermission());
@@ -87,11 +95,39 @@ export function ReminderCard() {
   const ask = async () => {
     if (!("Notification" in window)) return;
     primeAlarm();
+    let granted: Permission;
     try {
-      setPermission((await Notification.requestPermission()) as Permission);
+      granted = (await Notification.requestPermission()) as Permission;
     } catch {
-      setPermission(readPermission());
+      granted = readPermission();
     }
+    setPermission(granted);
+    /* Register for push in the same breath. Asking twice — once for
+       permission, once again for "and would you like them when the app is
+       closed?" — is a second decision nobody wants to make, and the second
+       one is the one they actually came for. */
+    if (granted === "granted" && settings) await turnPushOn();
+  };
+
+  /* Subscribing is what makes a reminder arrive with the app shut: the
+     schedule goes to the server, and a cron sends it. Failing here is not
+     fatal — the in-app scheduler carries on, which is why the copy says what
+     changed rather than showing an error. */
+  const turnPushOn = async () => {
+    if (!settings || !pushSupported()) return;
+    setPushBusy(true);
+    setPushFailed(false);
+    const ok = await enablePush(settings);
+    setPushActive(ok);
+    setPushFailed(!ok);
+    setPushBusy(false);
+  };
+
+  const turnPushOff = async () => {
+    setPushBusy(true);
+    await disablePush();
+    setPushActive(false);
+    setPushBusy(false);
   };
 
   const runTest = async () => {
@@ -376,12 +412,49 @@ export function ReminderCard() {
                  work — iOS simply has no Notification API in Safari tabs. */
               <p className="text-xs leading-relaxed text-ash">{t("permInstallFirst")}</p>
             ) : permission === "granted" ? (
-              <p className="flex items-center gap-2 text-xs text-ash">
-                <span className="text-blood">
-                  <Icon name="check" size={13} />
-                </span>
-                {t("permGranted")}
-              </p>
+              <>
+                <p className="flex items-center gap-2 text-xs text-ash">
+                  <span className="text-blood">
+                    <Icon name="check" size={13} />
+                  </span>
+                  {t("permGranted")}
+                </p>
+
+                {/* The line that matters. "Works with the app closed" is the
+                    whole difference between this and a page timer, and people
+                    should be able to see which one they are getting. */}
+                {pushSupported() && (
+                  <>
+                    <p
+                      className={`mt-2.5 flex items-start gap-2 text-xs leading-relaxed ${
+                        pushActive ? "text-bone" : "text-ash-dim"
+                      }`}
+                    >
+                      <span className={`mt-0.5 ${pushActive ? "text-blood" : "text-ash-dim"}`}>
+                        <Icon name={pushActive ? "bolt" : "clock"} size={13} />
+                      </span>
+                      {pushActive ? t("pushOn") : t("pushOff")}
+                    </p>
+                    {pushFailed && (
+                      <p className="mt-2 text-xs leading-relaxed text-blood-bright">
+                        {t("pushFailed")}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={pushActive ? turnPushOff : turnPushOn}
+                      disabled={pushBusy}
+                      className="btn btn-ghost mt-3 !py-2.5 text-xs disabled:opacity-50"
+                    >
+                      {pushBusy
+                        ? t("pushWorking")
+                        : pushActive
+                          ? t("pushDisable")
+                          : t("pushEnable")}
+                    </button>
+                  </>
+                )}
+              </>
             ) : permission === "denied" ? (
               <p className="text-xs leading-relaxed text-ash">{t("permDenied")}</p>
             ) : permission === "unsupported" ? (
@@ -396,7 +469,9 @@ export function ReminderCard() {
             )}
           </div>
 
-          <p className="mt-3 text-xs leading-relaxed text-ash-dim">{t("limitNote")}</p>
+          <p className="mt-3 text-xs leading-relaxed text-ash-dim">
+            {pushActive ? t("limitNotePush") : t("limitNote")}
+          </p>
         </>
       )}
     </section>

@@ -119,6 +119,13 @@ export async function proxy(request: NextRequest) {
   if (path.startsWith("/api/dev-")) {
     return NextResponse.next({ request });
   }
+  /* The push dispatcher is called once a minute by Postgres and carries no
+     session at all — it authenticates with a bearer secret. Resolving a
+     Supabase session for it would be 1,440 pointless auth round trips a day,
+     each one able to stall the request when Supabase is slow. */
+  if (path === "/api/push/dispatch") {
+    return NextResponse.next({ request });
+  }
   return withCsp(await updateSession(request, requestHeaders));
 }
 

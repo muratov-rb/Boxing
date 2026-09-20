@@ -1017,7 +1017,14 @@
     "trainingBody": "Tu sesión de las {at} toca ahora. Ponte los guantes.",
     "slotKindAria": "Comida o entrenamiento",
     "slotKindMeal": "Recordatorio de comida",
-    "slotKindTraining": "Recordatorio de entrenamiento"
+    "slotKindTraining": "Recordatorio de entrenamiento",
+    "pushOn": "Los avisos llegan aunque RingBornn esté cerrado.",
+    "pushOff": "Ahora mismo solo llegan mientras RingBornn está abierto.",
+    "pushEnable": "Recibirlos con la app cerrada",
+    "pushDisable": "Solo con la app abierta",
+    "pushWorking": "Configurando…",
+    "pushFailed": "No se pudo configurar. Los recordatorios siguen funcionando con la app abierta.",
+    "limitNotePush": "Tu teléfono los recibe aunque RingBornn esté cerrado. La excepción es el agua: solo funciona dentro de la app, porque depende de cuánto hayas bebido."
   },
   "circuits": {
     "kicker": "Acondicionamiento",

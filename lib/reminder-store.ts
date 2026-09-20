@@ -17,6 +17,7 @@
 import {
   dueReminders,
   markFired,
+  parseHhMm,
   type DueReminder,
   type ReminderSettings,
 } from "@/lib/reminders";
@@ -40,6 +41,11 @@ export interface FiredReminder extends DueReminder {
 export interface ReminderState {
   settings: ReminderSettings | null;
   due: FiredReminder[];
+  /** True once this device is registered for server-sent reminders, which is
+      what makes them arrive with the app closed. The card says so, because
+      "works when shut" is the whole difference and people should be able to
+      see which mode they are in. */
+  pushActive: boolean;
 }
 
 /** Wording comes from next-intl, which is React-only, so a subscriber hands
@@ -53,8 +59,15 @@ export interface ReminderLabels {
   waterBody: string;
 }
 
-const EMPTY: ReminderState = { settings: null, due: [] };
+const EMPTY: ReminderState = { settings: null, due: [], pushActive: false };
 const SHOW_FOR_MS = 3 * 60 * 60 * 1000;
+
+/* With push active the server is the one that notifies, and this timer's only
+   remaining job is to ring the bell for something happening RIGHT NOW while
+   you are looking at the page. Two minutes, so opening the app at six o'clock
+   does not sound the bell for a five-o'clock reminder the server already
+   delivered to the lock screen. */
+const BELL_WINDOW_MIN = 2;
 
 let snapshot: ReminderState = EMPTY;
 let labels: ReminderLabels | null = null;
@@ -85,6 +98,13 @@ export function getServerSnapshot(): ReminderState {
 
 export function setLabels(next: ReminderLabels): void {
   labels = next;
+}
+
+/** Told by the React layer once it has checked whether this device holds a
+    push subscription. It changes who does the notifying — see tick(). */
+export function setPushActive(active: boolean): void {
+  if (snapshot.pushActive === active) return;
+  set({ pushActive: active });
 }
 
 /** The only way settings change. Writes through to localStorage so the next
@@ -189,6 +209,7 @@ function tick(): void {
 
   const now = new Date();
   const today = todayKey();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
 
   /* Drop anything too old to still be worth showing, so opening the app in
      the evening does not greet you with this morning's breakfast nudge. */
@@ -216,24 +237,46 @@ function tick(): void {
     return;
   }
 
-  alarm(settings);
+  /* Who notifies depends on whether this device is registered for push.
 
-  for (const item of due) {
-    /* Water has no slot and therefore no name of its own; the other two are
-       the user's rows, so their own wording leads — a reminder called
-       "Pre-workout shake" should say that, not "time to eat". */
-    const owned = item.kind !== "water" && item.label.trim().length > 0;
-    const byKind = {
-      meal: { title: labels?.mealTitle, body: labels?.mealBody(item.at) },
-      training: { title: labels?.trainingTitle, body: labels?.trainingBody(item.at) },
-      water: { title: labels?.waterTitle, body: labels?.waterBody },
-    }[item.kind];
+     If it is, the server raises the notification — including when the app is
+     shut, which is the entire point — and this timer must NOT raise a second
+     one. Two notifications with the same tag collapse into one on screen, but
+     the phone alerts twice, and being buzzed twice for one reminder is worse
+     than either half of the feature being missing.
 
-    void showSystemNotification(
-      owned ? item.label : (byKind.title ?? "RingBornn"),
-      byKind.body ?? "",
-      item.key,
-    );
+     What the page keeps in that case is the bell: it is instant, where a push
+     takes a second or two to come back round, and it is what you want while
+     actually looking at the screen. Restricted to reminders happening right
+     now, so opening the app later does not re-ring old ones. */
+  const ringing = snapshot.pushActive
+    ? due.filter((item) => {
+        if (item.kind === "water") return true; // water is never pushed
+        const at = parseHhMm(item.at);
+        return at === null || nowMin - at <= BELL_WINDOW_MIN;
+      })
+    : due;
+
+  if (ringing.length > 0) alarm(settings);
+
+  if (!snapshot.pushActive) {
+    for (const item of due) {
+      /* Water has no slot and therefore no name of its own; the other two are
+         the user's rows, so their own wording leads — a reminder called
+         "Pre-workout shake" should say that, not "time to eat". */
+      const owned = item.kind !== "water" && item.label.trim().length > 0;
+      const byKind = {
+        meal: { title: labels?.mealTitle, body: labels?.mealBody(item.at) },
+        training: { title: labels?.trainingTitle, body: labels?.trainingBody(item.at) },
+        water: { title: labels?.waterTitle, body: labels?.waterBody },
+      }[item.kind];
+
+      void showSystemNotification(
+        owned ? item.label : (byKind.title ?? "RingBornn"),
+        byKind.body ?? "",
+        item.key,
+      );
+    }
   }
 
   /* Marked fired whether or not the system notification got through — the
@@ -282,6 +325,38 @@ function onStorage(event: StorageEvent): void {
   set({ settings: loadReminders() });
 }
 
+/* A push arrived while the app was open. The worker showed the notification
+   and then told us, so the page can put it on the card and ring the bell —
+   the two things a service worker cannot do, since it has no DOM and no
+   audio. Guarded on lastFired so a push that merely confirms what this tab
+   already rang for does not ring it again. */
+function onWorkerMessage(event: MessageEvent): void {
+  const message = event.data as { type?: string; reminder?: Record<string, unknown> } | null;
+  if (!message || message.type !== "ringbornn-reminder") return;
+
+  const settings = snapshot.settings;
+  const reminder = message.reminder;
+  if (!settings || !reminder) return;
+
+  const key = typeof reminder.tag === "string" ? reminder.tag : "";
+  if (!key || settings.lastFired[key]) return;
+
+  const kind: DueReminder["kind"] =
+    reminder.kind === "training" ? "training" : reminder.kind === "water" ? "water" : "meal";
+  const item: FiredReminder = {
+    kind,
+    key,
+    at: typeof reminder.at === "string" ? reminder.at : "",
+    label: typeof reminder.label === "string" ? reminder.label : "",
+    firedAt: Date.now(),
+  };
+
+  alarm(settings);
+  const next = markFired(settings, [key], todayKey());
+  saveReminders(next);
+  set({ settings: next, due: [...snapshot.due, item] });
+}
+
 /** Subscribe, and start the scheduler if this is the first subscriber. */
 export function subscribe(listener: () => void): () => void {
   listeners.add(listener);
@@ -293,6 +368,7 @@ export function subscribe(listener: () => void): () => void {
     window.addEventListener("focus", onWake);
     window.addEventListener("online", onWake);
     window.addEventListener("storage", onStorage);
+    navigator.serviceWorker?.addEventListener("message", onWorkerMessage);
     tick();
     schedule();
   }
@@ -307,6 +383,7 @@ export function subscribe(listener: () => void): () => void {
       window.removeEventListener("focus", onWake);
       window.removeEventListener("online", onWake);
       window.removeEventListener("storage", onStorage);
+      navigator.serviceWorker?.removeEventListener("message", onWorkerMessage);
     }
   };
 }

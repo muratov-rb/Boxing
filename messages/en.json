@@ -1017,7 +1017,14 @@
     "trainingBody": "Your {at} session is due. Get the gloves on.",
     "slotKindAria": "Meal or training",
     "slotKindMeal": "Meal reminder",
-    "slotKindTraining": "Training reminder"
+    "slotKindTraining": "Training reminder",
+    "pushOn": "Reminders arrive even when RingBornn is closed.",
+    "pushOff": "Right now these only arrive while RingBornn is open.",
+    "pushEnable": "Get them with the app closed",
+    "pushDisable": "Only while the app is open",
+    "pushWorking": "Setting up…",
+    "pushFailed": "Could not set that up. Reminders still work while the app is open.",
+    "limitNotePush": "Your phone gets these even with RingBornn shut. Water reminders are the exception — they only run in the app, because whether you need one depends on what you have drunk."
   },
   "circuits": {
     "kicker": "Conditioning",

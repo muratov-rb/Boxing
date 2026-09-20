@@ -1017,7 +1017,14 @@
     "trainingBody": "Votre séance de {at} commence. Enfilez les gants.",
     "slotKindAria": "Repas ou entraînement",
     "slotKindMeal": "Rappel de repas",
-    "slotKindTraining": "Rappel d'entraînement"
+    "slotKindTraining": "Rappel d'entraînement",
+    "pushOn": "Les rappels arrivent même quand RingBornn est fermé.",
+    "pushOff": "Pour l'instant ils n'arrivent que si RingBornn est ouvert.",
+    "pushEnable": "Les recevoir application fermée",
+    "pushDisable": "Seulement application ouverte",
+    "pushWorking": "Configuration…",
+    "pushFailed": "Configuration impossible. Les rappels fonctionnent toujours quand l'app est ouverte.",
+    "limitNotePush": "Votre téléphone les reçoit même RingBornn fermé. L'exception est l'eau : elle ne fonctionne que dans l'app, car cela dépend de ce que vous avez bu."
   },
   "circuits": {
     "kicker": "Condition physique",

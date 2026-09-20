@@ -172,6 +172,14 @@ export interface DueReminder {
 
 export interface DueInput {
   now: Date;
+  /** Minutes since midnight, overriding what `now` would say.
+
+      The push dispatcher runs on a server in some other timezone and has to
+      decide what time it is ON THE DEVICE. It resolves that from the device's
+      IANA zone and hands the answer in here, so the same function decides what
+      is due in both places rather than the rule being written twice and
+      drifting. Left out by the browser, where local time is simply the time. */
+  nowMinutes?: number;
   /** YYYY-MM-DD for `now`, passed in so the caller owns the date convention. */
   today: string;
   settings: ReminderSettings;
@@ -192,7 +200,7 @@ export function dueReminders(input: DueInput): DueReminder[] {
   if (!settings.enabled) return [];
 
   const out: DueReminder[] = [];
-  const nowMin = minutesOfDay(now);
+  const nowMin = input.nowMinutes ?? minutesOfDay(now);
 
   for (const slot of settings.slots) {
     const at = parseHhMm(slot.time);
