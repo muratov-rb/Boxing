@@ -80,10 +80,19 @@
 /* ===========================================================================
    base
    =========================================================================== */
-*,
-*::before,
-*::after {
-  border-color: var(--color-line);
+/* In the base LAYER, not loose in the file. Tailwind puts its utilities in a
+   cascade layer, and a rule outside every layer beats any layered rule
+   whatever its specificity — so while this sat unlayered, every border colour
+   utility in the app lost to it and rendered as the line grey: the red ring on
+   the current onboarding step, the selected tab, the scanner's mode buttons,
+   all of them, from the first commit. In the base layer it is a default
+   again, which is all it was ever meant to be. */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-line);
+  }
 }
 
 html {
@@ -257,8 +266,8 @@ body {
   font-weight: 600;
   font-size: 0.66rem;
   padding: 0.28rem 0.6rem;
-  border: 1px solid var(--color-line);
-  color: var(--color-ash);
+  border-width: 1px;
+  border-style: solid;
   background: var(--glass-bg);
   backdrop-filter: blur(6px);
   border-radius: 999px;
@@ -326,7 +335,8 @@ body {
   background: var(--glass-bg);
   backdrop-filter: blur(16px) saturate(130%);
   -webkit-backdrop-filter: blur(16px) saturate(130%);
-  border: 1px solid var(--glass-border);
+  border-width: 1px;
+  border-style: solid;
   box-shadow: var(--glass-shadow);
   border-radius: 20px;
   transition:
@@ -334,6 +344,25 @@ body {
     box-shadow 0.25s ease,
     transform 0.25s cubic-bezier(0.16, 0.84, 0.44, 1),
     background-color 0.3s ease;
+}
+
+/* The colours of badges and panels, layered so a utility can change them.
+
+   Everything else about these classes is still unlayered, and so still beats
+   a utility — deliberately. Moving the whole class would also switch on the
+   padding and font-size utilities that sit on about a hundred buttons and
+   badges and have never applied, resizing controls all over the app. The
+   colours are what the code plainly asks for — `badge border-blood/40
+   text-blood`, `panel hover:border-blood/40` — and what nobody ever saw. */
+@layer components {
+  .badge {
+    border-color: var(--color-line);
+    color: var(--color-ash);
+  }
+  .panel,
+  .glass {
+    border-color: var(--glass-border);
+  }
 }
 
 /* form controls glide between states instead of snapping */
