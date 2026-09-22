@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/supabase/user";
 import { pushConfigured } from "@/lib/push-server";
+import { isPushServiceEndpoint } from "@/lib/push-endpoints";
 import { MAX_SLOTS, SLOT_LABEL_MAX, parseHhMm, type ReminderSlot } from "@/lib/reminders";
 
 export const runtime = "nodejs";
@@ -96,12 +97,14 @@ export async function POST(req: Request) {
   const p256dh = typeof sub?.keys?.p256dh === "string" ? sub.keys.p256dh : "";
   const auth = typeof sub?.keys?.auth === "string" ? sub.keys.auth : "";
 
-  /* https only, and a sane length. The endpoint is a URL this server will
-     later make a request to on a schedule, so it is not somewhere to accept
-     whatever arrives — that is the shape of an SSRF. */
-  const validEndpoint =
-    endpoint.startsWith("https://") && endpoint.length > 20 && endpoint.length < 1024;
-  if (!validEndpoint || !p256dh || !auth) {
+  /* Only a real browser push service. The endpoint is a URL this server will
+     later send requests to on a schedule and on demand, so it is not somewhere
+     to accept whatever arrives. This used to check for "https://" and a sane
+     length -- which the 2026-09-22 audit exploited by registering a "device"
+     at an arbitrary page and watching the dispatcher post to it. The comment
+     here named the risk ("that is the shape of an SSRF") while the check
+     beneath it did not prevent it. */
+  if (!isPushServiceEndpoint(endpoint) || !p256dh || !auth) {
     return NextResponse.json({ error: "bad_subscription" }, { status: 400 });
   }
 

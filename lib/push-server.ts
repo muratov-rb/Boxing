@@ -1,5 +1,6 @@
 import "server-only";
 import webpush from "web-push";
+import { isPushServiceEndpoint } from "./push-endpoints";
 
 /* ===========================================================================
    Sending a web push.
@@ -71,6 +72,13 @@ function configure(): void {
  */
 export async function sendPush(target: PushTarget, payload: PushPayload): Promise<SendResult> {
   if (!pushConfigured()) return "failed";
+  /* The one place a push leaves this server, so the one place the destination
+     is checked: the dispatcher, the Test button and anything added later are
+     all covered without having to remember to be. An address that is not a
+     browser push service is not a device -- it is someone using this server
+     to send requests somewhere (proven live, 2026-09-22). Reported as "gone"
+     so every caller deletes the row rather than retrying it every minute. */
+  if (!isPushServiceEndpoint(target.endpoint)) return "gone";
   configure();
 
   try {

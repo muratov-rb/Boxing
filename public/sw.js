@@ -29,6 +29,23 @@ self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim(
    VIBRATE_PATTERN in lib/alarm.ts. */
 const VIBRATE = [220, 110, 220, 110, 420];
 
+/* Where a tapped notification may take the user: a path on THIS site.
+
+   Checking only for a leading "/" is the classic open-redirect mistake,
+   because "//evil.example" also starts with "/" and is another site entirely;
+   a slash followed by a backslash is read the same way by browsers. Same rule
+   as lib/safe-next.ts. Not exploitable today -- only this server can push to
+   its subscribers, since the push services require our VAPID key -- but this
+   is the function that decides where a click goes, so it should not depend on
+   who happens to be able to call it. Compared by character code (47 is "/",
+   92 is the backslash) so this file never contains a backslash at all. */
+function sameSitePath(value) {
+  if (typeof value !== "string" || value.charAt(0) !== "/") return "/calories";
+  const second = value.charCodeAt(1);
+  if (second === 47 || second === 92) return "/calories";
+  return value;
+}
+
 /* -------------------------------------------------------------------------
    A reminder sent by the server, which is what makes this work with the app
    shut. The payload says which slot it is, so the notification can be headed
@@ -47,7 +64,7 @@ self.addEventListener("push", (event) => {
   }
 
   const title = typeof data.title === "string" && data.title ? data.title : "RingBornn";
-  const url = typeof data.url === "string" && data.url.startsWith("/") ? data.url : "/calories";
+  const url = sameSitePath(data.url);
 
   event.waitUntil(
     (async () => {
@@ -89,7 +106,7 @@ self.addEventListener("pushsubscriptionchange", () => {
    up with six tabs and two of them logged out. */
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const target = (event.notification.data && event.notification.data.url) || "/calories";
+  const target = sameSitePath(event.notification.data && event.notification.data.url);
   event.waitUntil(
     (async () => {
       const open = await self.clients.matchAll({ type: "window", includeUncontrolled: true });

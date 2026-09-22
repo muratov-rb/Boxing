@@ -134,6 +134,13 @@ export async function recordFailure(key: string, now = Date.now()): Promise<void
   }
 }
 
+/** For throttles where EVERY attempt counts, not just failed ones -- e.g. the
+    push Test button, which makes this server send requests outward and so must
+    be bounded however it is used. Same table, window and lockout as the admin
+    login; callers keep them apart by prefixing their key ("push-test:<user>").
+    Recorded as a "failure" only because that is the counter the table keeps. */
+export const recordAttempt = recordFailure;
+
 /** A correct password clears the record — an admin who fat-fingers their
     password a few times shouldn't stay one mistake away from a lockout. */
 export async function recordSuccess(key: string): Promise<void> {

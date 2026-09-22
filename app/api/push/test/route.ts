@@ -3,6 +3,7 @@ import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/supabase/user";
 import { pushConfigured, sendPush, type PushPayload } from "@/lib/push-server";
 import { pushCopy } from "@/lib/push-copy";
+import { checkRate, recordAttempt } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,6 +34,23 @@ export async function POST() {
   if (!serviceRoleConfigured() || !pushConfigured()) {
     return NextResponse.json({ error: "push_unavailable" }, { status: 503 });
   }
+
+  /* Bounded. Every press makes this server send a request to each of the
+     caller's devices, and it had no limit at all: combined with the unchecked
+     endpoints fixed in lib/push-endpoints.ts, one account could make this
+     server post to any address as fast as it could call this route. Endpoints
+     are now restricted to real push services, but an unbounded outward
+     request on demand is still cost and push-service quota spent on our
+     account. 8 per 15 minutes is far more than anyone testing needs. */
+  const rateKey = "push-test:" + user.id;
+  const verdict = await checkRate(rateKey);
+  if (!verdict.allowed) {
+    return NextResponse.json(
+      { error: "too_many_tests", retryAfter: verdict.retryAfter },
+      { status: 429, headers: { "retry-after": String(verdict.retryAfter) } },
+    );
+  }
+  await recordAttempt(rateKey);
 
   const db = createAdminClient();
   /* Scoped to the caller's own devices. There is no endpoint parameter on
