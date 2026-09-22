@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import type { Micros } from "@/lib/nutrients";
 import { MAX_GRAMS, macrosAt, type Per100g } from "@/lib/scan-result";
+import { hasValidCheckDigit, isBarcodeFormat } from "@/lib/barcode";
+import { BAND_HEIGHT, BAND_WIDTH, frameBand, loadBarcodeReader } from "@/lib/barcode-decode";
 
 /* ===========================================================================
    FoodScanner — photo → Claude vision → calories.
@@ -23,6 +25,15 @@ import { MAX_GRAMS, macrosAt, type Per100g } from "@/lib/scan-result";
       cooked it settles it, and there was nowhere to put that word.
    3. An uploaded photo was sent at full size — several megabytes of phone
       camera, occasionally large enough to be rejected outright.
+
+   Packaged food has two better routes than a photo of the food, because the
+   exact numbers are printed on it:
+   - Barcode: decoded on the phone, and only the number leaves it. Looked up
+     in Open Food Facts, which costs no AI and no daily scan.
+   - Label: a photo of the nutrition table, which the model reads rather than
+     estimates. Where a barcode lookup misses (local products often do), this
+     is where it sends people.
+   All three land on the same result screen with the same weight controls.
    =========================================================================== */
 
 /* grams, per100g and confidence are optional only so a response from a server
@@ -48,6 +59,9 @@ export interface ScanResult {
   micros?: Micros;
   scale_reference?: string;
   scale_found?: boolean;
+  /** Where the numbers came from. Absent from a server one deploy behind,
+      which only ever did photos. */
+  source?: Mode;
   note: string;
 }
 
@@ -59,7 +73,25 @@ export interface ScanMacros {
   micros?: Micros;
 }
 
-type Stage = "consent" | "camera" | "preview" | "scanning" | "result" | "error";
+type Stage =
+  | "consent"
+  | "camera"
+  | "barcode"
+  | "preview"
+  | "scanning"
+  | "looking"
+  | "notFound"
+  | "result"
+  | "error";
+
+type Mode = "photo" | "barcode" | "label";
+
+const MODES: Mode[] = ["photo", "barcode", "label"];
+
+/* How often the live camera is decoded. Each attempt takes tens of
+   milliseconds on a phone; eight a second finds a code as soon as it is steady
+   without keeping the processor busy the whole time. */
+const DECODE_EVERY_MS = 120;
 
 /* The fraction of the frame the corner brackets enclose, and therefore the
    fraction that is actually sent. One constant so the guide people aim with
@@ -131,6 +163,14 @@ export function FoodScanner({
      big bowl and you had a small plate, the only option was to retake the same
      photo and get the same answer. */
   const [grams, setGrams] = useState<number[]>([]);
+  const [mode, setMode] = useState<Mode>("photo");
+  /* The barcode typed by hand, for a code the camera cannot read (a creased
+     wrapper, a phone that will not focus close) or a camera that was refused. */
+  const [typed, setTyped] = useState("");
+  const [typedError, setTypedError] = useState("");
+  /* The last code looked up, shown when it is not found so the person can
+     see it was read correctly and it is the database that does not know it. */
+  const [code, setCode] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -142,8 +182,59 @@ export function FoodScanner({
   };
   useEffect(() => stopCamera, []);
 
+  /* A code seen by the live decoder. An effect event so the loop below keeps
+     running across renders without restarting, yet always calls the current
+     lookup(). */
+  const onDetected = useEffectEvent((found: string) => {
+    stopCamera();
+    lookup(found);
+  });
+  /* The decoder failed to download. Typing the number still works, and the
+     screen already offers it, so say so rather than failing silently. */
+  const onReaderFailed = useEffectEvent(() => setTypedError(t("readerFailed")));
+
+  /* The live barcode reader: runs only while the barcode camera is on screen,
+     and stops the moment it is not — including when the dialog closes. */
+  useEffect(() => {
+    if (stage !== "barcode") return;
+    let cancelled = false;
+    let timer = 0;
+    /* A code is accepted once it has been read twice in a row. The decoder
+       checks each barcode's own check digit, but a code half out of the
+       band can still decode as a shorter, valid, wrong one; the same
+       answer twice is cheap insurance at eight reads a second. */
+    let previous = "";
+    const canvas = document.createElement("canvas");
+    loadBarcodeReader()
+      .then((reader) => {
+        const tick = () => {
+          if (cancelled) return;
+          const video = videoRef.current;
+          if (video && video.readyState >= 2) {
+            const frame = frameBand(video, canvas, video.videoWidth, video.videoHeight);
+            const read = frame ? reader.decode(frame) : null;
+            if (read && read === previous) {
+              onDetected(read);
+              return;
+            }
+            if (read) previous = read;
+          }
+          timer = window.setTimeout(tick, DECODE_EVERY_MS);
+        };
+        tick();
+      })
+      .catch(() => {
+        if (!cancelled) onReaderFailed();
+      });
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [stage]);
+
   /* -- consent accepted → NOW we may ask the browser for the camera -- */
-  async function allowCamera() {
+  async function allowCamera(next: Mode = mode) {
+    setMode(next);
     try {
       /* Ask for the rear camera at a decent resolution and continuous
          autofocus. The default stream on many phones is 640x480 and
@@ -161,7 +252,8 @@ export function FoodScanner({
         audio: false,
       });
       streamRef.current = stream;
-      setStage("camera");
+      setTypedError("");
+      setStage(next === "barcode" ? "barcode" : "camera");
       // attach after render
       requestAnimationFrame(() => {
         if (videoRef.current) {
@@ -201,6 +293,9 @@ export function FoodScanner({
 
   function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
+    /* Cleared so that choosing the same photo again, after a retake, still
+       counts as a change. */
+    e.target.value = "";
     if (!f) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -211,10 +306,19 @@ export function FoodScanner({
          big enough to be refused. */
       const img = new window.Image();
       img.onload = () => {
+        if (mode === "barcode") {
+          decodeUpload(img);
+          return;
+        }
         setPhoto(toScaledJpeg(img, 0, 0, img.naturalWidth, img.naturalHeight));
         setStage("preview");
       };
       img.onerror = () => {
+        if (mode === "barcode") {
+          setError(t("noBarcodeInPhoto"));
+          setStage("error");
+          return;
+        }
         /* Not something the canvas can read — send it as it came and let the
            server decide, rather than refusing a photo that might be fine. */
         setPhoto(raw);
@@ -225,13 +329,111 @@ export function FoodScanner({
     reader.readAsDataURL(f);
   }
 
+  /* A barcode in an uploaded photo. There is no guide band on an upload, so
+     the whole photo is searched, each size both as taken and turned a quarter
+     (a packet photographed upright usually has its barcode on its side).
+     Sizes: a middling one first; a smaller one, which smooths out blur and
+     is cheap; then a larger one for a small barcode in a big photo, only when
+     the photo is that big. The decoder is sensitive to scale — the same frame
+     measured failing at one width and reading at another — so trying more
+     than one size is not superstition. Decoded here on the phone; the photo
+     is never sent anywhere. */
+  async function decodeUpload(img: HTMLImageElement) {
+    setStage("looking");
+    try {
+      const reader = await loadBarcodeReader();
+      const canvas = document.createElement("canvas");
+      const longest = Math.max(img.naturalWidth, img.naturalHeight);
+      const attempts = [1280, 800, 2048]
+        .filter((size) => size <= 1280 || longest > 1280)
+        .flatMap((maxWidth) => [
+          { maxWidth, rotate: false },
+          { maxWidth, rotate: true },
+        ]);
+      for (const { maxWidth, rotate } of attempts) {
+        const frame = frameBand(img, canvas, img.naturalWidth, img.naturalHeight, {
+          fullFrame: true,
+          maxWidth,
+          rotate,
+        });
+        const read = frame ? reader.decode(frame) : null;
+        if (read) {
+          lookup(read);
+          return;
+        }
+      }
+      setError(t("noBarcodeInPhoto"));
+    } catch {
+      setError(t("readerFailed"));
+    }
+    setStage("error");
+  }
+
+  /* A barcode, from the camera, a photo or the keyboard, to a result. */
+  async function lookup(found: string) {
+    setCode(found);
+    setStage("looking");
+    try {
+      const res = await fetch("/api/food-barcode?code=" + encodeURIComponent(found));
+      if (res.status === 429) {
+        setError(t("tooManyLookups"));
+        setStage("error");
+        return;
+      }
+      if (!res.ok) throw new Error();
+      const data = (await res.json()) as ScanResult & { found?: boolean };
+      if (!data.found) {
+        setStage("notFound");
+        return;
+      }
+      showResult({ ...data, source: "barcode" });
+    } catch {
+      setError(t("lookupFailed"));
+      setStage("error");
+    }
+  }
+
+  function submitTyped(e: React.FormEvent) {
+    e.preventDefault();
+    /* Digits only: people copy the number with its spaces, as printed. */
+    const digits = [...typed].filter((ch) => ch >= "0" && ch <= "9").join("");
+    if (!isBarcodeFormat(digits)) {
+      setTypedError(t("typedBadLength"));
+      return;
+    }
+    /* An 8-digit code may be UPC-E, whose check digit is worked out on a
+       longer form, so only the longer codes are checked here. A failed check
+       on those is almost always one mistyped digit. */
+    if (digits.length !== 8 && !hasValidCheckDigit(digits)) {
+      setTypedError(t("typedBadDigits"));
+      return;
+    }
+    setTypedError("");
+    stopCamera();
+    lookup(digits);
+  }
+
+  /* Printed numbers are not a guess, so nothing from a pack starts unticked;
+     a low confidence there means a blurred table, which the note explains. */
+  function showResult(data: ScanResult) {
+    const fromPack = data.source === "barcode" || data.source === "label";
+    setResult(data);
+    setPicked(data.items.map((item) => fromPack || item.confidence !== "low"));
+    setGrams(data.items.map((item) => item.grams ?? 0));
+    setStage("result");
+  }
+
   async function scan() {
     setStage("scanning");
     try {
       const res = await fetch("/api/food-scan", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ image: photo, hint: hint.trim().slice(0, HINT_MAX) }),
+        body: JSON.stringify({
+          image: photo,
+          hint: hint.trim().slice(0, HINT_MAX),
+          mode: mode === "label" ? "label" : "photo",
+        }),
       });
       if (res.status === 503) {
         setError(t("noAi"));
@@ -240,10 +442,7 @@ export function FoodScanner({
       }
       if (!res.ok) throw new Error();
       const data = (await res.json()) as ScanResult;
-      setResult(data);
-      setPicked(data.items.map((item) => item.confidence !== "low"));
-      setGrams(data.items.map((item) => item.grams ?? 0));
-      setStage("result");
+      showResult({ ...data, source: data.source ?? "photo" });
     } catch {
       setError(t("scanFailed"));
       setStage("error");
@@ -348,10 +547,47 @@ export function FoodScanner({
     setResult(null);
     setPicked([]);
     setGrams([]);
+    setTypedError("");
     setStage("consent");
   }
 
   const chosen = selected();
+  const source: Mode = result?.source ?? "photo";
+
+  /* Typing the barcode: on the start screen for someone who refused the
+     camera, and under the live camera for a code it cannot read. */
+  const typedForm = (
+    <form onSubmit={submitTyped} className="mt-4">
+      <label
+        htmlFor="scan-barcode"
+        className="block font-condensed text-xs uppercase tracking-widest text-ash"
+      >
+        {t("typedLabel")}
+      </label>
+      <div className="mt-2 flex gap-2">
+        <input
+          id="scan-barcode"
+          value={typed}
+          onChange={(e) => {
+            setTyped(e.target.value.slice(0, 20));
+            setTypedError("");
+          }}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="4600000000000"
+          className="min-h-[45px] min-w-0 flex-1 rounded-md border border-line bg-void px-3 py-2 text-base tracking-wider text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none"
+        />
+        <button type="submit" className="btn btn-ghost shrink-0">
+          {t("typedSubmit")}
+        </button>
+      </div>
+      {typedError && (
+        <p role="alert" className="mt-1.5 text-xs text-blood-bright">
+          {typedError}
+        </p>
+      )}
+    </form>
+  );
 
   return (
     <div
@@ -380,13 +616,49 @@ export function FoodScanner({
         {/* -------- consent: shown BEFORE any camera access -------- */}
         {stage === "consent" && (
           <div>
+            {/* Three ways in. A meal photo is an estimate; a barcode or a
+                label is the pack's own printed numbers, and for packaged food
+                that beats any estimate. */}
+            <div className="mb-5 grid grid-cols-3 gap-1.5">
+              {MODES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={mode === m}
+                  onClick={() => {
+                    setMode(m);
+                    setTypedError("");
+                  }}
+                  className={
+                    "min-h-[44px] rounded-xl border px-1 font-condensed text-xs uppercase tracking-widest transition-colors " +
+                    (mode === m
+                      ? "border-blood bg-blood/10 text-bone"
+                      : "border-line text-ash hover:border-blood/50")
+                  }
+                >
+                  {t(m === "photo" ? "modePhoto" : m === "barcode" ? "modeBarcode" : "modeLabel")}
+                </button>
+              ))}
+            </div>
             <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-blood/40 text-blood">
               <Icon name="calorie" size={26} />
             </div>
-            <p className="mt-4 text-center text-sm text-ash">{t("consentBody")}</p>
+            <p className="mt-4 text-center text-sm text-ash">
+              {t(
+                mode === "photo"
+                  ? "consentBody"
+                  : mode === "barcode"
+                    ? "consentBarcode"
+                    : "consentLabel",
+              )}
+            </p>
             <p className="mt-2 text-center text-xs text-ash-dim">{t("consentPrivacy")}</p>
             <div className="mt-6 grid gap-2">
-              <button type="button" onClick={allowCamera} className="btn btn-primary w-full">
+              <button
+                type="button"
+                onClick={() => allowCamera()}
+                className="btn btn-primary w-full"
+              >
                 {t("allowCamera")}
               </button>
               <button
@@ -397,6 +669,55 @@ export function FoodScanner({
                 {t("uploadInstead")}
               </button>
             </div>
+            {mode === "barcode" && typedForm}
+          </div>
+        )}
+
+        {/* -------- live barcode reader -------- */}
+        {stage === "barcode" && (
+          <div>
+            <div className="relative">
+              <video
+                ref={videoRef}
+                playsInline
+                muted
+                className="aspect-[4/3] w-full rounded-lg border border-line/70 bg-black object-cover"
+              />
+              {/* The band the decoder reads, drawn from the same fractions
+                  frameBand() crops with. Clipped for the same reason as the
+                  meal guide: an unclipped shadow ring greys out the dialog. */}
+              <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden rounded-lg">
+                <div
+                  className="relative"
+                  style={{ height: `${BAND_HEIGHT * 100}%`, width: `${BAND_WIDTH * 100}%` }}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 rounded-lg border-2 border-blood/90 shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]"
+                  />
+                  {/* The scan line: tells people it is reading, not waiting
+                      for a shutter press that does not exist here. */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-3 top-1/2 h-0.5 -translate-y-1/2 animate-pulse bg-blood/80"
+                  />
+                </div>
+              </div>
+              <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
+                {t("barcodeHint")}
+              </p>
+            </div>
+            {typedForm}
+            <button
+              type="button"
+              onClick={() => {
+                stopCamera();
+                setStage("consent");
+              }}
+              className="btn btn-ghost mt-4 w-full"
+            >
+              {t("back")}
+            </button>
           </div>
         )}
 
@@ -441,7 +762,7 @@ export function FoodScanner({
                 </div>
               </div>
               <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
-                {t("frameHint")}
+                {t(mode === "label" ? "frameHintLabel" : "frameHint")}
               </p>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -479,17 +800,21 @@ export function FoodScanner({
               htmlFor="scan-hint"
               className="mt-4 block font-condensed text-xs uppercase tracking-widest text-ash"
             >
-              {t("hintLabel")}
+              {t(mode === "label" ? "labelNameLabel" : "hintLabel")}
             </label>
+            {/* In label mode the same field names the product: a photo of a
+                nutrition table rarely shows what the product is called. */}
             <input
               id="scan-hint"
               value={hint}
               onChange={(e) => setHint(e.target.value.slice(0, HINT_MAX))}
               maxLength={HINT_MAX}
-              placeholder={t("hintPlaceholder")}
+              placeholder={t(mode === "label" ? "labelNamePlaceholder" : "hintPlaceholder")}
               className="mt-2 min-h-[45px] w-full rounded-md border border-line bg-void px-3 py-2 text-base text-bone placeholder:text-ash-dim focus:border-blood focus:outline-none"
             />
-            <p className="mt-1.5 text-xs leading-relaxed text-ash-dim">{t("hintHelp")}</p>
+            {mode !== "label" && (
+              <p className="mt-1.5 text-xs leading-relaxed text-ash-dim">{t("hintHelp")}</p>
+            )}
 
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button type="button" onClick={scan} className="btn btn-primary">
@@ -508,8 +833,49 @@ export function FoodScanner({
               <Icon name="bolt" size={28} />
             </div>
             <p className="mt-4 font-condensed text-sm uppercase tracking-[0.25em] text-ash">
-              {t("scanning")}
+              {t(mode === "label" ? "readingLabel" : "scanning")}
             </p>
+          </div>
+        )}
+
+        {stage === "looking" && (
+          <div className="py-10 text-center">
+            <div className="animate-glow mx-auto grid h-14 w-14 place-items-center rounded-full text-blood">
+              <Icon name="bolt" size={28} />
+            </div>
+            <p className="mt-4 font-condensed text-sm uppercase tracking-[0.25em] text-ash">
+              {t("lookingUp")}
+            </p>
+          </div>
+        )}
+
+        {/* -------- barcode read, product unknown -------- */}
+        {stage === "notFound" && (
+          <div className="py-2 text-center">
+            <p className="font-condensed text-lg tracking-widest text-bone">{code}</p>
+            <p className="mt-3 text-sm leading-relaxed text-ash">{t("notFoundBody")}</p>
+            <div className="mt-6 grid gap-2">
+              <button
+                type="button"
+                onClick={() => allowCamera("label")}
+                className="btn btn-primary w-full"
+              >
+                {t("scanLabelInstead")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("label");
+                  fileRef.current?.click();
+                }}
+                className="btn btn-ghost w-full"
+              >
+                {t("uploadLabel")}
+              </button>
+              <button type="button" onClick={retake} className="btn btn-ghost w-full">
+                {t("back")}
+              </button>
+            </div>
           </div>
         )}
 
@@ -517,7 +883,9 @@ export function FoodScanner({
         {stage === "result" && result && (
           <div>
             {result.items.length > 0 && (
-              <p className="mb-2 text-xs leading-relaxed text-ash-dim">{t("itemsHint")}</p>
+              <p className="mb-2 text-xs leading-relaxed text-ash-dim">
+                {t(source === "photo" ? "itemsHint" : "portionHint")}
+              </p>
             )}
             <ul className="divide-y divide-line/70">
               {result.items.length === 0 && (
@@ -582,8 +950,16 @@ export function FoodScanner({
                         >
                           +
                         </button>
-                        {it.confidence === "low" && (
-                          <span className="ml-1 text-xs text-ash-dim">{t("lowConfidence")}</span>
+                        {/* From a pack, the printed density is the useful
+                            thing to see: it is what the weight multiplies. */}
+                        {source !== "photo" && it.per100g ? (
+                          <span className="ml-1 text-xs text-ash-dim">
+                            {t("per100", { kcal: Math.round(it.per100g.kcal) })}
+                          </span>
+                        ) : (
+                          it.confidence === "low" && (
+                            <span className="ml-1 text-xs text-ash-dim">{t("lowConfidence")}</span>
+                          )
                         )}
                       </div>
                     )}
@@ -597,7 +973,13 @@ export function FoodScanner({
                 know that before trusting the total — it is exactly the photo
                 (food filling the frame, no plate edge) that gives the same
                 number for a small plate and a large bowl. */}
+            {result.items.length > 0 && source !== "photo" && (
+              <p className="mt-2 text-xs leading-relaxed text-ash-dim">
+                {t(source === "barcode" ? "fromDatabase" : "fromLabel")}
+              </p>
+            )}
             {result.items.length > 0 &&
+              source === "photo" &&
               (result.scale_found === false ? (
                 <p className="mt-2 text-xs leading-relaxed text-ash">{t("noScale")}</p>
               ) : result.scale_reference ? (
@@ -638,7 +1020,9 @@ export function FoodScanner({
             {/* Got it wrong? Naming the food and going again is the fix, and
                 it is worth saying so rather than leaving people to re-shoot
                 the same photo and get the same answer. */}
-            <p className="mt-3 text-xs leading-relaxed text-ash-dim">{t("wrongHint")}</p>
+            {source === "photo" && (
+              <p className="mt-3 text-xs leading-relaxed text-ash-dim">{t("wrongHint")}</p>
+            )}
             <div className="mt-5 grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -648,8 +1032,15 @@ export function FoodScanner({
               >
                 {t("addMeal")}
               </button>
-              <button type="button" onClick={() => setStage("preview")} className="btn btn-ghost">
-                {t("tryAgain")}
+              {/* A meal goes back to its photo to be named and read again.
+                  A pack's numbers will not change on a second read, so the
+                  useful next step is the next product. */}
+              <button
+                type="button"
+                onClick={source === "photo" ? () => setStage("preview") : retake}
+                className="btn btn-ghost"
+              >
+                {t(source === "photo" ? "tryAgain" : "scanAnother")}
               </button>
             </div>
           </div>

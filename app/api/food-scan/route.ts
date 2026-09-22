@@ -130,6 +130,7 @@ const SYSTEM_PROMPT = [
 
   "WHAT TO COUNT",
   "- Only the meal being eaten: the subject of the photo, normally centred and in focus. Ignore other plates, food in the background, packaging, drinks that are not the subject, cutlery, and anything cut off at the edge of the frame.",
+  "- Packaging in the background is incidental, but when the subject of the photo IS a packaged product - a snack bar, a bag of crisps, a bottle, a tub - that product is the meal. Identify it from the packaging, and if its nutrition table is legible, use the printed values instead of estimating.",
   "- List only what you can actually see. Never add something a meal like this usually comes with - bread, salad, a sauce, a drink - unless it is in the photo.",
   "- A dish cooked as one is ONE item: plov, stew, soup, curry, fried rice, pasta in sauce, a sandwich, a burger. Give it one weight and one composition for the dish as served. Do not split it into its ingredients, and never add cooking oil as a separate item: the dish's composition already includes the fat it was cooked in. List oil, butter or dressing separately only when you can see it pooled or poured on top.",
   "- Separate foods are separate items: a fillet with rice and a side salad is three items.",
@@ -144,11 +145,12 @@ const SYSTEM_PROMPT = [
   "- Then work out how much food there is: how much of the plate or bowl it covers, and how deep or how high it is piled. Convert that to grams. grams is the weight of the food alone, never including the plate or bowl.",
   "- The vessel is your ruler. The same dish on a small plate and in a large bowl must get clearly different weights. Never fall back on a typical serving of the dish - estimate this portion.",
   "- Do not round up to a restaurant-sized serving. Rough guides for a rice-based or mixed main dish: a small side-plate portion 150-250 g; a full dinner plate 300-450 g; a large, deep bowl 400-600 g. A fist-sized mound of cooked rice or pasta is about 150-200 g. A palm-sized piece of meat or fish is about 100-150 g.",
+  "- Food that comes in pieces is weighed by COUNTING, not by guessing volume: count the pieces, then use a typical weight per piece adjusted for how large they look. Typical edible weights: a medium apple about 180 g, a medium banana about 120 g peeled, a medium orange about 140 g, a mandarin about 80 g, a pear about 180 g, a peach about 150 g, a kiwi about 75 g, a handful of grapes about 100 g, a large egg about 50 g, a slice of bread about 30 g. Whole fruit is dense and heavier than it looks in a photo - do not shrink it.",
   "- If nothing in the photo gives a scale, set scale_found to false, write 'none' as scale_reference, assume a standard dinner plate, and lower your confidence. Otherwise set scale_found to true.",
 
   "COMPOSITION",
   "- For each item give kcal, protein, carbs, fat and fiber PER 100 g, as served - cooked, including its oil and sauce. Do not multiply by the weight; that is done for you.",
-  "- Use standard composition values. For calibration, typical values per 100 g: cooked white rice about 130 kcal; plain cooked pasta about 155; bread about 260; grilled chicken breast about 165; battered fried fish about 230; boiled potatoes about 85; fries about 310; leafy salad without dressing about 20; rice pilaf cooked with meat and oil (plov) about 180-250 depending on how oily it looks; cooking oil about 880.",
+  "- Use standard composition values. For calibration, typical values per 100 g: cooked white rice about 130 kcal; plain cooked pasta about 155; bread about 260; grilled chicken breast about 165; battered fried fish about 230; boiled potatoes about 85; fries about 310; leafy salad without dressing about 20; rice pilaf cooked with meat and oil (plov) about 180-250 depending on how oily it looks; cooking oil about 880; apple about 52; banana about 89; orange about 47; grapes about 69.",
 
   "CONFIDENCE",
   "- high: clearly visible and clearly identified. medium: identified, but the amount or the recipe is uncertain. low: partly hidden, not sure it is food, or not sure it is part of this meal. Low-confidence items are left out of the total unless the person ticks them.",
@@ -160,6 +162,35 @@ const SYSTEM_PROMPT = [
   /* Newline built from its char code rather than written as an escape: this
      codebase has had a backslash silently halved before, and a prompt with
      its section breaks collapsed would still "work" - just worse. */
+].join(String.fromCharCode(10));
+
+/* ---------------------------------------------------------------------------
+   Reading a nutrition label, for packaged food the barcode lookup did not
+   know. A different job from the photo prompt, so a different prompt: there
+   the model judges a portion, here it must REPORT what is printed and never
+   estimate. Same output schema, so the result screen, the weight controls and
+   the arithmetic in lib/scan-result.ts all apply unchanged.
+   --------------------------------------------------------------------------- */
+const LABEL_PROMPT = [
+  "You read the nutrition label on packaged food for a boxing training app. The photo shows a package or its nutrition table. Report what is PRINTED. Do not estimate.",
+
+  "READ",
+  "- Find the nutrition table. Use the per 100 g (or per 100 ml) column when there is one. If the label gives values per serving only, convert them to per 100 g using the printed serving size in grams.",
+  "- Energy: use the kcal figure. If only kJ is printed, divide by 4.184.",
+  "- A value that is not printed is 0 - never fill a gap with a typical value.",
+
+  "PRODUCT AND PORTION",
+  "- One item: the product, named from the packaging (brand and product), as printed. If the person names the product, use their name. If only the table is visible and nobody named it, call it 'Packaged food' in the output language.",
+  "- grams: the printed serving size in grams if there is one; otherwise the net weight if it is clearly a single-serve pack of 100 g or less; otherwise 100.",
+  "- Set scale_found to true and scale_reference to 'label'.",
+
+  "CONFIDENCE",
+  "- high when every energy and macro value was legible. low when the table is blurred, cut off or partly hidden - and name what could not be read in the note.",
+  "- If no nutrition table is legible at all, return an empty items array and all micros 0, and say in the note that a closer, sharper photo of the table usually works.",
+
+  "MICRONUTRIENTS AND NOTE",
+  "- iron, calcium, potassium, sodium and vitamin C in whole milligrams for the portion in grams, only where printed; 0 otherwise. If only salt is printed, sodium is salt divided by 2.5.",
+  "- The note is one short line: what was read, or what was missing.",
 ].join(String.fromCharCode(10));
 
 const ALLOWED_MEDIA = [
@@ -190,7 +221,7 @@ export async function POST(req: Request) {
     return quotaDenied(guard, { allowed: false, used: 0, limit: 0, locked: true });
   }
 
-  let body: { image?: string; mediaType?: string; hint?: string };
+  let body: { image?: string; mediaType?: string; hint?: string; mode?: string };
   try {
     body = await req.json();
   } catch {
@@ -253,6 +284,11 @@ export async function POST(req: Request) {
   };
   const language = LANGUAGE[store.get("locale")?.value ?? ""] ?? "";
 
+  /* "label" reads a nutrition table (the fallback when a barcode is unknown);
+     anything else is an ordinary meal photo. Both spend one scan: both are a
+     model call. The barcode lookup itself is a separate route and spends none. */
+  const mode: "photo" | "label" = body.mode === "label" ? "label" : "photo";
+
   /* Everything that could reject this request has now passed, so the call is
      going to happen: spend the allowance. Still before the call rather than
      after it, because spending first is what makes the limit hold under
@@ -274,7 +310,7 @@ export async function POST(req: Request) {
       max_tokens: 16000,
       thinking: { type: "adaptive" },
       system:
-        SYSTEM_PROMPT +
+        (mode === "label" ? LABEL_PROMPT : SYSTEM_PROMPT) +
         (language ? " Write item names, scale_reference and the note in " + language + "." : ""),
       messages: [
         {
@@ -290,10 +326,14 @@ export async function POST(req: Request) {
             },
             {
               type: "text",
-              text: hint
-                ? "Identify each food in this meal and estimate its weight. The person eating it describes it as: " +
-                  hint
-                : "Identify each food in this meal and estimate its weight.",
+              text:
+                (mode === "label"
+                  ? "Read the nutrition label in this photo."
+                  : "Identify each food in this meal and estimate its weight.") +
+                (hint
+                  ? (mode === "label" ? " The product is: " : " The person eating it describes it as: ") +
+                    hint
+                  : ""),
             },
           ],
         },
@@ -304,7 +344,9 @@ export async function POST(req: Request) {
            Estimating the weight of food from a photo is exactly the kind of
            spatial reasoning that setting governs - and it is the part that
            was wrong. */
-        effort: "high",
+        /* Reading printed numbers is not the hard part a portion estimate is,
+           so a label costs less thinking than a plate. */
+        effort: mode === "label" ? "medium" : "high",
         format: { type: "json_schema", schema: SCHEMA },
       },
     });
@@ -318,7 +360,9 @@ export async function POST(req: Request) {
 
     const block = message.content.find((b) => b.type === "text");
     if (!block || block.type !== "text") throw new Error("no output");
-    return NextResponse.json(buildScanResult(JSON.parse(block.text)));
+    /* source tells the result screen what the numbers rest on: a measured
+       photo, or a label that was read. */
+    return NextResponse.json({ source: mode, ...buildScanResult(JSON.parse(block.text)) });
   } catch (err) {
     /* The call was made and produced nothing usable — a provider outage, a
        photo the model would not answer on, malformed output. The user got no
