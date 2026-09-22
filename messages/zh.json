@@ -586,10 +586,9 @@
     "lookingUp": "正在查找产品…",
     "tooManyLookups": "查询过于频繁。请等几分钟后再试。",
     "lookupFailed": "产品数据库暂时没有响应。请重试，或拍摄营养标签。",
-    "notFoundBody": "数据库中还没有这个产品，本地品牌常常如此。请拍摄它的营养标签：准确的数值就印在那里。",
+    "notFoundBody": "数据库中还没有这个产品，本地品牌常常如此。请拍摄它的营养标签：准确的数值就印在那里，我们会为这个条形码记住它们。",
     "scanLabelInstead": "拍摄营养标签",
     "uploadLabel": "上传标签照片",
-    "frameHintLabel": "将营养成分表放入四角框内",
     "labelNameLabel": "产品名称（可选）",
     "labelNamePlaceholder": "例如：牛奶巧克力",
     "readingLabel": "正在读取标签…",
@@ -597,7 +596,10 @@
     "per100": "{kcal} 千卡 / 100 克",
     "fromDatabase": "来自 Open Food Facts 产品数据库：包装上印刷的数值。",
     "fromLabel": "从营养标签读取。",
-    "scanAnother": "再扫一个"
+    "scanAnother": "再扫一个",
+    "torch": "手电筒",
+    "fromCommunity": "由另一位 RingBornn 用户从该产品的标签读取——请与包装核对。",
+    "savedForNext": "已保存：下次任何人扫描这个条形码，都能立即得到结果。"
   },
   "common": {
     "language": "语言"

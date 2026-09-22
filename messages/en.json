@@ -586,10 +586,9 @@
     "lookingUp": "Looking up the product…",
     "tooManyLookups": "Too many lookups in a row. Wait a few minutes and try again.",
     "lookupFailed": "The product database isn't answering right now. Try again, or photograph the label.",
-    "notFoundBody": "This product isn't in the database yet — common for local brands. Photograph its nutrition label instead: the exact numbers are printed there.",
+    "notFoundBody": "This product isn't in the database yet — common for local brands. Photograph its nutrition label: the exact numbers are printed there, and we'll remember them for this barcode.",
     "scanLabelInstead": "Photograph the label",
     "uploadLabel": "Upload a label photo",
-    "frameHintLabel": "Fit the nutrition table inside the corners",
     "labelNameLabel": "Product name (optional)",
     "labelNamePlaceholder": "e.g. Milka milk chocolate",
     "readingLabel": "Reading the label…",
@@ -597,7 +596,10 @@
     "per100": "{kcal} kcal / 100 g",
     "fromDatabase": "From the Open Food Facts product database — the pack's printed values.",
     "fromLabel": "Read from the nutrition label.",
-    "scanAnother": "Scan another"
+    "scanAnother": "Scan another",
+    "torch": "Flashlight",
+    "fromCommunity": "Read from this product's label by another RingBornn user — check it against the pack.",
+    "savedForNext": "Saved: the next time anyone scans this barcode, it's instant."
   },
   "common": {
     "language": "Language"

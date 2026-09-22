@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildScanResult } from "@/lib/scan-result";
+import { isBarcodeFormat } from "@/lib/barcode";
+import { rememberLabel } from "@/lib/products";
 
 export const runtime = "nodejs";
 
@@ -175,13 +177,16 @@ const LABEL_PROMPT = [
   "You read the nutrition label on packaged food for a boxing training app. The photo shows a package or its nutrition table. Report what is PRINTED. Do not estimate.",
 
   "READ",
-  "- Find the nutrition table. Use the per 100 g (or per 100 ml) column when there is one. If the label gives values per serving only, convert them to per 100 g using the printed serving size in grams.",
-  "- Energy: use the kcal figure. If only kJ is printed, divide by 4.184.",
+  "- Find the nutrition table. Use the per 100 g (or per 100 ml) column when there is one, even if a per-serving or per-package column is printed beside it. If the label gives values per serving only, convert them to per 100 g using the printed serving size in grams.",
+  "- Energy: use the kcal figure. Labels often print both, run together ('1890 kJ / 452 kcal', '1890 кДж / 452 ккал'): take the kcal one. If only kJ is printed, divide by 4.184.",
+  "- Many labels here are in Russian or Uzbek. Russian: 'пищевая ценность' = nutrition facts, 'на 100 г' = per 100 g, белки = protein, жиры = fat, углеводы = carbohydrates, пищевые волокна or клетчатка = fiber, энергетическая ценность = energy, ккал = kcal, кДж = kJ. Uzbek: 'ozuqaviy qiymati' = nutrition facts, oqsillar = protein, yog'lar = fat, uglevodlar = carbohydrates, kletchatka = fiber, energiya qiymati = energy.",
+  "- A comma is often the decimal point: '7,5 г' is 7.5 g. Never read it as 75.",
   "- A value that is not printed is 0 - never fill a gap with a typical value.",
+  "- Sanity check before answering: protein + fat + carbohydrates per 100 g cannot exceed 100, and kcal should be close to 4 x protein + 9 x fat + 4 x carbohydrates. If your numbers break either rule you have misread a line or a decimal point - look again.",
 
   "PRODUCT AND PORTION",
   "- One item: the product, named from the packaging (brand and product), as printed. If the person names the product, use their name. If only the table is visible and nobody named it, call it 'Packaged food' in the output language.",
-  "- grams: the printed serving size in grams if there is one; otherwise the net weight if it is clearly a single-serve pack of 100 g or less; otherwise 100.",
+  "- grams: the printed serving size in grams if there is one; otherwise, when the pack is clearly finished in one go - a can or a bottle of 0.5 l or less, a bar, a single yoghurt or dessert cup, a small bag of crisps - the net weight or volume printed on it (ml counts as g); otherwise 100.",
   "- Set scale_found to true and scale_reference to 'label'.",
 
   "CONFIDENCE",
@@ -221,7 +226,7 @@ export async function POST(req: Request) {
     return quotaDenied(guard, { allowed: false, used: 0, limit: 0, locked: true });
   }
 
-  let body: { image?: string; mediaType?: string; hint?: string; mode?: string };
+  let body: { image?: string; mediaType?: string; hint?: string; mode?: string; barcode?: string };
   try {
     body = await req.json();
   } catch {
@@ -289,6 +294,12 @@ export async function POST(req: Request) {
      model call. The barcode lookup itself is a separate route and spends none. */
   const mode: "photo" | "label" = body.mode === "label" ? "label" : "photo";
 
+  /* The barcode that sent the person here, when a lookup missed. A good read
+     of this label is then kept against it (lib/products.ts) so the next scan
+     of the product needs no photo. Ignored unless it is a well-formed code. */
+  const barcode = mode === "label" && isBarcodeFormat(body.barcode) ? body.barcode : null;
+  const startedAt = Date.now();
+
   /* Everything that could reject this request has now passed, so the call is
      going to happen: spend the allowance. Still before the call rather than
      after it, because spending first is what makes the limit hold under
@@ -344,9 +355,10 @@ export async function POST(req: Request) {
            Estimating the weight of food from a photo is exactly the kind of
            spatial reasoning that setting governs - and it is the part that
            was wrong. */
-        /* Reading printed numbers is not the hard part a portion estimate is,
-           so a label costs less thinking than a plate. */
-        effort: mode === "label" ? "medium" : "high",
+        /* Labels too: the first phone test of label reading came back
+           "strange", and a misplaced decimal comma or the per-serving column
+           read as per-100 g is exactly the slip more thinking catches. */
+        effort: "high",
         format: { type: "json_schema", schema: SCHEMA },
       },
     });
@@ -360,9 +372,38 @@ export async function POST(req: Request) {
 
     const block = message.content.find((b) => b.type === "text");
     if (!block || block.type !== "text") throw new Error("no output");
+    const result = buildScanResult(JSON.parse(block.text));
+    const saved = barcode ? await rememberLabel(barcode, result, guard.userId) : false;
+
+    /* One line per scan: what was asked, what came back, and how long it
+       took. Enough to answer "it was strange" from the logs, with no photo
+       and nothing about the person in it. */
+    console.log(
+      "food-scan " +
+        JSON.stringify({
+          mode,
+          model: message.model,
+          ms: Date.now() - startedAt,
+          barcode,
+          saved,
+          items: result.items.map((i) => ({
+            name: i.name,
+            g: i.grams,
+            kcal100: i.per100g.kcal,
+            p: i.per100g.protein,
+            f: i.per100g.fat,
+            c: i.per100g.carbs,
+            conf: i.confidence,
+          })),
+          scale: result.scale_found ? result.scale_reference : "none",
+          note: result.note,
+        }),
+    );
+
     /* source tells the result screen what the numbers rest on: a measured
-       photo, or a label that was read. */
-    return NextResponse.json({ source: mode, ...buildScanResult(JSON.parse(block.text)) });
+       photo, or a label that was read. saved tells it the label is now
+       known by its barcode. */
+    return NextResponse.json({ source: mode, saved, ...result });
   } catch (err) {
     /* The call was made and produced nothing usable — a provider outage, a
        photo the model would not answer on, malformed output. The user got no

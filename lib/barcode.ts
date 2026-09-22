@@ -56,6 +56,44 @@ export function hasValidCheckDigit(code: string): boolean {
   return (10 - (sum % 10)) % 10 === check;
 }
 
+/**
+ * A UPC-E code (8 digits, the short barcode on small American packs) written
+ * out as the 12-digit UPC-A it abbreviates, or null when the digits are not a
+ * valid UPC-E -- in which case they are an EAN-8, which is looked up as it is.
+ * The decoder reports both formats as 8 digits, so the two cannot be told apart
+ * until the expansion is tried and its check digit tested.
+ */
+export function upcEToUpcA(code: string): string | null {
+  if (code.length !== 8 || !isBarcodeFormat(code)) return null;
+  const system = code[0];
+  if (system !== "0" && system !== "1") return null;
+  const [d1, d2, d3, d4, d5, d6] = code.slice(1, 7);
+  let body: string;
+  if (d6 === "0" || d6 === "1" || d6 === "2") body = d1 + d2 + d6 + "0000" + d3 + d4 + d5;
+  else if (d6 === "3") body = d1 + d2 + d3 + "00000" + d4 + d5;
+  else if (d6 === "4") body = d1 + d2 + d3 + d4 + "00000" + d5;
+  else body = d1 + d2 + d3 + d4 + d5 + "0000" + d6;
+  const upcA = system + body + code[7];
+  return hasValidCheckDigit(upcA) ? upcA : null;
+}
+
+/**
+ * The forms a scanned code may be filed under, most likely first.
+ *
+ * Open Food Facts files a 12-digit UPC-A as 13 digits with a leading zero, a
+ * UPC-E under its expanded UPC-A, and a 14-digit GTIN under its 13-digit
+ * EAN. A lookup that tries only the digits as scanned misses those products
+ * and reports them unknown -- a "not found" that was really a spelling.
+ */
+export function lookupCandidates(code: string): string[] {
+  const out = [code];
+  if (code.length === 12) out.push("0" + code);
+  if (code.length === 14 && code[0] === "0") out.push(code.slice(1));
+  const expanded = upcEToUpcA(code);
+  if (expanded) out.push(expanded, "0" + expanded);
+  return [...new Set(out)];
+}
+
 /* --------------------------- Open Food Facts --------------------------- */
 
 export const OFF_FIELDS = [

@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/Icons";
 import type { Micros } from "@/lib/nutrients";
 import { MAX_GRAMS, macrosAt, type Per100g } from "@/lib/scan-result";
 import { hasValidCheckDigit, isBarcodeFormat } from "@/lib/barcode";
-import { BAND_HEIGHT, BAND_WIDTH, frameBand, loadBarcodeReader } from "@/lib/barcode-decode";
+import { BAND_HEIGHT, BAND_WIDTH, loadBarcodeReader } from "@/lib/barcode-decode";
 
 /* ===========================================================================
    FoodScanner — photo → Claude vision → calories.
@@ -62,6 +62,10 @@ export interface ScanResult {
   /** Where the numbers came from. Absent from a server one deploy behind,
       which only ever did photos. */
   source?: Mode;
+  /** For a barcode: Open Food Facts, or a label another user read here. */
+  origin?: "off" | "learned";
+  /** For a label read from a barcode miss: now known by that barcode. */
+  saved?: boolean;
   note: string;
 }
 
@@ -104,6 +108,14 @@ const FRAME_FRACTION = 0.8;
    throws away a fifth of each edge, the food needs the detail back. */
 const MAX_EDGE = 1536;
 
+/* A nutrition table is small print, and a digit read wrong is a wrong number,
+   not a rough one. Sonnet 5 reads images up to 2576 px on the long edge
+   (anything bigger it shrinks), so a label goes up near that limit. The
+   slightly lower JPEG quality keeps a full label photo well inside the 4.5 MB
+   a serverless request can carry. */
+const LABEL_EDGE = 2560;
+const LABEL_QUALITY = 0.85;
+
 const HINT_MAX = 120;
 
 /* Step for the weight buttons, sized to the portion. A fixed 10 g would take
@@ -115,15 +127,17 @@ function stepFor(grams: number): number {
   return 50;
 }
 
-/** Draw a source region onto a canvas no bigger than MAX_EDGE and return JPEG. */
+/** Draw a source region onto a canvas no bigger than maxEdge and return JPEG. */
 function toScaledJpeg(
   source: CanvasImageSource,
   sx: number,
   sy: number,
   sw: number,
   sh: number,
+  maxEdge = MAX_EDGE,
+  quality = 0.9,
 ): string {
-  const scale = Math.min(1, MAX_EDGE / Math.max(sw, sh));
+  const scale = Math.min(1, maxEdge / Math.max(sw, sh));
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(sw * scale));
   canvas.height = Math.max(1, Math.round(sh * scale));
@@ -135,7 +149,7 @@ function toScaledJpeg(
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(source, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
   }
-  return canvas.toDataURL("image/jpeg", 0.9);
+  return canvas.toDataURL("image/jpeg", quality);
 }
 
 export function FoodScanner({
@@ -171,15 +185,38 @@ export function FoodScanner({
   /* The last code looked up, shown when it is not found so the person can
      see it was read correctly and it is the database that does not know it. */
   const [code, setCode] = useState("");
+  /* The phone's flashlight, when the camera has one it will let a web page
+     switch. A barcode under a kitchen light is often too dim to read. */
+  const [torchAvailable, setTorchAvailable] = useState(false);
+  const [torchOn, setTorchOn] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  /* The phone's own camera app, for a label. It takes a full-resolution,
+     properly focused still -- a frame grabbed from the live preview is video
+     quality, and the small print on a nutrition table is exactly what video
+     quality loses. */
+  const captureRef = useRef<HTMLInputElement>(null);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((tr) => tr.stop());
     streamRef.current = null;
+    setTorchAvailable(false);
+    setTorchOn(false);
   };
+
+  async function toggleTorch() {
+    const track = streamRef.current?.getVideoTracks()[0];
+    if (!track) return;
+    const next = !torchOn;
+    try {
+      await track.applyConstraints({ advanced: [{ torch: next } as MediaTrackConstraintSet] });
+      setTorchOn(next);
+    } catch {
+      setTorchAvailable(false);
+    }
+  }
   useEffect(() => stopCamera, []);
 
   /* A code seen by the live decoder. An effect event so the loop below keeps
@@ -199,26 +236,23 @@ export function FoodScanner({
     if (stage !== "barcode") return;
     let cancelled = false;
     let timer = 0;
-    /* A code is accepted once it has been read twice in a row. The decoder
-       checks each barcode's own check digit, but a code half out of the
-       band can still decode as a shorter, valid, wrong one; the same
-       answer twice is cheap insurance at eight reads a second. */
+    /* A code is accepted once it has been read twice in a row. Both engines
+       check each barcode's own check digit, but a code half out of view can
+       still decode as a shorter, valid, wrong one; the same answer twice is
+       cheap insurance at eight reads a second. */
     let previous = "";
-    const canvas = document.createElement("canvas");
     loadBarcodeReader()
       .then((reader) => {
-        const tick = () => {
+        const tick = async () => {
           if (cancelled) return;
           const video = videoRef.current;
-          if (video && video.readyState >= 2) {
-            const frame = frameBand(video, canvas, video.videoWidth, video.videoHeight);
-            const read = frame ? reader.decode(frame) : null;
-            if (read && read === previous) {
-              onDetected(read);
-              return;
-            }
-            if (read) previous = read;
+          const read = video ? await reader.readFrame(video) : null;
+          if (cancelled) return;
+          if (read && read === previous) {
+            onDetected(read);
+            return;
           }
+          if (read) previous = read;
           timer = window.setTimeout(tick, DECODE_EVERY_MS);
         };
         tick();
@@ -235,6 +269,13 @@ export function FoodScanner({
   /* -- consent accepted → NOW we may ask the browser for the camera -- */
   async function allowCamera(next: Mode = mode) {
     setMode(next);
+    /* A label goes to the phone's camera app instead (see captureRef). This
+       must stay synchronous, before any await: a file chooser only opens
+       from inside the tap that asked for it. */
+    if (next === "label") {
+      captureRef.current?.click();
+      return;
+    }
     try {
       /* Ask for the rear camera at a decent resolution and continuous
          autofocus. The default stream on many phones is 640x480 and
@@ -253,6 +294,10 @@ export function FoodScanner({
       });
       streamRef.current = stream;
       setTypedError("");
+      const caps = stream.getVideoTracks()[0]?.getCapabilities?.() as
+        | (MediaTrackCapabilities & { torch?: boolean })
+        | undefined;
+      setTorchAvailable(next === "barcode" && caps?.torch === true);
       setStage(next === "barcode" ? "barcode" : "camera");
       // attach after render
       requestAnimationFrame(() => {
@@ -310,7 +355,11 @@ export function FoodScanner({
           decodeUpload(img);
           return;
         }
-        setPhoto(toScaledJpeg(img, 0, 0, img.naturalWidth, img.naturalHeight));
+        setPhoto(
+          mode === "label"
+            ? toScaledJpeg(img, 0, 0, img.naturalWidth, img.naturalHeight, LABEL_EDGE, LABEL_QUALITY)
+            : toScaledJpeg(img, 0, 0, img.naturalWidth, img.naturalHeight),
+        );
         setStage("preview");
       };
       img.onerror = () => {
@@ -329,38 +378,16 @@ export function FoodScanner({
     reader.readAsDataURL(f);
   }
 
-  /* A barcode in an uploaded photo. There is no guide band on an upload, so
-     the whole photo is searched, each size both as taken and turned a quarter
-     (a packet photographed upright usually has its barcode on its side).
-     Sizes: a middling one first; a smaller one, which smooths out blur and
-     is cheap; then a larger one for a small barcode in a big photo, only when
-     the photo is that big. The decoder is sensitive to scale — the same frame
-     measured failing at one width and reading at another — so trying more
-     than one size is not superstition. Decoded here on the phone; the photo
-     is never sent anywhere. */
+  /* A barcode in an uploaded photo, searched everywhere in it (see
+     readPhoto). Decoded here on the phone; the photo is never sent anywhere. */
   async function decodeUpload(img: HTMLImageElement) {
     setStage("looking");
     try {
       const reader = await loadBarcodeReader();
-      const canvas = document.createElement("canvas");
-      const longest = Math.max(img.naturalWidth, img.naturalHeight);
-      const attempts = [1280, 800, 2048]
-        .filter((size) => size <= 1280 || longest > 1280)
-        .flatMap((maxWidth) => [
-          { maxWidth, rotate: false },
-          { maxWidth, rotate: true },
-        ]);
-      for (const { maxWidth, rotate } of attempts) {
-        const frame = frameBand(img, canvas, img.naturalWidth, img.naturalHeight, {
-          fullFrame: true,
-          maxWidth,
-          rotate,
-        });
-        const read = frame ? reader.decode(frame) : null;
-        if (read) {
-          lookup(read);
-          return;
-        }
+      const read = await reader.readPhoto(img);
+      if (read) {
+        lookup(read);
+        return;
       }
       setError(t("noBarcodeInPhoto"));
     } catch {
@@ -433,6 +460,11 @@ export function FoodScanner({
           image: photo,
           hint: hint.trim().slice(0, HINT_MAX),
           mode: mode === "label" ? "label" : "photo",
+          /* The barcode that was not found, so a good read of its label is
+             remembered for the next person who scans it. Only set on the way
+             here from "not found"; a label photographed from the start
+             screen belongs to no barcode. */
+          barcode: mode === "label" && code ? code : undefined,
         }),
       });
       if (res.status === 503) {
@@ -548,6 +580,7 @@ export function FoodScanner({
     setPicked([]);
     setGrams([]);
     setTypedError("");
+    setCode("");
     setStage("consent");
   }
 
@@ -628,6 +661,7 @@ export function FoodScanner({
                   onClick={() => {
                     setMode(m);
                     setTypedError("");
+                    setCode("");
                   }}
                   className={
                     "min-h-[44px] rounded-xl border px-1 font-condensed text-xs uppercase tracking-widest transition-colors " +
@@ -659,7 +693,7 @@ export function FoodScanner({
                 onClick={() => allowCamera()}
                 className="btn btn-primary w-full"
               >
-                {t("allowCamera")}
+                {t(mode === "label" ? "scanLabelInstead" : "allowCamera")}
               </button>
               <button
                 type="button"
@@ -706,6 +740,20 @@ export function FoodScanner({
               <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
                 {t("barcodeHint")}
               </p>
+              {torchAvailable && (
+                <button
+                  type="button"
+                  onClick={toggleTorch}
+                  aria-pressed={torchOn}
+                  aria-label={t("torch")}
+                  className={
+                    "absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full border text-white backdrop-blur-sm transition-colors " +
+                    (torchOn ? "border-blood bg-blood/70" : "border-white/40 bg-black/40")
+                  }
+                >
+                  <Icon name="bolt" size={18} />
+                </button>
+              )}
             </div>
             {typedForm}
             <button
@@ -762,7 +810,7 @@ export function FoodScanner({
                 </div>
               </div>
               <p className="pointer-events-none absolute inset-x-0 bottom-2 text-center text-xs font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
-                {t(mode === "label" ? "frameHintLabel" : "frameHint")}
+                {t("frameHint")}
               </p>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -790,7 +838,13 @@ export function FoodScanner({
             <img
               src={photo}
               alt="Meal preview"
-              className="aspect-[4/3] w-full rounded-lg border border-line/70 object-cover"
+              className={
+                "aspect-[4/3] w-full rounded-lg border border-line/70 " +
+                /* A label is usually shot upright and must be checkable in
+                   full -- cropping it to fill the box would hide the very
+                   rows someone wants to see were in the photo. */
+                (mode === "label" ? "bg-black object-contain" : "object-cover")
+              }
             />
 
             {/* One word here is worth more than anything else on this screen.
@@ -820,7 +874,13 @@ export function FoodScanner({
               <button type="button" onClick={scan} className="btn btn-primary">
                 {t("analyze")}
               </button>
-              <button type="button" onClick={retake} className="btn btn-ghost">
+              {/* Retaking a label goes straight back to the camera, keeping the
+                  barcode it belongs to; a meal goes back to the start. */}
+              <button
+                type="button"
+                onClick={mode === "label" ? () => allowCamera("label") : retake}
+                className="btn btn-ghost"
+              >
                 {t("retake")}
               </button>
             </div>
@@ -975,8 +1035,17 @@ export function FoodScanner({
                 number for a small plate and a large bowl. */}
             {result.items.length > 0 && source !== "photo" && (
               <p className="mt-2 text-xs leading-relaxed text-ash-dim">
-                {t(source === "barcode" ? "fromDatabase" : "fromLabel")}
+                {t(
+                  source === "label"
+                    ? "fromLabel"
+                    : result.origin === "learned"
+                      ? "fromCommunity"
+                      : "fromDatabase",
+                )}
               </p>
+            )}
+            {result.saved && (
+              <p className="mt-1 text-xs leading-relaxed text-ash">{t("savedForNext")}</p>
             )}
             {result.items.length > 0 &&
               source === "photo" &&
@@ -1059,6 +1128,16 @@ export function FoodScanner({
           ref={fileRef}
           type="file"
           accept="image/*"
+          onChange={pickFile}
+          className="hidden"
+        />
+        {/* capture opens the camera app itself on a phone; a desktop without
+            one simply shows the file chooser. */}
+        <input
+          ref={captureRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
           onChange={pickFile}
           className="hidden"
         />

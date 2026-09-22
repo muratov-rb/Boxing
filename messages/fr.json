@@ -586,10 +586,9 @@
     "lookingUp": "Recherche du produit…",
     "tooManyLookups": "Trop de recherches d'affilée. Attendez quelques minutes et réessayez.",
     "lookupFailed": "La base de produits ne répond pas pour le moment. Réessayez ou photographiez l'étiquette.",
-    "notFoundBody": "Ce produit n'est pas encore dans la base, ce qui est fréquent pour les marques locales. Photographiez son étiquette nutritionnelle : les valeurs exactes y sont imprimées.",
+    "notFoundBody": "Ce produit n'est pas encore dans la base, ce qui est fréquent pour les marques locales. Photographiez son étiquette nutritionnelle : les valeurs exactes y sont imprimées, et nous les retiendrons pour ce code-barres.",
     "scanLabelInstead": "Photographier l'étiquette",
     "uploadLabel": "Importer une photo de l'étiquette",
-    "frameHintLabel": "Cadrez le tableau nutritionnel entre les coins",
     "labelNameLabel": "Nom du produit (facultatif)",
     "labelNamePlaceholder": "ex. chocolat Milka",
     "readingLabel": "Lecture de l'étiquette…",
@@ -597,7 +596,10 @@
     "per100": "{kcal} kcal / 100 g",
     "fromDatabase": "Issu de la base Open Food Facts : les valeurs imprimées sur l'emballage.",
     "fromLabel": "Lu sur l'étiquette nutritionnelle.",
-    "scanAnother": "Scanner un autre"
+    "scanAnother": "Scanner un autre",
+    "torch": "Lampe torche",
+    "fromCommunity": "Lu sur l'étiquette de ce produit par un autre utilisateur de RingBornn — vérifiez sur l'emballage.",
+    "savedForNext": "Enregistré : la prochaine fois que quelqu'un scannera ce code-barres, ce sera instantané."
   },
   "common": {
     "language": "Langue"
