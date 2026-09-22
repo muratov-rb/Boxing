@@ -142,6 +142,18 @@ export async function pullUserData(): Promise<boolean> {
       .eq("user_id", user.id),
   ]);
 
+  /* Same blind spot as the pushes: a refused read returns { error } and null
+     data, which merges as "nothing on the server" and looks exactly like a new
+     account. Still merged — whatever did come back is worth keeping — but a
+     failure is no longer indistinguishable from an empty account. */
+  for (const [table, res] of [
+    ["user_profiles", profileRes],
+    ["user_progress", progressRes],
+    ["user_activity", activityRes],
+  ] as const) {
+    if (res.error) console.error(`sync pull failed: ${table} ${res.error.code ?? ""}: ${res.error.message}`);
+  }
+
   const patch = computeMergePatch({
     profile: (profileRes.data?.profile ?? null) as Profile | null,
     progress: progressRes.data ?? null,
@@ -154,12 +166,32 @@ export async function pullUserData(): Promise<boolean> {
 
 /* --------------------------------- push ---------------------------------- */
 
+/* supabase-js does not THROW on a failed query. It RETURNS { error }. Every
+   push here used to await the call and discard the result, so when the
+   database refused them — every activity and progress write, from the
+   2026-07-28 column-grant hardening until 2026-09-22 — nothing anywhere said
+   so. The try/catch around them only ever caught network failures. Real
+   users' meals, water and training days stayed on their phones for eight
+   weeks, and the dashboard looked fine because the demo accounts had been
+   seeded by hand. Every write goes through this now. */
+function assertOk(what: string, res: { error: { code?: string; message: string } | null }) {
+  if (res.error) {
+    throw new Error(`${what} ${res.error.code ?? ""}: ${res.error.message}`);
+  }
+}
+
 async function pushProfile(userId: string) {
   const profile = readSlice<Profile | null>(KEYS.profile, null);
   if (!profile) return;
-  await createClient()
-    .from("user_profiles")
-    .upsert({ user_id: userId, profile, updated_at: new Date().toISOString() });
+  /* A plain upsert is fine HERE and only here: signed-in users hold UPDATE on
+     user_profiles.user_id, so the upsert's SET list is permitted. The other
+     two tables deliberately withhold it — see pushActivity. */
+  assertOk(
+    "user_profiles",
+    await createClient()
+      .from("user_profiles")
+      .upsert({ user_id: userId, profile, updated_at: new Date().toISOString() }),
+  );
 }
 
 /* XP itself is never pushed. The server owns it — /api/progress/award decides
@@ -168,20 +200,46 @@ async function pushProfile(userId: string) {
    these columns to signed-in users anyway; this keeps the request honest.
 
    rank_seen is the exception: it only records which rank-up celebration the
-   user has already watched, so it is theirs to set. */
-async function pushProgress(userId: string) {
-  await createClient()
-    .from("user_progress")
-    .upsert({
-      user_id: userId,
-      rank_seen: readSlice<number>(KEYS.rankSeen, 0),
-      updated_at: new Date().toISOString(),
-    });
+   user has already watched, so it is theirs to set. It goes through
+   push_rank_seen for the same reason activity goes through push_activity. */
+async function pushProgress() {
+  assertOk(
+    "push_rank_seen",
+    await createClient().rpc("push_rank_seen", {
+      p_rank_seen: Math.max(0, Math.round(readSlice<number>(KEYS.rankSeen, 0) || 0)),
+    }),
+  );
 }
 
-/** Push only the days that actually carry something — usually just today. */
-async function pushActivity(userId: string, days: string[]) {
-  if (!days.length) return;
+/** A day key the database will accept as a date. Checked without a regex —
+    this codebase has had a backslash silently halved before. One malformed key
+    would otherwise fail the whole batch, and with it every day's sync. */
+function isDayKey(day: string): boolean {
+  return (
+    day.length === 10 &&
+    day[4] === "-" &&
+    day[7] === "-" &&
+    !Number.isNaN(Date.parse(day))
+  );
+}
+
+/**
+ * Push only the days that actually carry something — usually just today.
+ *
+ * Through push_activity (db/migrations/006_sync_upserts.sql), NOT an upsert.
+ * PostgREST writes an upsert as INSERT ... ON CONFLICT DO UPDATE SET <every
+ * column sent>, the conflict key included, and Postgres checks UPDATE on each
+ * SET column when the statement starts — whether or not anything conflicts.
+ * Signed-in users may not update user_id or day, and must not: UPDATE on day
+ * would let someone move today's row, AI quota and all, onto another date and
+ * start fresh. So every upsert failed with 42501. The function issues the same
+ * upsert with its SET list limited to the columns users may already update;
+ * it runs as the caller (security invoker), takes user_id from the session
+ * rather than the request, and never mentions usage.
+ */
+async function pushActivity(days: string[]) {
+  const valid = days.filter(isDayKey);
+  if (!valid.length) return;
   const trained = new Set(readSlice<string[]>(KEYS.streak, []));
   const visited = new Set(readSlice<string[]>(KEYS.visits, []));
   const meals = readSlice<MealMap>(KEYS.meals, {});
@@ -189,18 +247,34 @@ async function pushActivity(userId: string, days: string[]) {
   const water = readSlice<BurnMap>(KEYS.water, {});
   /* `usage` is deliberately absent: it is the quota the paid features are
      metered against, so it is written only by consume_usage on the server.
-     Pushing the local copy would let anyone reset their own limits. */
-  const rows = days.map((day) => ({
-    user_id: userId,
+     Pushing the local copy would let anyone reset their own limits.
+
+     burned and water are integer columns, and all ninety days go in ONE
+     statement, so a single fractional value left in storage by an older build
+     would fail the batch for good. They are rounded on the way out as well as
+     on the way in. */
+  const rows = valid.map((day) => ({
     day,
     trained: trained.has(day),
     visited: visited.has(day),
-    burned: burn[day] ?? 0,
-    water: water[day] ?? 0,
-    meals: meals[day] ?? [],
-    updated_at: new Date().toISOString(),
+    burned: Math.max(0, Math.round(Number(burn[day]) || 0)),
+    water: Math.max(0, Math.round(Number(water[day]) || 0)),
+    meals: Array.isArray(meals[day]) ? meals[day] : [],
   }));
-  await createClient().from("user_activity").upsert(rows);
+  assertOk("push_activity", await createClient().rpc("push_activity", { p_rows: rows }));
+}
+
+/** Log every rejected push, not just the first — Promise.all would report one
+    failure and hide the rest, which is how a partial outage looks healthy. */
+function reportFailures(results: PromiseSettledResult<unknown>[]): boolean {
+  let failed = false;
+  for (const r of results) {
+    if (r.status === "rejected") {
+      failed = true;
+      console.error("sync push failed:", r.reason instanceof Error ? r.reason.message : r.reason);
+    }
+  }
+  return failed;
 }
 
 /* ------------------------------ change plumbing --------------------------- */
@@ -257,14 +331,21 @@ export function startSync(): () => void {
       const jobs: Promise<unknown>[] = [];
       if (keys.includes(KEYS.profile)) jobs.push(pushProfile(user.id));
       if (keys.includes(KEYS.xp) || keys.includes(KEYS.rankSeen)) {
-        jobs.push(pushProgress(user.id));
+        jobs.push(pushProgress());
       }
       if (keys.some((k) => ACTIVITY_KEYS.includes(k))) {
-        jobs.push(pushActivity(user.id, allLocalDays()));
+        jobs.push(pushActivity(allLocalDays()));
       }
-      await Promise.all(jobs);
-    } catch {
-      /* offline or blocked — local state is untouched, we retry on next change */
+      /* A failed write puts its keys back, so the next change retries them.
+         No timer of its own: a permanent failure must not become a request
+         loop, and every activity push re-sends all recent days anyway. */
+      if (reportFailures(await Promise.allSettled(jobs))) {
+        for (const k of keys) dirty.add(k);
+      }
+    } catch (err) {
+      /* offline, or no session — local state is untouched */
+      for (const k of keys) dirty.add(k);
+      console.error("sync flush failed:", err instanceof Error ? err.message : err);
     }
   };
 
@@ -289,12 +370,14 @@ export async function pushAll(): Promise<void> {
     const { data: auth } = await supabase.auth.getUser();
     const user = auth?.user;
     if (!user) return;
-    await Promise.all([
-      pushProfile(user.id),
-      pushProgress(user.id),
-      pushActivity(user.id, allLocalDays()),
-    ]);
-  } catch {
-    /* best effort */
+    reportFailures(
+      await Promise.allSettled([
+        pushProfile(user.id),
+        pushProgress(),
+        pushActivity(allLocalDays()),
+      ]),
+    );
+  } catch (err) {
+    console.error("sync pushAll failed:", err instanceof Error ? err.message : err);
   }
 }

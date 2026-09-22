@@ -10,6 +10,7 @@ import { ThemeChoice } from "@/components/ui/ThemeChoice";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Icon } from "@/components/ui/Icons";
 import { RemindersRunner } from "@/components/nutrition/RemindersRunner";
+import { SubscriptionSync } from "@/components/dashboard/SubscriptionSync";
 import { PRIMARY_NAV, ACCOUNT_NAV, isActive, type NavItem } from "@/lib/navigation";
 
 /* ===========================================================================
@@ -113,6 +114,9 @@ export function AppNav() {
           signed-in page, which is what makes a reminder able to arrive while
           you are on /train rather than only on /calories. */}
       <RemindersRunner />
+      {/* Same reason, and it was the costlier omission: sync used to run on the
+          dashboard only, so meals logged on /calories never left the phone. */}
+      <SubscriptionSync />
       <header className="sticky top-0 z-50 border-b border-line/70 bg-void/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-8">

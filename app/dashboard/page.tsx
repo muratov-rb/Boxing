@@ -7,7 +7,6 @@ import { StreakCard } from "@/components/dashboard/StreakCard";
 import { RankCard } from "@/components/dashboard/RankCard";
 import { RecoveryCard } from "@/components/dashboard/RecoveryCard";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
-import { SubscriptionSync } from "@/components/dashboard/SubscriptionSync";
 import { PlanNudge } from "@/components/dashboard/PlanNudge";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getUser } from "@/lib/supabase/user";
@@ -34,7 +33,6 @@ export default async function DashboardPage() {
       <AppNav />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
-        <SubscriptionSync />
         <TrialBanner />
         <PlanNudge />
         {!configured && (
