@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/ui/Icons";
 import type { Micros } from "@/lib/nutrients";
+import { MAX_GRAMS, macrosAt, type Per100g } from "@/lib/scan-result";
 
 /* ===========================================================================
    FoodScanner — photo → Claude vision → calories.
@@ -24,12 +25,18 @@ import type { Micros } from "@/lib/nutrients";
       camera, occasionally large enough to be rejected outright.
    =========================================================================== */
 
+/* grams, per100g and confidence are optional only so a response from a server
+   one deploy behind still renders. The current route always sends them. */
 interface ScanItem {
   name: string;
   kcal: number;
   protein?: number;
   carbs?: number;
   fat?: number;
+  fiber?: number;
+  grams?: number;
+  per100g?: Per100g;
+  confidence?: "high" | "medium" | "low";
 }
 export interface ScanResult {
   items: ScanItem[];
@@ -39,6 +46,8 @@ export interface ScanResult {
   total_fat?: number;
   total_fiber?: number;
   micros?: Micros;
+  scale_reference?: string;
+  scale_found?: boolean;
   note: string;
 }
 
@@ -64,6 +73,15 @@ const FRAME_FRACTION = 0.8;
 const MAX_EDGE = 1536;
 
 const HINT_MAX = 120;
+
+/* Step for the weight buttons, sized to the portion. A fixed 10 g would take
+   thirty taps to correct a bowl of plov; a fixed 50 g would overshoot a
+   spoonful of sauce. */
+function stepFor(grams: number): number {
+  if (grams < 100) return 10;
+  if (grams < 300) return 25;
+  return 50;
+}
 
 /** Draw a source region onto a canvas no bigger than MAX_EDGE and return JPEG. */
 function toScaledJpeg(
@@ -101,10 +119,18 @@ export function FoodScanner({
   const [photo, setPhoto] = useState<string>(""); // dataURL
   const [hint, setHint] = useState<string>("");
   const [result, setResult] = useState<ScanResult | null>(null);
-  /* Which detected items the person actually ate. Everything starts ticked;
-     unticking is how you throw out the bread roll the model spotted in the
-     background of a photo of your fish. */
+  /* Which detected items the person actually ate. Everything the model is
+     confident about starts ticked; anything it marked low-confidence starts
+     unticked, because "it may see something that wasn't even there" was the
+     complaint and an item nobody is sure exists should not be counted by
+     default. Unticking is still how you throw out the bread roll the model
+     spotted in the background of a photo of your fish. */
   const [picked, setPicked] = useState<boolean[]>([]);
+  /* The weight of each item, starting at the model's estimate and editable.
+     This is the correction the old scanner had no room for: when it guessed a
+     big bowl and you had a small plate, the only option was to retake the same
+     photo and get the same answer. */
+  const [grams, setGrams] = useState<number[]>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -215,7 +241,8 @@ export function FoodScanner({
       if (!res.ok) throw new Error();
       const data = (await res.json()) as ScanResult;
       setResult(data);
-      setPicked(data.items.map(() => true));
+      setPicked(data.items.map((item) => item.confidence !== "low"));
+      setGrams(data.items.map((item) => item.grams ?? 0));
       setStage("result");
     } catch {
       setError(t("scanFailed"));
@@ -223,39 +250,69 @@ export function FoodScanner({
     }
   }
 
-  /* What the ticked items come to.
+  /* One item at the weight it has now — the model's estimate or the person's
+     correction.
 
-     With everything ticked the model's own totals are used rather than a sum
-     of the parts: it estimated them together and they are self-consistent,
-     where re-adding rounded per-item grams introduces drift. Once something
-     is unticked there is no choice but to re-add, and the whole-meal figures
-     that have no per-item breakdown — fibre and the minerals — are scaled by
-     the share of calories kept. Approximate, but far closer than charging
-     someone for a plate they did not eat. */
+     Computed from the composition per 100 g with macrosAt(), the same
+     function the server used, so a weight nobody has touched shows exactly
+     the number the server sent, and a doubled weight is exactly double. */
+  function itemAt(index: number) {
+    const item = result!.items[index];
+    const g = grams[index] ?? item.grams ?? 0;
+    if (item.per100g && g > 0) {
+      return { name: item.name, grams: g, ...macrosAt(item.per100g, g) };
+    }
+    /* A response from before composition per 100 g existed: scale its
+       absolute figures by the change in weight, or use them as they came. */
+    const ratio = item.grams && g > 0 ? g / item.grams : 1;
+    const r = (v?: number) => Math.round((v ?? 0) * ratio);
+    return {
+      name: item.name,
+      grams: g,
+      kcal: r(item.kcal),
+      protein: r(item.protein),
+      carbs: r(item.carbs),
+      fat: r(item.fat),
+      fiber: r(item.fiber),
+    };
+  }
+
+  /* What the ticked items come to, at their current weights.
+
+     Always a sum of the items now. It used to prefer the model's own totals
+     when everything was ticked, on the grounds that they were
+     self-consistent — but the model no longer produces totals at all; the
+     server sums the items, so re-adding them here is the same arithmetic.
+
+     The minerals have no per-item breakdown (see the route for why), so they
+     scale with the calories kept: untick half the plate or halve the weight,
+     and they halve too. */
   function selected() {
-    const empty = { items: [] as ScanItem[], kcal: 0, macros: {} as ScanMacros };
+    const empty = { items: [] as ReturnType<typeof itemAt>[], kcal: 0, macros: {} as ScanMacros };
     if (!result) return empty;
 
-    const items = result.items.filter((_, i) => picked[i]);
+    const items = result.items.map((_, i) => i).filter((i) => picked[i]).map(itemAt);
     if (items.length === 0) return empty;
 
-    const all = items.length === result.items.length;
-    const sum = (key: "kcal" | "protein" | "carbs" | "fat") =>
-      items.reduce((n, item) => n + (item[key] ?? 0), 0);
+    const sum = (key: "kcal" | "protein" | "carbs" | "fat" | "fiber") =>
+      items.reduce((n, item) => n + item[key], 0);
+    const kcal = sum("kcal");
 
-    const kcal = all ? result.total_kcal : sum("kcal");
-    const share =
-      all || !result.total_kcal ? 1 : Math.min(1, Math.max(0, kcal / result.total_kcal));
+    /* Can exceed 1 now: correcting a small estimate upward is as legitimate as
+       unticking. Bounded so a typo of 50000 g cannot multiply the minerals
+       into nonsense. */
+    const share = result.total_kcal > 0 ? Math.min(20, Math.max(0, kcal / result.total_kcal)) : 1;
     const scale = (v: number | undefined) => (v == null ? undefined : Math.round(v * share));
+    const hasItemFiber = result.items.some((item) => item.fiber != null);
 
     return {
       items,
       kcal,
       macros: {
-        protein: all ? result.total_protein : sum("protein"),
-        carbs: all ? result.total_carbs : sum("carbs"),
-        fat: all ? result.total_fat : sum("fat"),
-        fiber: scale(result.total_fiber),
+        protein: sum("protein"),
+        carbs: sum("carbs"),
+        fat: sum("fat"),
+        fiber: hasItemFiber ? sum("fiber") : scale(result.total_fiber),
         micros: result.micros
           ? {
               iron: scale(result.micros.iron) ?? 0,
@@ -268,6 +325,14 @@ export function FoodScanner({
       } satisfies ScanMacros,
     };
   }
+
+  /* Clamped to what one visible item could weigh. Zero is allowed — it is how
+     an emptied field reads while someone types a new number, and it counts as
+     nothing, the same as unticking. */
+  const setGram = (index: number, value: number) =>
+    setGrams((prev) =>
+      prev.map((v, j) => (j === index ? Math.min(MAX_GRAMS, Math.max(0, Math.round(value))) : v)),
+    );
 
   function addAll() {
     const chosen = selected();
@@ -282,6 +347,7 @@ export function FoodScanner({
   function retake() {
     setResult(null);
     setPicked([]);
+    setGrams([]);
     setStage("consent");
   }
 
@@ -457,25 +523,88 @@ export function FoodScanner({
               {result.items.length === 0 && (
                 <li className="py-3 text-sm text-ash">{t("nothingFound")}</li>
               )}
-              {result.items.map((it, i) => (
-                <li key={i}>
-                  <label className="flex cursor-pointer items-center gap-3 py-2.5 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={picked[i] ?? true}
-                      onChange={() =>
-                        setPicked((prev) => prev.map((v, j) => (j === i ? !v : v)))
-                      }
-                      className="h-4 w-4 shrink-0 accent-blood"
-                    />
-                    <span className={picked[i] ? "flex-1 text-bone/90" : "flex-1 text-ash-dim line-through"}>
-                      {it.name}
-                    </span>
-                    <span className="font-condensed text-ash">{it.kcal} kcal</span>
-                  </label>
-                </li>
-              ))}
+              {result.items.map((it, i) => {
+                const row = itemAt(i);
+                const g = grams[i] ?? 0;
+                /* A response from before weights existed has nothing to edit. */
+                const editable = (it.grams ?? 0) > 0;
+                return (
+                  <li key={i} className="py-2.5">
+                    <label className="flex cursor-pointer items-center gap-3 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={picked[i] ?? true}
+                        onChange={() =>
+                          setPicked((prev) => prev.map((v, j) => (j === i ? !v : v)))
+                        }
+                        className="h-4 w-4 shrink-0 accent-blood"
+                      />
+                      <span
+                        className={
+                          picked[i] ? "flex-1 text-bone/90" : "flex-1 text-ash-dim line-through"
+                        }
+                      >
+                        {it.name}
+                      </span>
+                      <span className="font-condensed text-ash">{row.kcal} kcal</span>
+                    </label>
+
+                    {editable && (
+                      /* The correction the old scanner had no room for. The
+                         field can be typed into, so someone who weighed their
+                         food can enter the real number; the buttons step in
+                         sizes that suit the portion. */
+                      <div className="mt-2 flex items-center gap-2 pl-7">
+                        <button
+                          type="button"
+                          onClick={() => setGram(i, g - stepFor(g))}
+                          aria-label={t("lessGrams")}
+                          className="grid h-8 w-8 place-items-center rounded-md border border-line text-ash transition-colors hover:border-blood/50 hover:text-bone"
+                        >
+                          −
+                        </button>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          max={MAX_GRAMS}
+                          value={g > 0 ? g : ""}
+                          onChange={(e) => setGram(i, Number(e.target.value) || 0)}
+                          aria-label={t("gramsAria", { name: it.name })}
+                          className="h-8 w-16 rounded-md border border-line bg-void px-1 text-center text-sm text-bone focus:border-blood focus:outline-none"
+                        />
+                        <span className="text-xs text-ash-dim">g</span>
+                        <button
+                          type="button"
+                          onClick={() => setGram(i, g + stepFor(g))}
+                          aria-label={t("moreGrams")}
+                          className="grid h-8 w-8 place-items-center rounded-md border border-line text-ash transition-colors hover:border-blood/50 hover:text-bone"
+                        >
+                          +
+                        </button>
+                        {it.confidence === "low" && (
+                          <span className="ml-1 text-xs text-ash-dim">{t("lowConfidence")}</span>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
+
+            {/* What the weights were measured against. When the answer is
+                "nothing", the weights are an assumption and the person should
+                know that before trusting the total — it is exactly the photo
+                (food filling the frame, no plate edge) that gives the same
+                number for a small plate and a large bowl. */}
+            {result.items.length > 0 &&
+              (result.scale_found === false ? (
+                <p className="mt-2 text-xs leading-relaxed text-ash">{t("noScale")}</p>
+              ) : result.scale_reference ? (
+                <p className="mt-2 text-xs leading-relaxed text-ash-dim">
+                  {t("measuredAgainst", { ref: result.scale_reference })}
+                </p>
+              ) : null)}
             <div className="mt-3 flex items-center justify-between border-t border-line/70 pt-3">
               <span className="font-condensed text-sm font-bold uppercase tracking-wide">
                 {t("total")}

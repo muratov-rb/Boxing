@@ -558,13 +558,19 @@
     "cameraDenied": "摄像头访问被拒绝。你可以改为上传照片。",
     "noAi": "拍照识别暂时不可用。请在下方手动添加这一餐。",
     "scanFailed": "无法分析该照片。请重试或手动添加餐食。",
-    "frameHint": "只统计边角框内的食物",
+    "frameHint": "把整个盘子或碗放进边角框内",
     "hintLabel": "这是什么？（可选）",
     "hintPlaceholder": "例如：炸鱼，约 200 克",
     "hintHelp": "写出菜名是提升准确度最有效的办法——照片有时分不清炸鱼和面包。",
-    "itemsHint": "取消勾选不属于这一餐的项目。",
+    "itemsHint": "取消勾选不属于你的食物，如果重量看起来不对，请修改。",
     "wrongHint": "不对？在上面写出菜名，再扫描一次。",
-    "tryAgain": "重新扫描"
+    "tryAgain": "重新扫描",
+    "gramsAria": "{name} 的重量（克）",
+    "lessGrams": "减少",
+    "moreGrams": "增加",
+    "lowConfidence": "不确定是否存在",
+    "measuredAgainst": "参照物：{ref}",
+    "noScale": "照片里没有能判断大小的东西，所以这些重量只是估计。下次请拍下整个盘子，或在上方修改重量。"
   },
   "common": {
     "language": "语言"

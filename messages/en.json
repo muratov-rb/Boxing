@@ -558,13 +558,19 @@
     "cameraDenied": "Camera access was denied. You can upload a photo instead.",
     "noAi": "Meal scanning is unavailable right now. Add the meal by hand below.",
     "scanFailed": "Couldn't analyze the photo. Try again or add the meal manually.",
-    "frameHint": "Only what is inside the corners is counted",
+    "frameHint": "Fit the whole plate or bowl inside the corners",
     "hintLabel": "What is it? (optional)",
     "hintPlaceholder": "e.g. fried fish, about 200 g",
     "hintHelp": "Naming the food is the single biggest thing you can do for accuracy — a photo cannot always tell fried fish from bread.",
-    "itemsHint": "Untick anything that is not part of your meal.",
+    "itemsHint": "Untick anything that isn't yours, and correct the weight if it looks off.",
     "wrongHint": "Wrong? Name the food above and scan again.",
-    "tryAgain": "Scan again"
+    "tryAgain": "Scan again",
+    "gramsAria": "Weight of {name} in grams",
+    "lessGrams": "Less",
+    "moreGrams": "More",
+    "lowConfidence": "Not sure this is there",
+    "measuredAgainst": "Measured against: {ref}",
+    "noScale": "Nothing in the photo showed its size, so these weights are a guess. Include the whole plate next time, or correct the weight above."
   },
   "common": {
     "language": "Language"

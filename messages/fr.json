@@ -558,13 +558,19 @@
     "cameraDenied": "L'accès à la caméra a été refusé. Tu peux téléverser une photo à la place.",
     "noAi": "Le scan est indisponible pour le moment. Ajoutez le repas à la main ci-dessous.",
     "scanFailed": "Impossible d'analyser la photo. Réessaie ou ajoute le repas manuellement.",
-    "frameHint": "Seul ce qui est entre les coins est compté",
+    "frameHint": "Cadrez toute l'assiette ou le bol entre les coins",
     "hintLabel": "C'est quoi ? (facultatif)",
     "hintPlaceholder": "ex. poisson frit, environ 200 g",
     "hintHelp": "Nommer le plat est ce qui améliore le plus la précision : une photo ne distingue pas toujours un poisson frit d'une tranche de pain.",
-    "itemsHint": "Décochez ce qui ne fait pas partie de votre repas.",
+    "itemsHint": "Décochez ce qui n'est pas à vous et corrigez le poids s'il semble faux.",
     "wrongHint": "Faux ? Indiquez le plat ci-dessus et relancez l'analyse.",
-    "tryAgain": "Relancer l'analyse"
+    "tryAgain": "Relancer l'analyse",
+    "gramsAria": "Poids de {name} en grammes",
+    "lessGrams": "Moins",
+    "moreGrams": "Plus",
+    "lowConfidence": "Pas sûr que ce soit là",
+    "measuredAgainst": "Mesuré par rapport à : {ref}",
+    "noScale": "Rien sur la photo n'indiquait la taille, ces poids sont donc une estimation. La prochaine fois, cadrez l'assiette entière ou corrigez le poids ci-dessus."
   },
   "common": {
     "language": "Langue"

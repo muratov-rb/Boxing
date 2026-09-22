@@ -558,13 +558,19 @@
     "cameraDenied": "Se denegó el acceso a la cámara. Puedes subir una foto en su lugar.",
     "noAi": "El escaneo no está disponible ahora mismo. Añade la comida a mano abajo.",
     "scanFailed": "No se pudo analizar la foto. Inténtalo de nuevo o añade la comida manualmente.",
-    "frameHint": "Solo se cuenta lo que está dentro de las esquinas",
+    "frameHint": "Encaja todo el plato o el bol dentro de las esquinas",
     "hintLabel": "¿Qué es? (opcional)",
     "hintPlaceholder": "p. ej. pescado frito, unos 200 g",
     "hintHelp": "Nombrar la comida es lo que más ayuda a la precisión: una foto no siempre distingue el pescado frito del pan.",
-    "itemsHint": "Desmarca lo que no forme parte de tu comida.",
+    "itemsHint": "Desmarca lo que no sea tuyo y corrige el peso si no parece correcto.",
     "wrongHint": "¿Incorrecto? Escribe arriba el nombre de la comida y vuelve a escanear.",
-    "tryAgain": "Escanear otra vez"
+    "tryAgain": "Escanear otra vez",
+    "gramsAria": "Peso de {name} en gramos",
+    "lessGrams": "Menos",
+    "moreGrams": "Más",
+    "lowConfidence": "No es seguro que esté",
+    "measuredAgainst": "Medido con: {ref}",
+    "noScale": "Nada en la foto mostraba el tamaño, así que estos pesos son una estimación. La próxima vez incluye el plato entero o corrige el peso arriba."
   },
   "common": {
     "language": "Idioma"

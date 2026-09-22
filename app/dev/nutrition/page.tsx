@@ -5,6 +5,7 @@ import { MacroPanel } from "@/components/nutrition/MacroPanel";
 import { MicroPanel } from "@/components/nutrition/MicroPanel";
 import { WaterCard } from "@/components/nutrition/WaterCard";
 import { ReminderCard } from "@/components/nutrition/ReminderCard";
+import { FoodScanner } from "@/components/dashboard/FoodScanner";
 import type { Meal } from "@/lib/tracking";
 import type { Profile } from "@/lib/onboarding";
 
@@ -61,7 +62,10 @@ const MEALS: Meal[] = [
   { id: "c", name: "Handful of almonds", kcal: 180, at: "2026-08-26T16:00:00Z", source: "manual" },
 ];
 
-const VIEWS = ["macros", "water", "micros", "remind", "empty"] as const;
+/* "scan" opens the meal scanner, which is otherwise only reachable from a
+   signed-in page. The model call needs a key and a quota; to look at the
+   result screen without either, stub window.fetch for /api/food-scan. */
+const VIEWS = ["macros", "water", "micros", "remind", "empty", "scan"] as const;
 type View = (typeof VIEWS)[number];
 
 export default function NutritionBench() {
@@ -95,6 +99,9 @@ export default function NutritionBench() {
         {view === "micros" && <MicroPanel meals={MEALS} profile={PROFILE} />}
         {view === "remind" && <ReminderCard />}
         {view === "empty" && <MicroPanel meals={[]} profile={PROFILE} />}
+        {view === "scan" && (
+          <FoodScanner onAdd={() => undefined} onClose={() => setView("macros")} />
+        )}
       </div>
     </main>
   );
