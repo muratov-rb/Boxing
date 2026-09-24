@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { guardAiRoute, isDenied, quotaDenied } from "@/lib/api-guard";
 import { checkRate, recordAttempt } from "@/lib/rate-limit";
-import { isBarcodeFormat, lookupCandidates, offToScanResult, OFF_FIELDS } from "@/lib/barcode";
-import { CONTACT_EMAIL } from "@/lib/legal";
+import { isBarcodeFormat, lookupCandidates } from "@/lib/barcode";
+import { lookupOff } from "@/lib/off";
 import { findProduct } from "@/lib/products";
 import { recordToScanResult } from "@/lib/product-record";
 
@@ -40,12 +40,6 @@ export const dynamic = "force-dynamic";
     lookups throttled. */
 const LOOKUPS_PER_WINDOW = 60;
 
-/** Open Food Facts is a volunteer-run service; a slow answer must not hold a
-    serverless function open for its full lifetime. */
-const TIMEOUT_MS = 6000;
-
-const USER_AGENT = `RingBornn/1.0 (${CONTACT_EMAIL})`;
-
 export async function GET(req: Request) {
   const guard = await guardAiRoute(null);
   if (isDenied(guard)) return guard.response;
@@ -68,21 +62,33 @@ export async function GET(req: Request) {
   }
   await recordAttempt(rateKey, LOOKUPS_PER_WINDOW);
 
-  /* The same product can be filed under several spellings of its code (a
-     12-digit UPC-A is stored as 13 digits, a UPC-E under its long form). */
-  const candidates = lookupCandidates(code);
-
   /* One line per lookup, so a report of "the barcode didn't work" can be
      matched to what actually happened. A barcode is a product number, not
      anything about the person. */
   const log = (outcome: string) =>
     console.log("food-barcode " + JSON.stringify({ code, outcome }));
 
-  /* Products learned from labels first: they exist precisely because Open
-     Food Facts did not know them, and the lookup costs one query. */
-  const learned = await findProduct(candidates);
+  const store = await cookies();
+  const locale = store.get("locale")?.value ?? "en";
+
+  /* Open Food Facts FIRST, always. Products learned from labels are written
+     by users, so they must never outrank the real database: checked first,
+     one person photographing a fake label against Coca-Cola's barcode would
+     have changed Coca-Cola for everyone (found in the 2026-09-24 audit). */
+  const off = await lookupOff(code, locale);
+  if (off.status === "found") {
+    const item = off.result.items[0];
+    log("off:" + off.code + " " + item?.per100g.kcal + "kcal/100g " + item?.grams + "g");
+    return NextResponse.json({ found: true, source: "barcode", origin: "off", ...off.result });
+  }
+
+  /* Unknown to Open Food Facts, or known with no calorie figure: a label
+     someone read here is the next best thing. Also during an outage -- a
+     learned product is only ever stored for a code Open Food Facts did not
+     know at the time (see /api/food-scan), so serving it cannot shadow one. */
+  const learned = await findProduct(lookupCandidates(code));
   if (learned) {
-    log("learned:" + learned.barcode);
+    log("learned:" + learned.barcode + (off.status === "error" ? " (off down)" : ""));
     return NextResponse.json({
       found: true,
       source: "barcode",
@@ -91,47 +97,14 @@ export async function GET(req: Request) {
     });
   }
 
-  const store = await cookies();
-  const locale = store.get("locale")?.value ?? "en";
-
-  for (const candidate of candidates) {
-    let body: unknown;
-    try {
-      const res = await fetch(
-        `https://world.openfoodfacts.org/api/v2/product/${candidate}.json?fields=${OFF_FIELDS}`,
-        {
-          headers: { "User-Agent": USER_AGENT },
-          signal: AbortSignal.timeout(TIMEOUT_MS),
-          cache: "no-store",
-        },
-      );
-      /* An unknown product is an ordinary outcome, not an outage: try the
-         next spelling. */
-      if (res.status === 404) continue;
-      if (!res.ok) {
-        console.error("food-barcode: open food facts answered", res.status);
-        log("off_error:" + res.status);
-        return NextResponse.json({ error: "lookup_unavailable" }, { status: 502 });
-      }
-      body = await res.json();
-    } catch (err) {
-      console.error("food-barcode: lookup failed:", err instanceof Error ? err.message : String(err));
-      log("off_unreachable");
-      return NextResponse.json({ error: "lookup_unavailable" }, { status: 502 });
-    }
-
-    if ((body as { status?: number })?.status !== 1) continue;
-    const result = offToScanResult(body, locale);
-    /* Known product without a calorie figure counts as not found: a result of
-       "0 kcal" would be worse than sending the person to read the label. */
-    if (!result) {
-      log("off_no_kcal:" + candidate);
-      return NextResponse.json({ found: false });
-    }
-    log("off:" + candidate + " " + result.items[0]?.per100g.kcal + "kcal/100g " + result.items[0]?.grams + "g");
-    return NextResponse.json({ found: true, source: "barcode", origin: "off", ...result });
+  if (off.status === "error") {
+    console.error("food-barcode: open food facts unavailable:", off.detail);
+    log("off_error");
+    return NextResponse.json({ error: "lookup_unavailable" }, { status: 502 });
   }
 
-  log("not_found");
+  /* Known product without a calorie figure counts as not found: a result of
+     "0 kcal" would be worse than sending the person to read the label. */
+  log(off.status === "no_kcal" ? "off_no_kcal:" + off.code : "not_found");
   return NextResponse.json({ found: false });
 }

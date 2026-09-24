@@ -55,13 +55,13 @@ export async function rememberLabel(
     const supabase = createAdminClient();
     const { data: existing, error: readError } = await supabase
       .from("products")
-      .select("kcal, confirmations")
+      .select("kcal, confirmations, created_by")
       .eq("barcode", barcode)
-      .maybeSingle<Pick<ProductRecord, "kcal" | "confirmations">>();
+      .maybeSingle<Pick<ProductRecord, "kcal" | "confirmations"> & { created_by: string | null }>();
     if (readError) return false;
 
     const now = new Date().toISOString();
-    switch (decide(existing ? { ...existing, kcal: Number(existing.kcal) } : null, record)) {
+    switch (decide(existing ? { ...existing, kcal: Number(existing.kcal) } : null, record, userId)) {
       case "insert": {
         const { error } = await supabase
           .from("products")

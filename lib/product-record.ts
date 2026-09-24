@@ -28,6 +28,27 @@ const MICRO_KEYS: (keyof ScanMicros)[] = ["iron", "calcium", "potassium", "sodiu
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
+/* A stored name is shown to every later user who scans that barcode, and it
+   can be text the first user typed ("Product name") rather than anything on
+   the pack. Plain text cannot run in the page -- React escapes it -- but a
+   link, a handle or a phone number shown to strangers is an advert or a scam,
+   so a name that looks like one is never stored. Written with character
+   classes rather than escapes: no backslash in this file. */
+const LINK_MARKERS = ["http", "www", "://", "@", "t.me", "wa.me"];
+const DOMAIN =
+  /[a-z0-9-][.](com|net|org|ru|uz|kz|io|me|xyz|top|info|biz|link|site|online|shop|app|club|pro|store|live|click|cc|tk|gg)($|[^a-z])/i;
+
+export function looksLikeContact(name: string): boolean {
+  const lower = name.toLowerCase();
+  if (LINK_MARKERS.some((m) => lower.includes(m))) return true;
+  if (DOMAIN.test(lower)) return true;
+  /* Seven or more digits is a phone number, not a product name ("Coca-Cola
+     0.5" has two). */
+  let digits = 0;
+  for (const ch of lower) if (ch >= "0" && ch <= "9") digits++;
+  return digits >= 7;
+}
+
 /**
  * What to store from a label read, or null when it should not be stored.
  *
@@ -44,7 +65,7 @@ export function recordFromLabel(
   const item = result.items[0];
   if (item.confidence !== "high" || !(item.per100g.kcal > 0) || !(item.grams > 0)) return null;
   const name = item.name.trim().slice(0, 80);
-  if (!name) return null;
+  if (!name || looksLikeContact(name)) return null;
 
   /* The scan reports minerals for the portion; the store keeps them per
      100 g, like everything else, so any portion can be worked out later. */
@@ -75,19 +96,26 @@ export function agrees(a: Pick<ProductRecord, "kcal">, b: Pick<ProductRecord, "k
 
 /**
  * What a new read does to an existing row:
- * - "confirm": it agrees, so the row gains a confirmation.
+ * - "confirm": a DIFFERENT person's read agrees, so the row gains a
+ *   confirmation.
  * - "replace": it disagrees with a row nobody has confirmed, so the newer
- *   read wins -- the first photo may simply have been the bad one.
- * - "keep": it disagrees with a row two reads have agreed on, so this read is
- *   the likelier mistake and changes nothing.
+ *   read wins -- the first photo may simply have been the bad one. The same
+ *   person reading again also lands here: their newer read replaces their
+ *   older one but never confirms it, or anyone could lock in their own entry
+ *   by scanning it twice.
+ * - "keep": it disagrees with a row two people have agreed on, so this read
+ *   is the likelier mistake and changes nothing.
  */
 export function decide(
-  existing: Pick<ProductRecord, "kcal" | "confirmations"> | null,
+  existing: (Pick<ProductRecord, "kcal" | "confirmations"> & { created_by?: string | null }) | null,
   incoming: Pick<ProductRecord, "kcal">,
+  userId: string,
 ): "insert" | "confirm" | "replace" | "keep" {
   if (!existing) return "insert";
+  if (existing.confirmations >= 2 && !agrees(existing, incoming)) return "keep";
+  if (existing.created_by === userId) return existing.confirmations >= 2 ? "keep" : "replace";
   if (agrees(existing, incoming)) return "confirm";
-  return existing.confirmations >= 2 ? "keep" : "replace";
+  return "replace";
 }
 
 /** A stored product as a scan result: one item at the stored portion. */

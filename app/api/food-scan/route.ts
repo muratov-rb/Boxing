@@ -6,6 +6,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { buildScanResult } from "@/lib/scan-result";
 import { isBarcodeFormat } from "@/lib/barcode";
 import { rememberLabel } from "@/lib/products";
+import { lookupOff } from "@/lib/off";
 
 export const runtime = "nodejs";
 
@@ -373,7 +374,19 @@ export async function POST(req: Request) {
     const block = message.content.find((b) => b.type === "text");
     if (!block || block.type !== "text") throw new Error("no output");
     const result = buildScanResult(JSON.parse(block.text));
-    const saved = barcode ? await rememberLabel(barcode, result, guard.userId) : false;
+    /* Keep the read against its barcode only if Open Food Facts really does
+       not know that barcode -- checked here, not taken from the phone. The
+       barcode arrives from the client, so without this check anyone could
+       attach a fake label to a well-known product. If Open Food Facts cannot
+       be asked, nothing is stored: better one more label photo later than a
+       shared entry nobody could vouch for. */
+    let saved = false;
+    if (barcode) {
+      const off = await lookupOff(barcode, "en");
+      if (off.status === "unknown" || off.status === "no_kcal") {
+        saved = await rememberLabel(barcode, result, guard.userId);
+      }
+    }
 
     /* One line per scan: what was asked, what came back, and how long it
        took. Enough to answer "it was strange" from the logs, with no photo
