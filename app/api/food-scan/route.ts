@@ -4,9 +4,6 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildScanResult } from "@/lib/scan-result";
-import { isBarcodeFormat } from "@/lib/barcode";
-import { rememberLabel } from "@/lib/products";
-import { lookupOff } from "@/lib/off";
 
 export const runtime = "nodejs";
 
@@ -167,38 +164,6 @@ const SYSTEM_PROMPT = [
      its section breaks collapsed would still "work" - just worse. */
 ].join(String.fromCharCode(10));
 
-/* ---------------------------------------------------------------------------
-   Reading a nutrition label, for packaged food the barcode lookup did not
-   know. A different job from the photo prompt, so a different prompt: there
-   the model judges a portion, here it must REPORT what is printed and never
-   estimate. Same output schema, so the result screen, the weight controls and
-   the arithmetic in lib/scan-result.ts all apply unchanged.
-   --------------------------------------------------------------------------- */
-const LABEL_PROMPT = [
-  "You read the nutrition label on packaged food for a boxing training app. The photo shows a package or its nutrition table. Report what is PRINTED. Do not estimate.",
-
-  "READ",
-  "- Find the nutrition table. Use the per 100 g (or per 100 ml) column when there is one, even if a per-serving or per-package column is printed beside it. If the label gives values per serving only, convert them to per 100 g using the printed serving size in grams.",
-  "- Energy: use the kcal figure. Labels often print both, run together ('1890 kJ / 452 kcal', '1890 кДж / 452 ккал'): take the kcal one. If only kJ is printed, divide by 4.184.",
-  "- Many labels here are in Russian or Uzbek. Russian: 'пищевая ценность' = nutrition facts, 'на 100 г' = per 100 g, белки = protein, жиры = fat, углеводы = carbohydrates, пищевые волокна or клетчатка = fiber, энергетическая ценность = energy, ккал = kcal, кДж = kJ. Uzbek: 'ozuqaviy qiymati' = nutrition facts, oqsillar = protein, yog'lar = fat, uglevodlar = carbohydrates, kletchatka = fiber, energiya qiymati = energy.",
-  "- A comma is often the decimal point: '7,5 г' is 7.5 g. Never read it as 75.",
-  "- A value that is not printed is 0 - never fill a gap with a typical value.",
-  "- Sanity check before answering: protein + fat + carbohydrates per 100 g cannot exceed 100, and kcal should be close to 4 x protein + 9 x fat + 4 x carbohydrates. If your numbers break either rule you have misread a line or a decimal point - look again.",
-
-  "PRODUCT AND PORTION",
-  "- One item: the product, named from the packaging (brand and product), as printed. If the person names the product, use their name. If only the table is visible and nobody named it, call it 'Packaged food' in the output language.",
-  "- grams: the printed serving size in grams if there is one; otherwise, when the pack is clearly finished in one go - a can or a bottle of 0.5 l or less, a bar, a single yoghurt or dessert cup, a small bag of crisps - the net weight or volume printed on it (ml counts as g); otherwise 100.",
-  "- Set scale_found to true and scale_reference to 'label'.",
-
-  "CONFIDENCE",
-  "- high when every energy and macro value was legible. low when the table is blurred, cut off or partly hidden - and name what could not be read in the note.",
-  "- If no nutrition table is legible at all, return an empty items array and all micros 0, and say in the note that a closer, sharper photo of the table usually works.",
-
-  "MICRONUTRIENTS AND NOTE",
-  "- iron, calcium, potassium, sodium and vitamin C in whole milligrams for the portion in grams, only where printed; 0 otherwise. If only salt is printed, sodium is salt divided by 2.5.",
-  "- The note is one short line: what was read, or what was missing.",
-].join(String.fromCharCode(10));
-
 const ALLOWED_MEDIA = [
   "image/jpeg",
   "image/png",
@@ -227,7 +192,7 @@ export async function POST(req: Request) {
     return quotaDenied(guard, { allowed: false, used: 0, limit: 0, locked: true });
   }
 
-  let body: { image?: string; mediaType?: string; hint?: string; mode?: string; barcode?: string };
+  let body: { image?: string; mediaType?: string; hint?: string };
   try {
     body = await req.json();
   } catch {
@@ -290,15 +255,6 @@ export async function POST(req: Request) {
   };
   const language = LANGUAGE[store.get("locale")?.value ?? ""] ?? "";
 
-  /* "label" reads a nutrition table (the fallback when a barcode is unknown);
-     anything else is an ordinary meal photo. Both spend one scan: both are a
-     model call. The barcode lookup itself is a separate route and spends none. */
-  const mode: "photo" | "label" = body.mode === "label" ? "label" : "photo";
-
-  /* The barcode that sent the person here, when a lookup missed. A good read
-     of this label is then kept against it (lib/products.ts) so the next scan
-     of the product needs no photo. Ignored unless it is a well-formed code. */
-  const barcode = mode === "label" && isBarcodeFormat(body.barcode) ? body.barcode : null;
   const startedAt = Date.now();
 
   /* Everything that could reject this request has now passed, so the call is
@@ -322,7 +278,7 @@ export async function POST(req: Request) {
       max_tokens: 16000,
       thinking: { type: "adaptive" },
       system:
-        (mode === "label" ? LABEL_PROMPT : SYSTEM_PROMPT) +
+        SYSTEM_PROMPT +
         (language ? " Write item names, scale_reference and the note in " + language + "." : ""),
       messages: [
         {
@@ -338,14 +294,10 @@ export async function POST(req: Request) {
             },
             {
               type: "text",
-              text:
-                (mode === "label"
-                  ? "Read the nutrition label in this photo."
-                  : "Identify each food in this meal and estimate its weight.") +
-                (hint
-                  ? (mode === "label" ? " The product is: " : " The person eating it describes it as: ") +
-                    hint
-                  : ""),
+              text: hint
+                ? "Identify each food in this meal and estimate its weight. The person eating it describes it as: " +
+                  hint
+                : "Identify each food in this meal and estimate its weight.",
             },
           ],
         },
@@ -356,9 +308,6 @@ export async function POST(req: Request) {
            Estimating the weight of food from a photo is exactly the kind of
            spatial reasoning that setting governs - and it is the part that
            was wrong. */
-        /* Labels too: the first phone test of label reading came back
-           "strange", and a misplaced decimal comma or the per-serving column
-           read as per-100 g is exactly the slip more thinking catches. */
         effort: "high",
         format: { type: "json_schema", schema: SCHEMA },
       },
@@ -374,31 +323,15 @@ export async function POST(req: Request) {
     const block = message.content.find((b) => b.type === "text");
     if (!block || block.type !== "text") throw new Error("no output");
     const result = buildScanResult(JSON.parse(block.text));
-    /* Keep the read against its barcode only if Open Food Facts really does
-       not know that barcode -- checked here, not taken from the phone. The
-       barcode arrives from the client, so without this check anyone could
-       attach a fake label to a well-known product. If Open Food Facts cannot
-       be asked, nothing is stored: better one more label photo later than a
-       shared entry nobody could vouch for. */
-    let saved = false;
-    if (barcode) {
-      const off = await lookupOff(barcode, "en");
-      if (off.status === "unknown" || off.status === "no_kcal") {
-        saved = await rememberLabel(barcode, result, guard.userId);
-      }
-    }
 
-    /* One line per scan: what was asked, what came back, and how long it
-       took. Enough to answer "it was strange" from the logs, with no photo
-       and nothing about the person in it. */
+    /* One line per scan: what came back, from which model, and how long it
+       took. Enough to answer "the numbers looked wrong" from the logs, with no
+       photo and nothing about the person in it. */
     console.log(
       "food-scan " +
         JSON.stringify({
-          mode,
           model: message.model,
           ms: Date.now() - startedAt,
-          barcode,
-          saved,
           items: result.items.map((i) => ({
             name: i.name,
             g: i.grams,
@@ -413,10 +346,7 @@ export async function POST(req: Request) {
         }),
     );
 
-    /* source tells the result screen what the numbers rest on: a measured
-       photo, or a label that was read. saved tells it the label is now
-       known by its barcode. */
-    return NextResponse.json({ source: mode, saved, ...result });
+    return NextResponse.json(result);
   } catch (err) {
     /* The call was made and produced nothing usable — a provider outage, a
        photo the model would not answer on, malformed output. The user got no

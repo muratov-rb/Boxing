@@ -59,7 +59,7 @@ function memCheck(key: string, now: number): RateVerdict {
   return ALLOW;
 }
 
-function memFail(key: string, now: number, maxFailures = MAX_FAILURES): void {
+function memFail(key: string, now: number): void {
   if (buckets.size > 500) {
     for (const [k, a] of buckets) {
       if (now > a.lockedUntil && now - a.first > WINDOW_MS) buckets.delete(k);
@@ -71,7 +71,7 @@ function memFail(key: string, now: number, maxFailures = MAX_FAILURES): void {
     return;
   }
   a.failures += 1;
-  if (a.failures >= maxFailures) a.lockedUntil = now + LOCKOUT_MS;
+  if (a.failures >= MAX_FAILURES) a.lockedUntil = now + LOCKOUT_MS;
 }
 
 /* -------------------------------- database ------------------------------- */
@@ -105,12 +105,8 @@ export async function checkRate(key: string, now = Date.now()): Promise<RateVerd
   }
 }
 
-export async function recordFailure(
-  key: string,
-  now = Date.now(),
-  maxFailures = MAX_FAILURES,
-): Promise<void> {
-  if (!serviceRoleConfigured()) return memFail(key, now, maxFailures);
+export async function recordFailure(key: string, now = Date.now()): Promise<void> {
+  if (!serviceRoleConfigured()) return memFail(key, now);
 
   try {
     const supabase = createAdminClient();
@@ -129,7 +125,7 @@ export async function recordFailure(
         failures,
         first_at: new Date(stale ? now : Date.parse(data.first_at)).toISOString(),
         locked_until:
-          failures >= maxFailures ? new Date(now + LOCKOUT_MS).toISOString() : null,
+          failures >= MAX_FAILURES ? new Date(now + LOCKOUT_MS).toISOString() : null,
       },
       { onConflict: "client_key" },
     );
@@ -142,14 +138,8 @@ export async function recordFailure(
     push Test button, which makes this server send requests outward and so must
     be bounded however it is used. Same table, window and lockout as the admin
     login; callers keep them apart by prefixing their key ("push-test:<user>").
-    Recorded as a "failure" only because that is the counter the table keeps.
-
-    `max` is the attempts allowed per window before the lockout; it defaults
-    to the admin login's strict 8. A barcode lookup, where someone scanning a
-    cupboard may do a dozen in a row, passes a higher ceiling. */
-export function recordAttempt(key: string, max = MAX_FAILURES): Promise<void> {
-  return recordFailure(key, Date.now(), max);
-}
+    Recorded as a "failure" only because that is the counter the table keeps. */
+export const recordAttempt = recordFailure;
 
 /** A correct password clears the record — an admin who fat-fingers their
     password a few times shouldn't stay one mistake away from a lockout. */
