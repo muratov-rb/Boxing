@@ -162,7 +162,7 @@ export function InlineCheckout({
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start">
       {/* ------------------------- order summary ------------------------- */}
-      <section className="panel p-5 sm:p-6" aria-label={t("yourPlan")}>
+      <section className="rounded-[20px] border border-line bg-surface shadow-[var(--glass-shadow)] p-5 sm:p-6" aria-label={t("yourPlan")}>
         <p className="font-condensed text-xs uppercase tracking-[0.2em] text-blood">{t("yourPlan")}</p>
 
         {order ? (
@@ -226,7 +226,10 @@ export function InlineCheckout({
       </section>
 
       {/* ---------------------------- payment ---------------------------- */}
-      <section className="panel p-3 sm:p-5" aria-label={t("payment")}>
+      {/* SOLID, not the see-through .panel glass: on desktop the red brush behind
+          the page showed through Paddle transparent frame and its labels sat on
+          red and black streaks, unreadable (first live look, 2026-09-27). */}
+      <section className="rounded-[20px] border border-line bg-surface shadow-[var(--glass-shadow)] p-3 sm:p-5" aria-label={t("payment")}>
         <p className="px-2 pt-1 font-condensed text-xs uppercase tracking-[0.2em] text-ash sm:px-1">
           {t("payment")}
         </p>
