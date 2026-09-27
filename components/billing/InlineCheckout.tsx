@@ -118,9 +118,15 @@ export function InlineCheckout({
             frameTarget: FRAME_CLASS,
             frameInitialHeight: 450,
             frameStyle: "width: 100%; min-width: 312px; background-color: transparent; border: none;",
-            /* Paddle defaults to light; on a dark site that makes the payment
-               step the one moment that looks like somebody else's website. */
-            theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
+            /* Always LIGHT, on a white card (below). Dark was tried first and
+               failed on the owner's own screen: Paddle's dashboard styling
+               cannot set field backgrounds or the country list's colours, and
+               its dark theme combined with custom text colours put the card
+               number and the country names dark-on-dark, unreadable. Light is
+               the theme Paddle's styling is built for, so every field reads
+               exactly as designed -- the one screen where a card is typed in
+               must never be the hard one to read. */
+            theme: "light",
             locale: paddleLocale(locale),
             /* Where Paddle sends them once the payment succeeds. The plan
                itself arrives by webhook. */
@@ -226,16 +232,21 @@ export function InlineCheckout({
       </section>
 
       {/* ---------------------------- payment ---------------------------- */}
-      {/* SOLID, not the see-through .panel glass: on desktop the red brush behind
-          the page showed through Paddle transparent frame and its labels sat on
-          red and black streaks, unreadable (first live look, 2026-09-27). */}
-      <section className="rounded-[20px] border border-line bg-surface shadow-[var(--glass-shadow)] p-3 sm:p-5" aria-label={t("payment")}>
-        <p className="px-2 pt-1 font-condensed text-xs uppercase tracking-[0.2em] text-ash sm:px-1">
+      {/* A WHITE card in every site theme, because Paddle's form is always
+          light (see theme above). Solid, too: on the see-through .panel glass
+          the red brush behind the page showed through Paddle's transparent
+          frame. Fixed colours rather than theme tokens, since this card must
+          not flip to dark with the rest of the page. */}
+      <section
+        className="rounded-[20px] border border-[#d9dee7] bg-white p-3 text-[#14161b] shadow-[var(--glass-shadow)] sm:p-5"
+        aria-label={t("payment")}
+      >
+        <p className="px-2 pt-1 font-condensed text-xs uppercase tracking-[0.2em] text-[#565d69] sm:px-1">
           {t("payment")}
         </p>
 
         {state === "loading" && (
-          <p className="px-2 py-6 text-sm text-ash" role="status">
+          <p className="px-2 py-6 text-sm text-[#565d69]" role="status">
             {t("opening")}
           </p>
         )}
@@ -243,7 +254,7 @@ export function InlineCheckout({
             (and then redirecting) inside its frame when this event arrives. */}
         {state === "completed" && (
           <p
-            className="mx-2 mt-3 flex items-center gap-2 rounded-xl border border-blood/40 bg-blood/10 px-3 py-2.5 text-sm text-bone"
+            className="mx-2 mt-3 flex items-center gap-2 rounded-xl border border-[#e30f2a]/40 bg-[#e30f2a]/10 px-3 py-2.5 text-sm text-[#14161b]"
             role="status"
           >
             <Icon name="check" size={16} />
@@ -255,7 +266,7 @@ export function InlineCheckout({
         <div className={`${FRAME_CLASS} mt-2 min-h-[450px]`} />
 
 
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-line/70 px-2 pt-3 text-xs text-ash-dim">
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-[#e6e9ef] px-2 pt-3 text-xs text-[#565d69]">
           <span className="inline-flex items-center gap-1.5">
             <Icon name="lock" size={12} />
             {t("secure")}

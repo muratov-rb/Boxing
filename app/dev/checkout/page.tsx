@@ -43,9 +43,9 @@ if (typeof window !== "undefined") {
         const target = document.querySelector("." + o.settings.frameTarget);
         if (target) {
           target.innerHTML =
-            '<div style="padding:12px;display:grid;gap:10px;font:13px system-ui;color:#a3a8b4">' +
+            '<div style="padding:12px;display:grid;gap:10px;font:14px system-ui;color:#2b2a35">' +
             ["Email", "Card number", "MM / YY", "CVC", "Country"]
-              .map((l) => `<div style="border:1px solid #2a2e39;border-radius:8px;padding:9px 10px;background:#1e2129">${l}</div>`)
+              .map((l) => `<div style="border:1px solid #d9dee7;border-radius:12px;padding:12px;background:#fff;color:#99a0ac">${l}</div>`)
               .join("") +
             '<div style="background:#e30f2a;color:#fff;border-radius:999px;padding:11px;text-align:center;font-weight:600">Pay</div>' +
             "<small style='text-align:center'>[bench stand-in for the Paddle form]</small></div>";
