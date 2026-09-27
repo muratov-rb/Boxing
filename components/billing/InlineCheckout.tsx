@@ -34,6 +34,14 @@ import { Icon } from "@/components/ui/Icons";
 /** Paddle finds the container by class name. */
 const FRAME_CLASS = "paddle-checkout-frame";
 
+/* Both checkout cards share one soft grey-white style. Paddle cannot draw
+   its fields dark (see the theme note below), so matching goes the other
+   way: the summary follows the payment card, a shade darker than white so
+   Paddle's white fields stand out on it. Fixed colours, not theme tokens:
+   these cards must not flip with the site theme. */
+const CARD =
+  "rounded-[20px] border border-[#d5dae2] bg-[#eceff3] text-[#14161b] shadow-[var(--glass-shadow)]";
+
 type State = "loading" | "ready" | "completed" | "no_token" | "failed";
 
 interface Money {
@@ -168,7 +176,7 @@ export function InlineCheckout({
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start">
       {/* ------------------------- order summary ------------------------- */}
-      <section className="rounded-[20px] border border-line bg-surface shadow-[var(--glass-shadow)] p-5 sm:p-6" aria-label={t("yourPlan")}>
+      <section className={`${CARD} p-5 sm:p-6`} aria-label={t("yourPlan")}>
         <p className="font-condensed text-xs uppercase tracking-[0.2em] text-blood">{t("yourPlan")}</p>
 
         {order ? (
@@ -176,10 +184,12 @@ export function InlineCheckout({
             <div className="mt-2 flex items-center justify-between gap-3">
               <h2 className="font-display text-3xl uppercase leading-none">{tp(`name_${order.plan}`)}</h2>
               {order.plan === "pro" && (
-                <span className="badge border-blood/40 text-blood">{tp("popular")}</span>
+                <span className="rounded-full border border-[#e30f2a]/40 bg-[#e30f2a]/10 px-2.5 py-1 font-condensed text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-[#c70d24]">
+                  {tp("popular")}
+                </span>
               )}
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-ash">{tp(`tagline_${order.plan}`)}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[#4a515c]">{tp(`tagline_${order.plan}`)}</p>
             {/* Wide screens only: on a phone the list pushed the card form
                 below the fold, and by now the plan has been chosen. */}
             <ul className="mt-5 hidden space-y-2 lg:block">
@@ -188,12 +198,12 @@ export function InlineCheckout({
                 if (!c.on) return null;
                 return (
                   <li key={k} className="flex items-start gap-2.5 text-sm">
-                    <span className="mt-0.5 text-blood">
+                    <span className="mt-0.5 text-[#e30f2a]">
                       <Icon name="check" size={14} />
                     </span>
-                    <span className="text-bone/90">
+                    <span>
                       {tp(`f_${k}`)}
-                      {c.text && <span className="text-ash-dim"> · {c.text}</span>}
+                      {c.text && <span className="text-[#6b7280]"> · {c.text}</span>}
                     </span>
                   </li>
                 );
@@ -208,14 +218,14 @@ export function InlineCheckout({
           </h2>
         )}
 
-        <dl className="mt-6 space-y-2 border-t border-line/70 pt-4 text-sm">
-          <div className="flex justify-between text-ash">
+        <dl className="mt-6 space-y-2 border-t border-[#d5dae2] pt-4 text-sm">
+          <div className="flex justify-between text-[#4a515c]">
             <dt>
               {order ? tp(order.period === "yearly" ? "billYearly" : "billMonthly") : t("subtotal")}
             </dt>
             <dd>{money ? fmt(money.subtotal) : t("calculating")}</dd>
           </div>
-          <div className="flex justify-between text-ash">
+          <div className="flex justify-between text-[#4a515c]">
             <dt>{t("tax")}</dt>
             <dd>{money ? fmt(money.tax) : "—"}</dd>
           </div>
@@ -225,7 +235,7 @@ export function InlineCheckout({
           </div>
         </dl>
         {money && money.recurring !== null && (
-          <p className="mt-3 text-xs leading-relaxed text-ash-dim">
+          <p className="mt-3 text-xs leading-relaxed text-[#6b7280]">
             {t(interval === "year" ? "thenYearly" : "thenMonthly", { amount: fmt(money.recurring) })}
           </p>
         )}
@@ -238,7 +248,7 @@ export function InlineCheckout({
           frame. Fixed colours rather than theme tokens, since this card must
           not flip to dark with the rest of the page. */}
       <section
-        className="rounded-[20px] border border-[#d9dee7] bg-white p-3 text-[#14161b] shadow-[var(--glass-shadow)] sm:p-5"
+        className={`${CARD} p-3 sm:p-5`}
         aria-label={t("payment")}
       >
         <p className="px-2 pt-1 font-condensed text-xs uppercase tracking-[0.2em] text-[#565d69] sm:px-1">
@@ -266,7 +276,7 @@ export function InlineCheckout({
         <div className={`${FRAME_CLASS} mt-2 min-h-[450px]`} />
 
 
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-[#e6e9ef] px-2 pt-3 text-xs text-[#565d69]">
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-[#d5dae2] px-2 pt-3 text-xs text-[#565d69]">
           <span className="inline-flex items-center gap-1.5">
             <Icon name="lock" size={12} />
             {t("secure")}
