@@ -729,7 +729,8 @@
     "plan_pro": "Pro",
     "plan_max": "Max",
     "period_monthly": "month",
-    "period_yearly": "year"
+    "period_yearly": "year",
+    "alreadySubscribed": "You already have a paid plan, so a second checkout would bill you twice. To switch plans, message us from Support and we'll change it for you."
   },
   "admin": {
     "gateTitle": "Admin access",
@@ -840,7 +841,8 @@
     "deleteUnavailable": "Account deletion is not configured on this deployment yet. Please contact us and we will delete it for you.",
     "manageBilling": "Manage billing",
     "noSubscription": "You have no paid subscription — nothing to manage yet.",
-    "billingFailed": "Could not open the billing portal. Try again shortly."
+    "billingFailed": "Could not open the billing portal. Try again shortly.",
+    "deleteBillingFailed": "We couldn't cancel your subscription with the payment provider, so your account was not deleted — you won't be charged for an account that no longer exists. Please try again in a minute, or contact Support."
   },
   "profile": {
     "kicker": "Account",

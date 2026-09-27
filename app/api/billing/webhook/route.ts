@@ -72,6 +72,16 @@ async function applySubscription(sub: Subscription): Promise<void> {
      their dashboard. A visible failure beats a silent one when it is
      somebody's money. */
   if (!data || data.length === 0) {
+    /* A subscription ENDING for an account we no longer have is expected:
+       deleting an account cancels its subscription first (see
+       /api/account/delete), and Paddle then reports the cancellation after
+       the row is gone. Nothing is owed and nothing to grant, so it must not
+       fail the delivery and be retried for days. Only a live subscription
+       that matches nobody is money without an account. */
+    if (!active) {
+      console.warn(`[webhook] ${sub.id} ended for an account that no longer exists`);
+      return;
+    }
     throw new Error(
       `no subscription row matched for paddle subscription ${sub.id} ` +
         `(user_id=${userId ?? "none"}, customer=${sub.customerId ?? "none"})`,

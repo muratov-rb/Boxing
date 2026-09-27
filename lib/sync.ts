@@ -12,7 +12,7 @@
 
 import { createClient } from "./supabase/client";
 import { isSupabaseConfigured } from "./supabase/config";
-import { KEYS, hydrateLocal, readSlice, onTrackingChange, type Meal } from "./tracking";
+import { KEYS, hydrateLocal, readSlice, onTrackingChange, todayKey, type Meal } from "./tracking";
 import type { Profile } from "./onboarding";
 
 interface XpState {
@@ -219,7 +219,13 @@ function isDayKey(day: string): boolean {
     day.length === 10 &&
     day[4] === "-" &&
     day[7] === "-" &&
-    !Number.isNaN(Date.parse(day))
+    !Number.isNaN(Date.parse(day)) &&
+    /* The database refuses days outside 2026-01-01 .. two days past today
+       (db/migrations/011_bound_user_writes.sql). Dropped here too, so a phone
+       whose clock was once wrong cannot leave one impossible day in storage
+       that fails the whole batch forever. Day keys sort as dates. */
+    day >= "2026-01-01" &&
+    day <= todayKey(new Date(Date.now() + 86_400_000))
   );
 }
 

@@ -729,7 +729,8 @@
     "plan_pro": "Pro",
     "plan_max": "Max",
     "period_monthly": "mes",
-    "period_yearly": "año"
+    "period_yearly": "año",
+    "alreadySubscribed": "Ya tienes un plan de pago, así que un segundo pago te cobraría dos veces. Para cambiar de plan, escríbenos desde Soporte y lo cambiaremos por ti."
   },
   "admin": {
     "gateTitle": "Acceso de administrador",
@@ -840,7 +841,8 @@
     "deleteUnavailable": "La eliminación de cuentas aún no está configurada aquí. Escríbenos y la eliminaremos.",
     "manageBilling": "Gestionar pagos",
     "noSubscription": "No tienes suscripción de pago; nada que gestionar todavía.",
-    "billingFailed": "No se pudo abrir el portal de pagos. Inténtalo en un momento."
+    "billingFailed": "No se pudo abrir el portal de pagos. Inténtalo en un momento.",
+    "deleteBillingFailed": "No pudimos cancelar tu suscripción con el proveedor de pagos, así que tu cuenta no se eliminó: no se te cobrará por una cuenta que ya no existe. Inténtalo de nuevo en un minuto o contacta con Soporte."
   },
   "profile": {
     "kicker": "Cuenta",

@@ -13,6 +13,10 @@ import {
   statIssues,
   type Profile,
 } from "@/lib/onboarding";
+import { readJsonCapped } from "@/lib/read-json";
+
+/** A real profile is 1-3 KB; the ceiling leaves room for long notes. */
+const MAX_BODY_BYTES = 16_384;
 
 export const runtime = "nodejs";
 
@@ -134,12 +138,10 @@ export async function POST(req: Request) {
   if (isDenied(guard)) return guard.response;
   const aiAllowed = guard.entitlements.aiNutrition;
 
-  let body: Profile & { prefs?: NutritionPrefs };
-  try {
-    body = (await req.json()) as Profile & { prefs?: NutritionPrefs };
-  } catch {
-    return NextResponse.json({ error: "bad_request" }, { status: 400 });
-  }
+  /* Capped: parts of this body go straight into the prompt (lib/read-json.ts). */
+  const read = await readJsonCapped<Profile & { prefs?: NutritionPrefs }>(req, MAX_BODY_BYTES);
+  if (!read.ok) return NextResponse.json({ error: read.error }, { status: read.status });
+  const body = read.value;
   const profile = body;
   const prefs = body.prefs;
 

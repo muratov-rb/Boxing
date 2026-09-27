@@ -14,6 +14,10 @@ import {
   statIssues,
   type Profile,
 } from "@/lib/onboarding";
+import { readJsonCapped } from "@/lib/read-json";
+
+/** A real profile is 1-3 KB; the ceiling leaves room for long notes. */
+const MAX_BODY_BYTES = 16_384;
 
 export const runtime = "nodejs";
 
@@ -104,12 +108,10 @@ export async function POST(req: Request) {
   const guard = await guardAiRoute(null);
   if (isDenied(guard)) return guard.response;
 
-  let profile: Profile;
-  try {
-    profile = (await req.json()) as Profile;
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
+  /* Capped: parts of this body go straight into the prompt (lib/read-json.ts). */
+  const read = await readJsonCapped<Profile>(req, MAX_BODY_BYTES);
+  if (!read.ok) return NextResponse.json({ error: read.error }, { status: read.status });
+  const profile = read.value;
 
   const store = await cookies();
   const locale = store.get("locale")?.value === "ru" ? "ru" : "en";

@@ -729,7 +729,8 @@
     "plan_pro": "Pro",
     "plan_max": "Max",
     "period_monthly": "mois",
-    "period_yearly": "an"
+    "period_yearly": "an",
+    "alreadySubscribed": "Vous avez déjà un abonnement payant : un second paiement vous facturerait deux fois. Pour changer d'offre, écrivez-nous depuis le Support et nous la changerons pour vous."
   },
   "admin": {
     "gateTitle": "Accès administrateur",
@@ -840,7 +841,8 @@
     "deleteUnavailable": "La suppression de compte n est pas encore configurée ici. Contacte-nous, nous le ferons.",
     "manageBilling": "Gérer le paiement",
     "noSubscription": "Aucun abonnement payant — rien à gérer pour le moment.",
-    "billingFailed": "Impossible d ouvrir le portail de paiement. Réessaie bientôt."
+    "billingFailed": "Impossible d ouvrir le portail de paiement. Réessaie bientôt.",
+    "deleteBillingFailed": "Nous n'avons pas pu annuler votre abonnement auprès du prestataire de paiement, votre compte n'a donc pas été supprimé : vous ne serez pas facturé pour un compte qui n'existe plus. Réessayez dans une minute ou contactez le Support."
   },
   "profile": {
     "kicker": "Compte",

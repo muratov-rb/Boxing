@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveCaller } from "@/lib/entitlements-server";
 import { createAdminClient, serviceRoleConfigured } from "@/lib/supabase/admin";
-import { paddle, billingConfigured, priceIdFor } from "@/lib/billing";
+import { paddle, billingConfigured, priceIdFor, ACTIVE_STATUSES } from "@/lib/billing";
 import type { PaidPlanId, BillingPeriod } from "@/lib/subscription";
 
 export const runtime = "nodejs";
@@ -53,9 +53,26 @@ export async function POST(req: Request) {
        showing only half of it. */
     const { data: row } = await db
       .from("subscriptions")
-      .select("billing_customer_id")
+      .select("billing_customer_id, billing_subscription_id, billing_status")
       .eq("user_id", caller.userId)
-      .maybeSingle<{ billing_customer_id: string | null }>();
+      .maybeSingle<{
+        billing_customer_id: string | null;
+        billing_subscription_id: string | null;
+        billing_status: string | null;
+      }>();
+
+    /* Someone already paying must not start a second subscription. A new
+       transaction here is a NEW subscription, not a change to the old one --
+       a Budget subscriber tapping "Pro" ended up billed for both, every month
+       (found in the 2026-09-27 audit). Switching plans is done on the
+       existing subscription, by support for now. "paused" is included: a
+       paused subscription resumes billing on its own. */
+    if (
+      row?.billing_subscription_id &&
+      (ACTIVE_STATUSES.has(row.billing_status ?? "") || row.billing_status === "paused")
+    ) {
+      return NextResponse.json({ error: "already_subscribed" }, { status: 409 });
+    }
 
     let customerId = row?.billing_customer_id ?? null;
     if (!customerId && caller.email) {

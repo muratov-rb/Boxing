@@ -729,7 +729,8 @@
     "plan_pro": "Pro",
     "plan_max": "Max",
     "period_monthly": "月",
-    "period_yearly": "年"
+    "period_yearly": "年",
+    "alreadySubscribed": "你已经有付费方案，再次结账会被重复扣费。如需更换方案，请通过“支持”联系我们，我们会为你更换。"
   },
   "admin": {
     "gateTitle": "管理员访问",
@@ -840,7 +841,8 @@
     "deleteUnavailable": "此部署尚未配置账号删除功能。请联系我们，我们会为你删除。",
     "manageBilling": "管理付款",
     "noSubscription": "你还没有付费订阅，暂无可管理内容。",
-    "billingFailed": "无法打开付款门户，请稍后再试。"
+    "billingFailed": "无法打开付款门户，请稍后再试。",
+    "deleteBillingFailed": "无法在支付服务商处取消你的订阅，因此账户未被删除——你不会为一个已不存在的账户被扣费。请稍后再试，或联系“支持”。"
   },
   "profile": {
     "kicker": "账号",

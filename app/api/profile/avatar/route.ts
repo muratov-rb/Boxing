@@ -25,6 +25,16 @@ const EXT: Record<string, string> = {
   "image/webp": "webp",
 };
 
+/** The first bytes every file of each format starts with. */
+function looksLike(ext: string, b: Uint8Array): boolean {
+  const at = (i: number, ...want: number[]) => want.every((v, k) => b[i + k] === v);
+  if (ext === "jpg") return at(0, 0xff, 0xd8, 0xff);
+  if (ext === "png") return at(0, 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+  /* "RIFF" .... "WEBP" */
+  if (ext === "webp") return at(0, 0x52, 0x49, 0x46, 0x46) && at(8, 0x57, 0x45, 0x42, 0x50);
+  return false;
+}
+
 export async function POST(req: Request) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "sign_in_required" }, { status: 401 });
@@ -61,6 +71,13 @@ export async function POST(req: Request) {
   await admin.storage.from(BUCKET).remove(stale);
 
   const bytes = new Uint8Array(await file.arrayBuffer());
+
+  /* The type above is what the browser CLAIMED; anything can be sent as
+     "image/png". Check the file really starts like one, or the public bucket
+     becomes free hosting for arbitrary files under this app's name. */
+  if (!looksLike(ext, bytes)) {
+    return NextResponse.json({ error: "bad_type" }, { status: 400 });
+  }
   const { error: upErr } = await admin.storage.from(BUCKET).upload(path, bytes, {
     contentType: file.type,
     upsert: true,

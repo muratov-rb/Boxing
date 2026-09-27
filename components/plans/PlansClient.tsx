@@ -129,6 +129,12 @@ export function PlansClient() {
         window.location.assign("/login?next=/plans");
         return;
       }
+      if (data.error === "already_subscribed") {
+        /* A second checkout would be a second subscription, billed alongside
+           the first. Plan changes go through support for now. */
+        setError(t("alreadySubscribed"));
+        return;
+      }
       if (data.error === "billing_off" || data.error === "price_not_configured") {
         /* Was: setPlan(id) -- the browser handed itself the tier for free, and
            the sync then wrote it to the database as though it were paid. A

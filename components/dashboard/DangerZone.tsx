@@ -62,7 +62,13 @@ export function DangerZone() {
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(data.error === "no_service_key" ? t("deleteUnavailable") : t("deleteFailed"));
+        setError(
+          data.error === "no_service_key"
+            ? t("deleteUnavailable")
+            : data.error === "billing_cancel_failed"
+              ? t("deleteBillingFailed")
+              : t("deleteFailed"),
+        );
         setBusy(false);
         return;
       }
