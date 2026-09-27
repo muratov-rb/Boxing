@@ -1152,11 +1152,22 @@
     "xpShort": "{xp} XP"
   },
   "checkout": {
-    "title": "Abriendo el pago",
     "sub": "Paddle gestiona el pago. Los datos de tu tarjeta nunca pasan por nuestros servidores.",
-    "opening": "Abriendo la ventana de pago…",
+    "opening": "Cargando el formulario de pago…",
     "noTransaction": "Aquí no hay nada que pagar. Empieza desde la página de planes.",
     "failed": "No se pudo abrir la ventana de pago. Inténtalo otra vez.",
-    "backToPlans": "Volver a los planes"
+    "backToPlans": "Volver a los planes",
+    "heading": "Completa tu pedido",
+    "yourPlan": "Tu plan",
+    "payment": "Pago",
+    "subtotal": "Subtotal",
+    "tax": "Impuestos",
+    "dueToday": "A pagar hoy",
+    "calculating": "Calculando…",
+    "thenMonthly": "Después {amount} cada mes. Cancela cuando quieras.",
+    "thenYearly": "Después {amount} cada año. Cancela cuando quieras.",
+    "secure": "Pago seguro y cifrado",
+    "handledBy": "Procesado por Paddle, nuestro socio de pagos",
+    "completed": "Pago recibido. Activando tu plan…"
   }
 }

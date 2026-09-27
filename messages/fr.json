@@ -1152,11 +1152,22 @@
     "xpShort": "{xp} XP"
   },
   "checkout": {
-    "title": "Ouverture du paiement",
     "sub": "Paddle gère le paiement. Vos données bancaires ne passent jamais par nos serveurs.",
-    "opening": "Ouverture de la fenêtre de paiement…",
+    "opening": "Chargement du formulaire de paiement…",
     "noTransaction": "Il n'y a rien à payer ici. Commencez par la page des offres.",
     "failed": "La fenêtre de paiement n'a pas pu s'ouvrir. Réessayez.",
-    "backToPlans": "Retour aux offres"
+    "backToPlans": "Retour aux offres",
+    "heading": "Finalisez votre commande",
+    "yourPlan": "Votre offre",
+    "payment": "Paiement",
+    "subtotal": "Sous-total",
+    "tax": "Taxes",
+    "dueToday": "À payer aujourd'hui",
+    "calculating": "Calcul en cours…",
+    "thenMonthly": "Puis {amount} chaque mois. Résiliable à tout moment.",
+    "thenYearly": "Puis {amount} chaque année. Résiliable à tout moment.",
+    "secure": "Paiement sécurisé et chiffré",
+    "handledBy": "Traité par Paddle, notre partenaire de paiement",
+    "completed": "Paiement reçu. Activation de votre offre…"
   }
 }

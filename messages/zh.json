@@ -1152,11 +1152,22 @@
     "xpShort": "{xp} XP"
   },
   "checkout": {
-    "title": "正在打开支付",
     "sub": "支付由 Paddle 处理，你的银行卡信息不会经过我们的服务器。",
-    "opening": "正在打开支付窗口…",
+    "opening": "正在加载付款表单…",
     "noTransaction": "这里没有需要支付的内容，请从套餐页面开始。",
     "failed": "无法打开支付窗口，请重试。",
-    "backToPlans": "返回套餐"
+    "backToPlans": "返回套餐",
+    "heading": "完成订单",
+    "yourPlan": "你的方案",
+    "payment": "付款",
+    "subtotal": "小计",
+    "tax": "税费",
+    "dueToday": "今日应付",
+    "calculating": "计算中…",
+    "thenMonthly": "之后每月 {amount}。可随时取消。",
+    "thenYearly": "之后每年 {amount}。可随时取消。",
+    "secure": "安全加密付款",
+    "handledBy": "由我们的支付合作伙伴 Paddle 处理",
+    "completed": "已收到付款，正在开通你的方案…"
   }
 }

@@ -12,70 +12,15 @@ import {
   minYearlySavingPct,
   priceLabel,
   type BillingPeriod,
-  type Entitlements,
   type PaidPlanId,
   type PlanId,
 } from "@/lib/subscription";
 import { activePlan, trialDaysLeft, billingPeriod } from "@/lib/tracking";
 import { Icon } from "@/components/ui/Icons";
 import { AppNav } from "@/components/nav/AppNav";
+import { FEATURE_KEYS, featureCell as cell } from "./plan-features";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
-const INF = Number.POSITIVE_INFINITY;
-
-/* value shown for each feature row, derived from a plan's entitlements */
-function cell(
-  e: Entitlements,
-  key: string,
-  t: (k: string, v?: Record<string, number>) => string,
-): { on: boolean; text: string } {
-  switch (key) {
-    case "dailyPlans":
-      return e.dailyPlansPerWeek === INF
-        ? { on: true, text: t("vFull") }
-        : e.dailyPlansPerWeek === 0
-          ? { on: false, text: t("vNo") }
-          : { on: true, text: t("vPerWeek", { n: e.dailyPlansPerWeek }) };
-    case "ranks":
-      return { on: e.ranks, text: e.ranks ? t("vYes") : t("vNo") };
-    case "streaks":
-      return { on: e.streaks, text: e.streaks ? t("vYes") : t("vNo") };
-    case "lessons":
-      return e.lessonTier === "none"
-        ? { on: false, text: t("vNo") }
-        : e.lessonTier === "limited"
-          ? { on: true, text: t("vLessonsLimited") }
-          : e.lessonTier === "small"
-            ? { on: true, text: t("vLessonsSmall") }
-            : { on: true, text: t("vLessonsFull") };
-    case "nutrition":
-      return !e.aiNutrition
-        ? { on: false, text: t("vNo") }
-        : e.nutritionMealSlots >= 4
-          ? { on: true, text: t("vFull") }
-          : { on: true, text: t("vMeals", { n: e.nutritionMealSlots }) };
-    case "calorie":
-      return e.calorieScansPerDay === 0
-        ? { on: false, text: t("vNo") }
-        : e.calorieScansPerDay === INF
-          ? { on: true, text: t("vUnlimited") }
-          : { on: true, text: t("vPerDay", { n: e.calorieScansPerDay }) };
-    case "recovery":
-      return { on: e.restRecovery, text: e.restRecovery ? t("vYes") : t("vNo") };
-    default:
-      return { on: false, text: t("vNo") };
-  }
-}
-
-const FEATURE_KEYS = [
-  "dailyPlans",
-  "ranks",
-  "streaks",
-  "lessons",
-  "nutrition",
-  "calorie",
-  "recovery",
-] as const;
 
 const TIERS: { id: PaidPlanId; popular?: boolean }[] = [
   { id: "budget" },
