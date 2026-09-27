@@ -115,6 +115,13 @@ export async function POST(req: Request) {
   }
 
   try {
+    /* One line per event: which one, and its status. Without it a stream of
+       200s said only "something arrived" -- the first real payment attempt
+       produced six of them and no way to tell a decline from a success.
+       Ids and statuses only; nothing about the card or the person. */
+    const d = event.data as { id?: string; status?: string };
+    console.log("paddle-event " + JSON.stringify({ type: event.eventType, id: d?.id, status: d?.status }));
+
     switch (event.eventType) {
       case EventName.SubscriptionCreated:
       case EventName.SubscriptionActivated:
