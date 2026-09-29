@@ -180,6 +180,16 @@ export async function POST(req: Request) {
       },
     });
 
+    /* Real cost per call: tokens in and out (thinking counts as out). */
+    console.log(
+      "ai-usage " +
+        JSON.stringify({
+          route: "nutrition",
+          model: message.model,
+          in: message.usage.input_tokens,
+          out: message.usage.output_tokens,
+        }),
+    );
     const block = message.content.find((b) => b.type === "text");
     if (!block || block.type !== "text") throw new Error("no output");
     const data = JSON.parse(block.text) as Partial<NutritionPlan>;

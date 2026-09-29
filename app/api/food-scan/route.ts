@@ -332,6 +332,9 @@ export async function POST(req: Request) {
         JSON.stringify({
           model: message.model,
           ms: Date.now() - startedAt,
+          /* Real cost per call: tokens in and out (thinking counts as out). */
+          in: message.usage.input_tokens,
+          out: message.usage.output_tokens,
           items: result.items.map((i) => ({
             name: i.name,
             g: i.grams,

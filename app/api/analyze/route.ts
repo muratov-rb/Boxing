@@ -162,6 +162,16 @@ export async function POST(req: Request) {
       },
     });
 
+    /* Real cost per call: tokens in and out (thinking counts as out). */
+    console.log(
+      "ai-usage " +
+        JSON.stringify({
+          route: "analyze",
+          model: message.model,
+          in: message.usage.input_tokens,
+          out: message.usage.output_tokens,
+        }),
+    );
     const textBlock = message.content.find((b) => b.type === "text");
     if (!textBlock || textBlock.type !== "text") throw new Error("No text output");
 
