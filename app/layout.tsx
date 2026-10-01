@@ -64,6 +64,10 @@ export async function generateMetadata(): Promise<Metadata> {
       title: copy.ogTitle,
       description: copy.ogDescription,
     },
+    /* Proves to Bing Webmaster Tools that we own the site. Public by design:
+       it is a tag anyone can read in the page source, not a secret. Removing
+       it un-verifies the site there. Google is verified through DNS instead. */
+    verification: { other: { "msvalidate.01": "B272332646686326FF11F2D5E42DB47C" } },
   };
 }
 
