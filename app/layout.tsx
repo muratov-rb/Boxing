@@ -42,22 +42,26 @@ export const metadata: Metadata = {
      it Next warns at build time and social platforms get a relative path they
      cannot fetch, so the preview falls back to a blank card. */
   metadataBase: new URL(SITE_URL),
-  title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
+  /* This is the homepage's title: every other page sets its own. It leads
+     with what people type into Google ("learn boxing", "boxing lessons",
+     "workouts"), not the slogan, which nobody searches for. Kept under ~60
+     characters so the brand is not cut off in results. */
+  title: "Learn Boxing: Lessons, Workouts & AI Coach | RingBornn",
   description:
-    "Web-first boxing training for everyone — from total beginners to seasoned pros. AI-built plans, progress ranks, nutrition and technique. Start free, no app and no gear required.",
+    "Learn boxing step by step: jab, cross, hooks, footwork and defense, plus home or gym workouts, AI training plans and nutrition. 7-day free trial, no card.",
   openGraph: {
     type: "website",
     siteName: "RingBornn",
-    title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
+    title: "RingBornn — Learn Boxing: Lessons, Workouts & AI Coach",
     description:
-      "Web-first boxing training for beginners and pros. AI-built plans, progress ranks, nutrition and technique. Start free — no card, no app, no gear.",
+      "Boxing technique step by step, home or gym workouts, AI training plans and nutrition. 7-day free trial, no card.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "RingBornn — Train Like a Fighter. Look Like an Athlete.",
+    title: "RingBornn — Learn Boxing: Lessons, Workouts & AI Coach",
     description:
-      "Web-first boxing training for beginners and pros. Start free — no card, no app, no gear.",
+      "Boxing technique step by step, home or gym workouts, AI training plans and nutrition. 7-day free trial, no card.",
   },
 };
 
