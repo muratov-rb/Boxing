@@ -80,7 +80,16 @@ async function guardProtected(request: NextRequest, requestHeaders?: Headers) {
     // account" for new users), then they continue to the page they wanted
     url.pathname = "/login";
     url.searchParams.set("next", path);
-    return NextResponse.redirect(url);
+    const redirect = NextResponse.redirect(url);
+    /* Carry the cookie changes over to the redirect. When the saved login is
+       dead (logged out elsewhere, account deleted), getUser() fails to
+       refresh it and asks to delete the cookie through setAll above. Those
+       deletions land on `response`, which is thrown away here, so the dead
+       cookie used to stay in the browser and every later page hit retried
+       the same doomed refresh: a burst of "Refresh Token Not Found" warnings
+       in the auth log each time. */
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+    return redirect;
   }
 
   return response;
