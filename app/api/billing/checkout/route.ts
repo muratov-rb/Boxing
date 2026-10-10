@@ -76,15 +76,41 @@ export async function POST(req: Request) {
 
     let customerId = row?.billing_customer_id ?? null;
     if (!customerId && caller.email) {
-      const customer = await api.customers.create({
-        email: caller.email,
-        customData: { user_id: caller.userId },
-      });
-      customerId = customer.id;
-      await db
+      try {
+        const customer = await api.customers.create({
+          email: caller.email,
+          customData: { user_id: caller.userId },
+        });
+        customerId = customer.id;
+      } catch (e) {
+        /* Paddle keeps one customer per email, for good. Someone who deleted
+           their account and signed up again with the same address, or whose
+           row never got the id saved, has a Paddle customer this account
+           does not know about -- and creating a second one is refused. It
+           used to end here as "Could not start checkout", on every attempt,
+           with no way out (2026-10-10). Take the existing customer instead.
+
+           Safe to adopt by email alone: nobody gets a session here without
+           confirming the address first, so the caller owns it. */
+        if ((e as { code?: string })?.code !== "customer_already_exists") throw e;
+        const [existing] = await api.customers
+          .list({ email: [caller.email], status: ["active", "archived"] })
+          .next();
+        if (!existing) throw e;
+        if (existing.status === "archived") {
+          await api.customers.update(existing.id, { status: "active" });
+        }
+        customerId = existing.id;
+      }
+      const { data: saved } = await db
         .from("subscriptions")
         .update({ billing_customer_id: customerId, updated_at: new Date().toISOString() })
-        .eq("user_id", caller.userId);
+        .eq("user_id", caller.userId)
+        .select("user_id");
+      if (!saved?.length) {
+        // not fatal: the lookup above recovers it next time, but it should not happen
+        console.warn("[checkout] customer id not saved, no subscription row", caller.userId);
+      }
     }
 
     const origin = new URL(req.url).origin;
