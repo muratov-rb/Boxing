@@ -145,6 +145,41 @@ export function wipeLocal(): void {
   }
 }
 
+/* Which account this browser's saved data belongs to. Not in KEYS: it has
+   to survive wipeLocal, or the wipe would forget who it was wiped for. */
+const K_OWNER = "pressure.owner";
+
+/** Tie this browser's saved data to one account, and erase it when a
+    different account signs in. Returns true if it erased anything.
+
+    Everything above is keyed to the browser, not to a person. Two people
+    sharing one -- or one person testing with two accounts -- used to share a
+    profile: the second account opened onboarding to "Welcome back, you
+    already have a plan", and the sync then pushed the first account's
+    profile, XP, streak and meals up into the second (found 2026-10-10).
+
+    A browser with data but no owner recorded is from before this existed and
+    is adopted as-is: there is no telling whose it is, and wiping it would
+    throw away a real user's unsynced progress on the day this shipped. */
+export function claimLocal(userId: string): boolean {
+  if (!isBrowser()) return false;
+  let owner: string | null;
+  try {
+    owner = localStorage.getItem(K_OWNER);
+  } catch {
+    return false;
+  }
+  if (owner === userId) return false;
+  const stale = owner !== null;
+  if (stale) wipeLocal();
+  try {
+    localStorage.setItem(K_OWNER, userId);
+  } catch {
+    /* ignore */
+  }
+  return stale;
+}
+
 export function todayKey(d = new Date()): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");

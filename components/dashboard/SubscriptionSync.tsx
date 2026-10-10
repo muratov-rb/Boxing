@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
-import { applyServerSub, wipeLocal, applyServerXp } from "@/lib/tracking";
+import { applyServerSub, wipeLocal, applyServerXp, claimLocal } from "@/lib/tracking";
 import { pullUserData, pushAll, startSync } from "@/lib/sync";
 
 /* Keeps a signed-in user's data in step with Supabase:
@@ -84,6 +84,15 @@ function bootstrap(): Promise<void> {
        ever gains a session without a reload, the next mount tries again. */
     if (!user) {
       started = null;
+      return;
+    }
+
+    /* Before anything is read or pushed: if this browser's data was saved
+       under a different account, it is erased here rather than uploaded into
+       this one. The page has already drawn itself from the old data, so it
+       reloads; the second pass finds the owner matching and carries on. */
+    if (claimLocal(user.id)) {
+      window.location.reload();
       return;
     }
 

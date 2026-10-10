@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { profileReducer, initialProfile } from "@/lib/onboarding";
 import {
+  claimLocal,
   clearOnboarding,
   loadOnboardingStep,
   loadProfile,
@@ -12,6 +13,8 @@ import {
   saveProfile,
 } from "@/lib/tracking";
 import type { Analysis } from "@/lib/analysis";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { createClient } from "@/lib/supabase/client";
 import { Icon } from "@/components/ui/Icons";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -45,22 +48,42 @@ export function OnboardingFlow() {
      were simply never read back, so anyone who closed the tab — or used the
      Exit link in the header above — restarted from an empty form. */
   useEffect(() => {
-    const saved = loadProfile();
-    if (saved?.path) {
-      dispatch({ type: "patch", patch: saved });
-      const at = Math.min(LAST, loadOnboardingStep());
-
-      /* A finished profile, not an abandoned one: they answered every screen
-         that matters. Anything less is a half-filled form and resumes. */
-      if (saved.timeframe && saved.environment && saved.nutritionAccess) {
-        setReturning(true);
-        setStep(LAST);
-      } else if (at > 0) {
-        setStep(at);
-        setResumed(true);
+    let cancelled = false;
+    (async () => {
+      /* First make sure the saved answers are this account's. This page has
+         no AppNav, so the check SubscriptionSync does never ran here, and a
+         new account on a shared browser was greeted with the last person's
+         finished plan. getSession reads the cookie; it is not a round trip. */
+      if (isSupabaseConfigured()) {
+        try {
+          const { data } = await createClient().auth.getSession();
+          if (data.session?.user.id) claimLocal(data.session.user.id);
+        } catch {
+          /* offline: fall through with whatever is saved */
+        }
       }
-    }
-    setReady(true);
+      if (cancelled) return;
+
+      const saved = loadProfile();
+      if (saved?.path) {
+        dispatch({ type: "patch", patch: saved });
+        const at = Math.min(LAST, loadOnboardingStep());
+
+        /* A finished profile, not an abandoned one: they answered every screen
+           that matters. Anything less is a half-filled form and resumes. */
+        if (saved.timeframe && saved.environment && saved.nutritionAccess) {
+          setReturning(true);
+          setStep(LAST);
+        } else if (at > 0) {
+          setStep(at);
+          setResumed(true);
+        }
+      }
+      setReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // keep the fighter profile locally so the lesson library and calorie
