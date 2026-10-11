@@ -62,6 +62,14 @@ const MODEL =
    model has already committed to its own figures for what it sees before it
    picks an entry - those figures are what a doubtful match is checked
    against, and they are worth less if they were written to fit the entry.
+
+   Field order alone did not hold that line. Within an hour of going live a
+   scan came back with pan-fried potatoes NAMED "boiled", at a figure between,
+   and a note telling the person they had been "estimated as boiled because
+   the database has no exact option". The check in lib/scan-result.ts refused
+   the table value, so the damage was the name and a number pulled low - but
+   the model had treated the list as a menu it must order from. The REFERENCE
+   FOODS section of the prompt now says in so many words that it is not one.
    --------------------------------------------------------------------------- */
 const PER_100G = {
   type: "object",
@@ -167,7 +175,7 @@ const SYSTEM_PROMPT = [
   "- The vessel is your ruler. The same dish on a small plate and in a large bowl must get clearly different weights. Never fall back on a typical serving of the dish - estimate this portion.",
   "- Do not round up to a restaurant-sized serving. Rough guides for a rice-based or mixed main dish: a small side-plate portion 150-250 g; a full dinner plate 300-450 g; a large, deep bowl 400-600 g. A fist-sized mound of cooked rice or pasta is about 150-200 g. A palm-sized piece of meat or fish is about 100-150 g.",
   "- Food that comes in pieces is weighed by COUNTING, not by guessing volume: count the pieces, then use a typical weight per piece adjusted for how large they look. Typical edible weights: a medium apple about 180 g, a medium banana about 120 g peeled, a medium orange about 140 g, a mandarin about 80 g, a pear about 180 g, a peach about 150 g, a kiwi about 75 g, a handful of grapes about 100 g, a large egg about 50 g, a slice of bread about 30 g. Whole fruit is dense and heavier than it looks in a photo - do not shrink it.",
-  "- Weigh only the part that gets eaten. Bone, shell, fruit stones, cores, and any peel or rind that is left on the plate are not food: for meat on the bone, chicken wings or drumsticks, ribs, a whole fish, prawns in the shell or a slice of watermelon, judge the piece as it looks and then take off what will be left behind. As a guide, bone is about a quarter to a third of a chop, shank or drumstick, and close to half of a chicken wing or a rack of ribs. The composition you give is for the edible part as well. When you have left something out this way, say so in the note, so a person correcting the weight knows it is the weight without the bone.",
+  "- Weigh only what can be eaten. Bone, shell, fruit stones, cores, and peel or rind that is not eaten are not food: for meat on the bone, chicken wings or drumsticks, ribs, a whole fish, prawns in the shell or a slice of watermelon, judge the piece as it looks and then take off the bone, shell or rind. Take off nothing else. Fat and skin on a piece of meat are food: they stay in the weight, and the composition you give includes them. As a guide, bone is about a quarter to a third of a chop, shank or drumstick, and close to half of a chicken wing or a rack of ribs. When you have left a bone, shell or rind out, say so in the note, so a person correcting the weight knows it is the weight without it.",
   "- If nothing in the photo gives a scale, set scale_found to false, write 'none' as scale_reference, assume a standard dinner plate, and lower your confidence. Otherwise set scale_found to true.",
 
   "COMPOSITION",
@@ -175,10 +183,11 @@ const SYSTEM_PROMPT = [
   "- Use standard composition values. For calibration, typical values per 100 g: cooked white rice about 130 kcal; plain cooked pasta about 155; bread about 260; grilled chicken breast about 165; battered fried fish about 230; boiled potatoes about 85; fries about 310; leafy salad without dressing about 20; rice pilaf cooked with meat and oil (plov) about 180-250 depending on how oily it looks; cooking oil about 880; apple about 52; banana about 89; orange about 47; grapes about 69.",
 
   "REFERENCE FOODS",
-  "- Some plain foods have a laboratory-measured composition on file, listed below. Once you have written per_100g for an item, set its food_key to the entry that is this same food in the same state: the same food, cooked the same way, with nothing added. Copy the entry exactly as it is written, in English. Where an entry is given, its measured values replace yours, so a wrong entry does more harm than no entry.",
-  "- Write 'none' when the item is a dish made from several ingredients (plov, stew, soup, a dressed salad, a sandwich, pizza); when it is breaded, battered, sauced or cooked in visible fat and the entry is the plain version; when you read the values off a package label; or when the food is simply not on the list. Many items are 'none', and that is expected.",
+  "- This step comes last and changes nothing you have already decided. Name each food, weigh it and give its per_100g exactly as you would if no list existed. Only then look at the list below, which holds laboratory-measured compositions for some plain foods, and set food_key to the entry that is this same food in the same state: the same food, cooked the same way, with nothing added. Copy the entry exactly as it is written, in English.",
+  "- The list is not a menu to choose from. Most foods are not on it, and the answer for those is 'none' - never the nearest entry. Do not rename a food, describe it as plainer than it looks, or lower its numbers so that it fits an entry: potatoes that look fried or oiled are fried potatoes, with that name and their own numbers, and their food_key is 'none', not potato_boiled. A wrong entry does more harm than no entry, because its measured values replace yours.",
+  "- Also write 'none' for a dish made from several ingredients (plov, stew, soup, a dressed salad, a sandwich, pizza); for anything breaded, battered, sauced or cooked in visible fat when the entry is the plain version; and when you read the values off a package label.",
   "- An entry names the state where the state changes the numbers: rice_white_cooked, egg_fried, carrot_raw. An entry with no state is the food as it is normally eaten: fruit raw, bread baked, nuts shelled.",
-  "- per_100g remains your own estimate of the food as it is served in this photo. Do not move it toward an entry.",
+  "- Never mention the list, its entries or a database in the note. The note is read by the person eating the meal, who has never seen them.",
   "- Entries: " + FOOD_KEYS.join(", "),
 
   "CONFIDENCE",
