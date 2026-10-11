@@ -103,7 +103,8 @@ const SCHEMA = {
           name: { type: "string" },
           grams: {
             type: "integer",
-            description: "estimated weight of the visible portion of this food alone, in grams",
+            description:
+              "estimated weight of the edible part of the visible portion of this food alone, in grams - no bone, shell or uneaten peel",
           },
           per_100g: PER_100G,
           food_key: {
@@ -166,6 +167,7 @@ const SYSTEM_PROMPT = [
   "- The vessel is your ruler. The same dish on a small plate and in a large bowl must get clearly different weights. Never fall back on a typical serving of the dish - estimate this portion.",
   "- Do not round up to a restaurant-sized serving. Rough guides for a rice-based or mixed main dish: a small side-plate portion 150-250 g; a full dinner plate 300-450 g; a large, deep bowl 400-600 g. A fist-sized mound of cooked rice or pasta is about 150-200 g. A palm-sized piece of meat or fish is about 100-150 g.",
   "- Food that comes in pieces is weighed by COUNTING, not by guessing volume: count the pieces, then use a typical weight per piece adjusted for how large they look. Typical edible weights: a medium apple about 180 g, a medium banana about 120 g peeled, a medium orange about 140 g, a mandarin about 80 g, a pear about 180 g, a peach about 150 g, a kiwi about 75 g, a handful of grapes about 100 g, a large egg about 50 g, a slice of bread about 30 g. Whole fruit is dense and heavier than it looks in a photo - do not shrink it.",
+  "- Weigh only the part that gets eaten. Bone, shell, fruit stones, cores, and any peel or rind that is left on the plate are not food: for meat on the bone, chicken wings or drumsticks, ribs, a whole fish, prawns in the shell or a slice of watermelon, judge the piece as it looks and then take off what will be left behind. As a guide, bone is about a quarter to a third of a chop, shank or drumstick, and close to half of a chicken wing or a rack of ribs. The composition you give is for the edible part as well. When you have left something out this way, say so in the note, so a person correcting the weight knows it is the weight without the bone.",
   "- If nothing in the photo gives a scale, set scale_found to false, write 'none' as scale_reference, assume a standard dinner plate, and lower your confidence. Otherwise set scale_found to true.",
 
   "COMPOSITION",
