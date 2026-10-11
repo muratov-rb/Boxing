@@ -570,6 +570,7 @@
     "moreGrams": "增加",
     "lowConfidence": "不确定是否存在",
     "measuredAgainst": "参照物：{ref}",
+    "usdaNote": "USDA：每 100 克的营养数值来自美国农业部（USDA）食物数据库。重量仍是根据照片估算的。",
     "noScale": "照片里没有能判断大小的东西，所以这些重量只是估计。下次请拍下整个盘子，或在上方修改重量。"
   },
   "common": {

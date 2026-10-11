@@ -13,6 +13,11 @@
    - Totals are the sum of the items. The model used to produce both, and was
      free to make them disagree.
 
+   For a plain food the composition need not be an estimate at all: where the
+   model names a reference entry and its own figure agrees with it, the
+   laboratory-measured values are used instead (see agrees, below). The
+   weight is still the model's - no table can know how much is on the plate.
+
    Shared by the route (which builds the answer) and the scanner UI (which
    rescales it when someone corrects a weight), so the two cannot compute the
    same number two different ways.
@@ -38,7 +43,23 @@ export interface ScanItemOut {
   carbs: number;
   fat: number;
   fiber: number;
+  /** Present when the model named a reference food for this item. */
+  reference?: {
+    key: string;
+    /** true: per100g is the measured reference composition. false: the
+        model's own estimate disagreed with it and the match was not
+        believed, so per100g is still the estimate. */
+    used: boolean;
+    /** The model's own kcal per 100 g, kept so the two can be compared in
+        the logs. */
+    ownKcal: number;
+  };
 }
+
+/** Measured composition for a reference food, or undefined if there is no
+    such entry. Passed in by the route so the table itself stays out of this
+    file, which the browser also loads. */
+export type FoodLookup = (key: string) => Per100g | undefined;
 
 export interface ScanMicros {
   iron: number;
@@ -84,10 +105,26 @@ export function macrosAt(per100g: Per100g, grams: number) {
   };
 }
 
+/* Whether a reference value and the model's own estimate describe the same
+   food. The model names a reference entry AND gives its own composition for
+   what it sees; the entry is only trusted when the two land close together.
+
+   That is what catches the wrong match. A breaded, fried cutlet matched to
+   plain roast chicken breast (165 kcal) arrives with the model's own figure
+   near 260, and a reference value swapped in there would not be more
+   accurate - it would be a precise number for a different food. Within a
+   quarter either way the two agree on what the food is, and the measured
+   value is the better of the two. The 20 kcal floor is for vegetables, where
+   a quarter of 18 kcal is smaller than ordinary rounding. */
+export function agrees(ownKcal: number, referenceKcal: number): boolean {
+  return Math.abs(ownKcal - referenceKcal) <= Math.max(20, referenceKcal * 0.25);
+}
+
 interface RawItem {
   name?: unknown;
   grams?: unknown;
   per_100g?: Record<string, unknown>;
+  food_key?: unknown;
   confidence?: unknown;
 }
 
@@ -97,16 +134,29 @@ interface RawItem {
    visible item on a plate weighs 2.5 kg. A value outside them is a malformed
    answer, and clamping it is what stops one bad field turning into a
    40,000 kcal lunch in somebody's daily total. */
-export function toItem(raw: RawItem): ScanItemOut {
+export function toItem(raw: RawItem, lookup?: FoodLookup): ScanItemOut {
   const grams = Math.round(clamp(raw.grams, MIN_GRAMS, MAX_GRAMS));
   const p = raw.per_100g ?? {};
-  const per100g: Per100g = {
+  const own: Per100g = {
     kcal: clamp(p.kcal, 0, 900),
     protein: clamp(p.protein, 0, 100),
     carbs: clamp(p.carbs, 0, 100),
     fat: clamp(p.fat, 0, 100),
     fiber: clamp(p.fiber, 0, 60),
   };
+  /* The key is free text from the model, so it is normalised and then looked
+     up, never used to index anything directly. Anything that is not an entry
+     - "none", a misspelling, a food it made up - simply finds nothing. */
+  const key =
+    typeof raw.food_key === "string" ? raw.food_key.trim().toLowerCase().replace(/[ -]+/g, "_") : "";
+  const fact = key && lookup ? lookup(key) : undefined;
+  const used = fact !== undefined && agrees(own.kcal, fact.kcal);
+  /* Copied field by field: the table's rows carry more than a composition,
+     and none of the rest belongs in a response. */
+  const per100g: Per100g =
+    fact && used
+      ? { kcal: fact.kcal, protein: fact.protein, carbs: fact.carbs, fat: fact.fat, fiber: fact.fiber }
+      : own;
   const confidence: Confidence =
     raw.confidence === "high" || raw.confidence === "low" ? raw.confidence : "medium";
   return {
@@ -115,6 +165,7 @@ export function toItem(raw: RawItem): ScanItemOut {
     per100g,
     confidence,
     ...macrosAt(per100g, grams),
+    ...(fact ? { reference: { key, used, ownKcal: Math.round(own.kcal) } } : {}),
   };
 }
 
@@ -144,15 +195,18 @@ export function totalsOf(items: Pick<ScanItemOut, "kcal" | "protein" | "carbs" |
 }
 
 /** The response the scanner route sends back, built from the model's answer. */
-export function buildScanResult(parsed: {
-  scale_reference?: unknown;
-  scale_found?: unknown;
-  items?: unknown;
-  micros?: unknown;
-  note?: unknown;
-}): ScanResultOut {
+export function buildScanResult(
+  parsed: {
+    scale_reference?: unknown;
+    scale_found?: unknown;
+    items?: unknown;
+    micros?: unknown;
+    note?: unknown;
+  },
+  lookup?: FoodLookup,
+): ScanResultOut {
   const items = (Array.isArray(parsed.items) ? parsed.items : [])
-    .map((raw) => toItem(raw as RawItem))
+    .map((raw) => toItem(raw as RawItem, lookup))
     .filter((item) => item.name.length > 0);
   const totals = totalsOf(items);
 

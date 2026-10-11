@@ -37,6 +37,8 @@ interface ScanItem {
   grams?: number;
   per100g?: Per100g;
   confidence?: "high" | "medium" | "low";
+  /** used: the composition is the USDA reference value, not an estimate. */
+  reference?: { used: boolean };
 }
 export interface ScanResult {
   items: ScanItem[];
@@ -548,6 +550,13 @@ export function FoodScanner({
                         }
                       >
                         {it.name}
+                        {it.reference?.used && (
+                          /* inline-block, so the strike-through of an unticked
+                             row stops at the name and does not run through it */
+                          <span className="ml-1.5 inline-block rounded border border-line px-1 align-middle text-[10px] leading-4 tracking-wide text-ash-dim">
+                            USDA
+                          </span>
+                        )}
                       </span>
                       <span className="font-condensed text-ash">{row.kcal} kcal</span>
                     </label>
@@ -608,6 +617,11 @@ export function FoodScanner({
                   {t("measuredAgainst", { ref: result.scale_reference })}
                 </p>
               ) : null)}
+            {/* What the tag means, and what it does not: the table fixes what
+                100 g of the food contains, never how much of it is here. */}
+            {result.items.some((it) => it.reference?.used) && (
+              <p className="mt-2 text-xs leading-relaxed text-ash-dim">{t("usdaNote")}</p>
+            )}
             <div className="mt-3 flex items-center justify-between border-t border-line/70 pt-3">
               <span className="font-condensed text-sm font-bold uppercase tracking-wide">
                 {t("total")}

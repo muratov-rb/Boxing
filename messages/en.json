@@ -570,6 +570,7 @@
     "moreGrams": "More",
     "lowConfidence": "Not sure this is there",
     "measuredAgainst": "Measured against: {ref}",
+    "usdaNote": "USDA: the nutrition values per 100 g come from the USDA food database. The weight is still an estimate from the photo.",
     "noScale": "Nothing in the photo showed its size, so these weights are a guess. Include the whole plate next time, or correct the weight above."
   },
   "common": {

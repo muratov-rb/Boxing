@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildScanResult } from "@/lib/scan-result";
+import { FOOD_KEYS, foodFact } from "@/lib/food-db";
 
 export const runtime = "nodejs";
 
@@ -47,6 +48,20 @@ const MODEL =
 
    No minimum/maximum anywhere: structured outputs rejects numeric
    constraints, so the bounds are enforced in lib/scan-result.ts instead.
+
+   food_key points at a row of lib/food-db.ts, the USDA reference table. For a
+   plain food - boiled rice, a banana, roast chicken breast - there is nothing
+   to estimate about its composition: it has been measured in a laboratory,
+   and the model recalling "about 130" is strictly worse than the table saying
+   130. So the model names the entry and the code looks the numbers up.
+
+   It is a plain string, not an enum of the 141 keys. A schema the API will
+   not compile fails every scan, and a string is the one construct this
+   schema already uses that is certain to be accepted; a key that is not in
+   the table is simply ignored in code. And it comes AFTER per_100g, so the
+   model has already committed to its own figures for what it sees before it
+   picks an entry - those figures are what a doubtful match is checked
+   against, and they are worth less if they were written to fit the entry.
    --------------------------------------------------------------------------- */
 const PER_100G = {
   type: "object",
@@ -83,7 +98,7 @@ const SCHEMA = {
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["name", "grams", "per_100g", "confidence"],
+        required: ["name", "grams", "per_100g", "food_key", "confidence"],
         properties: {
           name: { type: "string" },
           grams: {
@@ -91,6 +106,11 @@ const SCHEMA = {
             description: "estimated weight of the visible portion of this food alone, in grams",
           },
           per_100g: PER_100G,
+          food_key: {
+            type: "string",
+            description:
+              "the REFERENCE FOODS entry that is this same food in the same state, copied exactly; 'none' if there is no such entry",
+          },
           confidence: { type: "string", enum: ["high", "medium", "low"] },
         },
       },
@@ -151,6 +171,13 @@ const SYSTEM_PROMPT = [
   "COMPOSITION",
   "- For each item give kcal, protein, carbs, fat and fiber PER 100 g, as served - cooked, including its oil and sauce. Do not multiply by the weight; that is done for you.",
   "- Use standard composition values. For calibration, typical values per 100 g: cooked white rice about 130 kcal; plain cooked pasta about 155; bread about 260; grilled chicken breast about 165; battered fried fish about 230; boiled potatoes about 85; fries about 310; leafy salad without dressing about 20; rice pilaf cooked with meat and oil (plov) about 180-250 depending on how oily it looks; cooking oil about 880; apple about 52; banana about 89; orange about 47; grapes about 69.",
+
+  "REFERENCE FOODS",
+  "- Some plain foods have a laboratory-measured composition on file, listed below. Once you have written per_100g for an item, set its food_key to the entry that is this same food in the same state: the same food, cooked the same way, with nothing added. Copy the entry exactly as it is written, in English. Where an entry is given, its measured values replace yours, so a wrong entry does more harm than no entry.",
+  "- Write 'none' when the item is a dish made from several ingredients (plov, stew, soup, a dressed salad, a sandwich, pizza); when it is breaded, battered, sauced or cooked in visible fat and the entry is the plain version; when you read the values off a package label; or when the food is simply not on the list. Many items are 'none', and that is expected.",
+  "- An entry names the state where the state changes the numbers: rice_white_cooked, egg_fried, carrot_raw. An entry with no state is the food as it is normally eaten: fruit raw, bread baked, nuts shelled.",
+  "- per_100g remains your own estimate of the food as it is served in this photo. Do not move it toward an entry.",
+  "- Entries: " + FOOD_KEYS.join(", "),
 
   "CONFIDENCE",
   "- high: clearly visible and clearly identified. medium: identified, but the amount or the recipe is uncertain. low: partly hidden, not sure it is food, or not sure it is part of this meal. Low-confidence items are left out of the total unless the person ticks them.",
@@ -322,7 +349,7 @@ export async function POST(req: Request) {
 
     const block = message.content.find((b) => b.type === "text");
     if (!block || block.type !== "text") throw new Error("no output");
-    const result = buildScanResult(JSON.parse(block.text));
+    const result = buildScanResult(JSON.parse(block.text), foodFact);
 
     /* One line per scan: what came back, from which model, and how long it
        took. Enough to answer "the numbers looked wrong" from the logs, with no
@@ -343,6 +370,13 @@ export async function POST(req: Request) {
             f: i.per100g.fat,
             c: i.per100g.carbs,
             conf: i.confidence,
+            /* Which reference entry it named, whether that was believed, and
+               the model's own kcal/100 g beside it - so a match that should
+               not have been made, or one refused that should have been, can
+               be seen from here. */
+            ...(i.reference
+              ? { key: i.reference.key, usda: i.reference.used, own: i.reference.ownKcal }
+              : {}),
           })),
           scale: result.scale_found ? result.scale_reference : "none",
           note: result.note,

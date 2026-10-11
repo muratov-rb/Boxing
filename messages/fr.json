@@ -570,6 +570,7 @@
     "moreGrams": "Plus",
     "lowConfidence": "Pas sûr que ce soit là",
     "measuredAgainst": "Mesuré par rapport à : {ref}",
+    "usdaNote": "USDA : les valeurs nutritionnelles pour 100 g viennent de la base de données alimentaire de l'USDA. Le poids reste une estimation d'après la photo.",
     "noScale": "Rien sur la photo n'indiquait la taille, ces poids sont donc une estimation. La prochaine fois, cadrez l'assiette entière ou corrigez le poids ci-dessus."
   },
   "common": {

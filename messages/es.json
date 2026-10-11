@@ -570,6 +570,7 @@
     "moreGrams": "Más",
     "lowConfidence": "No es seguro que esté",
     "measuredAgainst": "Medido con: {ref}",
+    "usdaNote": "USDA: los valores nutricionales por 100 g proceden de la base de datos de alimentos del USDA. El peso sigue siendo una estimación a partir de la foto.",
     "noScale": "Nada en la foto mostraba el tamaño, así que estos pesos son una estimación. La próxima vez incluye el plato entero o corrige el peso arriba."
   },
   "common": {
