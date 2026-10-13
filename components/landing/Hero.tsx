@@ -31,11 +31,27 @@ export function Hero() {
             words touching both edges — "Тренируйся" and "Entraîne-toi" have no
             slack at that size. Dropping the floor gives every language a
             margin instead of only the shortest one. */}
-        <h1 className="animate-rise mt-6 font-display text-[clamp(2.35rem,8.5vw,7.5rem)] uppercase text-bone [animation-delay:80ms]">
-          {t("title1")}
-          <br />
-          <span className="text-ash">{t("title2pre")}</span>
-          <span className="text-blood">{t("title2accent")}</span>
+        {/* Two sentences, each its own block and each balanced. On a phone the
+            Russian headline used to break wherever the line ran out:
+            "Тренируйся как / боец." and then "Выгляди как ат-/лет.", with the
+            last word hyphenated in half. Balanced, each sentence splits into
+            two even lines ("Тренируйся / как боец."), and no word is cut:
+            .font-display turns hyphenation on for headings in general, which
+            is right for a long word in a narrow card and wrong for the five
+            words a visitor reads first. Set inline because that rule is
+            unlayered and would beat a utility class.
+
+            The floor is 2rem, down from 2.35: at phone width the Cyrillic
+            falls back to a wider face than the Latin one, and the larger size
+            left the longest word no room to breathe. */}
+        <h1 className="animate-rise mt-6 font-display text-[clamp(2rem,8.5vw,7.5rem)] uppercase text-bone [animation-delay:80ms]">
+          <span className="block" style={{ hyphens: "manual", textWrap: "balance" }}>
+            {t("title1")}
+          </span>
+          <span className="block" style={{ hyphens: "manual", textWrap: "balance" }}>
+            <span className="text-ash">{t("title2pre")}</span>
+            <span className="text-blood">{t("title2accent")}</span>
+          </span>
         </h1>
 
         <p className="animate-rise mt-7 max-w-xl text-lg leading-relaxed text-ash [animation-delay:160ms]">
