@@ -67,6 +67,10 @@ export function resolvePlan(
 ): PlanId {
   if (banned) return "expired";
   if (stored === "budget" || stored === "pro" || stored === "max") return stored;
+  /* Set by hand in the admin panel (or by a ban). It used to fall through to
+     the trial clock below, so "Expired" on an account three days into its
+     trial did nothing at all. */
+  if (stored === "expired") return "expired";
 
   if (!trialStart) return "expired";
   const started = new Date(`${trialStart}T00:00:00Z`).getTime();

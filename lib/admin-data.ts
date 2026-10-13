@@ -5,6 +5,7 @@ import {
   type ConfigProblem,
 } from "./supabase/admin";
 import type { UserRow } from "./admin-stats";
+import { resolvePlan } from "./entitlements-server";
 
 /* Reading the user list for the admin panel. The admin signs in with a fixed
    name and password rather than an account, so there is no user session for
@@ -49,6 +50,12 @@ export async function listUsers(): Promise<UserList> {
   return {
     users: (data ?? []).map((u) => ({
       ...u,
+      /* The plan as the app sees it. A row keeps the word "trial" for ever,
+         so an account whose seven days ended a month ago was listed here as
+         a running trial, counted as one, and its plan menu already said
+         "Trial" - which made choosing Trial again do nothing. Banned
+         accounts keep their stored plan; the ban is shown separately. */
+      plan: u.banned ? u.plan : resolvePlan(u.plan, u.trial_start, false),
       last_active: lastSeen.get(u.user_id) ?? null,
     })) as UserRow[],
     problem: "none",

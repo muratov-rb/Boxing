@@ -48,22 +48,40 @@ export async function POST(req: Request) {
         if (!PLANS.includes(plan) || !PERIODS.includes(period)) {
           return NextResponse.json({ error: "bad_plan" }, { status: 400 });
         }
-        const { error } = await supabase
+        /* "Trial" has to start the clock again, not just write the word.
+           Whether a trial is running is decided by trial_start and the
+           calendar, everywhere: the app, the AI routes, this panel. Setting
+           the plan back to "trial" on an account whose seven days were
+           already up changed the label here and nothing else - the person
+           stayed locked out, which is exactly what was reported. */
+        const patch: Record<string, string> = { plan, period, updated_at: now };
+        if (plan === "trial") patch.trial_start = now.slice(0, 10);
+        const { data, error } = await supabase
           .from("subscriptions")
-          .update({ plan, period, updated_at: now })
-          .eq("user_id", userId);
+          .update(patch)
+          .eq("user_id", userId)
+          .select("user_id");
         if (error) throw error;
-        await auditAdmin(actor, "setPlan", userId, { plan, period });
+        if (!data?.length) return NextResponse.json({ error: "no_such_user" }, { status: 404 });
+        await auditAdmin(actor, "setPlan", userId, {
+          plan,
+          period,
+          ...(patch.trial_start ? { trial_start: patch.trial_start } : {}),
+        });
         return NextResponse.json({ ok: true, plan, period });
       }
 
       case "restartTrial": {
         const today = now.slice(0, 10);
-        const { error } = await supabase
+        /* An update that matches no row is not an error to Supabase, so it
+           is checked: "saved" must mean a row changed. */
+        const { data, error } = await supabase
           .from("subscriptions")
           .update({ plan: "trial", trial_start: today, updated_at: now })
-          .eq("user_id", userId);
+          .eq("user_id", userId)
+          .select("user_id");
         if (error) throw error;
+        if (!data?.length) return NextResponse.json({ error: "no_such_user" }, { status: 404 });
         await auditAdmin(actor, "restartTrial", userId, { trial_start: today });
         return NextResponse.json({ ok: true, trial_start: today });
       }
@@ -95,7 +113,11 @@ export async function POST(req: Request) {
       case "unban": {
         const { error } = await supabase
           .from("subscriptions")
-          .update({ banned: false, banned_at: null, updated_at: now })
+          /* The ban wrote "expired" over the plan. Left there, the account
+             would come back locked whatever was left of its trial, so it is
+             handed back to the trial clock, which is where it stood before
+             "expired" started to mean something on its own. */
+          .update({ banned: false, banned_at: null, plan: "trial", updated_at: now })
           .eq("user_id", userId);
         if (error) throw error;
         await supabase.auth.admin.updateUserById(userId, { ban_duration: "none" });

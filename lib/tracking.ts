@@ -733,7 +733,11 @@ export function applyServerSub(
     plan === "budget" || plan === "pro" || plan === "max" ? plan : null;
   write(K_SUB, {
     plan: paid,
-    trialStart: trialStart || todayKey(),
+    /* "expired" is a decision, not a date: an admin can end a trial early.
+       This browser only keeps a start date, so the decision is stored as a
+       start long past. It is never sent back up - the server's row is the
+       record - and the next server answer replaces it. */
+    trialStart: plan === "expired" ? "2000-01-01" : trialStart || todayKey(),
     period: period === "yearly" ? "yearly" : "monthly",
   });
 }
