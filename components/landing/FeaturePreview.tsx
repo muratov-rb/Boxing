@@ -25,18 +25,13 @@ export function FeaturePreview() {
   return (
     <section id="features" className="relative border-t border-line/70">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-xl">
-            <p className="kicker">{t("kicker")}</p>
-            <h2 className="mt-5 font-display text-[clamp(2rem,5vw,3.5rem)] uppercase leading-none">
-              {t("titlePre")}
-              <span className="text-blood">{t("titleAccent")}</span>
-            </h2>
-            <p className="mt-5 text-ash">{t("sub")}</p>
-          </div>
-          <span className="badge shrink-0 border-blood/40 text-blood">
-            <Icon name="check" size={13} /> {t("previewBadge")}
-          </span>
+        <div className="max-w-xl">
+          <p className="kicker">{t("kicker")}</p>
+          <h2 className="mt-5 font-display text-[clamp(2rem,5vw,3.5rem)] uppercase leading-none">
+            {t("titlePre")}
+            <span className="text-blood">{t("titleAccent")}</span>
+          </h2>
+          <p className="mt-5 text-ash">{t("sub")}</p>
         </div>
 
         <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
